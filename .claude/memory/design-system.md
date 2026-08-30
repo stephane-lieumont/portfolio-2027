@@ -20,7 +20,10 @@ Il demande explicitement de **parcourir le site actuel, en respecter le design e
 - **Fond plein écran** (render ou vidéo) au premier contact.
 - **Double parcours dev / 3D** proposé dès l'accueil, avec deux boutons distincts.
 - Navigation minimaliste : Accueil, Développeur, Graphisme 3D, Contact, plus un CV téléchargeable.
-- Une **citation personnelle** en ouverture — touche humaine assumée, à ne pas raboter au nom du professionnalisme.
+
+## Abandonné
+
+- **La citation d'ouverture** (« La passion est un désir qui se mue en plaisir », attribuée à Romain Guilleaumes). Stéphane l'a tranché le 2026-08-31 : elle est de trop. L'attribution à un tiers sur son propre portfolio brouillait de surcroît l'identité de la page. L'accroche d'accueil doit désormais porter directement sur ce qu'il fait et propose.
 
 ## Principe directeur
 

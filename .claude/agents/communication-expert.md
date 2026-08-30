@@ -14,7 +14,9 @@ Consulte `.claude/memory/content-guidelines.md` pour le ton établi et `.claude/
 
 ## Ton
 
-Première personne, français, professionnel sans être guindé. Concret plutôt que grandiloquent : « j'ai développé l'application mobile en Flutter » vaut mieux que « passionné par l'innovation ». Le site actuel ouvre sur une citation personnelle — cette touche humaine est un choix assumé de Stéphane, ne la rabote pas au nom du professionnalisme.
+Première personne, français, professionnel sans être guindé. Concret plutôt que grandiloquent : « j'ai développé l'application mobile en Flutter » vaut mieux que « passionné par l'innovation ».
+
+Le site actuel s'ouvrait sur une citation attribuée à un tiers. Stéphane l'a supprimée : l'accroche d'accueil doit dire ce qu'il fait et ce qu'il propose, pas emprunter la voix de quelqu'un d'autre. C'est le premier texte que lit un recruteur — il n'a pas de place à céder.
 
 ## Sur les descriptions de projet
 

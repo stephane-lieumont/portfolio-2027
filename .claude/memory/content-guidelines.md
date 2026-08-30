@@ -38,7 +38,7 @@ Chaque projet a un `summary` court pour les cartes et une `description` longue. 
 Stéphane a demandé une révision du wording. Points déjà identifiés :
 
 - **« Developpeur »** sans accent, dans le sous-titre de l'accueil et dans la navigation.
-- **« Romain Guilleaumes »** apparaît sur l'accueil, sur un site qui est celui de Stéphane Lieumont — nature à confirmer (attribution de la citation d'ouverture ?), mais en l'état c'est déroutant pour un visiteur.
+- **La citation d'ouverture disparaît.** « La passion est un désir qui se mue en plaisir », attribuée à Romain Guilleaumes : Stéphane l'a jugée de trop le 2026-08-31. L'accroche d'accueil est à réécrire pour dire directement ce qu'il fait et ce qu'il propose — c'est le premier texte que lit un recruteur, il doit travailler.
 - **« Après une reconversion dans le domaine il y a 5 ans »** — une formulation en années relatives se périme toute seule. Préférer une date, ou une tournure qui vieillit bien.
 - Le pied de page mentionne **« Developed on React »**, à mettre à jour après la migration Angular.
 
