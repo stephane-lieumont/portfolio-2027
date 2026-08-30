@@ -37,13 +37,44 @@ Chaque projet a un `summary` court pour les cartes et une `description` longue. 
 
 Stéphane a demandé une révision du wording. Points déjà identifiés :
 
-- **« Developpeur »** sans accent, dans le sous-titre de l'accueil et dans la navigation.
-- **La citation d'ouverture disparaît.** « La passion est un désir qui se mue en plaisir », attribuée à Romain Guilleaumes : Stéphane l'a jugée de trop le 2026-08-31. L'accroche d'accueil est à réécrire pour dire directement ce qu'il fait et ce qu'il propose — c'est le premier texte que lit un recruteur, il doit travailler.
-- **« Après une reconversion dans le domaine il y a 5 ans »** — une formulation en années relatives se périme toute seule. Préférer une date, ou une tournure qui vieillit bien.
-- Le pied de page mentionne **« Developed on React »**, à mettre à jour après la migration Angular.
+### Fautes
+
+| Où                       | Actuel                                                | Correct        |
+| ------------------------ | ----------------------------------------------------- | -------------- |
+| `h2` accueil, navigation | « Developpeur Fullstack »                             | Développeur    |
+| Contact                  | « une question **où** juste un Hello World ? »        | ou             |
+| Alt galerie 3D           | « **imeuble** photo-réaliste »                        | immeuble       |
+| Alt galerie 3D           | « exterieur **photo-réalise** »                       | photo-réaliste |
+| Titre galerie 3D         | « **Exterieur** »                                     | Extérieur      |
+| Classes CSS              | `theme-ligth`, `header--ligth`, `homepage__rigthside` | light / right  |
+
+### Contenu à retravailler
+
+- **La citation d'ouverture disparaît** (voir [[design-system]]). L'accroche d'accueil est à réécrire pour dire directement ce que Stéphane fait et propose — c'est le premier texte que lit un recruteur, il doit travailler. Le sous-titre actuel « Développeur Fullstack & Graphiste 3D » est factuel mais dit _ce qu'il est_, pas _ce qu'il propose_.
+- **« Après une reconversion dans le domaine il y a 5 ans »** — une formulation en années relatives se périme toute seule. Préférer une date.
+- Le ton de la section Développeur est **tourné vers la légitimation** (« mon potentiel », « mes objectifs ») plutôt que vers la valeur apportée. C'est le réflexe du reconverti ; il n'a plus lieu d'être.
+- Les **descriptions de projet sont nettement mieux écrites** que les pages de section — elles ont déjà la structure contexte → rôle → livrables. C'est le niveau à atteindre partout.
+- **Mélange français/anglais irrégulier** : « lead developer », « Users Stories », « Roadmap produit », « Hello World », « Designed & Developed on React ». Trancher une règle et s'y tenir.
+- **La section 3D n'a aucun texte de présentation** — que des images. Un client 3D n'a rien à lire.
+
+### Incohérences factuelles
+
+- Le pied de page affiche **« ©2026 »** alors que le dernier projet date de **2022** : le site paraît abandonné.
+- « Designed & Developed on **React** » à mettre à jour après la migration Angular.
+- Le CV téléchargeable s'appelle **`CV_LIEUMONT-stephane_2024_FrontEnd.pdf`** alors que le site se positionne « Fullstack ».
+- Dates contradictoires entre carrousel et galerie 3D : « Escart Wild © 2015 » vs « Escart wild — 2014 » ; « Légos minions © 2015 » vs fichier `Lego-Minions-2016`.
+
+### SEO cassé
+
+- `og:image` = `//preview.jpg` — protocole-relatif sans hôte, donc **aucun aperçu au partage**.
+- `og:description` ne parle **que du profil 3D** (« CG Artist Toulouse | Portfolio 3D — Zbrush, 3DSmax, Vray… ») alors que le site est mixte.
+- `og:url` pointe sur `www.stephane-lieumont.fr` alors que le site est servi **sans `www`**.
+- Une seule `meta description` globale, pas de canonical, pas de JSON-LD, et aucun rendu serveur : le contenu est injecté par JS.
 
 ## Éléments récurrents
 
 CV téléchargeable, formulaire de contact, liens GitHub / LinkedIn / ArtStation. Sections : Accueil, Développeur, Graphisme 3D, Contact.
+
+Les **pages de détail projet n'ont aucun lien sortant** : ni vers le projet en ligne, ni vers GitHub, ni vers le projet suivant. Le visiteur arrive dans un cul-de-sac.
 
 Voir [[user-profile]] pour les éléments biographiques validés et [[design-system]] pour le cadre visuel.
