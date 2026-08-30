@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1788127620269,
+      "tag": "0000_redundant_ben_parker",
+      "breakpoints": true
+    }
+  ]
+}
