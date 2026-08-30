@@ -1,54 +1,54 @@
-# ADR-0004 — Authentification administrateur : compte unique, session par cookie
+# ADR-0004 — Admin authentication: single account, cookie session
 
-- **Statut** : Accepted
-- **Date** : 2026-08-30
+- **Status**: Accepted
+- **Date**: 2026-08-30
 
-## Contexte
+## Context
 
-Le back-office permet de créer et modifier des projets et d'uploader des médias. Il sera exposé sur internet, comme le reste du site, derrière le reverse proxy nginx existant.
+The back office creates and edits projects and uploads media. It will be exposed on the internet, like the rest of the site, behind the existing nginx reverse proxy.
 
-Il n'y a **qu'un seul utilisateur, et il n'y en aura jamais d'autre** : Stéphane. Pas d'inscription, pas de rôles, pas de mot de passe oublié à gérer par email, pas d'invitation.
+There is **exactly one user, and there will never be another**: Stéphane. No sign-up, no roles, no forgotten-password email flow, no invitations.
 
-Rien ne serait plus coûteux — et plus risqué — que de plaquer ici un système d'authentification complet conçu pour du multi-utilisateur : plus de code d'authentification veut dire plus de surface d'attaque, pour un bénéfice nul.
+Nothing would be more expensive — or riskier — than bolting on a full multi-user authentication system here: more auth code means more attack surface, for zero benefit.
 
-## Décision
+## Decision
 
-Un **compte administrateur unique** défini par variables d'environnement : `ADMIN_EMAIL` et `ADMIN_PASSWORD_HASH`.
+A **single admin account** defined by environment variables: `ADMIN_EMAIL` and `ADMIN_PASSWORD_HASH`.
 
-Le mot de passe est haché en **argon2** et n'existe en clair nulle part. Le hash est généré hors ligne par `pnpm --filter @portfolio/api admin:hash` et déposé dans l'environnement de production.
+The password is hashed with **argon2** and exists in plaintext nowhere. The hash is generated offline with `pnpm --filter @portfolio/api admin:hash` and placed in the production environment.
 
-La session est un **cookie signé, `httpOnly`, `sameSite=lax`, `secure` en production**, d'une durée limitée (`SESSION_TTL_HOURS`, 12 h par défaut). Le secret de signature vient de `SESSION_SECRET`.
+The session is a **signed cookie, `httpOnly`, `sameSite=lax`, `secure` in production**, with a limited lifetime (`SESSION_TTL_HOURS`, 12 h by default). The signing secret comes from `SESSION_SECRET`.
 
-`loadConfig()` **refuse de démarrer en production** si `ADMIN_PASSWORD_HASH` est vide ou si `SESSION_SECRET` est resté à sa valeur de développement. Une mauvaise configuration doit faire échouer le déploiement, pas ouvrir le back-office.
+`loadConfig()` **refuses to boot in production** if `ADMIN_PASSWORD_HASH` is empty or if `SESSION_SECRET` is still at its development value. Bad configuration should fail the deployment, not open the back office.
 
-Toutes les routes d'écriture passent par le garde `requireAdmin`. Les routes de lecture publiques restent ouvertes.
+Every write route goes through the `requireAdmin` guard. Public read routes stay open.
 
-## Conséquences
+## Consequences
 
-La surface d'authentification tient en un fichier (`apps/api/src/plugins/auth.ts`), ce qui la rend intégralement auditable d'un coup d'œil.
+The authentication surface fits in one file (`apps/api/src/plugins/auth.ts`), which makes it auditable end to end at a glance.
 
-`httpOnly` met le cookie hors de portée de JavaScript : une faille XSS ne permet pas de voler la session. `sameSite=lax` couvre l'essentiel du CSRF pour un back-office sans requêtes cross-site. Aucun jeton n'est stocké dans `localStorage`, où il serait lisible par n'importe quel script.
+`httpOnly` puts the cookie out of JavaScript's reach: an XSS flaw can't steal the session. `sameSite=lax` covers the bulk of CSRF for a back office with no cross-site requests. No token is stored in `localStorage`, where any script could read it.
 
-En contrepartie : **changer le mot de passe demande de regénérer le hash et de redéployer**. Acceptable pour un usage personnel, mais c'est une friction réelle et assumée.
+The trade-off: **changing the password means regenerating the hash and redeploying**. Acceptable for personal use, but it's real friction, knowingly accepted.
 
-Le secret de session est global : le modifier invalide la session en cours — sans conséquence à un seul utilisateur.
+The session secret is global: changing it invalidates the current session — of no consequence with one user.
 
-Il n'y a **pas de révocation de session côté serveur** : un cookie volé reste valide jusqu'à son expiration. C'est le compromis d'une session sans état ; la durée de vie courte le borne.
+There is **no server-side session revocation**: a stolen cookie stays valid until it expires. That's the compromise of a stateless session; the short lifetime bounds it.
 
-Ce modèle ne s'étend pas au multi-utilisateur. C'est délibéré : si le besoin apparaissait, il faudrait une nouvelle ADR et un vrai magasin d'utilisateurs, pas une extension de celui-ci.
+This model does not extend to multiple users. That's deliberate: if the need ever appeared, it would call for a new ADR and a real user store, not an extension of this one.
 
-## Sécurité — points de vigilance permanents
+## Security — standing points of vigilance
 
-Le back-office est limité en débit comme le reste de l'API (`@fastify/rate-limit`), ce qui borne le bruteforce. La réponse d'échec de connexion ne distingue jamais « email inconnu » de « mot de passe faux ».
+The back office is rate-limited like the rest of the API (`@fastify/rate-limit`), which bounds brute-forcing. The login failure response never distinguishes "unknown email" from "wrong password".
 
-`ADMIN_PASSWORD_HASH` et `SESSION_SECRET` ne sont **jamais** commités : `.env` est ignoré par git, et `.env.example` ne contient que des valeurs de développement explicitement marquées comme telles.
+`ADMIN_PASSWORD_HASH` and `SESSION_SECRET` are **never** committed: `.env` is gitignored, and `.env.example` contains only development values explicitly marked as such.
 
-## Alternatives écartées
+## Alternatives considered
 
-**JWT en en-tête Authorization** — le réflexe habituel, mais il impose de stocker le jeton côté client, et le seul emplacement accessible au JS (`localStorage`) est exactement celui qu'une XSS sait lire. Un cookie `httpOnly` est plus sûr pour une application web servie depuis le même domaine, et le JWT n'apporte rien ici : il n'y a ni API tierce ni service distribué à qui prouver une identité.
+**JWT in the Authorization header** — the usual reflex, but it forces the token to be stored client-side, and the only place JavaScript can reach it (`localStorage`) is exactly the place an XSS knows how to read. An `httpOnly` cookie is safer for a web app served from the same domain, and the JWT buys nothing here: there is no third-party API and no distributed service to prove an identity to.
 
-**Un fournisseur externe (Auth0, Clerk, Supabase Auth)** — robuste et sans code d'auth à maintenir, mais c'est une dépendance externe, un compte de plus et un coût potentiel, pour authentifier une seule personne.
+**An external provider (Auth0, Clerk, Supabase Auth)** — solid, with no auth code to maintain, but it's an external dependency, one more account and a potential cost, to authenticate a single person.
 
-**Authentification HTTP basique au niveau de nginx** — le minimum absolu, et cela fonctionnerait. Écarté parce que l'API ne saurait alors plus qui est connecté, l'expérience de connexion serait celle d'une popup navigateur, et la sécurité du back-office dépendrait entièrement d'une configuration d'infra vivant hors du dépôt.
+**HTTP basic auth at the nginx level** — the absolute minimum, and it would work. Rejected because the API would then no longer know who is logged in, the login experience would be a browser popup, and back-office security would rest entirely on an infrastructure config living outside the repository.
 
-**Table d'utilisateurs en base** — la structure classique, inutile ici : une table dont on sait qu'elle ne contiendra qu'une ligne, plus le code de gestion associé, contre deux variables d'environnement.
+**A users table in the database** — the classic structure, pointless here: a table you know will hold exactly one row, plus the management code around it, versus two environment variables.

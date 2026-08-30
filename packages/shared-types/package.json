@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "echo \"schémas couverts par les tests des applications\""
+    "test": "echo \"schemas are covered by the application test suites\""
   },
   "dependencies": {
     "zod": "^4.5.4"

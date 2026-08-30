@@ -1,27 +1,27 @@
 ---
 name: new-adr
-description: Crée une Architecture Decision Record locale dans docs/adr/ à partir du template du repo. À utiliser quand une décision structurante est prise sur Portfolio 2027 — choix de librairie, pattern d'architecture, modèle de données, stratégie d'infra ou de déploiement. Distinct du skill global "adr" qui publie sur Notion : celui-ci reste versionné dans le dépôt.
+description: Create a local Architecture Decision Record in docs/adr/ from the repo template. Use when a structural decision is made on Portfolio 2027 — library choice, architecture pattern, data model, infrastructure or deployment strategy. Distinct from the global "adr" skill that publishes to Notion: this one stays versioned in the repository.
 ---
 
-# Créer une ADR locale
+# Creating a local ADR
 
-Les ADR de ce repo vivent dans `docs/adr/` et sont versionnées avec le code. Une ADR fige le _pourquoi_ d'une décision, pour qu'on ne la rediscute pas six mois plus tard sans se souvenir des contraintes de l'époque.
+The ADRs in this repo live in `docs/adr/` and are versioned alongside the code. An ADR pins down the _why_ of a decision, so nobody reopens it six months later without remembering the constraints of the time.
 
-## Quand écrire une ADR
+## When to write an ADR
 
-Écris-en une quand la décision est **coûteuse à inverser** ou **surprenante pour un lecteur** : ajouter une dépendance structurante, changer de modèle de données, choisir une stratégie d'auth ou de cache, renoncer à une approche évidente pour une raison non évidente.
+Write one when the decision is **expensive to reverse** or **surprising to a reader**: adding a structural dependency, changing the data model, choosing an auth or caching strategy, passing up an obvious approach for a non-obvious reason.
 
-N'en écris pas pour un choix local et réversible — nommer une variable, découper un composant, ajouter un champ. La valeur d'un dossier d'ADR tient à sa densité : vingt ADR triviales enterrent les trois qui comptent.
+Do not write one for a local, reversible choice — naming a variable, splitting a component, adding a field. The value of an ADR folder is its density: twenty trivial ADRs bury the three that matter.
 
-## Procédure
+## Procedure
 
-1. Liste `docs/adr/` et prends le numéro suivant, sur 4 chiffres.
-2. Copie `docs/adr/0000-template.md` vers `docs/adr/NNNN-titre-en-kebab-case.md`.
-3. Remplis les sections. La plus importante est **Conséquences** — c'est celle qu'on relit. Elle doit inclure les inconvénients acceptés, pas seulement les bénéfices.
-4. Dans **Alternatives écartées**, dis pourquoi chacune l'a été. Une alternative listée sans motif n'aide personne.
-5. Statut `Accepted` si la décision est prise. Si une ADR antérieure est remplacée, passe-la en `Superseded by ADR-NNNN` et référence-la depuis la nouvelle.
-6. Mets à jour `.claude/memory/tech-stack.md` si la décision change le socle technique.
+1. List `docs/adr/` and take the next number, on 4 digits.
+2. Copy `docs/adr/0000-template.md` to `docs/adr/NNNN-title-in-kebab-case.md`.
+3. Fill in the sections. The most important is **Consequences** — that is the one people come back to. It must include the downsides accepted, not just the benefits.
+4. Under **Alternatives rejected**, say why each one was. An alternative listed without a reason helps no one.
+5. Status `Accepted` once the decision is made. If an earlier ADR is replaced, set it to `Superseded by ADR-NNNN` and reference it from the new one.
+6. Update `.claude/memory/tech-stack.md` if the decision changes the technical foundation.
 
-## Ton
+## Tone
 
-Écris au passé pour le contexte, au présent pour la décision. Sois franc sur les compromis : une ADR qui ne présente que des avantages n'a pas fait son travail d'analyse.
+Write the context in the past tense, the decision in the present. Be straight about the trade-offs: an ADR that only presents advantages has not done its analytical work.

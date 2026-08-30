@@ -1,42 +1,42 @@
-# ADR-0001 — Monorepo en pnpm workspaces
+# ADR-0001 — Monorepo with pnpm workspaces
 
-- **Statut** : Accepted
-- **Date** : 2026-08-30
+- **Status**: Accepted
+- **Date**: 2026-08-30
 
-## Contexte
+## Context
 
-Portfolio 2027 réunit trois briques : une application Angular, une API Node, et le modèle de données qu'elles partagent. Le portfolio 2022 n'avait qu'un front, avec ses données en dur dans des fichiers TypeScript — la question de la cohérence front/back ne se posait pas.
+Portfolio 2027 brings together three pieces: an Angular application, a Node API, and the data model they share. The 2022 portfolio was front-end only, with its data hard-coded in TypeScript files — front/back consistency simply wasn't a question.
 
-Elle se pose maintenant. Un projet est décrit une fois et consommé des deux côtés ; si les deux définitions divergent, le bug se manifeste à l'exécution, en production, sur la vitrine professionnelle de Stéphane.
+It is now. A project is described once and consumed from both sides; if the two definitions drift apart, the bug shows up at runtime, in production, on Stéphane's professional showcase.
 
-Le projet est développé par une seule personne assistée d'agents IA, sur son temps personnel. L'outillage doit rester compréhensible sans documentation externe.
+The project is built by one person assisted by AI agents, on personal time. The tooling has to stay understandable without external documentation.
 
-## Décision
+## Decision
 
-Un monorepo unique géré par **pnpm workspaces**, sans couche d'orchestration supplémentaire :
+A single monorepo managed by **pnpm workspaces**, with no extra orchestration layer:
 
 ```
 apps/web              Angular
 apps/api              Fastify
-packages/shared-types Schémas Zod + types, source de vérité du domaine
+packages/shared-types Zod schemas + types, source of truth for the domain
 ```
 
-Les applications consomment le package partagé via le protocole `workspace:*`. Angular le résout par un alias `paths` vers les sources TypeScript directement : pas d'étape de build intermédiaire pour le package partagé.
+Both applications consume the shared package through the `workspace:*` protocol. Angular resolves it with a `paths` alias pointing straight at the TypeScript sources: no intermediate build step for the shared package.
 
-## Conséquences
+## Consequences
 
-Le modèle de données est défini à un seul endroit. Un changement de contrat casse le typecheck des deux côtés immédiatement, au lieu de passer inaperçu jusqu'au runtime — c'est le bénéfice principal, et il justifie à lui seul le monorepo.
+The data model is defined in exactly one place. A contract change breaks the typecheck on both sides immediately, instead of slipping through unnoticed until runtime — that's the main benefit, and on its own it justifies the monorepo.
 
-Un seul `pnpm install`, un seul lockfile, une version unique de TypeScript pour tout le repo.
+One `pnpm install`, one lockfile, one TypeScript version for the whole repo.
 
-En contrepartie : la racine porte de la configuration que ni `apps/web` ni `apps/api` ne porteraient seuls, et un développeur qui découvre le repo doit comprendre les workspaces avant de lancer quoi que ce soit. Sans cache de tâches, `pnpm -r build` reconstruit tout à chaque fois — acceptable à trois packages, à revoir si le repo grossit.
+The trade-off: the root carries configuration that neither `apps/web` nor `apps/api` would carry alone, and anyone discovering the repo has to understand workspaces before running anything. With no task cache, `pnpm -r build` rebuilds everything every time — fine at three packages, worth revisiting if the repo grows.
 
-Un changement de type partagé impacte les deux applications d'un coup : c'est voulu, mais cela veut dire qu'on ne peut pas déployer un front et un back désynchronisés sans y penser.
+Changing a shared type hits both applications at once: that's the point, but it also means you can't deploy a front end and a back end out of sync without noticing.
 
-## Alternatives écartées
+## Alternatives considered
 
-**Nx** — la génération de code et le cache de tâches sont réels, mais s'amortissent sur un repo de dix packages, pas de trois. Sur un projet solo, `nx.json` et les `project.json` ajoutent une couche d'indirection que ni Stéphane ni un agent IA n'ont besoin de décoder pour comprendre comment le projet se construit.
+**Nx** — the code generation and task caching are real, but they pay for themselves on a ten-package repo, not a three-package one. On a solo project, `nx.json` and the `project.json` files add a layer of indirection that neither Stéphane nor an AI agent needs to decode to understand how the project builds.
 
-**Deux dépôts séparés** — c'est exactement le scénario où le modèle de données diverge. Il aurait fallu publier le package partagé sur un registre, ou vivre avec deux définitions à synchroniser à la main. Le coût de la duplication dépasse largement celui du monorepo.
+**Two separate repositories** — this is exactly the scenario where the data model drifts. It would have meant publishing the shared package to a registry, or living with two definitions kept in sync by hand. The cost of that duplication far exceeds the cost of the monorepo.
 
-**Un seul package, front et back mélangés** — moins de configuration, mais les deux ont des cibles de build, des tsconfig et des cycles de vie incompatibles. La séparation ne coûte presque rien ici.
+**A single package with front and back mixed together** — less configuration, but the two have incompatible build targets, tsconfigs and lifecycles. Separating them costs almost nothing here.

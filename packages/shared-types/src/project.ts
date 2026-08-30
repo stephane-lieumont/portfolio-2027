@@ -12,7 +12,7 @@ export const slugSchema = z
   .string()
   .min(3)
   .max(120)
-  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'slug kebab-case attendu');
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'expected a kebab-case slug');
 
 export const projectSchema = z.object({
   id: z.uuid(),
@@ -26,7 +26,7 @@ export const projectSchema = z.object({
   missionSteps: z.array(z.string()),
   technos: z.array(z.string()),
   tags: z.array(z.string()),
-  /** Lien de démo, servi par le reverse proxy nginx (voir docs/adr/0005). */
+  /** Demo link, served by the nginx reverse proxy (see ADR-0005). */
   demoUrl: z.url().nullable(),
   sourceUrl: z.url().nullable(),
   coverAsset: mediaAssetSchema.nullable(),

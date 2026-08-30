@@ -17,7 +17,7 @@ const envSchema = z.object({
   MINIO_ACCESS_KEY: z.string().default('minioadmin'),
   MINIO_SECRET_KEY: z.string().default('minioadmin'),
   MINIO_BUCKET: z.string().default('portfolio-media'),
-  /** Origine publique servie par nginx pour lire les médias (voir docs/adr/0003). */
+  /** Public origin served by nginx for reading media (see ADR-0003). */
   MEDIA_PUBLIC_URL: z.string().default('http://localhost:9000/portfolio-media'),
 
   ADMIN_EMAIL: z.email().default('admin@localhost'),
@@ -32,16 +32,16 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const parsed = envSchema.safeParse(env);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `  - ${i.path.join('.')}: ${i.message}`);
-    throw new Error(`Configuration invalide :\n${issues.join('\n')}`);
+    throw new Error(`Invalid configuration:\n${issues.join('\n')}`);
   }
 
   const config = parsed.data;
   if (config.NODE_ENV === 'production') {
     if (!config.ADMIN_PASSWORD_HASH) {
-      throw new Error('ADMIN_PASSWORD_HASH est obligatoire en production.');
+      throw new Error('ADMIN_PASSWORD_HASH is required in production.');
     }
     if (config.SESSION_SECRET.startsWith('dev-only-')) {
-      throw new Error('SESSION_SECRET doit être défini en production.');
+      throw new Error('SESSION_SECRET must be set in production.');
     }
   }
   return config;

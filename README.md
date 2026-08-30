@@ -1,14 +1,16 @@
 # Portfolio 2027
 
-Portfolio de Stéphane Lieumont — développeur fullstack et graphiste 3D. Successeur du portfolio React de 2022, réécrit en Angular avec un back-office pour publier les projets sans redéployer le site.
+Portfolio of Stéphane Lieumont — Lead Tech and 3D artist. Successor to the 2022 React portfolio, rewritten in Angular with a back office to publish projects without redeploying the site.
 
-## Prérequis
+> **Language policy.** Code and documentation are written in English. The site's visitor-facing content is written in French — that is the audience.
 
-- Node 22 (`nvm use` — la version est dans `.nvmrc`)
+## Requirements
+
+- Node 22 (`nvm use` — the version lives in `.nvmrc`)
 - pnpm 11 (`corepack enable`)
-- Docker, pour MinIO
+- Docker, for MinIO
 
-## Démarrer
+## Getting started
 
 ```bash
 nvm use
@@ -18,48 +20,51 @@ pnpm infra:up
 pnpm dev
 ```
 
-- Site : http://localhost:4200
-- API : http://localhost:3000
-- Console MinIO : http://localhost:9001
+- Site: http://localhost:4200
+- API: http://localhost:3000
+- MinIO console: http://localhost:9001
 
-`pnpm infra:up` doit précéder l'API : le plugin de stockage vérifie le bucket au démarrage.
+`pnpm infra:up` must run before the API: the storage plugin checks the bucket at startup.
 
-## Structure
+## Layout
 
 ```
-apps/web              Angular 22 — site public et back-office
-apps/api              Fastify + SQLite — projets, médias, contact
-packages/shared-types Schémas Zod partagés entre front et back
-docs/adr              Décisions d'architecture
-.claude/              Agents, skills et mémoire du projet
+apps/web              Angular 22 — public site and back office
+apps/api              Fastify + SQLite — projects, media, contact
+packages/shared-types Zod schemas shared between front and back
+docs/adr              Architecture decisions
+docs/specs            Functional and design specifications
+.claude/              Agents, skills and project memory
 infra/                docker-compose (MinIO, API)
 ```
 
-## Commandes
+## Commands
 
-| Commande                       | Effet                             |
+| Command                        | What it does                      |
 | ------------------------------ | --------------------------------- |
-| `pnpm dev`                     | web + api en parallèle            |
-| `pnpm build`                   | build de tous les packages        |
-| `pnpm test`                    | tests, seuil de couverture à 80 % |
+| `pnpm dev`                     | web + api in parallel             |
+| `pnpm build`                   | build every package               |
+| `pnpm test`                    | tests, 80% coverage threshold     |
 | `pnpm verify`                  | typecheck + lint + format + tests |
-| `pnpm format`                  | Prettier sur tout le repo         |
-| `pnpm infra:up` / `infra:down` | conteneurs MinIO                  |
+| `pnpm format`                  | Prettier across the repo          |
+| `pnpm infra:up` / `infra:down` | MinIO containers                  |
 
-Côté API :
+`pnpm ci` is a built-in pnpm command (clean reinstall), not this project's check script — use `pnpm verify`.
+
+API-side:
 
 ```bash
-pnpm --filter @portfolio/api db:generate   # migration après modif du schéma
-pnpm --filter @portfolio/api db:studio     # explorateur de base
-pnpm --filter @portfolio/api admin:hash    # hash argon2 du mot de passe admin
+pnpm --filter @portfolio/api db:generate   # migration after a schema change
+pnpm --filter @portfolio/api db:studio     # database browser
+pnpm --filter @portfolio/api admin:hash    # argon2 hash for the admin password
 ```
 
 ## Configuration
 
-Tout passe par `.env`, calqué sur `.env.example`. Les valeurs par défaut conviennent au développement local.
+Everything goes through `.env`, modelled on `.env.example`. The defaults are fine for local development.
 
-En production, l'API refuse de démarrer si `ADMIN_PASSWORD_HASH` est vide ou si `SESSION_SECRET` est resté à sa valeur de développement.
+In production the API refuses to start if `ADMIN_PASSWORD_HASH` is empty or if `SESSION_SECRET` is still at its development value.
 
 ## Conventions
 
-Les règles de code, de sécurité et de test sont dans [CLAUDE.md](CLAUDE.md). Le _pourquoi_ des choix techniques est dans [docs/adr](docs/adr/).
+Code, security and testing rules live in [CLAUDE.md](CLAUDE.md). The reasoning behind the technical choices lives in [docs/adr](docs/adr/), and what the site must do in [docs/specs](docs/specs/).

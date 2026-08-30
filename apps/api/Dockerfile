@@ -1,4 +1,4 @@
-# Contexte de build = racine du monorepo (voir infra/docker-compose.yml).
+# Build context is the monorepo root (see infra/docker-compose.yml).
 FROM node:22-bookworm-slim AS base
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH
 RUN corepack enable
@@ -21,5 +21,5 @@ COPY packages/shared-types packages/shared-types
 COPY apps/api apps/api
 WORKDIR /app/apps/api
 EXPOSE 3000
-# Node 22 exécute le TypeScript nativement (type stripping) : pas d'étape de build.
+# Node 22 runs TypeScript natively (type stripping): no build step.
 CMD ["node", "src/server.ts"]

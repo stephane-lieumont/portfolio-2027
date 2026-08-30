@@ -6,7 +6,7 @@ export type MediaKind = z.infer<typeof mediaKindSchema>;
 export const mediaAssetSchema = z.object({
   id: z.uuid(),
   kind: mediaKindSchema,
-  /** Clé de l'objet dans le bucket MinIO, jamais une URL absolue : l'origine peut changer. */
+  /** Object key in the MinIO bucket, never an absolute URL: the origin can change. */
   objectKey: z.string().min(1),
   url: z.url(),
   alt: z.string().max(200),
@@ -25,7 +25,7 @@ export const uploadTicketRequestSchema = z.object({
 });
 export type UploadTicketRequest = z.infer<typeof uploadTicketRequestSchema>;
 
-/** URL présignée : le navigateur pousse le fichier vers MinIO sans transiter par l'API. */
+/** Presigned URL: the browser pushes the file to MinIO without passing through the API. */
 export const uploadTicketSchema = z.object({
   assetId: z.uuid(),
   objectKey: z.string().min(1),

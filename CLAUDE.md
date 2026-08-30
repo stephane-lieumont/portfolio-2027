@@ -1,88 +1,119 @@
-# Portfolio 2027 — règles du projet
+# Portfolio 2027 — project rules
 
-Portfolio de Stéphane Lieumont, développeur fullstack et graphiste 3D. C'est sa vitrine professionnelle : le site vend ce qu'il sait faire et ce qu'il propose. Une régression visible ou un texte approximatif coûtent plus qu'un bug ordinaire.
+Stéphane Lieumont's portfolio: Lead Tech and 3D artist. This is his professional shop window — a visible regression or sloppy copy costs more here than an ordinary bug.
 
-## Structure
+## Language
+
+**Code, comments, commit messages and documentation are written in English.**
+
+**The site's visitor-facing content is written in French** — every string a visitor reads, plus the project copy stored in the database. The site is French-only; see ADR and specs.
+
+Quotes from the current site kept as audit evidence stay in French.
+
+## Layout
 
 ```
-apps/web              Angular 22 — le site public et le back-office
-apps/api              Fastify + SQLite — projets, médias, contact
-packages/shared-types Schémas Zod + types : source de vérité du domaine
-docs/adr              Décisions d'architecture et leur pourquoi
-.claude/memory        Contexte durable du projet
+apps/web              Angular 22 — public site and back office
+apps/api              Fastify + SQLite — projects, media, contact
+packages/shared-types Zod schemas + types: source of truth for the domain
+docs/adr              Architecture decisions and their reasoning
+docs/specs            What the site must do
+.claude/memory        Durable project context
 ```
 
-**Avant toute décision structurante**, lis `.claude/memory/` et `docs/adr/`. La réponse y est souvent déjà, avec ses raisons.
+**Before any structural decision**, read `.claude/memory/` and `docs/adr/`. The answer is often already there, with its reasons.
 
-## Démarrer
+## Getting started
 
 ```bash
 nvm use && pnpm install && pnpm infra:up && pnpm dev
 ```
 
-Node 22 est requis (`.nvmrc`). Le registre npm public est forcé par le `.npmrc` du projet.
+Node 22 is required (`.nvmrc`). The public npm registry is forced by the project's `.npmrc`.
 
-## Style de code
+Use `pnpm verify` to run the checks — `pnpm ci` is a built-in pnpm command that wipes `node_modules`.
 
-Le code doit être **simple et lisible en première lecture**. Un lecteur qui découvre un fichier doit comprendre ce qu'il fait sans dérouler d'indirections.
+## Code style
 
-- **Pas de commentaires**, sauf pour un _pourquoi_ non déductible du code : une contrainte cachée, un invariant subtil, un contournement. Un commentaire qui paraphrase le code est du bruit qui se périmera.
-- Nommer précisément plutôt qu'expliquer après coup.
-- Pas d'abstraction anticipée. Trois lignes qui se ressemblent valent mieux qu'un helper prématuré.
-- **Pas de `any`.** La règle ESLint est en `error`. Un `as` pour faire taire le compilateur est un bug reporté à plus tard.
-- Prettier et ESLint font autorité sur la forme. `pnpm format` avant de committer, et on ne discute pas du placement des virgules.
+Code must be **simple and readable on first pass**. Someone opening a file should understand what it does without chasing indirections.
+
+- **No comments**, except for a _why_ the code cannot convey: a hidden constraint, a subtle invariant, a workaround. A comment that paraphrases the code is noise that will go stale.
+- Name things precisely rather than explaining after the fact.
+- No premature abstraction. Three similar lines beat an early helper.
+- **No `any`.** The ESLint rule is set to `error`. An `as` used to silence the compiler is a bug deferred.
+- Prettier and ESLint are the authority on form. Run `pnpm format` before committing; the placement of commas is not up for debate.
 
 ## Frontend — Angular 22
 
-Standalone, **zoneless**, signals. Détail complet dans l'agent `angular-expert`, à consulter avant d'écrire du code Angular.
+Standalone, **zoneless**, signals. Full detail in the `angular-expert` agent — consult it before writing Angular code.
 
-Les points qui ne se négocient pas : aucun `NgModule` ; `OnPush` partout ; `input()`/`output()`/`computed()` plutôt que les décorateurs ; `@if`/`@for` (avec `track`) plutôt que les directives structurelles ; types du domaine importés de `@portfolio/shared-types` et jamais redéclarés.
+Non-negotiable: no `NgModule`; `OnPush` everywhere; `input()`/`output()`/`computed()` over decorators; `@if`/`@for` (with `track`) over structural directives; domain types imported from `@portfolio/shared-types` and never redeclared.
 
 ## Backend — Fastify
 
-Node 22 exécute le TypeScript nativement : **aucune étape de build**, et les imports relatifs portent l'extension `.ts`. `erasableSyntaxOnly` est actif, donc pas d'enum TypeScript, pas de namespace, pas de propriété de paramètre de constructeur.
+Node 22 runs TypeScript natively: **no build step**, and relative imports carry the `.ts` extension. `erasableSyntaxOnly` is on, so no TypeScript enums, no namespaces, no constructor parameter properties.
 
-Un plugin par responsabilité (`config`, `db`, `storage`, `auth`), déclaré avec `fastify-plugin`. Toute entrée est validée par un schéma Zod venu de `@portfolio/shared-types`.
+One plugin per responsibility (`config`, `db`, `storage`, `auth`), declared with `fastify-plugin`. Every input is validated by a Zod schema from `@portfolio/shared-types`.
 
-## Sécurité
+## Security
 
-Le site est public et le back-office le sera aussi. Ces règles ne sont pas négociables :
+The site is public and the back office will be too. These rules are not negotiable:
 
-- **Aucun secret dans le dépôt ni dans le bundle.** Clés, hash, jetons vivent dans `.env`, qui est ignoré par git. Une clé de service tierce ne part jamais côté client — c'est la raison pour laquelle l'email de contact transite par l'API (voir ADR-0007).
-- **Toute entrée est validée** par Zod avant d'atteindre la base ou le stockage. Aucune donnée client n'est fiable.
-- **Les routes d'écriture passent par `requireAdmin`.** Une route d'écriture non gardée est une faille, pas un oubli.
-- Session en cookie `httpOnly` signé. Jamais de jeton dans `localStorage`.
-- Requêtes via Drizzle, jamais de SQL concaténé à la main.
-- Uploads : type et taille contrôlés côté serveur. Le bucket est en lecture publique, **jamais en écriture publique**.
-- Le message d'erreur d'une connexion échouée ne dit jamais _quelle_ partie a échoué.
+- **No secret in the repository or in the bundle.** Keys, hashes and tokens live in `.env`, which is gitignored. A third-party service key never ships to the client — that is why the contact email goes through the API (see ADR-0007).
+- **Every input is validated** by Zod before reaching the database or storage. No client data is trusted.
+- **Write routes go through `requireAdmin`.** An unguarded write route is a vulnerability, not an oversight.
+- Session in a signed `httpOnly` cookie. Never a token in `localStorage`.
+- Queries through Drizzle, never hand-concatenated SQL.
+- Uploads: type and size enforced server-side. The bucket is publicly readable, **never publicly writable**.
+- A failed login message never reveals _which_ part failed.
+
+## Accessibility and semantics
+
+Target: **WCAG 2.2 level AA**, enforced in CI (see ADR-0010).
+
+HTML carries the meaning; ARIA only covers what HTML cannot express. **No editorial information is reachable by hover alone** — that is the current site's costliest defect. Every interactive state keeps AA contrast, hover and focus included. `prefers-reduced-motion` is honored everywhere.
+
+## Responsive
+
+**Mobile-first**, breakpoints in `min-width` only (see ADR-0011). **No feature is removed based on viewport width** — on the current site the Contact and CV buttons vanish below 1200px, which makes contact unreachable on mobile.
 
 ## Tests
 
-**80 % de couverture minimum** (lignes, branches, fonctions), seuil bloquant. Vitest côté web, runner natif de Node côté API. Voir ADR-0006.
+**80% coverage minimum** (lines, branches, functions), enforced. Vitest on the web side, Node's built-in runner on the API side. See ADR-0006.
 
-Teste le comportement observable, pas l'implémentation : un test qui casse à chaque refactoring sans qu'aucun comportement ne change est un test à réécrire. Franchir la barre avec des assertions creuses est pire que 60 % de tests honnêtes.
+Test observable behavior, not implementation: a test that breaks on every refactor without any behavior changing is a test to rewrite. Clearing the bar with hollow assertions is worse than 60% honest coverage.
 
-## Librairies
+## Libraries
 
-Une dépendance s'ajoute quand elle résout un problème réellement fastidieux ou piégeux en accessibilité — galerie, carrousel, envoi d'email. Elle ne s'ajoute pas par réflexe : voir ADR-0007 pour les critères. Toute nouvelle dépendance structurante mérite une ADR.
+A dependency is added when it solves something genuinely tedious or riddled with accessibility traps — gallery, carousel, email delivery. Not by reflex: see ADR-0007 for the criteria. Any new structural dependency deserves an ADR.
 
-## Décisions
+## Decisions
 
-Une décision coûteuse à inverser ou surprenante → une ADR, via le skill `new-adr`. La section _Conséquences_ doit inclure les inconvénients acceptés. Une ADR qui ne liste que des avantages n'a pas fait son travail.
+A decision that is expensive to reverse or surprising to a reader → an ADR, via the `new-adr` skill. The _Consequences_ section must include the accepted downsides. An ADR that lists only benefits has not done its job.
 
-Un choix local et réversible ne mérite pas d'ADR : la valeur du dossier tient à sa densité.
+A local, reversible choice does not deserve an ADR: the value of the collection lies in its density.
 
-## Agents
+## Agents and orchestration
 
-Quatre experts dédiés dans `.claude/agents/` :
+Four dedicated experts in `.claude/agents/`:
 
-| Agent                  | Quand                                                        |
-| ---------------------- | ------------------------------------------------------------ |
-| `angular-expert`       | code frontend, architecture de composants, performance, a11y |
-| `design-expert`        | tokens, hiérarchie visuelle, direction artistique            |
-| `communication-expert` | tout texte visible, wording, SEO                             |
-| `motion-design-expert` | animations, transitions, `prefers-reduced-motion`            |
+| Agent                  | When                                                     |
+| ---------------------- | -------------------------------------------------------- |
+| `angular-expert`       | frontend code, component architecture, performance, a11y |
+| `design-expert`        | tokens, visual hierarchy, art direction                  |
+| `communication-expert` | any visitor-facing text, copy, SEO                       |
+| `motion-design-expert` | animation, transitions, `prefers-reduced-motion`         |
+
+**Work as an orchestrator, not as a lone author.** Consult the relevant experts throughout — not once at the start — and **set them against each other when one drifts**. This is a standing instruction from Stéphane, and it exists because a specialist left alone optimizes for its own axis and quietly propagates whatever premise it was handed.
+
+Concretely:
+
+- **Any significant deliverable gets a contradiction pass** by an agent that did not write it, briefed to attack it. A reviewer told to "check" agrees; a reviewer told to "find what is wrong here" finds it.
+- **Cross the axes deliberately.** Design proposes a hover reveal → accessibility kills it. Motion proposes a cascade → performance measures it on real renders. Copy proposes a claim → check it against `user-profile.md`, never invent.
+- **Every claim traces back to a source**: the audit, an ADR, or something Stéphane said. An assertion no one can source is a drift, whoever wrote it.
+- **A premise repeated is not a premise verified.** Agents inherit context and restate it with confidence. Check the foundational claims against reality — the "dark theme" premise survived three documents before a screenshot disproved it.
+- **Arbitrate, do not average.** When two experts disagree, decide and record why. A compromise that satisfies both usually serves neither.
 
 ## Git
 
-Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`). Aucun push sans accord explicite de Stéphane. Jamais de `.env`, de fichier SQLite ni de média dans un commit.
+Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`), written in English. **Stéphane is the sole author — never add a co-author trailer.** No push without his explicit approval. Never commit `.env`, the SQLite file, or media.

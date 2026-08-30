@@ -1,80 +1,92 @@
 ---
 name: content-guidelines
-description: Ligne éditoriale du portfolio — ton, structure des textes de projet, SEO, et les corrections à apporter au wording actuel
+description: Editorial line for the portfolio — tone, structure of project copy, SEO, and the fixes to apply to the current wording. All visitor-facing copy is written in French.
 metadata:
   type: project
 ---
 
-# Ligne éditoriale
+# Editorial line
 
-## Objectif du site
+**Language:** this file is written in English, like the rest of the repository's documentation. **The copy it governs is written in French** — the site is French-speaking and that is settled. Quotations from the current site below are kept in French: they are audit evidence, not text to translate.
 
-C'est la **vitrine de ce que Stéphane fait et de ce qu'il propose**. Le lecteur type — recruteur, CTO, client — accorde trente secondes avant de décider s'il continue. Chaque texte se juge à cette aune.
+## Purpose of the site
 
-## Ton
+It is the **shop window for what Stéphane does and what he offers**. The typical reader — recruiter, CTO, client — gives it thirty seconds before deciding whether to keep going. Every piece of copy is judged against that.
 
-Première personne, français, professionnel sans raideur. **Concret plutôt que grandiloquent** : « j'ai développé l'application mobile en Flutter » vaut mieux que « passionné par l'innovation ».
+Two commercial goals, in this order: **salaried opportunities**, then **freelance dev work**. See [[user-profile]].
 
-Interdits : superlatifs invérifiables, jargon marketing, emoji. Ne jamais inventer une compétence, un client, une date ou un chiffre — un portfolio qui exagère se retourne contre son auteur en entretien.
+**The 3D section sells nothing.** Stéphane presents it as a passion and _« une plus-value sur mon apprentissage autodidacte »_ (an asset to his self-taught learning). It proves an ability to learn alone and an eye — two qualities that serve his case as a developer. No commercial call to action belongs there.
 
-## Structure d'une description de projet
+## Positioning
 
-Héritée du site actuel, elle fonctionne et se conserve :
+**Lead Tech / technical referent** replaces « Développeur Fullstack & Graphiste 3D ». The copy puts **technical arbitration, mentoring and responsibility** forward as much as writing code. The tone is no longer that of a career changer justifying himself, but of someone who makes the calls.
 
-1. **Contexte** du projet — ce qu'était le produit.
-2. **Mission de Stéphane** précisément — c'est ce qui intéresse le lecteur.
-3. **Étapes concrètes** — les livrables réels.
+## Tone
 
-Quand il a piloté, le dire. Quand il a exécuté, le dire aussi : l'honnêteté sur le périmètre est plus crédible qu'un rôle gonflé.
+First person, French, professional without stiffness. **Concrete over grandiose**: « j'ai développé l'application mobile en Flutter » (I built the mobile app in Flutter) beats « passionné par l'innovation » (passionate about innovation).
 
-Chaque projet a un `summary` court pour les cartes et une `description` longue. **Le résumé n'est pas le premier paragraphe tronqué** : c'est un texte écrit pour son usage.
+Forbidden: unverifiable superlatives, marketing jargon, emoji. Never invent a skill, a client, a date or a figure — a portfolio that exaggerates turns against its author in the interview.
+
+## Structure of a project description
+
+Inherited from the current site; it works and it stays:
+
+1. **Context** of the project — what the product was.
+2. **Stéphane's mission** precisely — that is what interests the reader.
+3. **Concrete steps** — the real deliverables.
+
+When he led, say so. When he executed, say that too: honesty about scope is more credible than an inflated role.
+
+Every project has a short `summary` for cards and a long `description`. **The summary is not the first paragraph truncated**: it is written for its own purpose.
 
 ## SEO
 
-`title` et `meta description` uniques par page, écrits pour un humain d'abord. « Stéphane Lieumont » doit figurer dans les titres : la recherche nominative amène l'essentiel du trafic d'un portfolio.
+A unique `title` and `meta description` per page, written for a human first. « Stéphane Lieumont » must appear in the titles: name searches bring most of a portfolio's traffic.
 
-## Wording à revoir — relevé sur le site actuel
+## Wording to revise — audit of the current site
 
-Stéphane a demandé une révision du wording. Points déjà identifiés :
+Stéphane asked for a wording revision. Points already identified.
 
-### Fautes
+### Spelling mistakes
 
-| Où                       | Actuel                                                | Correct        |
-| ------------------------ | ----------------------------------------------------- | -------------- |
-| `h2` accueil, navigation | « Developpeur Fullstack »                             | Développeur    |
-| Contact                  | « une question **où** juste un Hello World ? »        | ou             |
-| Alt galerie 3D           | « **imeuble** photo-réaliste »                        | immeuble       |
-| Alt galerie 3D           | « exterieur **photo-réalise** »                       | photo-réaliste |
-| Titre galerie 3D         | « **Exterieur** »                                     | Extérieur      |
-| Classes CSS              | `theme-ligth`, `header--ligth`, `homepage__rigthside` | light / right  |
+These are French spelling corrections — both columns stay in French.
 
-### Contenu à retravailler
+| Where                 | Current                                               | Correct        |
+| --------------------- | ----------------------------------------------------- | -------------- |
+| Home `h2`, navigation | « Developpeur Fullstack »                             | Développeur    |
+| Contact               | « une question **où** juste un Hello World ? »        | ou             |
+| 3D gallery alt        | « **imeuble** photo-réaliste »                        | immeuble       |
+| 3D gallery alt        | « exterieur **photo-réalise** »                       | photo-réaliste |
+| 3D gallery heading    | « **Exterieur** »                                     | Extérieur      |
+| CSS classes           | `theme-ligth`, `header--ligth`, `homepage__rigthside` | light / right  |
 
-- **La citation d'ouverture disparaît** (voir [[design-system]]). L'accroche d'accueil est à réécrire pour dire directement ce que Stéphane fait et propose — c'est le premier texte que lit un recruteur, il doit travailler. Le sous-titre actuel « Développeur Fullstack & Graphiste 3D » est factuel mais dit _ce qu'il est_, pas _ce qu'il propose_.
-- **« Après une reconversion dans le domaine il y a 5 ans »** — une formulation en années relatives se périme toute seule. Préférer une date.
-- Le ton de la section Développeur est **tourné vers la légitimation** (« mon potentiel », « mes objectifs ») plutôt que vers la valeur apportée. C'est le réflexe du reconverti ; il n'a plus lieu d'être.
-- Les **descriptions de projet sont nettement mieux écrites** que les pages de section — elles ont déjà la structure contexte → rôle → livrables. C'est le niveau à atteindre partout.
-- **Mélange français/anglais irrégulier** : « lead developer », « Users Stories », « Roadmap produit », « Hello World », « Designed & Developed on React ». Trancher une règle et s'y tenir.
-- **La section 3D n'a aucun texte de présentation** — que des images. Un client 3D n'a rien à lire.
+### Content to rework
 
-### Incohérences factuelles
+- **The opening quotation goes** (see [[design-system]]). The home page hook has to be rewritten to say directly what Stéphane does and offers — it is the first text a recruiter reads, it has to work. The current subtitle « Développeur Fullstack & Graphiste 3D » is factual but says _what he is_, not _what he offers_.
+- **« Après une reconversion dans le domaine il y a 5 ans »** — a phrasing built on relative years goes stale on its own. Use a date instead.
+- The tone of the Developer section is **aimed at legitimizing himself** (« mon potentiel », « mes objectifs ») rather than at the value he brings. That is the career changer's reflex; it no longer applies.
+- The **project descriptions are written markedly better** than the section pages — they already have the context → role → deliverables structure. That is the level to reach everywhere.
+- **Irregular French/English mixing**: « lead developer », « Users Stories », « Roadmap produit », « Hello World », « Designed & Developed on React ». Settle on one rule and hold it.
+- **The 3D section has no introductory copy at all** — only images. A 3D client has nothing to read.
 
-- Le pied de page affiche **« ©2026 »** alors que le dernier projet date de **2022** : le site paraît abandonné.
-- « Designed & Developed on **React** » à mettre à jour après la migration Angular.
-- Le CV téléchargeable s'appelle **`CV_LIEUMONT-stephane_2024_FrontEnd.pdf`** alors que le site se positionne « Fullstack ».
-- Dates contradictoires entre carrousel et galerie 3D : « Escart Wild © 2015 » vs « Escart wild — 2014 » ; « Légos minions © 2015 » vs fichier `Lego-Minions-2016`.
+### Factual inconsistencies
 
-### SEO cassé
+- The footer shows **« ©2026 »** while the most recent project dates from **2022**: the site looks abandoned.
+- « Designed & Developed on **React** » to be updated after the Angular migration.
+- The downloadable CV is named **`CV_LIEUMONT-stephane_2024_FrontEnd.pdf`** while the site positions him as « Fullstack ».
+- Contradictory dates between the carousel and the 3D gallery: « Escart Wild © 2015 » vs « Escart wild — 2014 »; « Légos minions © 2015 » vs the file `Lego-Minions-2016`.
 
-- `og:image` = `//preview.jpg` — protocole-relatif sans hôte, donc **aucun aperçu au partage**.
-- `og:description` ne parle **que du profil 3D** (« CG Artist Toulouse | Portfolio 3D — Zbrush, 3DSmax, Vray… ») alors que le site est mixte.
-- `og:url` pointe sur `www.stephane-lieumont.fr` alors que le site est servi **sans `www`**.
-- Une seule `meta description` globale, pas de canonical, pas de JSON-LD, et aucun rendu serveur : le contenu est injecté par JS.
+### Broken SEO
 
-## Éléments récurrents
+- `og:image` = `//preview.jpg` — protocol-relative with no host, so **no preview when shared**.
+- `og:description` covers **only the 3D profile** (« CG Artist Toulouse | Portfolio 3D — Zbrush, 3DSmax, Vray… ») while the site is mixed.
+- `og:url` points at `www.stephane-lieumont.fr` while the site is served **without `www`**.
+- A single global `meta description`, no canonical, no JSON-LD, and no server rendering: the content is injected by JS.
 
-CV téléchargeable, formulaire de contact, liens GitHub / LinkedIn / ArtStation. Sections : Accueil, Développeur, Graphisme 3D, Contact.
+## Recurring elements
 
-Les **pages de détail projet n'ont aucun lien sortant** : ni vers le projet en ligne, ni vers GitHub, ni vers le projet suivant. Le visiteur arrive dans un cul-de-sac.
+Downloadable CV, contact form, GitHub / LinkedIn / ArtStation links. Sections: Accueil, Développeur, Graphisme 3D, Contact.
 
-Voir [[user-profile]] pour les éléments biographiques validés et [[design-system]] pour le cadre visuel.
+The **project detail pages have no outbound links**: none to the live project, none to GitHub, none to the next project. The visitor lands in a dead end.
+
+See [[user-profile]] for approved biographical facts and [[design-system]] for the visual frame.

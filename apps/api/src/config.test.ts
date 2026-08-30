@@ -11,7 +11,7 @@ const productionEnv = {
 };
 
 describe('loadConfig', () => {
-  it('applique les valeurs par défaut de développement', () => {
+  it('applies development defaults', () => {
     const config = loadConfig({});
 
     assert.equal(config.NODE_ENV, 'development');
@@ -19,36 +19,36 @@ describe('loadConfig', () => {
     assert.equal(config.MINIO_USE_SSL, false);
   });
 
-  it('convertit les variables numériques et booléennes', () => {
+  it('coerces numeric and boolean variables', () => {
     const config = loadConfig({ PORT: '8080', MINIO_USE_SSL: 'true' });
 
     assert.equal(config.PORT, 8080);
     assert.equal(config.MINIO_USE_SSL, true);
   });
 
-  it('rejette un port invalide', () => {
-    assert.throws(() => loadConfig({ PORT: 'not-a-port' }), /Configuration invalide/);
+  it('rejects an invalid port', () => {
+    assert.throws(() => loadConfig({ PORT: 'not-a-port' }), /Invalid configuration/);
   });
 
-  it('rejette un secret de session trop court', () => {
-    assert.throws(() => loadConfig({ SESSION_SECRET: 'trop-court' }), /Configuration invalide/);
+  it('rejects a session secret that is too short', () => {
+    assert.throws(() => loadConfig({ SESSION_SECRET: 'too-short' }), /Invalid configuration/);
   });
 
-  it('accepte une configuration de production complète', () => {
+  it('accepts a complete production configuration', () => {
     const config = loadConfig(productionEnv);
 
     assert.equal(config.NODE_ENV, 'production');
     assert.equal(config.ADMIN_EMAIL, 'admin@example.com');
   });
 
-  it('refuse de démarrer en production sans hash de mot de passe', () => {
+  it('refuses to boot in production without a password hash', () => {
     assert.throws(
       () => loadConfig({ ...productionEnv, ADMIN_PASSWORD_HASH: '' }),
       /ADMIN_PASSWORD_HASH/,
     );
   });
 
-  it('refuse de démarrer en production avec le secret de développement', () => {
+  it('refuses to boot in production with the development secret', () => {
     assert.throws(
       () =>
         loadConfig({ ...productionEnv, SESSION_SECRET: 'dev-only-secret-change-me-32-chars-min' }),

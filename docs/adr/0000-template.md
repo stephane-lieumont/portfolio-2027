@@ -1,20 +1,20 @@
-# ADR-0000 — Titre de la décision
+# ADR-0000 — Decision title
 
-- **Statut** : Proposed | Accepted | Deprecated | Superseded by ADR-NNNN
-- **Date** : AAAA-MM-JJ
+- **Status**: Proposed | Accepted | Deprecated | Superseded by ADR-NNNN
+- **Date**: YYYY-MM-DD
 
-## Contexte
+## Context
 
-Quelle situation a rendu cette décision nécessaire ? Quelles contraintes pesaient (temps, coût, compétences, existant, infra) ? Écris ce qu'un lecteur qui découvre le projet dans un an aurait besoin de savoir.
+What made this decision necessary? What constraints applied (time, cost, skills, existing system, infrastructure)? Write what someone discovering the project a year from now would need to know.
 
-## Décision
+## Decision
 
-Ce qui a été décidé, formulé au présent et sans ambiguïté.
+What was decided, stated in the present tense and without ambiguity.
 
-## Conséquences
+## Consequences
 
-Ce que cela implique concrètement — **les inconvénients acceptés autant que les bénéfices**. C'est la section qu'on relit quand la décision commence à coincer.
+What this means in practice — **the accepted downsides as much as the benefits**. This is the section you come back to when the decision starts to hurt.
 
-## Alternatives écartées
+## Alternatives considered
 
-Chaque option sérieusement envisagée, et le motif précis de son rejet. Une alternative citée sans raison n'apporte rien.
+Every option seriously weighed, and the precise reason it was rejected. An alternative named without a reason adds nothing.

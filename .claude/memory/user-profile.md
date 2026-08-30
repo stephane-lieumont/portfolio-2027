@@ -1,46 +1,60 @@
 ---
 name: user-profile
-description: Qui est Stéphane Lieumont — parcours, double compétence dev/3D, et ce que le portfolio doit en dire
+description: Who Stéphane Lieumont is — background, dual dev/3D skill set, and what the portfolio should say about it
 metadata:
   type: user
 ---
 
 # Stéphane Lieumont
 
-Développeur fullstack **et** graphiste 3D. C'est le portfolio de quelqu'un qui exerce réellement les deux métiers, pas d'un développeur qui fait de la 3D en amateur — la structure du site doit refléter cette parité.
+## Current positioning — settled 2026-08-31
 
-## Parcours
+**Lead Tech / technical referent.** This is the positioning that replaces « Développeur Fullstack & Graphiste 3D ». The site puts **responsibility and technical arbitration** forward as much as the code: he mentors, he settles the calls, he challenges his backend developers. His role as co-founder and lead developer on Case Tes Potes already documents it.
 
-- Intérêt pour les nouvelles technologies depuis **2006**.
-- **14 ans dans l'industrie aéronautique**, puis reconversion vers le développement (une cinquantaine de mois d'expérience dev revendiqués sur le site de 2022 — à réactualiser, cette formulation vieillit mal).
-- Aujourd'hui en poste chez **Web Atrio**, où il est le développeur Angular de son équipe. Le portfolio est un projet personnel, distinct.
+**3D is a passion, not a commercial offer.** Stéphane wants to show it and describes it himself as _« une plus-value sur mon apprentissage autodidacte »_ (an asset to his self-taught learning). That is the framing to hold: the 3D section does not sell 3D services, it **proves an ability to learn independently and an eye**. Never write a commercial call to action there.
 
-Cette trajectoire est un argument, pas une anecdote : elle explique une rigueur d'ingénieur et une sensibilité visuelle rares ensemble.
+**Goals of the site**, in this order: to be contacted for **salaried opportunities**, and to find **freelance dev work**. 3D serves both; it is not a third offer.
 
-## Réalisations présentes sur le portfolio 2022
+## Background
 
-| Projet                        | Année | Stack                                                  |
-| ----------------------------- | ----- | ------------------------------------------------------ |
-| Case Tes Potes — Mobile       | 2022  | Flutter, Dart, Android, iOS — co-fondateur et lead dev |
-| Case Tes Potes — Landing Page | 2022  | React, TypeScript, Sass, Node, Koa, MongoDB            |
-| Case Tes Potes — Web App      | 2021  | Webpack, JavaScript, Sass, Node                        |
-| Kasa — OpenClassrooms         | 2021  | React, TypeScript, Sass, Node                          |
-| Portfolio 3D                  | 2018  | JavaScript, CSS                                        |
-| Pixmodels                     | 2015  | JavaScript, PHP, CSS                                   |
+- Interested in new technologies since **2006**.
+- **14 years in the aerospace industry**, then a career change into development.
+- Today at **Web Atrio**, the only Angular developer on his team, acting as technical referent to .NET backend developers.
 
-Sur Case Tes Potes il était **co-fondateur et lead developer** : définition de la stratégie technique, users stories, roadmap, maquettes XD/Figma, pilotage d'une équipe de deux développeurs. C'est le projet qui porte le plus de responsabilité — le mettre en avant.
+That trajectory is an argument, not an anecdote: it explains an engineer's rigor and a visual sensibility that rarely come together.
 
-## Présence en ligne
+## Technologies to put forward — settled 2026-08-31
 
-- GitHub : `stephane-lieumont`
-- LinkedIn : `stephane-lieumont`
-- ArtStation : `s-lieumont.artstation.com` — le portfolio 3D de référence
-- Un CV téléchargeable depuis le site
+Angular, TypeScript, RxJS/Signals, .NET/C#, Docker, CI/CD, Git, and **React** (which he can still use).
 
-## Comment travailler avec lui
+**Flutter comes off the highlighted specialties** — he no longer wants to be approached for it. The Case Tes Potes Mobile project does stay in the work section: it is a fact of his career, and the one carrying the most responsibility.
 
-Développeur expérimenté : pas d'explication de base, pas de pédagogie non demandée. Il attend un code simple, lisible, sans commentaires superflus, et des justifications techniques qui tiennent la route.
+The specialties displayed in 2022 (Vue.js, React.js, Flutter, Webpack, Sass, Node.js) are **out of date** and must not be carried over.
 
-Il a l'œil pour l'image — une proposition visuelle molle sera repérée.
+## Work featured on the 2022 portfolio
 
-Voir [[content-guidelines]] pour la façon de parler de lui à la première personne sur le site.
+| Project                       | Year | Stack                                                 |
+| ----------------------------- | ---- | ----------------------------------------------------- |
+| Case Tes Potes — Mobile       | 2022 | Flutter, Dart, Android, iOS — co-founder and lead dev |
+| Case Tes Potes — Landing Page | 2022 | React, TypeScript, Sass, Node, Koa, MongoDB           |
+| Case Tes Potes — Web App      | 2021 | Webpack, JavaScript, Sass, Node                       |
+| Kasa — OpenClassrooms         | 2021 | React, TypeScript, Sass, Node                         |
+| Portfolio 3D                  | 2018 | JavaScript, CSS                                       |
+| Pixmodels                     | 2015 | JavaScript, PHP, CSS                                  |
+
+On Case Tes Potes he was **co-founder and lead developer**: defining the technical strategy, user stories, roadmap, XD/Figma mockups, and leading a team of two developers. It is the project carrying the most responsibility — put it forward.
+
+## Online presence
+
+- GitHub: `stephane-lieumont`
+- LinkedIn: `stephane-lieumont`
+- ArtStation: `s-lieumont.artstation.com` — the reference 3D portfolio
+- A CV downloadable from the site
+
+## How to work with him
+
+Experienced developer: no basics explained, no unrequested teaching. He expects simple, readable code with no superfluous comments, and technical rationale that holds up.
+
+He has an eye for images — a limp visual proposal will be spotted.
+
+See [[content-guidelines]] for how to speak about him in the first person on the site.

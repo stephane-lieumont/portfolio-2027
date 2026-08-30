@@ -1,9 +1,11 @@
-# Mémoire — Portfolio 2027
+# Memory — Portfolio 2027
 
-Contexte durable du projet. À lire avant toute décision structurante, avec `docs/adr/`.
+Durable project context. Read before any structural decision, together with `docs/adr/`.
 
-- [Socle technique](tech-stack.md) — versions, commandes, et les contraintes d'exécution qui ne se devinent pas
-- [Profil de Stéphane](user-profile.md) — parcours, double compétence dev/3D, réalisations à mettre en avant
-- [Direction artistique](design-system.md) — ce qu'on garde du site actuel, ce qu'on modernise, tokens
-- [Ligne éditoriale](content-guidelines.md) — ton, structure des projets, SEO, wording à corriger
-- [Contraintes de production](production-constraints.md) — nginx, liens de démo, sauvegardes
+**Language rule:** code, comments, documentation and these memory files are written in **English**. Everything a visitor reads on the site — copy, labels, `alt` text, SEO metadata — stays in **French**. The site is French-speaking; that decision is settled.
+
+- [Technical foundation](tech-stack.md) — versions, commands, and the runtime constraints you cannot guess
+- [Stéphane's profile](user-profile.md) — background, dual dev/3D skill set, work to put forward
+- [Art direction](design-system.md) — what we keep from the current site, what we modernize, tokens
+- [Editorial line](content-guidelines.md) — tone, project structure, SEO, wording to fix
+- [Production constraints](production-constraints.md) — nginx, demo links, backups

@@ -1,36 +1,36 @@
 ---
 name: add-project
-description: Ajoute un projet au portfolio de bout en bout — rédaction du contenu, upload des visuels vers MinIO, création via l'API, vérification de l'affichage. À utiliser quand Stéphane veut publier une nouvelle réalisation dev ou 3D, ou mettre à jour un projet existant.
+description: Add a project to the portfolio end to end — write the copy, upload the visuals to MinIO, create it through the API, verify how it renders. Use when Stéphane wants to publish a new dev or 3D piece of work, or update an existing project.
 ---
 
-# Ajouter un projet au portfolio
+# Adding a project to the portfolio
 
-Un projet se compose de **texte** (rédigé), de **médias** (uploadés vers MinIO) et d'une **entrée en base** (créée via l'API). Les trois doivent être cohérents avant publication.
+A project is made of **copy** (written), **media** (uploaded to MinIO) and a **database entry** (created through the API). All three must be consistent before publishing.
 
-## Avant de commencer
+## Before starting
 
-Vérifie que l'environnement tourne :
+Check that the environment is running:
 
 ```bash
 pnpm infra:up && pnpm dev:api
 ```
 
-Le modèle de données fait autorité dans `packages/shared-types/src/project.ts`. Si un champ te manque pour décrire le projet, **ne le bricole pas dans une chaîne existante** : modifie le schéma partagé, puis le schéma Drizzle (`apps/api/src/db/schema.ts`), génère la migration (`pnpm --filter @portfolio/api db:generate`) et note-le. Un champ détourné de son usage est une dette qu'on paie au projet suivant.
+The data model is authoritative in `packages/shared-types/src/project.ts`. If a field is missing to describe the project, **do not improvise it inside an existing string**: change the shared schema, then the Drizzle schema (`apps/api/src/db/schema.ts`), generate the migration (`pnpm --filter @portfolio/api db:generate`) and note it down. A field bent out of its purpose is debt you pay on the next project.
 
-## Étapes
+## Steps
 
-**1. Le contenu.** Délègue la rédaction à l'agent `communication-expert`. Il lui faut : le contexte du projet, le rôle exact de Stéphane, les étapes concrètes, les technos, les dates. Ne remplis jamais un trou par une supposition — demande.
+**1. The copy.** Delegate writing to the `communication-expert` agent — the site is French-speaking, so the copy it produces is in French. It needs: the project context, Stéphane's exact role, the concrete steps, the technologies, the dates. Never fill a gap with an assumption — ask.
 
-**2. Les médias.** Chaque projet a une image de couverture et, souvent, une galerie. Le flux d'upload passe par une URL présignée : l'API délivre un ticket (`POST /media/upload-ticket`), le fichier part directement vers MinIO, puis l'upload est confirmé (`POST /media/confirm`). Renseigne un `alt` réel sur chaque média — c'est une obligation d'accessibilité et le lint template la vérifie côté web.
+**2. The media.** Every project has a cover image and, often, a gallery. The upload flow goes through a presigned URL: the API issues a ticket (`POST /media/upload-ticket`), the file goes straight to MinIO, then the upload is confirmed (`POST /media/confirm`). Set a real `alt` on every media item — it is an accessibility requirement and the template lint checks it on the web side.
 
-Pour les renders 3D, surveille le poids : ce sont les fichiers les plus lourds du site et la principale menace pour les performances.
+For 3D renders, watch the file size: they are the heaviest files on the site and the main threat to performance.
 
-**3. La création.** Appelle l'API en `POST /projects` avec un payload conforme à `createProjectInputSchema`. Le `slug` est kebab-case et définitif : il devient l'URL publique, donc le changer casse les liens existants et le référencement.
+**3. The creation.** Call the API with `POST /projects` and a payload matching `createProjectInputSchema`. The `slug` is kebab-case and final: it becomes the public URL, so changing it breaks existing links and search ranking.
 
-Statut `draft` d'abord. On passe en `published` après relecture, pas avant.
+Status `draft` first. It moves to `published` after review, not before.
 
-**4. La vérification.** Affiche le projet dans l'application (`pnpm dev:web`) et contrôle : les images se chargent, le texte ne déborde pas, le lien de démo répond.
+**4. The verification.** Render the project in the app (`pnpm dev:web`) and check: images load, text does not overflow, the demo link responds.
 
-## Le cas des liens de démo
+## The case of demo links
 
-`demoUrl` pointe vers des projets hébergés à part, **redirigés par le reverse proxy nginx** (voir `docs/adr/0005`). Un lien de démo n'est pas une simple URL externe : vérifie que la route nginx correspondante existe réellement avant de publier, sinon le visiteur atterrit sur une erreur depuis la vitrine.
+`demoUrl` points at separately hosted projects, **proxied by the nginx reverse proxy** (see ADR-0005). A demo link is not a plain external URL: verify that the matching nginx route actually exists before publishing, otherwise the visitor lands on an error straight from the shop window.

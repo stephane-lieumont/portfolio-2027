@@ -1,95 +1,95 @@
 ---
 name: design-system
-description: Direction artistique de Portfolio 2027 — relevé du site actuel, ce qu'on garde, ce qu'on modernise, tokens
+description: Art direction for Portfolio 2027 — audit of the current site, what we keep, what we modernize, tokens
 metadata:
   type: project
 ---
 
-# Direction artistique
+# Art direction
 
-## Le brief, dans les mots de Stéphane
+## The brief, in Stéphane's words
 
-Il est **globalement satisfait du rendu actuel** de stephane-lieumont.fr, mais le trouve **en manque de modernité**. La refonte est une remise à niveau, pas une table rase — se tromper de niveau d'ambition ici, c'est jeter ce qui marche.
+He is **broadly happy with the current look** of stephane-lieumont.fr, but finds it **short on modernity**. The rebuild is a refresh, not a blank slate — getting the level of ambition wrong here means throwing away what works.
 
-Il demande explicitement de **parcourir le site actuel, en respecter le design et le moderniser, en révisant le wording**.
+He explicitly asks to **go through the current site, respect its design and modernize it, while revising the wording**.
 
-## Relevé de l'existant (audit du 2026-08-31)
+## Audit of the existing site (2026-08-31)
 
-### Le site est clair, pas sombre
+### The site is light, not dark
 
-Erreur d'hypothèse corrigée : l'accueil et la section Développeur sont en **thème clair** (fond blanc, texte `#242424`). Seule la **section Graphisme 3D passe en sombre** (`#242424`), pour laisser les renders dominer.
+Corrected assumption: the home page and the Developer section are on a **light theme** (white background, text `#242424`). Only the **3D Graphics section switches to dark** (`#242424`), to let the renders dominate.
 
-**C'est une bonne décision de design, à conserver et à assumer davantage** : le thème suit la nature du contenu. Le code l'exprime par deux classes sur `<main>` — `theme-ligth` (faute incluse) et `theme-dark` — qui recolorent à la main.
+**This is a good design decision, to keep and to commit to further**: the theme follows the nature of the content. The code expresses it through two classes on `<main>` — `theme-ligth` (typo included) and `theme-dark` — which recolor everything by hand.
 
-### Palette réelle
+### Actual palette
 
-| Rôle                      | Valeur                                              |
-| ------------------------- | --------------------------------------------------- |
-| Accent primaire           | `#f2a154` (orange sable) — écrit **40 fois en dur** |
-| Texte principal           | `#242424` — sert aussi de fond à la section 3D      |
-| Texte secondaire          | `#7e7d7d`                                           |
-| Accent clair (hover)      | `#fad8b8`, `#fcecdd`, `hsla(29,87%,85%,.9)`         |
-| Accent foncé              | `#c28143`                                           |
-| Fond footer               | `#464646`                                           |
-| Fond section Réalisations | `#f9f9f9`                                           |
-| Erreur / succès           | `#cc4534` / `#1aa260`                               |
+| Role                    | Value                                                    |
+| ----------------------- | -------------------------------------------------------- |
+| Primary accent          | `#f2a154` (sand orange) — written **40 times hardcoded** |
+| Primary text            | `#242424` — also serves as the 3D section background     |
+| Secondary text          | `#7e7d7d`                                                |
+| Light accent (hover)    | `#fad8b8`, `#fcecdd`, `hsla(29,87%,85%,.9)`              |
+| Dark accent             | `#c28143`                                                |
+| Footer background       | `#464646`                                                |
+| Work section background | `#f9f9f9`                                                |
+| Error / success         | `#cc4534` / `#1aa260`                                    |
 
-**Zéro custom property CSS** dans tout le site. Aucun `prefers-color-scheme`.
+**Zero CSS custom properties** across the whole site. No `prefers-color-scheme`.
 
-### Typographie
+### Typography
 
-`html { font-size: 62.5% }` (1rem = 10px). **Open Sans** partout, **Poppins** sur le seul `<h1>` du header, et **Arial sur tous les boutons** — parce que `.button` ne déclare pas de `font-family` et hérite du user-agent. Le couple Poppins/Open Sans est le duo par défaut des templates 2018.
+`html { font-size: 62.5% }` (1rem = 10px). **Open Sans** everywhere, **Poppins** on the header's single `<h1>`, and **Arial on every button** — because `.button` declares no `font-family` and inherits the user agent's. The Poppins/Open Sans pairing is the default duo of 2018 templates.
 
-**11 tailles entre 9,6 px et 28 px, sans ratio** : corps à 14 px, `h2` du hero à 25,2 px, `h1` à 28 px — et ce 28 px n'est qu'un `2em` par défaut du navigateur, pas une décision. `line-height: normal` presque partout, aucun `letter-spacing`, un seul `clamp()` dans tout le CSS.
+**11 sizes between 9.6px and 28px, with no ratio**: body at 14px, hero `h2` at 25.2px, `h1` at 28px — and that 28px is only the browser's default `2em`, not a decision. `line-height: normal` almost everywhere, no `letter-spacing` at all, a single `clamp()` in the entire CSS.
 
-### Espacement, rayons, ombres
+### Spacing, radii, shadows
 
-Aucun système : px, em et rem mélangés ; gouttières en `%` sur la grille projets (34,8 px à 1160 px, 57,6 px à 1920 px) et en `px` sur la galerie 3D. **Quatre rayons sans échelle** (`2em`, `10px`, `5px`, `3px`). **Une seule ombre** (`0 8px 24px hsla(210,8%,62%,.2)`) pour tout le site.
+No system: px, em and rem mixed together; gutters in `%` on the projects grid (34.8px at 1160px, 57.6px at 1920px) and in `px` on the 3D gallery. **Four radii with no scale** (`2em`, `10px`, `5px`, `3px`). **A single shadow** (`0 8px 24px hsla(210,8%,62%,.2)`) for the whole site.
 
-**Pas de largeur maximale de contenu** hors la page Contact : à 1920 px, les paragraphes s'étirent sur 1800 px.
+**No maximum content width** outside the Contact page: at 1920px, paragraphs stretch across 1800px.
 
 ### Motion
 
-C'est la partie la plus travaillée du site — 29 `@keyframes`, système `.reveal` maison, entrée d'accueil en panneau qui se rétracte. Mais les cascades sont linéaires et sans plafond : le hero met **1,2 s** à se composer, la 16ᵉ tuile de la galerie arrive **2,4 s** après la première. **Aucun `prefers-reduced-motion`.**
+This is the most crafted part of the site — 29 `@keyframes`, a homegrown `.reveal` system, a home page entrance built on a retracting panel. But the cascades are linear and uncapped: the hero takes **1.2s** to assemble, and the 16th gallery tile arrives **2.4s** after the first. **No `prefers-reduced-motion` anywhere.**
 
-## Acquis à préserver
+## Assets to preserve
 
-- **Accent orange `#f2a154`** comme signature de marque.
-- **Le thème suit le contenu** : clair pour le dev, sombre pour la 3D.
-- **Fond plein écran** (render ou vidéo) au premier contact.
-- **Double parcours dev / 3D** dès l'accueil — Stéphane a confirmé le 2026-08-31 vouloir **garder deux parcours séparés**, pas une liste unifiée avec filtre.
-- Sections : Accueil, Développeur, Graphisme 3D, Contact, plus un CV téléchargeable.
-- **Le soin apporté au mouvement** — à recalibrer, pas à supprimer.
+- **Orange accent `#f2a154`** as the brand signature.
+- **The theme follows the content**: light for dev, dark for 3D.
+- **Full-screen background** (render or video) at first contact.
+- **Dual dev / 3D path** straight from the home page — Stéphane confirmed on 2026-08-31 that he wants to **keep two separate paths**, not a unified filtered list.
+- Sections: Home, Developer, 3D Graphics, Contact, plus a downloadable CV.
+- **The care put into motion** — to recalibrate, not to remove.
 
-## Abandonné
+## Dropped
 
-- **La citation d'ouverture** (« La passion est un désir qui se mue en plaisir », attribuée à Romain Guilleaumes). Tranché par Stéphane le 2026-08-31 : elle est de trop. L'audit confirme le problème de forme — l'attribution en 9,6 px collée sous le `<h1>` « Stéphane Lieumont » se lit comme une erreur d'identité.
+- **The opening quotation** (« La passion est un désir qui se mue en plaisir », attributed to Romain Guilleaumes). Settled by Stéphane on 2026-08-31: it is one thing too many. The audit confirms the formal problem — the attribution set at 9.6px right under the `<h1>` « Stéphane Lieumont » reads as a mistaken identity.
 
-## Défauts fonctionnels à corriger en priorité
+## Functional defects to fix first
 
-Ce ne sont pas des questions de goût : le site perd des informations et des visiteurs.
+These are not matters of taste: the site is losing information and visitors.
 
-1. **Tout le contenu éditorial des cartes est en `:hover`**, sans `@media (hover:hover)`. Sur mobile, les Réalisations sont **six captures anonymes** — ni titre, ni techno, ni année. Idem pour les 16 tuiles 3D.
-2. **Le contact est inatteignable depuis la navigation sur mobile** : les boutons Contact et CV sont en `display:none` sous 1200 px, et le menu burger ne contient pas de lien Contact.
-3. **Le hover des boutons dégrade le contraste** (pêche sur pêche, ≈ 2:1) : l'état survolé est moins lisible que l'état repos. Échec WCAG.
-4. **Accueil à 3,46 Mo**, dont **2,88 Mo pour un MP4 en autoplay empaqueté dans le build**. Portrait chargé deux fois, logos en base64, aucun WebP/AVIF, aucun `srcset`, aucun `loading="lazy"`.
-5. **Le header transparent fixe** passe au-dessus des logos colorés de la section Développeur : le titre devient illisible.
-6. **Navigation principale enfermée dans un burger même à 1920 px.**
-7. **Hiérarchie typographique qui s'écrase en mobile** : le corps monte à 16 px pendant que les titres tombent à 19,2 px — le rapport passe de 1,7× à 1,2×.
+1. **All editorial content on the cards sits behind `:hover`**, with no `@media (hover:hover)`. On mobile, the Work section is **six anonymous screenshots** — no title, no technology, no year. Same for the 16 3D tiles.
+2. **Contact is unreachable from the navigation on mobile**: the Contact and CV buttons are `display:none` below 1200px, and the burger menu contains no Contact link.
+3. **Button hover degrades contrast** (peach on peach, ≈ 2:1): the hovered state is less legible than the resting state. WCAG failure.
+4. **Home page at 3.46 MB**, of which **2.88 MB is an autoplaying MP4 bundled into the build**. Portrait loaded twice, logos in base64, no WebP/AVIF, no `srcset`, no `loading="lazy"`.
+5. **The fixed transparent header** passes over the colored logos of the Developer section: the title becomes illegible.
+6. **Main navigation locked inside a burger even at 1920px.**
+7. **Type hierarchy collapses on mobile**: body rises to 16px while headings drop to 19.2px — the ratio falls from 1.7× to 1.2×.
 
-## Principe directeur
+## Guiding principle
 
-**Le design est le cadre, les images sont le produit.** Si un élément d'interface rivalise avec un render, c'est l'élément qui a tort.
+**The design is the frame, the images are the product.** If an interface element competes with a render, the element is wrong.
 
-## Contraintes fermes
+## Hard constraints
 
-- **Contraste AA minimum**, états de survol inclus — c'est précisément là que le site actuel échoue.
-- Tout par **tokens CSS custom properties**, aucune valeur en dur.
-- **Aucune information éditoriale accessible uniquement au survol.**
-- Le site est **en français** : ne jamais caler une largeur sur un mot anglais court.
+- **AA contrast minimum**, hover states included — that is exactly where the current site fails.
+- Everything through **CSS custom property tokens**, no hardcoded values.
+- **No editorial information reachable only on hover.**
+- The site's content is **in French**: never size a width around a short English word.
 
-## État des tokens
+## Token status
 
-À arrêter en phase de specs avec l'agent `design-expert`, à partir du relevé ci-dessus. Pistes déjà identifiées : ancrer le corps à 16–18 px et ouvrir le hero avec un `clamp()`, poser une échelle typographique à ratio nommé, une échelle d'espacement, trois rayons maximum, deux ou trois couches d'ombre teintées, et une largeur maximale de contenu.
+To be settled during the specs phase with the `design-expert` agent, from the audit above. Directions already identified: anchor the body at 16–18px and open the hero with a `clamp()`, set a type scale with a named ratio, a spacing scale, three radii at most, two or three tinted shadow layers, and a maximum content width.
 
-Voir [[tech-stack]] pour les contraintes d'implémentation et [[content-guidelines]] pour l'éditorial.
+See [[tech-stack]] for implementation constraints and [[content-guidelines]] for editorial.

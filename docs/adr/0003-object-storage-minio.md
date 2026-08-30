@@ -1,44 +1,44 @@
-# ADR-0003 — Stockage des médias dans MinIO, uploads présignés
+# ADR-0003 — Media stored in MinIO, presigned uploads
 
-- **Statut** : Accepted
-- **Date** : 2026-08-30
+- **Status**: Accepted
+- **Date**: 2026-08-30
 
-## Contexte
+## Context
 
-Le portfolio expose des renders 3D et des captures de projets : ce sont les fichiers les plus lourds du site, et son contenu le plus important puisque c'est le travail de Stéphane qui est vendu.
+The portfolio shows 3D renders and project screenshots: they are the heaviest files on the site and its most important content, since what's being sold is Stéphane's work.
 
-En 2022, les images étaient importées en dur dans le bundle React. Ajouter un projet exigeait un commit et un redéploiement, et chaque image alourdissait la compilation. Le nouveau back-office doit permettre d'ajouter un projet sans toucher au code.
+In 2022, images were imported straight into the React bundle. Adding a project required a commit and a redeploy, and every image made the build heavier. The new back office has to allow adding a project without touching code.
 
-Stocker les binaires dans SQLite serait techniquement possible et pratiquement mauvais : la base gonflerait, les sauvegardes deviendraient lourdes, et l'API servirait des octets qu'un serveur de fichiers sert mieux.
+Storing the binaries in SQLite would be technically possible and practically bad: the database would balloon, backups would get heavy, and the API would serve bytes that a file server serves better.
 
-## Décision
+## Decision
 
-**MinIO** (compatible S3) pour tous les médias, en conteneur aux côtés de l'API.
+**MinIO** (S3-compatible) for all media, in a container alongside the API.
 
-Les uploads passent par des **URL présignées** : l'API délivre un ticket, le navigateur pousse le fichier directement vers MinIO, puis confirme l'upload à l'API qui enregistre les métadonnées. **Le fichier ne transite jamais par le processus Node.**
+Uploads go through **presigned URLs**: the API issues a ticket, the browser pushes the file straight to MinIO, then confirms the upload to the API, which records the metadata. **The file never passes through the Node process.**
 
-En base, on ne stocke qu'une **clé d'objet**, jamais une URL absolue. L'URL publique est reconstruite à la lecture depuis `MEDIA_PUBLIC_URL`.
+The database stores only an **object key**, never an absolute URL. The public URL is rebuilt on read from `MEDIA_PUBLIC_URL`.
 
-## Conséquences
+## Consequences
 
-L'API ne fait pas de proxy de fichiers : pas de mémoire consommée par des renders de plusieurs mégaoctets, pas de timeout sur les gros uploads. C'est le principal gain.
+The API doesn't proxy files: no memory eaten by multi-megabyte renders, no timeouts on large uploads. That's the main win.
 
-Stocker la clé plutôt que l'URL rend l'origine des médias déplaçable — passer MinIO derrière un autre domaine ou un CDN ne demande qu'un changement de variable d'environnement, sans migration de données. Une URL absolue en base aurait figé cette décision pour toujours.
+Storing the key rather than the URL makes the media origin movable — putting MinIO behind another domain or a CDN takes one environment variable change, with no data migration. An absolute URL in the database would have frozen that decision forever.
 
-Compatible S3 : si l'hébergement change un jour, le code reste, seule la configuration bouge.
+S3-compatible: if the hosting changes one day, the code stays and only the configuration moves.
 
-En contrepartie : un service de plus à faire tourner et à sauvegarder, et la sauvegarde du site devient double — le fichier SQLite **et** le bucket. Les deux doivent être cohérents ; une restauration partielle laisse des projets pointant vers des médias absents.
+The trade-off: one more service to run and back up, and the site backup becomes a two-part job — the SQLite file **and** the bucket. The two must stay consistent; a partial restore leaves projects pointing at missing media.
 
-Les URL présignées ont une durée de vie courte et le client doit gérer leur expiration. Le flux d'upload en deux temps est plus complexe qu'un simple POST multipart, et un ticket délivré puis abandonné laisse une ligne orpheline en base : il faudra un nettoyage périodique.
+Presigned URLs are short-lived and the client has to handle their expiry. The two-step upload flow is more complex than a plain multipart POST, and a ticket issued then abandoned leaves an orphan row in the database: periodic cleanup will be needed.
 
-Le bucket doit être en lecture publique pour les médias publiés, mais **jamais en écriture publique**. Cette distinction est la seule chose qui empêche n'importe qui de déposer des fichiers dans le stockage du site.
+The bucket must be publicly readable for published media, but **never publicly writable**. That distinction is the only thing standing between the site's storage and anyone who feels like dropping files into it.
 
-## Alternatives écartées
+## Alternatives considered
 
-**Système de fichiers local servi par nginx** — plus simple, sans service supplémentaire. Écarté parce que les médias seraient liés à la machine : pas de séparation entre stockage et calcul, et une migration d'hébergement deviendrait un déplacement manuel de fichiers.
+**Local filesystem served by nginx** — simpler, with no extra service. Rejected because the media would be tied to the machine: no separation between storage and compute, and a hosting migration would turn into moving files by hand.
 
-**Un service S3 managé (AWS, Scaleway, Cloudflare R2)** — zéro administration, mais un coût mensuel et une dépendance externe pour un projet personnel. MinIO garde la porte ouverte : le code étant compatible S3, la bascule reste possible sans réécriture.
+**A managed S3 service (AWS, Scaleway, Cloudflare R2)** — zero administration, but a monthly cost and an external dependency for a personal project. MinIO keeps the door open: since the code is S3-compatible, switching remains possible without a rewrite.
 
-**Upload en multipart à travers l'API** — plus simple à implémenter, mais Node porte alors tout le poids des fichiers, avec les limites de taille et les timeouts qui vont avec. Mauvais compromis pour des renders 3D.
+**Multipart upload through the API** — simpler to implement, but Node then carries the full weight of the files, with the size limits and timeouts that come with it. A bad trade for 3D renders.
 
-**Images dans le dépôt Git** — le mode actuel. Le dépôt grossit indéfiniment, et publier un projet reste un acte de développeur alors que l'objectif est précisément de s'en affranchir.
+**Images in the Git repository** — the current setup. The repository grows without bound, and publishing a project stays a developer act when the whole point is to stop it being one.

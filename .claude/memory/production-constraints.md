@@ -1,34 +1,34 @@
 ---
 name: production-constraints
-description: Contraintes de l'infrastructure de production — nginx, liens de démo proxyfiés, sauvegardes à double volet
+description: Production infrastructure constraints — nginx, proxied demo links, two-part backups
 metadata:
   type: project
 ---
 
-# Contraintes de production
+# Production constraints
 
-## Les liens de démo passent par nginx
+## Demo links go through nginx
 
-`stephane-lieumont.fr` tourne derrière **nginx**, qui **redirige les liens de démo vers des projets hébergés séparément**. Les champs `demoUrl` ne sont pas de simples URL externes : ce sont des chemins que le proxy route vers d'autres applications.
+`stephane-lieumont.fr` runs behind **nginx**, which **routes the demo links to separately hosted projects**. The `demoUrl` fields are not plain external URLs: they are paths the proxy routes to other applications.
 
-**Pourquoi ça compte :** publier un projet avec un `demoUrl` dont la route nginx n'existe pas envoie le visiteur sur une erreur, depuis la vitrine. Le code ne peut pas détecter ce cas — seule une vérification côté infra le peut.
+**Why it matters:** publishing a project with a `demoUrl` whose nginx route does not exist sends the visitor to an error, straight from the shop window. The code cannot detect that case — only a check on the infrastructure side can.
 
-**Comment l'appliquer :** avant de publier un projet portant un lien de démo, vérifier que la route existe côté nginx. Ne jamais réorganiser les chemins `/demo/*` sans vérifier ce qui pointe dessus.
+**How to apply it:** before publishing a project carrying a demo link, verify the route exists on the nginx side. Never reorganize the `/demo/*` paths without checking what points at them.
 
-## La configuration nginx vit hors du dépôt
+## The nginx configuration lives outside the repository
 
-Le routage par chemin (`/api`, `/media`, `/demo`, repli `index.html`) est décrit dans l'ADR-0005, mais **la configuration réelle n'est pas versionnée ici**.
+Path-based routing (`/api`, `/media`, `/demo`, `index.html` fallback) is described in ADR-0005, but **the actual configuration is not versioned here**.
 
-**Pourquoi ça compte :** un ordre de blocs `location` mal choisi peut faire disparaître l'API derrière le repli `index.html` — l'API renverrait alors du HTML au lieu du JSON attendu, et rien dans le code n'indiquerait la cause. C'est un point de défaillance unique invisible depuis le repo.
+**Why it matters:** a badly ordered set of `location` blocks can make the API disappear behind the `index.html` fallback — the API would then return HTML instead of the expected JSON, and nothing in the code would point at the cause. It is a single point of failure invisible from the repo.
 
-**Comment l'appliquer :** en cas de comportement inexplicable en production (réponse HTML sur une route d'API, média introuvable), suspecter nginx avant le code. Cette configuration mérite d'être sauvegardée avec le même soin que la base.
+**How to apply it:** when production behaves inexplicably (HTML response on an API route, missing media), suspect nginx before the code. This configuration deserves to be backed up with the same care as the database.
 
-## La sauvegarde a deux volets
+## Backups have two parts
 
-L'état du site vit dans **deux endroits distincts** : le fichier SQLite et le bucket MinIO.
+The site's state lives in **two distinct places**: the SQLite file and the MinIO bucket.
 
-**Pourquoi ça compte :** restaurer l'un sans l'autre laisse des projets pointant vers des médias absents, ou des médias orphelins. Les deux doivent être cohérents dans le temps.
+**Why it matters:** restoring one without the other leaves projects pointing at missing media, or orphaned media. The two must be consistent in time.
 
-**Comment l'appliquer :** toute procédure de sauvegarde ou de restauration traite les deux ensemble. Ni le fichier SQLite ni les médias ne sont dans le dépôt Git.
+**How to apply it:** any backup or restore procedure handles both together. Neither the SQLite file nor the media are in the Git repository.
 
-Voir [[tech-stack]] pour les contraintes d'exécution locales.
+See [[tech-stack]] for local runtime constraints.
