@@ -25,7 +25,7 @@ The decorative triangle covers the home page `<h2>` and the Specialties section 
 
 **No information is carried by hover alone** (see ADR-0010). Hover effects are gated behind `@media (hover: hover) and (pointer: fine)` and add nothing but polish.
 
-**The typographic hierarchy never inverts.** Fluid `clamp()` sizes replace per-breakpoint overrides: the ratio between headings and body is monotonic across the entire width range.
+**The typographic hierarchy never inverts.** Fluid `clamp()` sizes replace per-breakpoint overrides: the ratio between headings and body is monotonic across the entire width range. Where this meets the scale defined in ADR-0009, **monotonicity is the rule that wins** — the ratio opens as the viewport widens, it never narrows.
 
 **Decorative elements never cover text.** They are `aria-hidden`, non-focusable, and give way rather than overlap. The fixed social sidebar rejoins the document flow once it no longer has room to sit in the margin.
 

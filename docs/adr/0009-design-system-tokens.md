@@ -21,11 +21,11 @@ Tokens are organised in two tiers. **Primitive tokens** name raw values (`--colo
 
 The **theme follows the nature of the content**, a decision from the current site that we keep and stand behind: light on the home page and the Developer section, dark on the 3D Graphics section so the renders dominate. Technically, a theme is **a redefinition of the semantic tokens** under a `data-theme` attribute, never a rewrite of component rules.
 
-`prefers-color-scheme` is respected for the default choice of the overall theme.
+**Section themes are fixed, and `prefers-color-scheme` does not flip them.** The light/dark split is an identity decision, not a display preference: the switch to dark is what signals the visitor is entering the 3D world and what lets the renders own the screen. If the OS dark mode turned the home page and the Developer section dark, that contrast would vanish and the strongest effect on the site would cancel itself out. `prefers-color-scheme` only ever drives an explicit manual toggle, if one is added. Concretely: `:root { color-scheme: light }` and `[data-theme="dark"] { color-scheme: dark }` — never `light dark` on the root, which would hand a dark-mode visitor native dark form controls on a light page.
 
 The scales are explicit and built on named ratios:
 
-- **Typography**: body anchored at 16–18 px, a constant-ratio scale, fluid headings via `clamp()`. The ratio between the hero title and body text never drops below its desktop value — the current site crushes its hierarchy from 1.7× to 1.2× on mobile, and that must not happen again.
+- **Typography**: body anchored at 16–18 px, fluid headings via `clamp()`, and a **ratio that opens with the viewport** — major third (1.25) at 360 px widening to perfect fourth (1.333) at 1440 px, on headings only. Two rules bound it: the **hero-to-body ratio has a floor of 3× at every viewport**, and **no heading is ever smaller at a wider viewport than at a narrower one**. The current site crushes its hierarchy from 1.7× to 1.2× on mobile; that is what must not happen again.
 - **Spacing**: one scale, in `rem`, no percentages. Grid gutters are fixed.
 - **Radii**: three values at most.
 - **Elevation**: two or three levels, each shadow composed of several layers and **tinted relative to its background**.
@@ -45,6 +45,10 @@ The trade-off: **two token tiers is indirection**. Reading `--surface-raised` me
 Laying down the scales before designing the pages is upfront work, and it will take discipline to resist adding an off-scale value "just for this one case". Every exception added drags the system back toward its current state.
 
 Custom properties aren't typed: nothing stops you writing a non-existent `var(--space-99)`. CSS linting won't catch it; only the eye will.
+
+An opening ratio means the hierarchy is **tighter on mobile (3.00×) than on desktop (4.22×)**. That is an accepted trade-off, not a regression: a 4.22× ratio at 360 px would put the hero at 67.6 px inside 312 px of usable width, which is typographically wrong for a name as long as "Stéphane Lieumont". The floor of 3× is what guarantees the mobile hierarchy still beats the current site's _desktop_ figure of 1.7×.
+
+Fixing the section themes costs the visitor's stated OS preference on two of the four pages. For an interface that would be the wrong call; for a portfolio whose light/dark split _is_ the staging, it is the right one.
 
 ## Alternatives considered
 
