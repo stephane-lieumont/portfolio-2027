@@ -34,7 +34,19 @@ Keys are deterministic and immutable: `media/{id}/original.{ext}` for the source
 
 Renders are no longer cropped by CSS. The container takes the media's intrinsic ratio via `aspect-ratio`, and the grid absorbs the varying heights. `object-fit: cover` remains allowed on screenshots only, where the framing isn't an authorial choice.
 
-**The video leaves the bundle and leaves autoplay behind.** The home page hero becomes a still render, which is the page's LCP. The demo becomes an on-demand element: a poster image — an ordinary image media item, so it goes through the pipeline above — with an explicit play button over it; the `<video>` tag is `preload="none"` and its source is attached only on click. The file is served from MinIO through nginx, which handles byte-range requests. **The API does not transcode video**: two H.264/AAC renders at 720p and 1080p are encoded upstream by Stéphane, whose job that is, and uploaded as two media items. `ffmpeg` does not go into the API's Docker image for a file replaced once a year.
+**The background video stays, and leaves the bundle.** Stéphane settled this on 2026-08-31: the 3D video behind the home page hero is well integrated and is kept, autoplaying, muted, looping. What was wrong was never the video — it was shipping 2.88 MB of it inside the JavaScript bundle and starting it unconditionally.
+
+So the video moves to MinIO, served through nginx with byte-range support, and its delivery is staged:
+
+- A **poster image** renders immediately and carries the LCP. It goes through the image pipeline above like any other media item, so it arrives as an AVIF of a few dozen kilobytes.
+- The `<video>` is `preload="none"`, `muted`, `playsinline`, `loop`, `autoplay`, and fades in only once it can actually play. The poster is the first frame, so the fade never shows a jump.
+- Under **`prefers-reduced-motion: reduce`, the video is never fetched.** The poster stays, still. That is a complete hero, not a degraded one.
+- Under **`Save-Data`, or a `navigator.connection.effectiveType` below 4g**, likewise: poster only.
+- The element is decorative — `aria-hidden`, not focusable, never carrying information the copy does not also carry.
+
+**A hard budget applies: 1.5 MB for the loop, and it is checked before publishing.** The current file is 2.88 MB for a background that plays under text; a short, well-encoded loop lands far below that. This is a manual gate, and §Consequences says what happens when it is missed.
+
+**The API does not transcode video.** H.264/AAC renditions are encoded upstream by Stéphane, whose job that is, and uploaded as media items. `ffmpeg` does not go into the API's Docker image for a file replaced once a year.
 
 **One `priority` image per prerendered route** — the hero render on the home page, the main visual on a project page, the first tile of the 3D gallery. Everything else is `loading="lazy"`, with a hand-written `sizes` for each layout, because a wrong `sizes` cancels out the benefit of the `srcset`. The portrait is loaded once. The six tool logos become SVGs served with the application: they're interface elements, not content, and they have no business in MinIO or in base64.
 
@@ -42,7 +54,9 @@ Renders are no longer cropped by CSS. The container takes the media's intrinsic 
 
 ## Consequences
 
-The home page targets under 600 KB on first render against 3.46 MB today, and most of that budget goes into the hero render — that is, into what the visitor came to see. The 2.88 MB of video becomes zero bytes until someone clicks. The portrait, loaded twice for 230 KB, becomes a single AVIF of a few dozen kilobytes. The weight that remains is content, not waste.
+The home page targets **under 600 KB before the video starts**, against 3.46 MB today. The poster carries the opening image, so the page is complete and readable before a single byte of video arrives, and the video then loads outside the critical path instead of competing with it. The portrait, loaded twice for 230 KB, becomes a single AVIF of a few dozen kilobytes. The weight that remains is content, not waste.
+
+Keeping an autoplaying background costs something, and it is worth naming: on a phone over cellular the visitor still pays for the loop, decoding it costs battery, and the effect is one a still render would largely deliver on its own. That trade was made deliberately — the video is part of what the site is, and a portfolio that opens on motion says something a static image cannot. The staged delivery is what makes the cost acceptable rather than the cost disappearing.
 
 Generating at upload time means **the original passes through the Node process**, which contradicts the cleanest property of ADR-0003. That's accepted and contained: the transfer happens on the internal network, off the visitor path, triggered by an authenticated administrator. It has a real memory cost — decoding a 6000 px render takes several hundred megabytes — which the API container's memory limit must account for, or the first large upload kills the process.
 
@@ -72,7 +86,7 @@ Finally, video encoding remains **a manual act**. Nothing in the code guarantees
 
 **Client-side JavaScript detection of AVIF/WebP support** — not cleanly possible under SSG: the HTML is frozen at build time, detection lands after the first render and causes either a double request or a delayed display. Exactly what we're trying to avoid on the LCP.
 
-**Keeping autoplay with a lighter video** — even at 800 KB, a video that starts on its own competes directly with the LCP for bandwidth, forces decoding at the busiest moment, and ignores `prefers-reduced-motion`. The staging effect isn't worth that price; a full-width still render produces the same opening impact anyway, which is one thing the current design got right.
+**Replacing the video with a still render** — this was the original decision here, argued on weight: the video competes with the LCP, costs decoding at the busiest moment, and ignores `prefers-reduced-motion`. Overruled by Stéphane on 2026-08-31, and the objections are answered rather than dismissed: the poster carries the LCP so nothing competes with it, the video loads after first render, and `prefers-reduced-motion` and `Save-Data` both skip it entirely. What remains is a bandwidth cost on cellular, accepted knowingly.
 
 **HLS or DASH for the demo** — adaptive streaming is the right answer for a video catalogue. For a single two-minute demo played on demand, two MP4 renditions and nginx's byte-range requests are enough, with no manifest, no segmentation and no JavaScript player to ship.
 

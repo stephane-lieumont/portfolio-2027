@@ -14,10 +14,12 @@ Visitor-facing copy is written in French; this document is in English.
 
 1. **The hook.** The positioning — Lead Tech / technical referent — and what Stéphane offers. Replaces the removed quotation and the "Developpeur Fullstack & Graphiste 3D" subtitle. See spec 05 for the copy.
 2. **Two entry points**: "Profil dev" and "Profil 3D". Confirmed decision: two separate paths, not a unified filtered list.
-3. **A 3D render as the background**, which is the page's LCP.
+3. **The 3D video as the background**, kept — Stéphane settled on 2026-08-31 that it is well integrated. A poster image renders first and carries the LCP; the video fades in once it can play, and is never fetched under `prefers-reduced-motion` or `Save-Data` (ADR-0012).
 4. **Direct access to contact and CV**, without going through the navigation.
 
-**What changes.** The quotation and its attribution are gone. The 2.88 MB autoplay video is replaced by a still render; the showreel, if kept, sits behind a poster and a click (ADR-0012). The decorative triangle no longer covers the heading.
+**What changes.** The quotation and its attribution are gone. The video stays but stops shipping inside the JavaScript bundle and stops blocking first render — 2.88 MB is far past what a background loop under text should cost, and a 1.5 MB budget applies. The decorative triangle no longer covers the heading.
+
+**The hero text must stay readable over any frame of the video.** That is a constraint on the encode as much as on the CSS: a scrim helps, a busy or bright passage behind the headline does not.
 
 **Visual hierarchy.** The hook is the first thing read. Today it comes third, after the site title and a quotation.
 
