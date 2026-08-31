@@ -223,6 +223,31 @@ A direct consequence of rule 1: **pin the ink first, then move the surface in wh
 
 The pressed feeling comes from elevation and a 1px translate (spec 07), not from a value that would drag contrast down.
 
+### 3.5 Scrims — text over imagery
+
+Everywhere else in this system, contrast is computed against a known surface. Over a render or a video frame it cannot be: the background changes with the content, and on the home page it changes 25 times a second. A ratio that holds on the average frame is worthless — the guarantee has to hold on the **worst** frame.
+
+The worst frame is white. Measured for white ink, with the scrim built on `--color-neutral-950` (`#12100f`) — **not** pure black, which is what the ramp actually gives us and which costs a few points of ratio:
+
+| Scrim opacity | Composited background | White ink |
+| ------------- | --------------------- | --------- |
+| 45%           | `#949393`             | 3.06      |
+| 55%           | `#7d7c7b`             | 4.17 ❌   |
+| **58%**       | `#767474`             | **4.65**  |
+| 62%           | `#6c6b6a`             | **5.32**  |
+| 72%           | `#545352`             | **7.68**  |
+| 78%           | `#464544`             | **9.57**  |
+
+**58% is the floor for body-size text**, and nothing on this site sits over imagery below it. The intuitive round number, 55%, lands at 4.17 and fails — a reminder that the scrim colour matters as much as its opacity, and that a tinted near-black is not a black.
+
+`--hero-scrim` reaches 62% in the band the hook occupies and 78% at the bottom edge, so the guarantee holds with margin while the top of the frame stays open and the render keeps its light.
+
+`--scrim` is the flat variant at 72%, for the off-canvas menu backdrop and the lightbox, where the content behind must recede rather than merely darken.
+
+Both are identical in the two themes. A scrim covers imagery, not a surface token, so it has no theme to follow.
+
+**This is also an encoding constraint, not only a CSS one.** A scrim that has to reach 78% to rescue a badly chosen frame has stopped being a scrim and become a curtain — at which point the video is no longer visible and there was no reason to ship it. The passage behind the hook should be dark and quiet in the source. Spec 07 carries that requirement.
+
 ---
 
 ## 4. Typography
@@ -723,6 +748,16 @@ The mechanism is `color-scheme` + `light-dark()`. `color-scheme` inherits, so pu
 
   /* Letterboxing behind full-bleed 3D media, darker than the section page. */
   --surface-letterbox: var(--color-neutral-950);
+
+  /* Scrims — see §3.5. Identical in both themes: they darken toward black
+     regardless of the surface underneath, because what they cover is imagery. */
+  --scrim: color-mix(in srgb, var(--color-neutral-950) 72%, transparent);
+  --hero-scrim: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-neutral-950) 78%, transparent) 0%,
+    color-mix(in srgb, var(--color-neutral-950) 62%, transparent) 45%,
+    color-mix(in srgb, var(--color-neutral-950) 30%, transparent) 100%
+  );
   --accent-wash: light-dark(var(--color-orange-100), var(--color-orange-950));
   --accent-wash-strong: light-dark(var(--color-orange-200), var(--color-orange-900));
 
