@@ -52,7 +52,21 @@ The current site's `#242424` is a pure neutral sitting next to a warm orange; th
 | `--color-neutral-850` | `#252422` | `40 4% 14%`  | **Dark page background** — the `#242424` anchor                                                       |
 | `--color-neutral-900` | `#1b1a18` | `40 6% 10%`  | Light primary text, ink on accent, dark sunken surface, dark field background, light-theme focus ring |
 
-`--color-neutral-950` is gone: nothing consumed it. Full-bleed media letterboxing uses `--surface-page` on a dark section.
+| `--color-neutral-950` | `#12100f` | `30 9% 6%` | **Letterboxing** behind full-bleed 3D media |
+
+`--color-neutral-950` was deleted in the previous revision as unconsumed, then reinstated: Stéphane compared the two framings on 2026-08-31 and chose the darker frame. It sits **1.22:1** from `--surface-page` and **1.35:1** from `--surface-raised` — enough to read as a distinct frame, far too little to compete with the render inside it. It has exactly one consumer, `--surface-letterbox`, and no other element may use it:
+
+```css
+.media--bleed {
+  background: var(--surface-letterbox);
+  display: grid;
+  place-items: center;
+}
+.media--bleed img {
+  max-inline-size: 100%;
+  block-size: auto;
+}
+```
 
 ### 2.2 Orange — brand ramp derived from `#f2a154`
 
@@ -66,10 +80,14 @@ The current site's `#242424` is a pure neutral sitting next to a warm orange; th
 | `--color-orange-400` | `#f5b170`     | `29 87% 70%` | Primary hover fill, dark-theme accent text                     |
 | `--color-orange-500` | **`#f2a154`** | `29 86% 64%` | **Brand accent.** Fill in both themes; foreground on dark only |
 | `--color-orange-600` | `#db7624`     | `27 72% 50%` | Accent rim on light, current-page rule on light                |
-| `--color-orange-700` | `#ad571a`     | `25 74% 39%` | Light-theme accent text and links                              |
-| `--color-orange-800` | `#853f14`     | `23 74% 30%` | Light-theme accent hover text, ink on light accent washes      |
-| `--color-orange-900` | `#4c3c2f`     | `27 24% 24%` | Dark accent wash strong — tertiary active fill                 |
-| `--color-orange-950` | `#3d3024`     | `29 26% 19%` | Dark accent wash — tertiary hover fill, chip fill              |
+| `--color-orange-700` | `#ad571a`     | `25 74% 39%` | Light-theme accent text and links; **primary button fill**     |
+| `--color-orange-750` | `#944915`     | `24 75% 33%` | Primary button hover fill                                      |
+| `--color-orange-800` | `#853f14`     | `23 74% 30%` | Light accent hover text, ink on light washes                   |
+| `--color-orange-850` | `#7a3c11`     | `24 75% 27%` | Primary button active fill                                     |
+
+White on `#ad571a` is **5.05:1**, on `#944915` **6.52:1**, on `#7a3c11` **8.46:1** — monotonically increasing, which is why the primary button darkens on hover rather than brightening (§3.4, §10.1).
+| `--color-orange-900` | `#4c3c2f` | `27 24% 24%` | Dark accent wash strong — tertiary active fill |
+| `--color-orange-950` | `#3d3024` | `29 26% 19%` | Dark accent wash — tertiary hover fill, chip fill |
 
 Steps 900 and 950 replace the former `#532a13`, which the previous revision itself documented as "Reserved" — a token nothing consumed. `--color-orange-50` (`#fef5ec`) is deleted: it sat 1.03:1 from `--surface-raised` and could not carry a hover state on a card (see §3.4).
 
@@ -201,7 +219,9 @@ The current site's worst accessibility defect is the button hover: peach fill wi
 
 Rule 2 is the reason `--color-orange-50` (`#fef5ec`) was deleted. It measured 1.08:1 against `--surface-page` and **1.03:1 against `--surface-raised`** — so the tertiary button hover did literally nothing on a card, which is where tertiary buttons mostly live. `--accent-wash` is now `orange-100`, at 1.18 / 1.14. The same failure existed in dark, where `--accent-wash` resolved to `--color-neutral-800`, byte-identical to `--surface-raised`: ratio **1.00**. It is now `orange-950` at 1.22 / 1.10.
 
-A direct consequence of rule 1: on both themes, **hover brightens the accent fill**. Since the ink is pinned to `#1b1a18`, brightening can only raise contrast. That inverts the usual "darken on hover" reflex, and it is the right call here — darkening `#f2a154` toward `#db7624` would take the label from 8.28:1 down to 5.49:1. The pressed feeling comes from elevation and a 1px translate (spec 07), not from value.
+A direct consequence of rule 1: **pin the ink first, then move the surface in whichever direction raises the ratio.** The direction is not a house style, it falls out of the ink. On the primary button, whose ink is white (§10.1), the surface darkens: 5.05 → 6.52 → 8.46. On a fill carrying dark ink — chips, overlines, the dark-theme accent — it brightens instead. Both obey the same rule and both climb.
+
+The pressed feeling comes from elevation and a 1px translate (spec 07), not from a value that would drag contrast down.
 
 ---
 
@@ -647,6 +667,7 @@ The mechanism is `color-scheme` + `light-dark()`. `color-scheme` inherits, so pu
   --color-neutral-800: #2e2b29;
   --color-neutral-850: #252422;
   --color-neutral-900: #1b1a18;
+  --color-neutral-950: #12100f;
 
   --color-orange-100: #fce9d4;
   --color-orange-200: #f9d4ae;
@@ -655,7 +676,9 @@ The mechanism is `color-scheme` + `light-dark()`. `color-scheme` inherits, so pu
   --color-orange-500: #f2a154; /* brand — does not move */
   --color-orange-600: #db7624;
   --color-orange-700: #ad571a;
+  --color-orange-750: #944915;
   --color-orange-800: #853f14;
+  --color-orange-850: #7a3c11;
   --color-orange-900: #4c3c2f;
   --color-orange-950: #3d3024;
 
@@ -687,10 +710,19 @@ The mechanism is `color-scheme` + `light-dark()`. `color-scheme` inherits, so pu
   --text-on-accent: var(--color-neutral-900); /* identical in both themes */
   --text-on-accent-strong: var(--color-neutral-0);
 
+  /* Fills carrying DARK ink — chips, overlines, dark-theme accent. Brighten on hover. */
   --accent: var(--color-orange-500);
   --accent-hover: var(--color-orange-400);
   --accent-active: var(--color-orange-300);
   --accent-rim: light-dark(var(--color-orange-600), var(--color-orange-500));
+
+  /* Fills carrying WHITE ink — the primary button. Darken on hover (§10.1). */
+  --accent-solid: var(--color-orange-700);
+  --accent-solid-hover: var(--color-orange-750);
+  --accent-solid-active: var(--color-orange-850);
+
+  /* Letterboxing behind full-bleed 3D media, darker than the section page. */
+  --surface-letterbox: var(--color-neutral-950);
   --accent-wash: light-dark(var(--color-orange-100), var(--color-orange-950));
   --accent-wash-strong: light-dark(var(--color-orange-200), var(--color-orange-900));
 
@@ -889,17 +921,42 @@ The previous revision's "≥ 4.14 on every light surface" and "≥ 7.64 on every
 
 The button composes `.t-label`; the 0.01em tracking is that class's value, not a number chosen at the component. The previous revision wrote `0.01em` here while §4.3 gave `--text-small` 0.005em — the same size with two trackings depending on which file you opened.
 
-**Primary** — `--accent` fill, `--text-on-accent` ink. The rim is constant across states; it is what gives the fill a boundary against a white page, where the fill itself only reaches 2.10:1.
+**Primary** — `--accent-solid` fill, white ink. Settled by Stéphane on 2026-08-31: he wants the white label of the current button kept. White on `#f2a154` is **2.10:1** and unusable, so the fill deepens along the same hue to `--color-orange-700` (`#ad571a`), where white reaches **5.05:1**. The hue is Stéphane's; only its density changes, and `#f2a154` keeps every other job in the system.
 
-| State         | Fill                        | Ink                | Ink ratio                      | Rim vs page                                 | Border                            |
-| ------------- | --------------------------- | ------------------ | ------------------------------ | ------------------------------------------- | --------------------------------- |
-| Rest          | `--accent` `#f2a154`        | `#1b1a18`          | **8.28**                       | light 3.17 / dark 7.39                      | `--accent-rim`                    |
-| Hover         | `--accent-hover` `#f5b170`  | `#1b1a18`          | **9.45** ↑                     | idem                                        | `--accent-rim`                    |
-| Focus-visible | as rest                     | `#1b1a18`          | **8.28**                       | + 3px neutral ring at 17.39 / 15.51 vs page | `--accent-rim`                    |
-| Active        | `--accent-active` `#f7c28d` | `#1b1a18`          | **10.81** ↑                    | idem                                        | `--accent-rim`                    |
-| Disabled      | `--surface-inset`           | `--text-secondary` | light **5.43** / dark **6.73** | —                                           | `--border-on-inset` (3.72 / 6.73) |
+**This inverts the state direction for this button.** With the ink pinned white, brightening the surface would _lower_ contrast — so here the surface darkens. The rule in §3.4 is unchanged and this is what it produces: pin the ink, then move the surface in whichever direction raises the ratio.
 
-Contrast is monotonically increasing across rest → hover → active. This is the direct fix for the ≈2:1 hover of the current site.
+| State         | Fill                              | Ink                | Ink ratio                      | Border                            |
+| ------------- | --------------------------------- | ------------------ | ------------------------------ | --------------------------------- |
+| Rest          | `--accent-solid` `#ad571a`        | `#ffffff`          | **5.05**                       | none needed on light, see below   |
+| Hover         | `--accent-solid-hover` `#944915`  | `#ffffff`          | **6.52** ↑                     | idem                              |
+| Focus-visible | as rest                           | `#ffffff`          | **5.05**                       | + 3px neutral ring, 17.39 / 15.51 |
+| Active        | `--accent-solid-active` `#7a3c11` | `#ffffff`          | **8.46** ↑                     | idem                              |
+| Disabled      | `--surface-inset`                 | `--text-secondary` | light **5.43** / dark **6.73** | `--border-on-inset` (3.72 / 6.73) |
+
+Contrast increases monotonically across rest → hover → active, as it did with dark ink. The direction of travel flipped; the guarantee did not.
+
+```css
+.button--primary {
+  background: var(--accent-solid);
+  color: var(--text-on-accent-strong);
+  border-color: transparent;
+}
+[data-theme='dark'] .button--primary {
+  border-color: var(--accent-rim);
+}
+@media (hover: hover) and (pointer: fine) {
+  .button--primary:hover {
+    background: var(--accent-solid-hover);
+  }
+}
+.button--primary:active {
+  background: var(--accent-solid-active);
+}
+```
+
+**Boundary.** The fill carries its own boundary on light — `#ad571a` measures 5.05 against `--surface-page` and 4.85 against `--surface-raised`, both well past the 3:1 of 1.4.11, so no rim is required. On dark it measures 3.07 against the page but only **2.78 against `--surface-raised`**, which fails on a card. On the dark theme the primary button therefore carries an `--accent-rim` hairline (`#f2a154`, 7.39 against page and 6.70 against raised).
+
+**Where `#f2a154` still lives.** It remains `--accent`: the chip and overline fill, the dark-theme accent text (7.39 on the dark page), the dark-theme rim, and any fill carrying dark ink (8.28). The brand colour did not move — one component stopped using it as a background for white text, because it never could.
 
 **Secondary** — outlined. The default for "Voir le projet", "Télécharger le CV".
 
@@ -1187,19 +1244,20 @@ It is moved out of view by `transform`, not `display: none` or `visibility: hidd
 
 ## À valider avec Stéphane — To validate with Stéphane
 
-Four decisions below are **taken**, recorded here with their reason because they change how the site looks and Stéphane will notice them. They are not open questions.
-
-**Decided.**
+Everything below is **settled**. Stéphane reviewed the rendered specimens on 2026-08-31 and ruled on each. Kept here with the reasoning, because these choices change how the site looks and someone reading this file later will want to know they were deliberate.
 
 1. **One type family, no monospace.** Instrument Sans, variable, 400–700. The mono's four jobs are done by an overline class, tabular numerals, a tracked identifier class, and — for code blocks — nothing, because the site has none. One voice; the images carry the personality.
+
 2. **Section themes are fixed and ignore `prefers-color-scheme`.** Home and Developer are always light, 3D is always dark. `:root { color-scheme: light }`, never `light dark`. The light/dark break is the site's strongest effect and an OS setting must not be able to cancel it. Recorded in ADR-0009.
-3. **Hover brightens instead of darkening.** The primary button goes from `#f2a154` to `#f5b170`, not to a deeper orange. With the ink pinned at `#1b1a18` it is the only direction that raises contrast: 8.28 → 9.45. It inverts a reflex and it is correct.
-4. **Warm neutrals, and body at 16→18px.** Every grey carries a warm hue at 4–20% saturation; the dark page becomes `#252422` instead of `#242424`. The body scale moves from the current 14px to 16–18px, with `--text-meta` floored at 13px. Fewer words per screen, more air — the right trade on a site where images are the product.
 
-**Genuinely open.**
+3. **Warm neutrals, and body at 16→18px.** Every grey carries a warm hue at 4–20% saturation; the dark page becomes `#252422` instead of `#242424`. The body scale moves from the current 14px to 16–18px, with `--text-meta` floored at 13px. Fewer words per screen, more air — the right trade on a site where images are the product.
 
-5. **Three numbers that need a measurement before they are frozen.** `--measure: 62ch` — the character-per-`ch` estimate needs checking against Instrument Sans at 18px with real French copy. The three `size-adjust` / `ascent-override` / `descent-override` values in §4.1 — placeholders until measured against the real face. And the five-layer `box-shadow` interpolation in §7 — the arithmetic says the three levels are now mutually interpolable, but the card hover has to be watched in a browser before it is signed off.
+4. **The primary button keeps its white label, on a deeper orange.** Stéphane wanted the white ink of the current button. White on `#f2a154` is 2.10:1 and unusable, so the fill deepens along the same hue to `#ad571a` (5.05:1). The hue is unchanged; only its density moves, and `#f2a154` keeps every other job in the system. Consequence: this button's states **darken** rather than brighten — 5.05 → 6.52 → 8.46. See §3.4 and §10.1.
 
-6. **The 3D section's letterboxing.** `--color-neutral-950` was deleted as unconsumed, which leaves full-bleed media letterboxed in `--surface-page` (`#252422`) rather than something darker. If the renders need a darker frame than the page they sit on, that is a new primitive and it should be chosen against actual images, not in the abstract.
+5. **The 3D section letterboxes in `#12100f`, not in the page colour.** Compared side by side against a render, the darker frame won: it detaches the image and concentrates the eye. `--color-neutral-950` returns as a primitive with exactly one consumer, `--surface-letterbox`, at 1.22:1 from the page and 1.35:1 from a raised surface — a readable frame that cannot compete with the render inside it.
 
-7. **`--surface-danger` and `--surface-success` in dark.** `#43302d` and `#25372c` are derived, not designed: they satisfy the delta rule against page and raised (1.25 / 1.14 and 1.23 / 1.11) and carry `--text-primary` at 11.85 and 12.12. They have never been seen next to the orange. A confirmation block is the last thing a visitor sees after sending a message, so it is worth ten seconds of looking.
+6. **The dark status blocks are approved as derived.** `#43302d` and `#25372c` were computed rather than designed; seen next to the orange in a real confirmation block, they hold. No change.
+
+7. **`--measure: 62ch` is confirmed by reading.** Judged on real French copy set in Instrument Sans at 18px rather than on the character-per-`ch` estimate.
+
+**Two things still to watch in a browser, not decisions:** the three `size-adjust` / `ascent-override` / `descent-override` values in §4.1 are placeholders until measured against the real face, and the five-layer `box-shadow` interpolation in §7 is arithmetically sound but the card hover has to be seen fading before it is signed off.
