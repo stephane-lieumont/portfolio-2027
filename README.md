@@ -20,7 +20,7 @@ pnpm infra:up
 pnpm dev
 ```
 
-- Site: http://localhost:4200
+- Site: http://localhost:4300
 - API: http://localhost:3000
 - MinIO console: http://localhost:9001
 

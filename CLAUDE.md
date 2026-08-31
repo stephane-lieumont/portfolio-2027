@@ -114,6 +114,18 @@ Concretely:
 - **A premise repeated is not a premise verified.** Agents inherit context and restate it with confidence. Check the foundational claims against reality — the "dark theme" premise survived three documents before a screenshot disproved it.
 - **Arbitrate, do not average.** When two experts disagree, decide and record why. A compromise that satisfies both usually serves neither.
 
-## Git
+## Git and pull requests
 
-Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`), written in English. **Stéphane is the sole author — never add a co-author trailer.** No push without his explicit approval. Never commit `.env`, the SQLite file, or media.
+Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`), written in English. **Stéphane is the sole author — never add a co-author trailer.** Never commit `.env`, the SQLite file, or media.
+
+**Implementation work goes through a pull request.** Never commit a feature straight to `main`:
+
+1. Branch from `main` (`feat/…`, `fix/…`, `refactor/…`).
+2. Implement, committing as you go.
+3. **Run `pnpm verify` and make it pass before opening the PR** — typecheck, lint, format, tests, 80% coverage. A red PR wastes the review.
+4. Open the PR with `gh pr create`, describing what changed and why.
+5. **Merge only after the checks are green.** If CI is configured, wait for it; otherwise the local `pnpm verify` is the gate.
+
+Ask before merging, and before any push that rewrites history.
+
+Documentation-only changes (ADRs, specs, memory) may go straight to `main`.
