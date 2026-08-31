@@ -19,7 +19,20 @@ Visitor-facing copy is written in French; this document is in English.
 
 **What changes.** The quotation and its attribution are gone. The video stays but stops shipping inside the JavaScript bundle and stops blocking first render — 2.88 MB is far past what a background loop under text should cost, and a 1.5 MB budget applies. The decorative triangle no longer covers the heading.
 
-**The hero text must stay readable over any frame of the video.** That is a constraint on the encode as much as on the CSS: a scrim helps, a busy or bright passage behind the headline does not.
+**The hero text must stay readable over any frame of the video.** That is a constraint on the encode as much as on the CSS: the scrim carries it down to a measured floor of 58% opacity (spec 06 §3.5), but a busy or bright passage behind the headline still costs legibility the scrim then has to buy back by turning up until the video stops being visible.
+
+### The video pause control
+
+Required by WCAG 2.2.2, level A: motion that starts on its own, runs past five seconds and sits beside other content needs a mechanism to stop it. Settled with Stéphane on 2026-08-31 — a discreet control rather than dropping the loop or accepting the gap.
+
+- **Persistently visible**, in a bottom corner of the hero. Not revealed on hover: a control that only exists on hover does not satisfy the criterion, and does not exist at all on touch.
+- In the **tab order**, with a 44 × 44px target (ADR-0010).
+- The accessible name states the action and follows the state: « Mettre la vidéo en pause » / « Lire la vidéo ». The icon alone is not a name.
+- The choice **persists for the visit**. Someone who paused the video does not want it restarting on the next route change.
+- The icon sits over the scrim's densest band, where white reaches 9.57:1 — well past the 3:1 that 1.4.11 asks of an interface control.
+- Under `prefers-reduced-motion` or `Save-Data` the video is never fetched, so **the control is not rendered either**. There is nothing to pause, and a dead button is worse than no button.
+
+On a 3D portfolio this is also a feature, not only a compliance cost: freezing a frame to look at a render is a legitimate thing for a visitor to want.
 
 **Visual hierarchy.** The hook is the first thing read. Today it comes third, after the site title and a quotation.
 
