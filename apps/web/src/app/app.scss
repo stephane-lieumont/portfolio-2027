@@ -20,16 +20,31 @@
   min-block-size: var(--header-height);
   padding-inline: var(--page-inline);
   padding-block: var(--space-2);
-  // Opaque from the first frame, and its border only appears once something has
-  // scrolled under it — so the top of the page carries no seam, and nothing
-  // ever passes unreadably beneath a transparent bar the way it does today.
+  // Opaque by default: on a page with ordinary content beneath, a transparent
+  // bar is how the current site makes its own title unreadable.
   background: var(--surface-page);
   border-block-end: 1px solid transparent;
-  transition: border-color var(--motion-state) var(--ease-state);
+  transition:
+    background-color var(--motion-state) var(--ease-state),
+    border-color var(--motion-state) var(--ease-state);
 }
 
 .site-header--settled {
   border-block-end-color: var(--border-subtle);
+}
+
+// On the home page the split runs to the top edge and the header floats on it.
+// This only works because the navigation sits entirely to the right of the
+// divide: the brand is over the light half and the links over the dark one, so
+// each has one theme under it and neither crosses the boundary. Straddling it
+// with a single ink is what would fail — one side always loses.
+.site-header--overlay:not(.site-header--settled) {
+  background: transparent;
+  border-block-end-color: transparent;
+}
+
+.site-header--overlay:not(.site-header--settled) .nav-desktop {
+  color-scheme: dark;
 }
 
 .scroll-sentinel {
@@ -43,9 +58,10 @@
   gap: 2px;
   text-decoration: none;
   color: var(--text-primary);
-  // The brand takes the fraction the divide starts at, so the navigation and
-  // the diagonal share one vertical.
-  flex: 0 0 var(--split-top);
+  // The brand stops short of where the divide crosses the header, so it stays
+  // wholly on the light half. Everything else is pushed to the far right.
+  margin-inline-end: auto;
+  max-inline-size: calc(var(--split-top) - var(--split-lean));
 }
 
 .brand__role {

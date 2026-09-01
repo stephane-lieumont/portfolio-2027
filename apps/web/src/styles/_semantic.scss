@@ -27,6 +27,10 @@
   --text-secondary: light-dark(var(--color-neutral-600), var(--color-neutral-300));
   --text-accent: light-dark(var(--color-orange-700), var(--color-orange-400));
   --text-accent-hover: light-dark(var(--color-orange-800), var(--color-orange-300));
+  // Accent ink over a surface carrying a blended image. --text-accent measures
+  // 5.05 on a clean page but only 3.65 once a 14% multiply texture darkens the
+  // worst pixel beneath it; this step holds 4.5 with the texture in place.
+  --text-accent-on-texture: light-dark(var(--color-orange-800), var(--color-orange-300));
   --text-on-accent: var(--color-neutral-900);
   --text-on-accent-strong: var(--color-neutral-0);
 

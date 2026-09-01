@@ -1,8 +1,9 @@
 <h1 class="visually-hidden">Stéphane Lieumont — Lead Tech et graphiste 3D</h1>
 
 <!-- The split is the page. Two halves, full bleed, divided on a slight diagonal
-     — the shape says "two paths" before a word is read, and neither side is
-     illustrated, so neither outweighs the other. -->
+     — the shape says "two paths" before a word is read. Each half shows the
+     work behind it, and a long slow zoom on hover makes the choice feel alive
+     without either side shouting over the other. -->
 <section class="split" aria-label="Parcours">
   <ul class="split__list" role="list">
     @for (gate of gates; track gate.path) {
@@ -11,6 +12,15 @@
         [class]="'split__panel--' + gate.side"
         [attr.data-theme]="gate.theme"
       >
+        <img
+          class="split__media"
+          [src]="gate.media"
+          [alt]="gate.alt"
+          [width]="gate.width"
+          [height]="gate.height"
+          fetchpriority="high"
+          decoding="async"
+        />
         <div class="split__body">
           <p class="t-overline split__eyebrow">{{ gate.eyebrow }}</p>
           <h2 class="t-h1 split__title">{{ gate.title }}</h2>
