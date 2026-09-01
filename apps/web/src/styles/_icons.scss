@@ -1,0 +1,21 @@
+// Icon font carried over from the 2022 site. It already covers every tool in
+// both registries — 3ds Max, V-Ray, ZBrush, Substance, Corona — which no
+// general icon set does, and redrawing them would be work for no gain.
+@font-face {
+  font-family: 'icons';
+  src: url('/fonts/icons.woff') format('woff');
+  font-display: block;
+}
+
+// The glyph is decoration: the label beside it carries the meaning, so the
+// pseudo-element stays out of the accessibility tree.
+.icon {
+  font-family: 'icons';
+  font-style: normal;
+  font-weight: 400;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  speak: never;
+  -webkit-font-smoothing: antialiased;
+}

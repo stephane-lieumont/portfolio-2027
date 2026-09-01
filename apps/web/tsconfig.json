@@ -15,7 +15,8 @@
     "target": "ES2022",
     "module": "preserve",
     "paths": {
-      "@portfolio/shared-types": ["../../packages/shared-types/src/index.ts"]
+      "@portfolio/shared-types": ["../../packages/shared-types/src/index.ts"],
+      "@portfolio/shared-types/registries": ["../../packages/shared-types/src/registries.ts"]
     }
   },
   "angularCompilerOptions": {

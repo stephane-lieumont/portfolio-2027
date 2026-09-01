@@ -1,0 +1,42 @@
+// The theme follows the content: this section is dark so the renders dominate.
+// The host must paint the ground itself — the tokens flip on the subtree, but a
+// transparent host leaves the shell's light surface showing through and the
+// light ink lands on it invisibly. Measured before this: the chips were correct
+// and every heading had vanished.
+:host {
+  display: block;
+  min-block-size: 100dvh;
+  background: var(--surface-page);
+  color: var(--text-primary);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+}
+
+.tile {
+  display: grid;
+  align-content: end;
+  min-block-size: 12rem;
+  background: var(--surface-sunken);
+}
+
+// Emphasis, not sequence: the one thing a ratio cannot express.
+.tile--featured {
+  grid-column: span 2;
+}
+
+.tile__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+}
+
+.tile__meta {
+  color: var(--text-secondary);
+}

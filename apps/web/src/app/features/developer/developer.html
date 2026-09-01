@@ -1,0 +1,50 @@
+<article class="page section">
+  <header class="section__head">
+    <p class="t-overline section__eyebrow">Développement</p>
+    <h1 class="t-h1">Lead Tech, Angular et .NET</h1>
+    <p class="t-lead measure section__lead">
+      J’arbitre les choix techniques, j’encadre, et j’écris du code tous les jours. Quatorze ans
+      dans l’aéronautique avant de basculer vers le développement : c’est de là que vient ma façon
+      de travailler.
+    </p>
+  </header>
+
+  <section class="section__block" aria-labelledby="titre-stack">
+    <h2 id="titre-stack" class="t-h3">Ce avec quoi je travaille</h2>
+    <ul class="chips" role="list">
+      @for (tech of highlighted; track tech.slug) {
+        <li><app-tech-chip [entry]="tech" /></li>
+      }
+    </ul>
+  </section>
+
+  <section class="section__block" aria-labelledby="titre-realisations">
+    <h2 id="titre-realisations" class="t-h3">Réalisations</h2>
+    <ul class="projects" role="list">
+      @for (project of projects; track project.slug) {
+        <li class="project card">
+          <div class="project__body">
+            @if (project.series) {
+              <p class="t-overline project__series">{{ project.series }}</p>
+            }
+            <h3 class="t-h4">{{ project.title }}</h3>
+            <p class="t-meta tabular project__meta">
+              {{ year(project.releasedAt) }} · {{ project.role }}
+            </p>
+            <p class="t-body project__summary">{{ project.summary }}</p>
+            <ul class="chips" role="list">
+              @for (slug of project.technologies; track slug) {
+                <li><app-tech-chip [entry]="technologyOf(slug)" /></li>
+              }
+            </ul>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <aside class="section__cta">
+    <p class="t-lead">Un poste, une mission, une question ?</p>
+    <a class="button button--primary" routerLink="/contact">Me contacter</a>
+  </aside>
+</article>

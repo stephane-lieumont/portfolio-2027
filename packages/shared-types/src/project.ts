@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { SOFTWARE, TECHNOLOGIES } from './registries.js';
+import type { SoftwareSlug, TechnologySlug } from './registries.js';
 
 import { mediaAssetSchema } from './media.js';
 
@@ -67,3 +69,13 @@ export const listProjectsQuerySchema = z.object({
   tag: z.string().optional(),
 });
 export type ListProjectsQuery = z.infer<typeof listProjectsQuerySchema>;
+
+// Validating against the registries means a typo fails at the API boundary
+// rather than rendering a missing glyph nobody notices. These live here rather
+// than in registries.ts so the browser can read the registries without pulling
+// Zod into its bundle.
+const technologySlugs = TECHNOLOGIES.map((t) => t.slug) as [TechnologySlug, ...TechnologySlug[]];
+const softwareSlugs = SOFTWARE.map((s) => s.slug) as [SoftwareSlug, ...SoftwareSlug[]];
+
+export const technologySlugSchema = z.enum(technologySlugs);
+export const softwareSlugSchema = z.enum(softwareSlugs);

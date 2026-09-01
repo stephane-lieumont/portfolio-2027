@@ -1,0 +1,33 @@
+// Shared page rhythm lives in _page.scss; only what is specific to this page
+// is here.
+.project__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.project__series {
+  color: var(--text-accent-on-texture);
+}
+
+.project__meta {
+  color: var(--text-secondary);
+}
+
+.project__summary {
+  max-inline-size: var(--measure);
+}
+
+.projects {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 48rem) {
+  .projects {
+    grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+  }
+}

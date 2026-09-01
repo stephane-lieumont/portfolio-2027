@@ -1,0 +1,55 @@
+<article class="page section">
+  <header class="section__head">
+    <p class="t-overline section__eyebrow">Graphisme 3D</p>
+    <h1 class="t-h1">Une pratique apprise seule</h1>
+    <!-- The section that had no copy at all on the current site: a visitor
+         arrived on sixteen images with no key to read them. And it sells
+         nothing — it is evidence of self-taught learning, not an offer. -->
+    <p class="t-lead measure section__lead">
+      J’ai commencé la 3D bien avant le développement, sans école et sans commande. C’est là que
+      j’ai appris à apprendre seul — et à regarder une image jusqu’à voir ce qui ne va pas.
+    </p>
+  </header>
+
+  <section class="section__block" aria-labelledby="titre-outils">
+    <h2 id="titre-outils" class="t-h3">Outils</h2>
+    <ul class="chips" role="list">
+      @for (tool of tools; track tool.slug) {
+        <li><app-tech-chip [entry]="tool" /></li>
+      }
+    </ul>
+  </section>
+
+  <section class="section__block" aria-labelledby="titre-galerie">
+    <h2 id="titre-galerie" class="t-h3">Galerie</h2>
+    <!-- Title and year visible at rest, on every device. On the current site
+         they live only in a :hover with no @media (hover:hover), so on a phone
+         the gallery is sixteen anonymous tiles. -->
+    <ul class="tiles" role="list">
+      @for (artwork of artworks; track artwork.slug) {
+        <li class="tile card" [class.tile--featured]="artwork.featured">
+          <div class="tile__body">
+            <h3 class="t-label">{{ artwork.title }}</h3>
+            <p class="t-meta tabular tile__meta">
+              {{ year(artwork.releasedAt) }} ·
+              @for (slug of artwork.software; track slug) {
+                <span>{{ softwareOf(slug).label }}</span>
+                @if (!$last) {
+                  <span>, </span>
+                }
+              }
+            </p>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <aside class="section__cta">
+    <p class="t-lead">Le reste du travail 3D est sur ArtStation.</p>
+    <div class="chips">
+      <a class="button button--secondary" href="https://s-lieumont.artstation.com/">ArtStation</a>
+      <a class="button button--primary" routerLink="/contact">Me contacter</a>
+    </div>
+  </aside>
+</article>
