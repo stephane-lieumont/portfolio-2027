@@ -48,6 +48,12 @@
         animation: boot-failsafe 400ms linear 4s forwards;
       }
 
+      /* The failsafe path leaves no `data-ready`, so the entrance never plays.
+         That is deliberate: the content is visible in its resting state either
+         way, and an entrance is worth losing to keep the page reachable. */
+      .boot {
+      }
+
       .boot--done {
         animation: boot-out 360ms cubic-bezier(0.45, 0, 0.25, 1) forwards;
       }
@@ -216,11 +222,23 @@
 
     <script>
       // Wait for what is actually still arriving — the webfont and the images —
-      // and never for longer than it takes. Promise.race so a font that never
+      // and never longer than it takes. Promise.race so a font that never
       // resolves cannot hold the page.
+      //
+      // A one-second floor sits under it. On a warm cache everything is ready
+      // in well under 100ms and the loader would flash: appearing and leaving
+      // inside a blink reads as a glitch, not as loading. Below the floor it is
+      // better to show nothing; above it, better to show it properly.
+      //
+      // Retiring it also stamps the document, which is what starts the home
+      // page's entrance. The two cannot be timed independently — an entrance
+      // that plays under the loader has not been seen.
       (function () {
         var boot = document.getElementById('boot');
-        if (!boot) return;
+        var ready = function () {
+          document.documentElement.setAttribute('data-ready', '');
+        };
+        if (!boot) return ready();
 
         var settled = Promise.all([
           document.fonts ? document.fonts.ready : Promise.resolve(),
@@ -230,12 +248,16 @@
           }),
         ]);
 
+        var floor = new Promise(function (done) {
+          setTimeout(done, 1000);
+        });
         var capped = new Promise(function (done) {
           setTimeout(done, 3000);
         });
 
-        Promise.race([settled, capped]).then(function () {
+        Promise.all([floor, Promise.race([settled, capped])]).then(function () {
           boot.classList.add('boot--done');
+          ready();
           setTimeout(function () {
             boot.remove();
           }, 400);

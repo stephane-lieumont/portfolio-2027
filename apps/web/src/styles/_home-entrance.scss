@@ -1,0 +1,88 @@
+// The home page's entrance lives here, not in the component's stylesheet.
+//
+// It is keyed on `[data-ready]`, an attribute on <html> — state that sits
+// outside the component, so Angular's emulated encapsulation scopes the rule
+// away and it silently never matches. Measured before this move: every one of
+// these animations computed to `animation-name: none`. The menu's recession hit
+// the identical trap; see _menu-state.scss.
+
+// ---------------------------------------------------------------------------
+// The entrance: the structure builds itself.
+//
+// 2022 did this by retracting a panel from 100% to 50% of the width while the
+// other faded in. The geometry is gone — there are no two equal columns any
+// more — but the intention translates: something arrives and, in arriving,
+// reveals that there are two choices rather than one.
+//
+// Here the dark wedge sweeps in from the right along its own diagonal, and the
+// two bodies follow it. `--ease-signature` is the 2022 curve, kept.
+//
+// Everything is `translate` and `opacity`. The original animated `flex-basis`,
+// which lays out the page on every frame; spec 07 forbids it and this is the
+// equivalent gesture without the cost.
+//
+// It is keyed on `[data-ready]`, stamped by the loader when it retires. Timing
+// them independently would play the entrance underneath the loader, where
+// nobody would see it. If the stamp never arrives — script blocked, failsafe
+// path — nothing animates and the page is simply there, which is the right way
+// to fail.
+// ---------------------------------------------------------------------------
+
+:root[data-ready] .split__panel--end {
+  animation: split-sweep var(--motion-entrance) var(--ease-signature) both;
+}
+
+:root[data-ready] .split__panel--start .split__body {
+  animation: split-settle var(--motion-enter) var(--ease-signature) both;
+  animation-delay: var(--motion-entrance-lead);
+}
+
+:root[data-ready] .split__panel--end .split__body {
+  animation: split-settle var(--motion-enter) var(--ease-signature) both;
+  // One step behind the light half, so the eye reads left then right rather
+  // than both at once — the order the page wants to be read in.
+  animation-delay: calc(var(--motion-entrance-lead) + var(--stagger-list));
+}
+
+@keyframes split-sweep {
+  from {
+    translate: 100% 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+@keyframes split-settle {
+  from {
+    opacity: 0;
+    translate: 0 var(--motion-rise);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+// The wedge still arrives — it is the structure, and losing it would leave the
+// page looking broken rather than calm — but it arrives without travel, and
+// the bodies simply appear.
+@media (prefers-reduced-motion: reduce) {
+  :root[data-ready] .split__panel--end {
+    animation: none;
+  }
+
+  :root[data-ready] .split__panel--start .split__body,
+  :root[data-ready] .split__panel--end .split__body {
+    animation-name: split-fade;
+  }
+
+  @keyframes split-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
