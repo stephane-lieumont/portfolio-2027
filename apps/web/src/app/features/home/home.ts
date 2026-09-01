@@ -1,23 +1,38 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+
+interface Swatch {
+  readonly token: string;
+  readonly note: string;
+}
 
 @Component({
   selector: 'app-home',
-  template: `
-    <main class="home">
-      <h1>Portfolio 2027</h1>
-      <p>Squelette en place. Le design et le contenu arrivent après la phase de specs.</p>
-    </main>
-  `,
-  styles: `
-    .home {
-      display: grid;
-      place-content: center;
-      gap: 1rem;
-      min-height: 100dvh;
-      padding: 2rem;
-      text-align: center;
-    }
-  `,
+  templateUrl: './home.html',
+  styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Home {}
+export class Home {
+  protected readonly submitting = signal(false);
+
+  protected readonly surfaces: readonly Swatch[] = [
+    { token: '--surface-page', note: 'Fond de page' },
+    { token: '--surface-raised', note: 'Cartes' },
+    { token: '--surface-sunken', note: 'Zones en creux' },
+    { token: '--accent-wash', note: 'Puces, survol tertiaire' },
+    { token: '--accent-solid', note: 'Bouton primaire' },
+    { token: '--accent', note: 'Marque, aplats à encre sombre' },
+  ];
+
+  protected readonly scale: readonly string[] = [
+    't-display',
+    't-h1',
+    't-h2',
+    't-h3',
+    't-body',
+    't-overline',
+  ];
+
+  protected toggleSubmitting(): void {
+    this.submitting.update((value) => !value);
+  }
+}

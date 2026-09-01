@@ -1,0 +1,95 @@
+// Semantic tokens — the only tier components may read.
+// A component reading a primitive breaks theming silently. See ADR-0009.
+
+// Section themes are fixed and ignore prefers-color-scheme: the light/dark
+// break is the site's staging, not a display preference. Never `light dark`
+// on the root — that hands native control rendering to the OS setting.
+:root {
+  color-scheme: light;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+:root {
+  --surface-page: light-dark(var(--color-neutral-0), var(--color-neutral-850));
+  --surface-raised: light-dark(var(--color-neutral-50), var(--color-neutral-800));
+  --surface-sunken: light-dark(var(--color-neutral-100), var(--color-neutral-900));
+  --surface-inset: light-dark(var(--color-neutral-200), var(--color-neutral-700));
+  --surface-field: light-dark(var(--color-neutral-0), var(--color-neutral-900));
+
+  --text-primary: light-dark(var(--color-neutral-900), var(--color-neutral-50));
+  --text-secondary: light-dark(var(--color-neutral-600), var(--color-neutral-300));
+  --text-accent: light-dark(var(--color-orange-700), var(--color-orange-400));
+  --text-accent-hover: light-dark(var(--color-orange-800), var(--color-orange-300));
+  --text-on-accent: var(--color-neutral-900);
+  --text-on-accent-strong: var(--color-neutral-0);
+
+  // Fills carrying DARK ink — chips, overlines, dark-theme accent. Brighten on hover.
+  --accent: var(--color-orange-500);
+  --accent-hover: var(--color-orange-400);
+  --accent-active: var(--color-orange-300);
+  --accent-rim: light-dark(var(--color-orange-600), var(--color-orange-500));
+  --accent-wash: light-dark(var(--color-orange-100), var(--color-orange-950));
+  --accent-wash-strong: light-dark(var(--color-orange-200), var(--color-orange-900));
+
+  // Fills carrying WHITE ink — the primary button. Darken on hover: with the ink
+  // pinned white, darkening is the direction that raises contrast (5.05 → 8.46).
+  --accent-solid: var(--color-orange-700);
+  --accent-solid-hover: var(--color-orange-750);
+  --accent-solid-active: var(--color-orange-850);
+
+  --surface-letterbox: var(--color-neutral-950);
+
+  // Scrims cover imagery, not a surface, so they have no theme to follow.
+  // 58% is the measured floor for white body text over a white frame.
+  --scrim: color-mix(in srgb, var(--color-neutral-950) 72%, transparent);
+  --hero-scrim: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-neutral-950) 78%, transparent) 0%,
+    color-mix(in srgb, var(--color-neutral-950) 62%, transparent) 45%,
+    color-mix(in srgb, var(--color-neutral-950) 30%, transparent) 100%
+  );
+
+  --border-subtle: light-dark(var(--color-neutral-200), var(--color-neutral-700));
+  --border-strong: var(--color-neutral-500);
+  --border-hover: light-dark(var(--color-neutral-600), var(--color-neutral-400));
+  --border-on-inset: light-dark(var(--color-neutral-500), var(--color-neutral-300));
+
+  // Neutral, never accent: an orange ring around an orange button measured
+  // 2.41 light and 1.14 dark, and matched the hover fill exactly.
+  --focus-ring: light-dark(var(--color-neutral-900), var(--color-neutral-0));
+
+  --text-danger: light-dark(var(--color-red-700), var(--color-red-300));
+  --border-danger: light-dark(var(--color-red-600), var(--color-red-400));
+  --surface-danger: light-dark(var(--color-red-100), var(--color-red-950));
+  --text-success: light-dark(var(--color-green-600), var(--color-green-300));
+  --border-success: light-dark(var(--color-green-600), var(--color-green-400));
+  --surface-success: light-dark(var(--color-green-100), var(--color-green-950));
+
+  // Elevation — five layers throughout so the three levels interpolate.
+  // A mismatched inset in any pair makes the whole list non-interpolable
+  // and the card hover jumps instead of fading.
+  --shadow-ring: light-dark(hsl(28 25% 18% / 0.06), hsl(30 20% 96% / 0.07));
+  --shadow-near: light-dark(hsl(28 25% 18% / 0.1), hsl(0 0% 0% / 0.35));
+  --shadow-mid: light-dark(hsl(28 25% 18% / 0.08), hsl(0 0% 0% / 0.28));
+  --shadow-far: light-dark(hsl(28 25% 18% / 0.06), hsl(0 0% 0% / 0.22));
+  --shadow-highlight: light-dark(hsl(0 0% 100% / 0), hsl(30 20% 96% / 0.06));
+
+  --elevation-1:
+    0 0 0 1px var(--shadow-ring), inset 0 1px 0 transparent, 0 1px 2px -1px var(--shadow-near),
+    0 2px 6px -2px var(--shadow-mid), 0 0 0 0 transparent;
+  --elevation-2:
+    0 0 0 1px var(--shadow-ring), inset 0 1px 0 var(--shadow-highlight),
+    0 2px 4px -2px var(--shadow-near), 0 8px 20px -6px var(--shadow-mid),
+    0 16px 32px -12px var(--shadow-far);
+  --elevation-3:
+    0 0 0 1px var(--shadow-ring), inset 0 1px 0 var(--shadow-highlight),
+    0 4px 8px -3px var(--shadow-near), 0 16px 32px -8px var(--shadow-mid),
+    0 32px 64px -16px var(--shadow-far);
+}

@@ -1,1 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
+// Design system — see docs/specs/06-design-system.md and ADR-0009.
+// Order matters: primitives, then semantics that reference them, then the
+// base layer, then everything components read.
+@use 'styles/fonts';
+@use 'styles/primitives';
+@use 'styles/semantic';
+@use 'styles/base';
+@use 'styles/typography';
+@use 'styles/components';
