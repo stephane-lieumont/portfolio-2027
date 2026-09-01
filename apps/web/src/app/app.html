@@ -1,2 +1,117 @@
 <a class="skip-link" href="#contenu">Aller au contenu</a>
-<router-outlet />
+
+<!-- .shell is what recedes. The menu and its scrim are siblings, never
+     descendants: a transform on an ancestor makes it the containing block for
+     any position:fixed inside, which is the trap that makes the current site's
+     menu links unreachable the moment its animation misfires. -->
+<div class="shell" [attr.inert]="menu.open() || null">
+  <header class="site-header">
+    <a class="brand" routerLink="/">
+      <span class="brand__name t-label">Stéphane Lieumont</span>
+      <span class="brand__role t-overline">Lead Tech &amp; graphiste 3D</span>
+    </a>
+
+    <nav class="nav-desktop" aria-label="Navigation principale">
+      <ul role="list">
+        @for (item of items; track item.path) {
+          <li>
+            <a
+              class="nav-link"
+              [routerLink]="item.path"
+              routerLinkActive
+              #active="routerLinkActive"
+              [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+              [attr.aria-current]="active.isActive ? 'page' : null"
+              >{{ item.label }}</a
+            >
+          </li>
+        }
+        <li>
+          <a class="button button--secondary" href="/cv-stephane-lieumont.pdf" download>Mon CV</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="burger-slot" aria-hidden="true"></div>
+  </header>
+
+  <main #main id="contenu" tabindex="-1">
+    <router-outlet />
+  </main>
+
+  <footer class="site-footer">
+    <p class="t-small">Conçu et développé par <strong>Stéphane Lieumont</strong> · {{ year }}</p>
+  </footer>
+</div>
+
+<button
+  #burger
+  class="burger"
+  type="button"
+  aria-controls="menu"
+  [attr.aria-expanded]="menu.open()"
+  (click)="menu.toggle(!menu.open())"
+>
+  <span class="burger__bar" aria-hidden="true"></span>
+  <span class="burger__bar" aria-hidden="true"></span>
+  <span class="burger__bar" aria-hidden="true"></span>
+  <span class="visually-hidden">{{ menu.open() ? 'Fermer le menu' : 'Ouvrir le menu' }}</span>
+</button>
+
+<!-- The scrim is a pointer convenience, deliberately not a tab stop: Escape and
+     the burger are its keyboard equivalents, and a focusable backdrop would be
+     a stop that announces nothing. The rule cannot see those equivalents, so
+     the exemption is written down rather than worked around by making the
+     element focusable — which would be worse for the keyboard, not better. -->
+<button
+  class="menu-scrim"
+  type="button"
+  tabindex="-1"
+  aria-hidden="true"
+  (click)="menu.toggle(false)"
+></button>
+
+<nav #panel id="menu" class="offcanvas" aria-label="Menu" [attr.inert]="!menu.open() || null">
+  <!-- The panel's left edge, carried over from the 2022 site: it bulges inward
+       as the panel arrives, then springs back. There it was a GSAP timeline
+       morphing this path's control points with an Elastic ease; here the same
+       three shapes are keyframes on the CSS `d` property, which needs no
+       library. Where `d` is not animatable the edge simply stays straight. -->
+  <svg
+    class="offcanvas__edge"
+    viewBox="0 0 210 297"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M 210,297 H 0 C 0,297 0,230.472 0,148.5 0,66.528001 0,0 0,0 h 210 z" />
+  </svg>
+
+  <ul role="list">
+    @for (item of items; track item.path; let i = $index) {
+      <li class="offcanvas__item" [style.--item-index]="i">
+        <a
+          class="offcanvas__link t-h3"
+          [routerLink]="item.path"
+          routerLinkActive
+          #active="routerLinkActive"
+          [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+          [attr.aria-current]="active.isActive ? 'page' : null"
+          (click)="closeFromLink()"
+          >{{ item.label }}</a
+        >
+      </li>
+    }
+    <li class="offcanvas__item" [style.--item-index]="items.length">
+      <a
+        class="offcanvas__link t-h3"
+        href="/cv-stephane-lieumont.pdf"
+        download
+        (click)="closeFromLink()"
+        >Mon CV</a
+      >
+    </li>
+  </ul>
+</nav>
+
+<p class="visually-hidden" aria-live="polite" aria-atomic="true">{{ announcement() }}</p>

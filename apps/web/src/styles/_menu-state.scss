@@ -1,0 +1,199 @@
+// Rules keyed on `data-menu`, which lives on <html>. They cannot sit in the
+// shell component's stylesheet: Angular's emulated encapsulation scopes them
+// to the component, and the state they depend on is outside it. Measured
+// before this move: `scale` computed to `none` and the scrim stayed at 0.
+//
+// The motion values here are the 2022 site's, kept on Stéphane's instruction.
+// What changed is the structure that carries them, not the gesture: the panel
+// is a sibling of the receding shell rather than a descendant, so a transform
+// can no longer make itself the containing block for a position:fixed panel
+// and strand the links. The recalibrated timings are documented in spec 07 and
+// deliberately not applied.
+
+:root[data-menu='open'] .shell {
+  // 0.9, as on the 2022 site.
+  scale: 0.9;
+  transition-duration: var(--motion-menu-panel);
+}
+
+:root[data-menu='open'] .menu-scrim {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--motion-menu-panel) var(--ease-menu),
+    visibility 0s;
+}
+
+:root[data-menu='open'] .offcanvas__item {
+  opacity: 1;
+  translate: 0 0;
+  transition-duration: var(--motion-menu-items);
+  transition-timing-function: var(--ease-menu);
+  // 100ms per step, uncapped — the 2022 cadence. Five entries span 400ms.
+  transition-delay: calc(var(--motion-menu-lead) + var(--stagger-menu) * var(--item-index, 0));
+}
+
+:root[data-menu='open'] .burger {
+  background: var(--accent-wash);
+  transition-duration: var(--motion-state);
+  transition-timing-function: var(--ease-state);
+}
+
+:root[data-menu='open'] .burger__bar {
+  transition-duration: var(--motion-state);
+  transition-timing-function: var(--ease-state);
+}
+
+:root[data-menu='open'] .burger__bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+// The one deliberate desync: the middle bar leaves in 90ms while the outer two
+// travel over 180ms, so the cross is never drawn through a third line.
+:root[data-menu='open'] .burger__bar:nth-child(2) {
+  opacity: 0;
+}
+
+:root[data-menu='open'] .burger__bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-menu='open'] .shell {
+    scale: 1;
+  }
+
+  :root[data-menu='open'] .offcanvas__item {
+    transition-delay: 0ms;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The elastic left edge, carried over from the 2022 site.
+//
+// There: a GSAP timeline morphed this path's control points from `start` to
+// `middle` over 0.2s, then back over 0.7s, both on Elastic.easeInOut. Total
+// 0.9s, exactly the panel's own travel.
+//
+// Here the same two legs are two keyframe segments of one 0.9s animation, and
+// the elastic curve is not approximated by hand: it is GSAP's Elastic.easeInOut
+// sampled at 40 points and written as `linear()`. That function overshoots to
+// 1.1175 and undershoots to -0.1175, which is what produces the bounce — no
+// cubic-bezier can leave the 0..1 range, which is why the first attempt at this
+// with invented keyframe stops did not match.
+//
+// The two paths are the originals, byte for byte.
+// ---------------------------------------------------------------------------
+
+:root[data-menu='open'] .offcanvas__edge path {
+  animation: menu-edge-elastic var(--motion-menu-edge) both;
+}
+
+@keyframes menu-edge-elastic {
+  0% {
+    d: path('M 210,297 H 0 C 0,297 0,230.472 0,148.5 0,66.528001 0,0 0,0 h 210 z');
+    animation-timing-function: linear(
+      0,
+      0.0005,
+      0.001,
+      0.0011,
+      0.0003,
+      -0.0014,
+      -0.0037,
+      -0.0052,
+      -0.0039,
+      0.0019,
+      0.012,
+      0.0221,
+      0.0239,
+      0.0077,
+      -0.0313,
+      -0.0831,
+      -0.1175,
+      -0.0884,
+      0.0434,
+      0.2708,
+      0.5,
+      0.7292,
+      0.9566,
+      1.0884,
+      1.1175,
+      1.0831,
+      1.0312,
+      0.9923,
+      0.9761,
+      0.9779,
+      0.988,
+      0.9981,
+      1.0039,
+      1.0052,
+      1.0037,
+      1.0014,
+      0.9997,
+      0.9989,
+      0.999,
+      0.9995,
+      1
+    );
+  }
+
+  // 0.2s of 0.9s. The bulge peaks while the panel is still arriving.
+  22.22% {
+    d: path(
+      'M 210,297 H 0 C 0,297 51.660001,230.472 51.660001,148.5 51.660001,66.528001 0,0 0,0 h 210 z'
+    );
+    animation-timing-function: linear(
+      0,
+      0.0005,
+      0.001,
+      0.0011,
+      0.0003,
+      -0.0014,
+      -0.0037,
+      -0.0052,
+      -0.0039,
+      0.0019,
+      0.012,
+      0.0221,
+      0.0239,
+      0.0077,
+      -0.0313,
+      -0.0831,
+      -0.1175,
+      -0.0884,
+      0.0434,
+      0.2708,
+      0.5,
+      0.7292,
+      0.9566,
+      1.0884,
+      1.1175,
+      1.0831,
+      1.0312,
+      0.9923,
+      0.9761,
+      0.9779,
+      0.988,
+      0.9981,
+      1.0039,
+      1.0052,
+      1.0037,
+      1.0014,
+      0.9997,
+      0.9989,
+      0.999,
+      0.9995,
+      1
+    );
+  }
+
+  100% {
+    d: path('M 210,297 H 0 C 0,297 0,230.472 0,148.5 0,66.528001 0,0 0,0 h 210 z');
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-menu='open'] .offcanvas__edge path {
+    animation: none;
+  }
+}
