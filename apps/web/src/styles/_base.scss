@@ -69,11 +69,16 @@ svg {
   block-size: auto;
 }
 
-// Media reserves its space before it loads: no layout shift, and a visible
-// placeholder rather than a collapsed box if it never arrives.
+// Media reserves its space before it loads, so nothing shifts as it arrives.
+//
+// No background here. It was meant as a placeholder and it is a trap twice
+// over: it never goes away, so every transparent image gets an opaque
+// rectangle that belongs to nothing — and at (0,2,1) this selector outranks
+// any single class, so a component cannot take it back. A placeholder that
+// needs one belongs on the container, which knows whether its image is a
+// cut-out or a photograph.
 img[width][height] {
   block-size: auto;
-  background: var(--surface-sunken);
 }
 
 :where(h1, h2, h3, h4) {

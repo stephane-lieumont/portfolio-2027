@@ -1,26 +1,29 @@
 <article class="page section not-found">
-  <header class="section__head">
-    <p class="t-overline section__eyebrow">Erreur 404</p>
-    <h1 class="t-display not-found__code">404</h1>
-    <p class="t-lead not-found__joke">Page not found — Where is the intercom&nbsp;?</p>
-    <p class="t-body measure section__lead">
-      Cette page n’existe pas, ou plus. Les adresses de l’ancien site ont changé : si tu arrives
-      d’un lien, il pointe probablement vers l’une des sections ci-dessous.
-    </p>
-  </header>
+  <div class="not-found__layout">
+    <header class="section__head">
+      <p class="t-overline section__eyebrow">Erreur 404</p>
+      <h1 class="t-display not-found__code">404</h1>
+      <!-- Nothing under the joke. The code says what happened, the picture says
+           how it feels, and the links say what to do — an explanation of the
+           URL migration is after-sales service on an error page. -->
+      <p class="t-lead not-found__joke">Page not found — Where is the intercom&nbsp;?</p>
+    </header>
 
-  <!-- The easter egg, carried over from the 2022 site. It is the one place on
-       the portfolio where the tone breaks, and that is exactly why it works —
-       a 404 is the only page nobody chose to visit. -->
-  <img
-    class="not-found__gif"
-    src="/medias/travolta-confused.gif"
-    alt="John Travolta cherchant son chemin, perplexe"
-    width="490"
-    height="476"
-    loading="lazy"
-    decoding="async"
-  />
+    <!-- The easter egg, carried over from the 2022 site. It is the one place on
+         the portfolio where the tone breaks, and that is exactly why it works —
+         a 404 is the only page nobody chose to visit. Beside the joke rather
+         than under it: they are one gag, and scrolling between them tells it
+         twice. -->
+    <img
+      class="not-found__gif"
+      src="/medias/travolta-confused.gif"
+      alt="John Travolta cherchant son chemin, perplexe"
+      width="490"
+      height="476"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
 
   <nav class="section__block" aria-label="Sections du site">
     <h2 class="t-h3">Où aller</h2>

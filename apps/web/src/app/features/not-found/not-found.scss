@@ -2,9 +2,16 @@
   align-items: flex-start;
 }
 
+.not-found__layout {
+  display: grid;
+  gap: var(--space-5);
+  align-items: center;
+  inline-size: 100%;
+}
+
 .not-found__code {
-  // The one number on the site allowed to be this big and this quiet: it is a
-  // label, not a headline, so it steps back to the accent rather than the ink.
+  // The one number allowed to be this big and this quiet: it is a label, not a
+  // headline, so it steps back to the accent rather than the ink.
   color: var(--accent);
   line-height: 1;
 }
@@ -13,10 +20,13 @@
   color: var(--text-secondary);
 }
 
+// Nothing behind him and nothing under him. The gif declares transparency, so
+// any panel colour shows through as a rectangle belonging to nothing — that was
+// the grey box — and a drop shadow only replaces one invented ground with
+// another. He is a cut-out; he sits on the page.
 .not-found__gif {
-  inline-size: min(100%, 26rem);
-  border-radius: var(--radius-md);
-  background: var(--surface-sunken);
+  inline-size: min(100%, 22rem);
+  justify-self: center;
 }
 
 .not-found__links {
@@ -25,4 +35,17 @@
   gap: var(--space-3);
   margin: 0;
   padding: 0;
+}
+
+@media (min-width: 56rem) {
+  // Side by side rather than stacked: the joke and the picture are one gag, and
+  // scrolling between them tells it twice.
+  .not-found__layout {
+    grid-template-columns: 1fr auto;
+    gap: var(--space-7);
+  }
+
+  .not-found__gif {
+    inline-size: 24rem;
+  }
 }
