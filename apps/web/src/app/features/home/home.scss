@@ -1,0 +1,104 @@
+.specimen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding-block: var(--space-6) var(--space-8);
+}
+
+.specimen__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.specimen__eyebrow {
+  color: var(--text-secondary);
+}
+
+.specimen__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.specimen__scale {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+}
+
+.specimen__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-block-end: var(--space-3);
+  border-block-end: 1px solid var(--border-subtle);
+}
+
+.specimen__token {
+  color: var(--text-secondary);
+}
+
+.specimen__note {
+  color: var(--text-secondary);
+}
+
+.specimen__row-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.specimen__swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+}
+
+.specimen__swatch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-block-size: 6rem;
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+}
+
+.specimen__form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-4);
+  max-inline-size: var(--measure);
+}
+
+.specimen__section--dark {
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+}
+
+.specimen__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  max-inline-size: 20rem;
+}
+
+@media (min-width: 48rem) {
+  .specimen__row {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--space-4);
+  }
+
+  .specimen__token {
+    flex: 0 0 7rem;
+  }
+}

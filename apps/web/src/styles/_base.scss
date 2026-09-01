@@ -1,0 +1,161 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  // The 62.5% hack is gone: it made every rem in the codebase a lie and broke
+  // anyone who had changed their browser's default size.
+  font-size: 100%;
+  background: var(--surface-page);
+  scroll-padding-block-start: var(--header-height); // WCAG 2.2 SC 2.4.11
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.65;
+  color: var(--text-primary);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+// Any subtree can flip. The 3D section carries this permanently.
+[data-theme] {
+  background: var(--surface-page);
+  color: var(--text-primary);
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+ul,
+ol {
+  margin: 0;
+}
+
+ul[role='list'],
+ol[role='list'] {
+  padding: 0;
+  list-style: none;
+}
+
+// Form controls do not inherit the font. This one line is why every button on
+// the current site renders in Arial.
+button,
+input,
+select,
+textarea,
+optgroup {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+}
+
+// Media reserves its space before it loads: no layout shift, and a visible
+// placeholder rather than a collapsed box if it never arrives.
+img[width][height] {
+  block-size: auto;
+  background: var(--surface-sunken);
+}
+
+:where(h1, h2, h3, h4) {
+  text-wrap: balance;
+}
+
+:where(p) {
+  text-wrap: pretty;
+}
+
+// Focus. Deliberately not wrapped in :where() — a zero-specificity focus rule
+// loses to any component rule that touches :focus, silently.
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+// The skip-link target is <main tabindex="-1">; without this, using the skip
+// link draws a ring around the entire page.
+[tabindex='-1']:focus-visible {
+  outline: none;
+}
+
+::selection {
+  background: var(--accent-wash-strong);
+  color: var(--text-primary);
+}
+
+:root {
+  caret-color: var(--text-accent);
+  accent-color: var(--accent-solid);
+}
+
+.skip-link {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: 100;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-page);
+  color: var(--text-primary);
+  box-shadow: var(--elevation-2);
+  translate: 0 -200%;
+}
+
+.skip-link:focus-visible {
+  translate: 0 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// box-shadow is not painted in forced-colors mode, so every boundary this
+// system builds from elevation disappears. Give them a real border there.
+@media (forced-colors: active) {
+  .button,
+  .card,
+  .field-input {
+    border: 1px solid buttontext;
+  }
+
+  :focus-visible {
+    outline-color: highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

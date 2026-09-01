@@ -1,0 +1,198 @@
+// Base components. Every state clears its own AA target, and no persistent
+// state falls below 90% of the rest-state ratio. See spec 06 §3.4 and §10.
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-block-size: 2.75rem; // 44px — the current site's 34px is under the target
+  padding-inline: var(--space-4);
+  padding-block: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-state) var(--ease-state),
+    border-color var(--motion-state) var(--ease-state),
+    box-shadow var(--motion-state) var(--ease-state);
+}
+
+// Primary — white ink on a deepened orange. White on #f2a154 is 2.10:1 and
+// unusable, so the fill darkens along the same hue to reach 5.05:1. The hue is
+// unchanged; #f2a154 keeps every other job in the system.
+// States darken, because with the ink pinned white that is the direction that
+// raises contrast: 5.05 → 6.52 → 8.46.
+.button--primary {
+  background: var(--accent-solid);
+  color: var(--text-on-accent-strong);
+}
+
+// On dark the fill reaches only 2.78:1 against a raised surface, so it needs
+// a rim to carry its boundary. On light it clears 4.85 unaided.
+[data-theme='dark'] .button--primary {
+  border-color: var(--accent-rim);
+}
+
+.button--secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.button--tertiary {
+  background: transparent;
+  color: var(--text-accent);
+  padding-inline: var(--space-3);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button--primary:hover {
+    background: var(--accent-solid-hover);
+  }
+
+  .button--secondary:hover {
+    background: var(--surface-sunken);
+    border-color: var(--border-hover);
+  }
+
+  .button--tertiary:hover {
+    background: var(--accent-wash);
+    color: var(--text-accent-hover);
+  }
+}
+
+.button--primary:active {
+  background: var(--accent-solid-active);
+}
+
+.button--secondary:active,
+.button--tertiary:active {
+  background: var(--accent-wash-strong);
+}
+
+.button:disabled {
+  background: var(--surface-inset);
+  color: var(--text-secondary);
+  border-color: var(--border-on-inset);
+  cursor: not-allowed;
+}
+
+// A link in running prose. On light the colour alone carries 3.44:1 against
+// body text; on dark it carries only 1.77, so the underline does the work.
+.link {
+  color: var(--text-accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentcolor 70%, transparent);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+  transition: color var(--motion-state) var(--ease-state);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    color: var(--text-accent-hover);
+    text-decoration-color: currentcolor;
+  }
+}
+
+// A link drops its underline only when it is alone in a navigation container,
+// never in a flow of text.
+.nav-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-2);
+}
+
+// State is never carried by colour alone: the weight moves with the rule.
+.nav-link[aria-current='page'] {
+  color: var(--text-accent);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 0 var(--accent-rim);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.field-label {
+  font-size: var(--text-small);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.field-input {
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-3);
+  padding-block: var(--space-2);
+  background: var(--surface-field);
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--motion-state) var(--ease-state);
+}
+
+.field-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.field-input:hover {
+  border-color: var(--border-hover);
+}
+
+.field-input[aria-invalid='true'] {
+  border-color: var(--border-danger);
+}
+
+.field-error {
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--text-danger);
+}
+
+.card {
+  background: var(--surface-raised);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-1);
+  transition:
+    box-shadow var(--motion-state) var(--ease-state),
+    translate var(--motion-state) var(--ease-state);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    box-shadow: var(--elevation-2);
+    translate: 0 calc(-1 * var(--motion-lift));
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--space-2);
+  padding-block: var(--space-1);
+  background: var(--accent-wash);
+  color: var(--text-accent-hover);
+  border: 1px solid var(--accent-rim);
+  border-radius: var(--radius-pill);
+}
+
+.page {
+  inline-size: 100%;
+  max-inline-size: var(--width-content);
+  margin-inline: auto;
+  padding-inline: var(--page-inline);
+}
