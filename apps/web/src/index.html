@@ -17,19 +17,24 @@
     <!--
       The loader is inline, in the document head, and not in a component.
 
-      The site is prerendered, so the page's HTML arrives complete and there is
-      nothing to wait for in the sense a loader usually covers. What it covers
-      here is real but different: the window between first paint and the page
-      being *settled* — the webfont swapping in, the split's textures decoding,
-      Angular hydrating. Without it the first second is a visible reflow.
+      What it covers is the window between the first paint and the page being
+      settled — the webfont swapping in, the split's textures decoding, Angular
+      booting. Without it the first second is a visible reflow.
+
+      ADR-0008 settles on static prerendering, which is NOT configured yet: the
+      build is a plain SPA today, so the markup underneath this overlay is empty
+      until Angular boots. That does not change what the loader does, but it does
+      change the third escape hatch below — with prerendering the content is
+      readable under the overlay from the first byte, and without it there is
+      nothing to read yet. Turning it on is the next step on this file.
 
       It must therefore paint on the first byte, before any stylesheet or script
       has been fetched, which is why it is here rather than in styles.scss.
 
       It must also never be able to trap anyone. Three independent ways out:
       the script below, the CSS failsafe on the animation, and — because both of
-      those could fail — it is `aria-hidden` and inert to the reader, which sees
-      the prerendered content underneath it from the start.
+      those could fail — it is `aria-hidden` and inert to the reader, so it never
+      stands between a screen reader and the page.
     -->
     <style>
       .boot {

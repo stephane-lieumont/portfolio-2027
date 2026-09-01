@@ -1,0 +1,94 @@
+// Shared page rhythm lives in _page.scss; only what is specific to this page
+// is here.
+// A link, not a button: it goes somewhere, and the browser's own affordances
+// (open in a new tab, copy the address) come free with the right element.
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  color: var(--text-primary);
+}
+
+// Only the arrow moves. Sliding the label as well makes the whole control feel
+// unmoored from the text around it.
+.back-link__arrow {
+  transition: translate var(--motion-state) var(--ease-state);
+}
+
+.back-link:hover .back-link__arrow {
+  translate: calc(var(--motion-nudge) * -1) 0;
+}
+
+.project-page__meta {
+  color: var(--text-secondary);
+}
+
+// The header is a flex column with its own gap; this is the one place that
+// wants more than the rhythm gives, so the action sits apart from the prose it
+// follows rather than reading as the next line of it.
+.project-page__actions {
+  margin-block-start: var(--space-2);
+}
+
+// An ordered list because the order is the content: these are the steps of a
+// mission, in the order they happened. The counter is drawn rather than left to
+// the marker so it can be aligned and coloured; `list-style: none` on a styled
+// <ol> drops it from the accessibility tree in Safari, hence the role.
+.steps {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  align-items: baseline;
+  max-inline-size: var(--measure);
+  counter-increment: step;
+}
+
+.steps__item::before {
+  content: counter(step, decimal-leading-zero);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--font-size-0);
+  font-weight: 600;
+  color: var(--text-accent-on-texture);
+}
+
+.siblings {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+}
+
+.siblings__link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-block: var(--space-3);
+  border-block-end: 1px solid var(--border-subtle);
+  color: inherit;
+  text-decoration: none;
+}
+
+.siblings__link:hover,
+.siblings__link:focus-visible {
+  color: var(--text-accent-on-texture);
+}
+
+.siblings__link .t-meta {
+  color: var(--text-secondary);
+}

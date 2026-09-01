@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { PROJECTS } from './core/static-content';
+
 export const routes: Routes = [
   {
     path: '',
@@ -8,6 +10,19 @@ export const routes: Routes = [
   {
     path: 'developpeur',
     loadComponent: () => import('./features/developer/developer').then((m) => m.Developer),
+  },
+  // Only known slugs match. An unknown one falls through to the 404 below
+  // rather than rendering an empty detail page, which keeps the dead-link
+  // reporting honest and lets the component treat its project as always
+  // present.
+  {
+    path: 'developpeur/:slug',
+    canMatch: [
+      (_route: unknown, segments: readonly { path: string }[]) =>
+        PROJECTS.some((p) => p.slug === segments[1]?.path),
+    ],
+    loadComponent: () =>
+      import('./features/project-detail/project-detail').then((m) => m.ProjectDetail),
   },
   {
     path: 'graphisme-3d',

@@ -27,7 +27,11 @@
             @if (project.series) {
               <p class="t-overline project__series">{{ project.series }}</p>
             }
-            <h3 class="t-h4">{{ project.title }}</h3>
+            <h3 class="t-h4">
+              <a class="project__link" [routerLink]="['/developpeur', project.slug]">{{
+                project.title
+              }}</a>
+            </h3>
             <p class="t-meta tabular project__meta">
               {{ year(project.releasedAt) }} · {{ project.role }}
             </p>
