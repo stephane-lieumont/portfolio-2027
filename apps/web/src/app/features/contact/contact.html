@@ -1,0 +1,72 @@
+<article class="page section">
+  <header class="section__head">
+    <p class="t-overline section__eyebrow">Contact</p>
+    <h1 class="t-h1">Un projet, une question ou juste un Hello World ?</h1>
+    <p class="t-lead measure section__lead">
+      Je réponds à tout, y compris pour dire non. Par formulaire, par email ou sur LinkedIn — au
+      choix.
+    </p>
+  </header>
+
+  <section class="section__block contact__grid" aria-labelledby="titre-formulaire">
+    <form class="contact__form" novalidate>
+      <h2 id="titre-formulaire" class="t-h3">Écrire</h2>
+
+      <div class="field">
+        <label class="field-label" for="nom">Nom</label>
+        <input class="field-input" id="nom" name="nom" type="text" autocomplete="name" required />
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="email">Email</label>
+        <input
+          class="field-input"
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+        />
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="message">Message</label>
+        <textarea class="field-input" id="message" name="message" rows="6" required></textarea>
+      </div>
+
+      <!-- Full appearance while busy rather than a disabled one: a disabled fill
+           has no visible boundary, and the control has to stay focusable to
+           explain itself. -->
+      <button
+        class="button button--primary contact__submit"
+        type="submit"
+        [attr.aria-busy]="submitting() || null"
+      >
+        {{ submitting() ? 'Envoi en cours…' : 'Envoyer' }}
+      </button>
+
+      <p class="t-small contact__note">
+        Le formulaire n’est pas encore branché : l’envoi passera par l’API, jamais depuis le
+        navigateur.
+      </p>
+    </form>
+
+    <aside class="contact__aside">
+      <h2 class="t-h3">Autrement</h2>
+      <ul class="contact__links" role="list">
+        <li>
+          <a class="link" href="mailto:stephane1920@gmail.com">stephane1920@gmail.com</a>
+        </li>
+        <li>
+          <a class="link" href="https://www.linkedin.com/in/stephane-lieumont/">LinkedIn</a>
+        </li>
+        <li><a class="link" href="https://github.com/stephane-lieumont">GitHub</a></li>
+        <li><a class="link" href="https://s-lieumont.artstation.com/">ArtStation</a></li>
+      </ul>
+
+      <p class="t-body contact__place">31470 Fontenilles, France</p>
+
+      <a class="button button--secondary" href="/cv-stephane-lieumont.pdf" download>Mon CV</a>
+    </aside>
+  </section>
+</article>

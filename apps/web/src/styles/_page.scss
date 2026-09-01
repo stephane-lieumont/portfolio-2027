@@ -1,0 +1,46 @@
+// Shared rhythm for the content pages. The home page is a full-bleed split and
+// deliberately does not use any of this.
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding-block: var(--space-6) var(--space-7);
+}
+
+.section__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.section__eyebrow {
+  color: var(--text-accent);
+}
+
+.section__lead {
+  color: var(--text-secondary);
+}
+
+.section__block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.section__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding-block-start: var(--space-5);
+  border-block-start: 1px solid var(--border-subtle);
+}
+
+// Tools, named and marked. A list, not a row of spans: it is a list.
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+}

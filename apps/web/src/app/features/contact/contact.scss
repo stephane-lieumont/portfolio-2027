@@ -1,0 +1,45 @@
+.contact__grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.contact__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-inline-size: var(--measure);
+}
+
+.contact__submit {
+  align-self: flex-start;
+}
+
+.contact__note {
+  color: var(--text-secondary);
+}
+
+.contact__aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.contact__links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+}
+
+.contact__place {
+  color: var(--text-secondary);
+}
+
+@media (min-width: 64rem) {
+  .contact__grid {
+    grid-template-columns: 1fr auto;
+    gap: var(--space-7);
+  }
+}
