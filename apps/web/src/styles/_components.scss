@@ -104,13 +104,24 @@
 
 // A link drops its underline only when it is alone in a navigation container,
 // never in a flow of text.
+// Discreet at rest: the navigation is a tool, not a headline. Secondary ink and
+// small type keep it from competing with the page, and it steps up to primary
+// on hover so it never asks to be read twice.
 .nav-link {
-  color: var(--text-primary);
-  text-decoration: none;
   display: inline-flex;
   align-items: center;
   min-block-size: 2.75rem;
   padding-inline: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--text-small);
+  text-decoration: none;
+  transition: color var(--motion-state) var(--ease-state);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover {
+    color: var(--text-primary);
+  }
 }
 
 // State is never carried by colour alone: the weight moves with the rule.

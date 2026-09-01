@@ -1,111 +1,26 @@
-<main id="contenu" tabindex="-1" class="page specimen">
-  <header class="specimen__head">
-    <p class="t-overline specimen__eyebrow">Portfolio 2027 · Design system</p>
-    <h1 class="t-display">Stéphane Lieumont</h1>
-    <p class="t-lead measure">
-      Cette page n'est pas le site. C'est le système qui le construira, rendu en vrai : la
-      typographie, la palette, les états, et les deux thèmes.
-    </p>
-  </header>
+<h1 class="visually-hidden">Stéphane Lieumont — Lead Tech et graphiste 3D</h1>
 
-  <section class="specimen__section" aria-labelledby="titre-typo">
-    <h2 id="titre-typo" class="t-h2">Typographie</h2>
-    <ul class="specimen__scale" role="list">
-      @for (level of scale; track level) {
-        <li class="specimen__row">
-          <span class="t-ident specimen__token">.{{ level }}</span>
-          <span [class]="level">Portfolio 2027</span>
-        </li>
-      }
-    </ul>
-    <p class="t-small specimen__note">
-      Rapport titre / corps : 3,0× en mobile, 4,2× en desktop. Le site actuel : 1,2× et 1,7×.
-    </p>
-  </section>
-
-  <section class="specimen__section" aria-labelledby="titre-boutons">
-    <h2 id="titre-boutons" class="t-h2">Boutons</h2>
-    <p class="t-body measure">
-      Survole le bouton primaire : l'encre reste blanche et la surface s'assombrit, donc le
-      contraste monte de 5,05 à 6,52 puis 8,46. Sur ton site actuel, il tombe à 1,84.
-    </p>
-    <div class="specimen__row-buttons">
-      <button type="button" class="button button--primary">Profil dev</button>
-      <button type="button" class="button button--secondary">Profil 3D</button>
-      <button type="button" class="button button--tertiary">Voir tout</button>
-      <button type="button" class="button button--primary" disabled>Indisponible</button>
-    </div>
-    <div class="specimen__row-buttons">
-      <button
-        type="button"
-        class="button button--primary"
-        [attr.aria-busy]="submitting() || null"
-        (click)="toggleSubmitting()"
+<!-- The split is the page. Two halves, full bleed, divided on a slight diagonal
+     — the shape says "two paths" before a word is read, and neither side is
+     illustrated, so neither outweighs the other. -->
+<section class="split" aria-label="Parcours">
+  <ul class="split__list" role="list">
+    @for (gate of gates; track gate.path) {
+      <li
+        class="split__panel"
+        [class]="'split__panel--' + gate.side"
+        [attr.data-theme]="gate.theme"
       >
-        {{ submitting() ? 'Envoi en cours…' : 'Envoyer' }}
-      </button>
-      <span class="t-small specimen__note">
-        Le bouton d'envoi garde son apparence pleine : l'état désactivé n'a pas de frontière
-        visible.
-      </span>
-    </div>
-  </section>
-
-  <section class="specimen__section" aria-labelledby="titre-surfaces">
-    <h2 id="titre-surfaces" class="t-h2">Surfaces</h2>
-    <ul class="specimen__swatches" role="list">
-      @for (swatch of surfaces; track swatch.token) {
-        <li class="specimen__swatch" [style.background]="'var(' + swatch.token + ')'">
-          <span class="t-ident">{{ swatch.token }}</span>
-          <span class="t-meta">{{ swatch.note }}</span>
-        </li>
-      }
-    </ul>
-  </section>
-
-  <section class="specimen__section" aria-labelledby="titre-formulaire">
-    <h2 id="titre-formulaire" class="t-h2">Formulaire</h2>
-    <div class="specimen__form">
-      <div class="field">
-        <label class="field-label" for="nom">Nom</label>
-        <input class="field-input" id="nom" type="text" placeholder="Votre nom" />
-      </div>
-      <div class="field">
-        <label class="field-label" for="email">Email</label>
-        <input
-          class="field-input"
-          id="email"
-          type="email"
-          value="pas-un-email"
-          aria-invalid="true"
-          aria-describedby="email-erreur"
-        />
-        <p class="field-error" id="email-erreur">
-          L'adresse doit contenir un @ et un nom de domaine.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section
-    class="specimen__section specimen__section--dark"
-    data-theme="dark"
-    aria-labelledby="titre-sombre"
-  >
-    <h2 id="titre-sombre" class="t-h2">Thème sombre — section 3D</h2>
-    <p class="t-body measure">
-      Le thème suit le contenu. Rien ici n'est une règle de composant réécrite : ce sont les mêmes
-      classes, avec les tokens sémantiques redéfinis.
-    </p>
-    <div class="specimen__row-buttons">
-      <button type="button" class="button button--primary">Voir la galerie</button>
-      <button type="button" class="button button--secondary">ArtStation</button>
-      <span class="chip t-overline">Zbrush</span>
-      <span class="chip t-overline">V-Ray</span>
-    </div>
-    <div class="card specimen__card">
-      <p class="t-h4">Escart Wild</p>
-      <p class="t-meta tabular">2014 · 3ds Max, V-Ray</p>
-    </div>
-  </section>
-</main>
+        <div class="split__body">
+          <p class="t-overline split__eyebrow">{{ gate.eyebrow }}</p>
+          <h2 class="t-h1 split__title">{{ gate.title }}</h2>
+          <p class="t-body split__pitch">{{ gate.pitch }}</p>
+          <a class="split__link t-label" [routerLink]="gate.path">
+            {{ gate.cue }}
+            <span class="split__arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </li>
+    }
+  </ul>
+</section>

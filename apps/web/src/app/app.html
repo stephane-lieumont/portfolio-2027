@@ -5,7 +5,17 @@
      any position:fixed inside, which is the trap that makes the current site's
      menu links unreachable the moment its animation misfires. -->
 <div class="shell" [attr.inert]="menu.open() || null">
-  <header class="site-header">
+  <!-- Zero-height marker: once it leaves the viewport the header has something
+       under it and earns its background. Before that it floats over the hero
+       with no border, and the name lives large inside the hero instead. -->
+  <div
+    appScrollSentinel
+    #sentinel="appScrollSentinel"
+    class="scroll-sentinel"
+    aria-hidden="true"
+  ></div>
+
+  <header class="site-header" [class.site-header--settled]="sentinel.passed()">
     <a class="brand" routerLink="/">
       <span class="brand__name t-label">Stéphane Lieumont</span>
       <span class="brand__role t-overline">Lead Tech &amp; graphiste 3D</span>
@@ -39,7 +49,7 @@
     <router-outlet />
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer" [hidden]="bare()">
     <p class="t-small">Conçu et développé par <strong>Stéphane Lieumont</strong> · {{ year }}</p>
   </footer>
 </div>

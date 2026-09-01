@@ -1,38 +1,47 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
-interface Swatch {
-  readonly token: string;
-  readonly note: string;
+interface Gate {
+  readonly path: string;
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly pitch: string;
+  readonly cue: string;
+  readonly side: 'start' | 'end';
+  readonly theme: 'light' | 'dark';
 }
 
 @Component({
   selector: 'app-home',
+  imports: [RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Home {
-  protected readonly submitting = signal(false);
-
-  protected readonly surfaces: readonly Swatch[] = [
-    { token: '--surface-page', note: 'Fond de page' },
-    { token: '--surface-raised', note: 'Cartes' },
-    { token: '--surface-sunken', note: 'Zones en creux' },
-    { token: '--accent-wash', note: 'Puces, survol tertiaire' },
-    { token: '--accent-solid', note: 'Bouton primaire' },
-    { token: '--accent', note: 'Marque, aplats à encre sombre' },
+  // Two halves of one split, not two cards. Each carries the theme its section
+  // will use, so the visitor sees where they are going before they go — and
+  // neither is illustrated, so neither outweighs the other.
+  protected readonly gates: readonly Gate[] = [
+    {
+      path: '/developpeur',
+      eyebrow: 'Développement',
+      title: 'Ce que je construis',
+      pitch:
+        'Angular, TypeScript, .NET. Des applications menées de la décision technique à la mise en production.',
+      cue: 'Voir les réalisations',
+      side: 'start',
+      theme: 'light',
+    },
+    {
+      path: '/graphisme-3d',
+      eyebrow: 'Graphisme 3D',
+      title: 'Ce que j’explore',
+      pitch:
+        'Modélisation, texturing, rendu. Une pratique apprise seule, qui nourrit mon regard de développeur.',
+      cue: 'Voir la galerie',
+      side: 'end',
+      theme: 'dark',
+    },
   ];
-
-  protected readonly scale: readonly string[] = [
-    't-display',
-    't-h1',
-    't-h2',
-    't-h3',
-    't-body',
-    't-overline',
-  ];
-
-  protected toggleSubmitting(): void {
-    this.submitting.update((value) => !value);
-  }
 }
