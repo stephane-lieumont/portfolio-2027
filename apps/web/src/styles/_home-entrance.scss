@@ -1,0 +1,208 @@
+// The home page's entrance lives here, not in the component's stylesheet.
+//
+// It is keyed on `[data-ready]`, an attribute on <html> — state that sits
+// outside the component, so Angular's emulated encapsulation scopes the rule
+// away and it silently never matches. Measured before this move: every one of
+// these animations computed to `animation-name: none`. The menu's recession hit
+// the identical trap; see _menu-state.scss.
+//
+// ---------------------------------------------------------------------------
+// The order, and why it is this order
+//
+// Structure, then surface, then reading.
+//
+// The wedge travels alone, as flat colour. Both textures wait for it: each half
+// is cut by a diagonal whose other side is still empty while the wedge is in
+// flight, so fading an image up early shows a picture clipped against nothing.
+// They arrive once the edge that cuts them has something behind it.
+//
+// Then the words, one line at a time — overline, title, pitch, link — because a
+// block that resolves all at once is a slide, and a block that resolves in
+// reading order is a sentence. This is the 2022 site's gesture, kept.
+//
+// The two halves do not overlap. The right one starts where the left one
+// finishes, so the eye is never asked to follow two things at once — it reads
+// one offer, then the other, in the order the page is read in.
+//
+// Everything is `translate` and `opacity`, and every phase carries a fade —
+// nothing appears by simply existing. 2022 animated `flex-basis`, which lays
+// out the page on every frame; spec 07 forbids it and this is the same gesture
+// without the cost.
+// ---------------------------------------------------------------------------
+
+// `inherits: false` keeps the interpolation off every element in the document:
+// registered and inheriting, animating this on <html> would invalidate the
+// computed style of the whole page on every frame. Scoped to the panels, one
+// frame re-cuts two clip-paths.
+@property --split-lean {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 3%;
+}
+
+// Phase 1 — the structure, as flat colour. The wedge travels in from the right
+// while the edge tips from square to diagonal, one movement rather than a slide
+// followed by a tilt.
+//
+// The lean is animated on the token both clip-paths are cut from, so a single
+// interpolation re-cuts the light half and the dark half in step — and the
+// mobile and desktop geometries alike. Two hand-written polygon keyframe sets
+// would have to be kept in sync by hand.
+//
+// It outlasts the sweep rather than ending with it. Three percent is a small
+// angle, and spent entirely underneath a panel that is itself still travelling
+// it does not register; the edge has to keep tipping after the wedge has landed
+// for the movement to be seen at all.
+:root[data-ready] .split__panel {
+  animation: split-lean-in var(--motion-entrance-lean) var(--ease-signature) both;
+}
+
+// One element, one `animation` property: the wedge's sweep has to be declared
+// alongside its lean or the rule above would replace it.
+:root[data-ready] .split__panel--end {
+  animation:
+    split-sweep var(--motion-entrance) var(--ease-signature) both,
+    split-lean-in var(--motion-entrance-lean) var(--ease-signature) both;
+}
+
+@keyframes split-lean-in {
+  from {
+    --split-lean: 0%;
+  }
+  to {
+    --split-lean: 3%;
+  }
+}
+
+// Phase 2 — both textures, once the diagonal has something behind it.
+//
+// Long, and on the curve that barely moves at first — the same one the hover
+// zoom releases on. A texture sitting at 14% opacity has very little distance
+// to travel, so any brisk curve spends it all at once and the image simply
+// appears. It should surface, not switch on.
+:root[data-ready] .split__media {
+  animation: split-media-in var(--motion-entrance-media) var(--ease-zoom-out) both;
+  animation-delay: var(--motion-entrance);
+}
+
+// Phases 3 and 4 — the words, line by line, one half after the other.
+//
+// A column's full span: its first line starting to its last line landing. The
+// second wave is offset by exactly this, so the two never speak over each
+// other, and retuning a line's duration or step keeps that true on its own.
+:root[data-ready] {
+  --enter-column: calc(3 * var(--motion-entrance-line) + var(--motion-entrance-body));
+  --enter-second: calc(var(--motion-entrance-lead) + var(--enter-column));
+}
+
+:root[data-ready] .split__body > * {
+  --line: 0;
+  animation: split-settle var(--motion-entrance-body) var(--ease-signature) both;
+  animation-delay: calc(var(--enter-lead) + var(--line) * var(--motion-entrance-line));
+}
+
+:root[data-ready] .split__panel--start .split__body {
+  --enter-lead: var(--motion-entrance-lead);
+}
+
+:root[data-ready] .split__panel--end .split__body {
+  --enter-lead: var(--enter-second);
+}
+
+:root[data-ready] .split__body > :nth-child(2) {
+  --line: 1;
+}
+
+:root[data-ready] .split__body > :nth-child(3) {
+  --line: 2;
+}
+
+:root[data-ready] .split__body > :nth-child(4) {
+  --line: 3;
+}
+
+@keyframes split-sweep {
+  from {
+    translate: 100% 0;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+// Ends on the panel's own texture level rather than on 1: the media is a
+// background at 14% or 20%, and fading it to full would flash the image at
+// four times its resting weight before settling back.
+@keyframes split-media-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: var(--panel-texture);
+  }
+}
+
+@keyframes split-settle {
+  from {
+    opacity: 0;
+    translate: 0 var(--motion-rise);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+// The wedge still arrives — it is the structure, and losing it would leave the
+// page looking broken rather than calm — but it arrives without travel, and
+// everything else simply fades.
+@media (prefers-reduced-motion: reduce) {
+  :root[data-ready] .split__panel--end,
+  :root[data-ready] .split__body > *,
+  :root[data-ready] .site-header--overlay .nav-desktop li,
+  :root[data-ready] .site-header--overlay ~ .burger {
+    animation-name: split-fade;
+  }
+
+  @keyframes split-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+// Phase 4 (continued) — the menu, one link at a time.
+//
+// It is chrome: it says where you can go, which only matters once you have seen
+// where you are. Arriving with the structure it would compete with it.
+//
+// The brand is deliberately not in this list. It is not navigation — it is
+// whose page this is, and that is the one thing worth reading while the rest
+// assembles. It is painted from the first frame.
+//
+// The links ride the second wave, alongside the right column and on the same
+// step and rise, so the menu is part of that movement rather than a flourish
+// appended to it. The burger is the same phase on the other side of the
+// breakpoint, so it takes the base delay with no step of its own.
+//
+// Scoped to the home page. Everywhere else the header is simply present, and a
+// route change that faded its own navigation back in each time would be a tic.
+:root[data-ready] .site-header--overlay .nav-desktop li,
+:root[data-ready] .site-header--overlay ~ .burger {
+  --line: 0;
+  animation: split-settle var(--motion-entrance-body) var(--ease-signature) both;
+  animation-delay: calc(var(--enter-second) + var(--line) * var(--motion-entrance-line));
+}
+
+// One rule per position rather than sibling-index(), which is too new to rely
+// on here. Covers more items than the nav has, so adding a link keeps working.
+@for $i from 2 through 6 {
+  :root[data-ready] .site-header--overlay .nav-desktop li:nth-child(#{$i}) {
+    --line: #{$i - 1};
+  }
+}

@@ -69,11 +69,16 @@ svg {
   block-size: auto;
 }
 
-// Media reserves its space before it loads: no layout shift, and a visible
-// placeholder rather than a collapsed box if it never arrives.
+// Media reserves its space before it loads, so nothing shifts as it arrives.
+//
+// No background here. It was meant as a placeholder and it is a trap twice
+// over: it never goes away, so every transparent image gets an opaque
+// rectangle that belongs to nothing — and at (0,2,1) this selector outranks
+// any single class, so a component cannot take it back. A placeholder that
+// needs one belongs on the container, which knows whether its image is a
+// cut-out or a photograph.
 img[width][height] {
   block-size: auto;
-  background: var(--surface-sunken);
 }
 
 :where(h1, h2, h3, h4) {
@@ -146,53 +151,5 @@ img[width][height] {
 
   :focus-visible {
     outline-color: highlight;
-  }
-}
-
-// Reduced motion is served by redefining the motion tokens, not by crushing
-// every duration to nothing. The blunt `* { transition-duration: 0.01ms }`
-// rule is the anti-pattern spec 07 §11.1 names: it makes every state snap,
-// including the ones whose whole job is to be gentle, and it cannot be
-// overridden by a component that has a good reason to keep a fade.
-//
-// What stays: anything carrying meaning still changes, just without travel.
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --motion-press-dur: 1ms;
-    --motion-lead: 0ms;
-    --motion-exit-state: 1ms;
-    --motion-state: 1ms;
-    --motion-exit: 1ms;
-    --motion-dismiss: 1ms;
-    --motion-enter: 1ms;
-    --motion-page: 1ms;
-    --motion-panel: 1ms;
-    --motion-menu-panel: 1ms;
-    --motion-menu-dismiss: 1ms;
-    --motion-menu-items: 1ms;
-    --motion-menu-lead: 0ms;
-    --motion-menu-edge: 1ms;
-    --stagger-menu: 0ms;
-    --stagger-list: 0ms;
-    --stagger-grid: 0ms;
-
-    // Travel goes to zero rather than the movement going to zero: an element
-    // that arrives without sliding is calm, one that jumps is not.
-    --motion-rise: 0px;
-    --motion-rise-tight: 0px;
-    --motion-slide: 0px;
-    --motion-lift: 0px;
-    --motion-press: 0px;
-    --zoom-icon: 1;
-
-    // The one exception. The split's recession carries no travel at all — it is
-    // a value change on a background texture — so there is nothing to make
-    // still. Snapping it would be a regression, not an accommodation.
-    --motion-recede-in: 400ms;
-    --motion-recede-out: 300ms;
-  }
-
-  html {
-    scroll-behavior: auto;
   }
 }

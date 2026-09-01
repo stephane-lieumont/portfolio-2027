@@ -100,8 +100,10 @@
   // (spec 07 §10.2, §11.1).
   --motion-nudge: 0.5rem;
   --zoom-icon: 1.08;
+  --zoom-media: 1.09;
 
   --stagger-menu: 50ms;
+  --shell-scale: 0.9; // 2022: the shell recedes to 0.9 behind the panel
   --motion-menu-panel: 900ms; // 2022: 0.9s in, Power3.easeInOut
   --motion-menu-dismiss: 700ms; // 2022: 0.7s out
   // The lines only fade. A short stagger reads as one wave rather than five
@@ -112,10 +114,9 @@
   --motion-menu-edge: 900ms; // 2022: 0.2s bulge + 0.7s elastic return
 
   // The split's hover zoom. The entrance is long and near-linear so the motion
-  // is continuous rather than front-loaded; the exit is short because the
-  // cursor always leaves mid-travel and a long return reads as a drag.
+  // is continuous rather than front-loaded.
   --motion-zoom-in: 5000ms;
-  --motion-zoom-out: 1500ms;
+  --motion-zoom-out: 3800ms;
   --ease-zoom-in: cubic-bezier(0.4, 0.05, 0.6, 0.95);
   // The release eases out of the held state and settles into rest — gentle at
   // both ends, which is the only shape that does not jolt.
@@ -127,6 +128,11 @@
   // it covers 28% of the distance in the first 5% of the time and 49% in the
   // first 10%. The image snapped halfway back in about a tenth of a second and
   // crawled the rest. This curve covers 2% in the same window.
+  //
+  // With the shape right, the duration could be lengthened: 1500ms still read
+  // as short, 2600ms still read as abrupt, and at 3800ms the release is a slow
+  // letting-go rather than a return. Lengthening the old curve would only have
+  // stretched the crawl after the jolt — the shape had to come first.
   --ease-zoom-out: cubic-bezier(0.45, 0, 0.25, 1);
 
   // The other half receding. Atmosphere, not acknowledgement: at --motion-state
@@ -134,8 +140,28 @@
   // Long enough to be a fade, short enough to still belong to the pointer —
   // and on the same curves as the zoom, so the two are one gesture rather than
   // an instant answer sitting beside a five-second one.
+  //
+  // The release is deliberately much shorter than the zoom's. Tying the two
+  // together was an earlier, wrong answer to "the zoom-out is brutal": the
+  // actual cause was a shorthand in home.scss stripping the transition off
+  // `scale` entirely, so it snapped in one frame. With that fixed the light can
+  // go back to being the fast half of the pair — it is the acknowledgement, the
+  // zoom is the atmosphere, and they are not meant to move at the same speed.
   --motion-recede-in: 900ms;
-  --motion-recede-out: 500ms;
+  --motion-recede-out: 700ms;
+
+  // The home page's entrance. Long enough to read as a structure assembling
+  // rather than a panel appearing, short enough that nobody waits for it — it
+  // starts only once the loader has gone, so it is the first thing seen.
+  // The home entrance, phase by phase. Structure, then left words, then right
+  // words, then the header. Faster than the first attempt at 1.2s, which read
+  // as slow — an entrance is a way in, not a performance.
+  --motion-entrance: 520ms; // the wedge travelling in
+  --motion-entrance-lean: 900ms; // the edge tipping square to diagonal, outlasting it
+  --motion-entrance-media: 1200ms; // the two textures, once the wedge has landed
+  --motion-entrance-body: 300ms; // one line of one half
+  --motion-entrance-line: 80ms; // between two lines of the same half
+  --motion-entrance-lead: 660ms; // before the left half speaks
   --ease-menu: cubic-bezier(0.77, 0, 0.175, 1); // ~ Power3.easeInOut
   --stagger-list: 60ms;
   --stagger-grid: 40ms;
@@ -162,7 +188,13 @@
   // at the same fraction, so the divide reads as continuing the menu's own
   // left edge rather than crossing it at random.
   --split-top: 46%;
-  --split-lean: 3%;
+  // Two values on purpose. --split-lean-rest is the geometry; --split-lean is
+  // what the clip-paths read, registered in _home-entrance.scss so the entrance
+  // can interpolate it from square to diagonal. Only clip-path may use the
+  // second one — padding on an animated value would relay out the page every
+  // frame instead of re-cutting two shapes.
+  --split-lean: var(--split-lean-rest);
+  --split-lean-rest: 3%;
   // The width a half actually offers, in viewport units. Percentages resolve
   // against the element's own containing block, so the two halves — whose
   // content boxes differ because their paddings differ — computed different
@@ -183,10 +215,58 @@
   }
 }
 
-// Reduced motion removes travel, not feedback (spec 07 §11.3). Distances go to
-// zero here so no component rule has to know about the preference.
+// The reduced variant is expressed the way a theme is: the tokens are
+// redefined here and no component rule is touched (spec 07 §11.1). One place to
+// read, nothing to forget, and no component can opt out by accident.
+//
+// `* { transition-duration: 0.01ms }` is the anti-pattern this replaces. It
+// flattens staged sequences into simultaneous jumps and removes the feedback
+// that tells a visitor a control responded — the degraded version ADR-0010
+// forbids. Two rules govern what follows (spec 07 §11.3): reduced motion
+// removes travel, not feedback; and nothing here is slower than its full
+// counterpart.
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --motion-nudge: 0;
+    // Travel and scale go to zero. The state change itself stays: an element
+    // that arrives without sliding is calm, one that jumps is not.
+    --motion-rise: 0px;
+    --motion-rise-tight: 0px;
+    --motion-slide: 0px;
+    --motion-lift: 0px;
+    --motion-press: 0px;
+    --motion-nudge: 0px;
+    --shell-scale: 1;
+    --zoom-media: 1;
+    --zoom-icon: 1;
+
+    // Cascades collapse: the group arrives as a group.
+    --stagger-menu: 0ms;
+    --stagger-list: 0ms;
+    --stagger-grid: 0ms;
+    --motion-lead: 0ms;
+    --motion-menu-lead: 0ms;
+
+    // Only the long moves shorten. The feedback durations —
+    // --motion-press-dur, --motion-exit-state, --motion-state, --motion-exit,
+    // --motion-dismiss — are absent on purpose: they carry no travel once the
+    // distances above are zero, and 90-180ms is what still reads as an answer.
+    --motion-enter: var(--duration-125);
+    --motion-panel: var(--duration-125);
+    --motion-page: var(--duration-90);
+    --motion-menu-panel: var(--duration-125);
+    --motion-menu-dismiss: var(--duration-125);
+    --motion-menu-items: var(--duration-125);
+
+    // The split's zoom is not painted, so --motion-zoom-* go unused. The
+    // recession is the accommodation rather than a casualty: it is a value
+    // change on a background texture with no vector to remove, and once the
+    // zoom and the arrow's nudge are gone it is the only thing left telling a
+    // visitor which half is live.
+    --motion-recede-in: var(--duration-360);
+    --motion-recede-out: var(--duration-255);
+
+    // No deceleration to read when there is no distance to decelerate over.
+    --ease-enter: var(--ease-state);
+    --ease-signature: var(--ease-state);
   }
 }

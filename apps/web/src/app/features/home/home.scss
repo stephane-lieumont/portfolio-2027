@@ -63,7 +63,8 @@
   // Content sits a fifth of the way down its own screen rather than hard
   // against the top, so it is read as placed rather than as pushed up by the
   // header.
-  padding-block: calc(var(--header-height) + 18dvh) calc(var(--space-5) + var(--split-lean) * 2);
+  padding-block: calc(var(--header-height) + 18dvh)
+    calc(var(--space-5) + var(--split-lean-rest) * 2);
   align-content: start;
 }
 
@@ -74,7 +75,7 @@
     100% 100%,
     0 100%
   );
-  padding-block: calc(var(--space-5) + var(--split-lean) * 2) 30dvh;
+  padding-block: calc(var(--space-5) + var(--split-lean-rest) * 2) 30dvh;
   align-content: end;
 
   --panel-texture: 0.2;
@@ -227,9 +228,16 @@
   // second, which is what made the previous attempt read as fast-then-stalled
   // rather than slow. It is atmosphere, and atmosphere cannot also be
   // acknowledgement — at 180ms this zoom has covered 0.5% of its distance.
+  //
+  // Both properties are restated, never just the one being changed. `transition`
+  // is a shorthand: declaring it resets every property it does not name, so a
+  // rule that mentions only `scale` silently strips the transition off
+  // `opacity`, and vice versa.
   .split__panel:hover .split__media {
-    scale: 1.09;
-    transition: scale var(--motion-zoom-in) var(--ease-zoom-in);
+    scale: var(--zoom-media);
+    transition:
+      scale var(--motion-zoom-in) var(--ease-zoom-in),
+      opacity var(--motion-recede-out) var(--ease-zoom-out);
   }
 
   // So the acknowledgement is the *other* half going quiet.
@@ -258,9 +266,18 @@
   // the texture behave as one slow gesture instead of an instant answer sitting
   // beside a five-second one. The arrow keeps the fast response; it is the
   // control, and a control should answer at once.
+  // `scale` is restated here for a reason worth spelling out. This rule matches
+  // the half the pointer has just *left*, and on a split that fills the screen
+  // that is nearly every exit — there is almost no neutral ground to leave to.
+  // Declaring only `opacity` stripped the transition off `scale`, so the zoom
+  // did not ease back at all: it snapped 1.09 to 1 in a single frame while the
+  // light faded over nearly a second. Three rounds of lengthening the release
+  // could not fix a release that was never running.
   .split__list:has(.split__panel:hover) .split__panel:not(:hover) .split__media {
     opacity: var(--panel-texture-quiet);
-    transition: opacity var(--motion-recede-in) var(--ease-zoom-in);
+    transition:
+      opacity var(--motion-recede-in) var(--ease-zoom-in),
+      scale var(--motion-zoom-out) var(--ease-zoom-out);
   }
 
   // The arrow leads on the state duration, so the half answers at the control
@@ -317,7 +334,7 @@
     );
     // The content stays clear of the diagonal: at the bottom the edge has moved
     // inward by twice the lean, so the inline end has to give that back.
-    padding-inline: var(--page-inline) calc(var(--page-inline) + var(--split-lean) * 2);
+    padding-inline: var(--page-inline) calc(var(--page-inline) + var(--split-lean-rest) * 2);
   }
 
   .split__panel--end {
@@ -331,17 +348,7 @@
     // the viewport edge, not from the divide. Starting the text at the divide
     // plus the page gutter mirrors the left half; pushing it right with an auto
     // margin instead left a gap between the diagonal and the first word.
-    padding-inline: calc(var(--split-top) + var(--split-lean) + var(--page-inline))
+    padding-inline: calc(var(--split-top) + var(--split-lean-rest) + var(--page-inline))
       var(--page-inline);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  // Travel goes, feedback stays (spec 07 §11.3). The zoom is travel and is not
-  // painted at all; the recession is a state change with no vector, so it is
-  // kept — it is the only thing left telling a visitor which half is live, and
-  // --motion-nudge has already taken the arrow's 8px to zero.
-  .split__panel:hover .split__media {
-    scale: 1;
   }
 }

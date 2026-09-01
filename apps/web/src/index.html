@@ -13,8 +13,300 @@
       crossorigin
     />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+    <!--
+      The loader is inline, in the document head, and not in a component.
+
+      The site is prerendered, so the page's HTML arrives complete and there is
+      nothing to wait for in the sense a loader usually covers. What it covers
+      here is real but different: the window between first paint and the page
+      being *settled* — the webfont swapping in, the split's textures decoding,
+      Angular hydrating. Without it the first second is a visible reflow.
+
+      It must therefore paint on the first byte, before any stylesheet or script
+      has been fetched, which is why it is here rather than in styles.scss.
+
+      It must also never be able to trap anyone. Three independent ways out:
+      the script below, the CSS failsafe on the animation, and — because both of
+      those could fail — it is `aria-hidden` and inert to the reader, which sees
+      the prerendered content underneath it from the start.
+    -->
+    <style>
+      .boot {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 1.25rem;
+        background: #ffffff;
+        /* Ends on its own even if no script ever runs. A real duration, not
+           0s: a zero-length animation does not reliably apply its filled end
+           state, and tested that way the loader stayed opaque past its
+           deadline — the one failure mode this rule exists to prevent. */
+        animation: boot-failsafe 400ms linear 4s forwards;
+      }
+
+      /* The failsafe path leaves no `data-ready`, so the entrance never plays.
+         That is deliberate: the content is visible in its resting state either
+         way, and an entrance is worth losing to keep the page reachable. */
+      .boot {
+      }
+
+      .boot--done {
+        animation: boot-out 360ms cubic-bezier(0.45, 0, 0.25, 1) forwards;
+      }
+
+      @keyframes boot-out {
+        to {
+          opacity: 0;
+          visibility: hidden;
+        }
+      }
+
+      @keyframes boot-failsafe {
+        to {
+          opacity: 0;
+          visibility: hidden;
+        }
+      }
+
+      /* The dot lane. `overflow: hidden` is what lets a dot disappear rather
+         than drift past Pac-Man and out the far side, which is what it did
+         before: the 2022 container was `overflow: visible`. */
+      .boot__track {
+        position: relative;
+        display: flex;
+        align-items: center;
+        inline-size: 9.375rem;
+        block-size: 2.8125rem;
+        overflow: hidden;
+      }
+
+      /* The 2022 Pac-Man, unchanged: two half-discs built from borders, opening
+         and closing against a row of dots that travels the other way. */
+      /* Pac-Man sits over the lane and carries an opaque patch the width of his
+         own mouth, so a dot is *eaten* — it goes behind him and does not come
+         out. Before this the dots crossed straight through the open jaw. */
+      .boot__pac {
+        position: absolute;
+        inset-inline-start: 0;
+        inset-block-start: 50%;
+        inline-size: 0;
+        block-size: 0;
+        z-index: 2;
+      }
+
+      .boot__pac::before,
+      .boot__pac::after,
+      .boot__pac > i {
+        content: '';
+        position: absolute;
+        display: block;
+      }
+
+      .boot__pac > i {
+        inset-block-start: -22px;
+        inset-inline-start: -2px;
+        inline-size: 46px;
+        block-size: 44px;
+        background: #ffffff;
+        z-index: -1;
+      }
+
+      .boot__pac::before,
+      .boot__pac::after {
+        inset-block-start: -20px;
+        inline-size: 0;
+        block-size: 0;
+        border: 20px solid #f2a154;
+        border-radius: 50%;
+      }
+
+      .boot__pac::before {
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        animation: boot-chunk-top 0.5s ease infinite;
+      }
+
+      .boot__pac::after {
+        border-right-color: transparent;
+        border-top-color: transparent;
+        animation: boot-chunk-bottom 0.5s ease infinite;
+      }
+
+      /* One period of travel per cycle, so the loop has no seam and the stream
+         is genuinely endless. The 2022 version slid the whole row by half its
+         width and jumped back, which is visible as a reset. */
+      .boot__dots {
+        --boot-dot: 8px;
+        --boot-gap: 26px;
+        position: absolute;
+        inset-inline-start: 46px;
+        inset-block-start: 50%;
+        display: flex;
+        align-items: center;
+        gap: calc(var(--boot-gap) - var(--boot-dot));
+        translate: 0 -50%;
+        animation: boot-eat 0.55s linear infinite;
+      }
+
+      .boot__dots span {
+        flex: none;
+        inline-size: var(--boot-dot);
+        block-size: var(--boot-dot);
+        border-radius: 50%;
+        background: #7b756f;
+      }
+
+      @keyframes boot-chunk-top {
+        0%,
+        100% {
+          transform: rotate(-45deg);
+        }
+        50% {
+          transform: rotate(-80deg);
+        }
+      }
+
+      @keyframes boot-chunk-bottom {
+        0%,
+        100% {
+          transform: rotate(-40deg);
+        }
+        50% {
+          transform: rotate(0deg);
+        }
+      }
+
+      @keyframes boot-eat {
+        to {
+          transform: translateX(calc(-1 * var(--boot-gap)));
+        }
+      }
+
+      .boot__label {
+        font-family: 'Instrument Sans', system-ui, sans-serif;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #605c57;
+      }
+
+      .boot__label span {
+        display: inline-block;
+        animation: boot-letter 2s infinite;
+        animation-delay: calc(0.15s * var(--i));
+      }
+
+      @keyframes boot-letter {
+        0%,
+        40%,
+        100% {
+          transform: translateY(0);
+        }
+        20% {
+          transform: translateY(-5px);
+        }
+      }
+
+      /* Three infinite animations at half a second is exactly what someone who
+         asked for less movement does not want. The loader still exists and
+         still says what it is; it simply stops moving. */
+      @media (prefers-reduced-motion: reduce) {
+        .boot__pac::before,
+        .boot__pac::after,
+        .boot__dots,
+        .boot__label span {
+          animation: none;
+        }
+
+        .boot__pac::before {
+          transform: rotate(-45deg);
+        }
+
+        .boot__pac::after {
+          transform: rotate(-40deg);
+        }
+      }
+    </style>
   </head>
   <body>
+    <div class="boot" id="boot" aria-hidden="true">
+      <div class="boot__track">
+        <div class="boot__pac"><i></i></div>
+        <div class="boot__dots">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span
+          ><span></span>
+        </div>
+      </div>
+      <p class="boot__label">
+        <span style="--i: 1">C</span><span style="--i: 2">h</span><span style="--i: 3">a</span
+        ><span style="--i: 4">r</span><span style="--i: 5">g</span><span style="--i: 6">e</span
+        ><span style="--i: 7">m</span><span style="--i: 8">e</span><span style="--i: 9">n</span
+        ><span style="--i: 10">t</span>
+      </p>
+    </div>
+
+    <script>
+      // Wait for what is actually still arriving — the webfont and the images —
+      // and never longer than it takes. Promise.race so a font that never
+      // resolves cannot hold the page.
+      //
+      // A one-second floor sits under it. On a warm cache everything is ready
+      // in well under 100ms and the loader would flash: appearing and leaving
+      // inside a blink reads as a glitch, not as loading. Below the floor it is
+      // better to show nothing; above it, better to show it properly.
+      //
+      // Retiring it also stamps the document, which is what starts the home
+      // page's entrance. The two cannot be timed independently — an entrance
+      // that plays under the loader has not been seen.
+      (function () {
+        var boot = document.getElementById('boot');
+        // The stamp is deliberately short-lived. The entrance belongs to
+        // arriving at the site, not to arriving at the home page: coming back
+        // to it from another section re-creates the component, and a rule still
+        // matching would replay the whole assembly every time — a tic.
+        //
+        // 2200ms covers the longest chain — the textures, which start once the
+        // wedge has landed at 520 and surface slowly until 1720. The words are
+        // done just after, and nothing depends on the attribute afterwards.
+        var ready = function () {
+          var root = document.documentElement;
+          root.setAttribute('data-ready', '');
+          setTimeout(function () {
+            root.removeAttribute('data-ready');
+          }, 2200);
+        };
+        if (!boot) return ready();
+
+        var settled = Promise.all([
+          document.fonts ? document.fonts.ready : Promise.resolve(),
+          new Promise(function (done) {
+            if (document.readyState === 'complete') done();
+            else addEventListener('load', done, { once: true });
+          }),
+        ]);
+
+        var floor = new Promise(function (done) {
+          setTimeout(done, 1000);
+        });
+        var capped = new Promise(function (done) {
+          setTimeout(done, 3000);
+        });
+
+        Promise.all([floor, Promise.race([settled, capped])]).then(function () {
+          boot.classList.add('boot--done');
+          ready();
+          setTimeout(function () {
+            boot.remove();
+          }, 400);
+        });
+      })();
+    </script>
+
     <app-root></app-root>
   </body>
 </html>
