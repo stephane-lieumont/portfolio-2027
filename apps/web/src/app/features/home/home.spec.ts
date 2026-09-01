@@ -47,9 +47,20 @@ describe('Home', () => {
     expect(themes).toEqual(['light', 'dark']);
   });
 
-  it('illustrates neither half, so neither outweighs the other', () => {
-    // The 3D renders were pulling the page toward one of the two trades.
-    expect(host().querySelectorAll('.split__panel img')).toHaveLength(0);
+  it("carries each half's work as a background, with real alternatives", () => {
+    // The images are desaturated and blended into their half's own colour, so
+    // they read as texture rather than as photographs on display — which is
+    // what stopped the 3D render pulling the page toward one of the two trades.
+    const media = host().querySelectorAll<HTMLImageElement>('.split__media');
+    expect(media).toHaveLength(2);
+
+    for (const image of Array.from(media)) {
+      expect(image.getAttribute('alt')?.length).toBeGreaterThan(0);
+      // Intrinsic dimensions on every image: without them the page reflows as
+      // each one arrives.
+      expect(image.getAttribute('width')).toBeTruthy();
+      expect(image.getAttribute('height')).toBeTruthy();
+    }
   });
 
   it('routes both halves', () => {

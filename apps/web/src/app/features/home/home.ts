@@ -7,6 +7,10 @@ interface Gate {
   readonly title: string;
   readonly pitch: string;
   readonly cue: string;
+  readonly media: string;
+  readonly alt: string;
+  readonly width: number;
+  readonly height: number;
   readonly side: 'start' | 'end';
   readonly theme: 'light' | 'dark';
 }
@@ -30,6 +34,10 @@ export class Home {
       pitch:
         'Angular, TypeScript, .NET. Des applications menées de la décision technique à la mise en production.',
       cue: 'Voir les réalisations',
+      media: '/medias/split-dev.jpg',
+      alt: 'Landing page de Case Tes Potes, développée en React',
+      width: 1100,
+      height: 434,
       side: 'start',
       theme: 'light',
     },
@@ -40,6 +48,10 @@ export class Home {
       pitch:
         'Modélisation, texturing, rendu. Une pratique apprise seule, qui nourrit mon regard de développeur.',
       cue: 'Voir la galerie',
+      media: '/medias/split-3d.jpg',
+      alt: "Rendu 3D photoréaliste d'une maison moderne au crépuscule",
+      width: 1280,
+      height: 720,
       side: 'end',
       theme: 'dark',
     },

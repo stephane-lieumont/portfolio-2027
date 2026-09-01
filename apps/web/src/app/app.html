@@ -15,7 +15,11 @@
     aria-hidden="true"
   ></div>
 
-  <header class="site-header" [class.site-header--settled]="sentinel.passed()">
+  <header
+    class="site-header"
+    [class.site-header--settled]="sentinel.passed()"
+    [class.site-header--overlay]="bare()"
+  >
     <a class="brand" routerLink="/">
       <span class="brand__name t-label">Stéphane Lieumont</span>
       <span class="brand__role t-overline">Lead Tech &amp; graphiste 3D</span>

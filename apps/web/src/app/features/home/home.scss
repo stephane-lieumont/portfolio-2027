@@ -22,49 +22,95 @@
 // single shared edge rather than two shapes hoping to meet.
 .split__panel {
   grid-area: 1 / 1;
+  position: relative;
   display: grid;
-  align-content: center;
-  min-block-size: 24rem;
-  padding-block: var(--space-6);
+  min-block-size: 20rem;
+  padding-inline: var(--page-inline);
   background: var(--surface-page);
   color: var(--text-primary);
-  position: relative;
   isolation: isolate;
+  overflow: hidden;
 }
 
+// Mobile-first: the divide runs horizontally. Two columns on a 360px screen are
+// too narrow to set a heading in, so the split stacks and the diagonal turns.
 .split__panel--start {
   clip-path: polygon(
     0 0,
-    calc(var(--split-top) + var(--split-lean)) 0,
-    calc(var(--split-top) - var(--split-lean)) 100%,
-    0 100%
+    100% 0,
+    100% calc(var(--split-top) - var(--split-lean)),
+    0 calc(var(--split-top) + var(--split-lean))
   );
-  // The content stays clear of the diagonal: at the bottom the edge has moved
-  // inward by 2 x $lean, so the inline end has to give that back.
-  padding-inline: var(--page-inline) calc(var(--page-inline) + var(--split-lean) * 2);
-  justify-items: start;
+  padding-block: var(--space-5) calc(var(--space-5) + var(--split-lean) * 2);
+  align-content: start;
 }
 
 .split__panel--end {
   clip-path: polygon(
-    calc(var(--split-top) + var(--split-lean)) 0,
-    100% 0,
+    0 calc(var(--split-top) + var(--split-lean)),
+    100% calc(var(--split-top) - var(--split-lean)),
     100% 100%,
-    calc(var(--split-top) - var(--split-lean)) 100%
+    0 100%
   );
-  padding-inline: calc(var(--page-inline) + var(--split-lean) * 2) var(--page-inline);
-  justify-items: start;
+  padding-block: calc(var(--space-5) + var(--split-lean) * 2) var(--space-5);
+  align-content: end;
 }
+
+.split__media {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  // The subject of both images sits above centre; a centred crop cuts it.
+  object-position: center 38%;
+  z-index: -2;
+  // The images are backgrounds, not photographs on display. Stripped of their
+  // own colour and blended into the panel, each takes the hue of the half it
+  // sits in: the work is legible as texture, and neither image pulls the page
+  // toward one of the two trades the way a full-colour render did.
+  filter: grayscale(1) contrast(1.05);
+  mix-blend-mode: multiply;
+  // 0.14 is a ceiling, not a taste: at 0.16 the secondary ink drops below 4.5
+  // against the worst pixel the texture can produce. Measured, see §Contrast.
+  opacity: 0.14;
+  // The exit, and only the exit, lives here. The entrance is declared on the
+  // hover rule so the two can have different durations: the cursor always
+  // leaves mid-travel, and returning over 5s reads as a drag rather than a
+  // release. 320ms out against 5000ms in.
+  transition: scale var(--motion-zoom-out) var(--ease-exit);
+}
+
+// multiply darkens, which is right on a light ground and wrong on a dark one:
+// there it would erase the image entirely. screen lifts instead.
+// 0.20 for the same reason as above: the accent ink fails past 0.23 here.
+.split__panel--end .split__media {
+  mix-blend-mode: screen;
+  opacity: 0.2;
+}
+
+// No scrim. Blended this low the image is a texture rather than a picture, so
+// the text sits on the panel's own surface — but not on a clean one, and that
+// is the trap. Measured against the worst pixel each blend can produce:
+//
+//   light half, multiply 14% -> worst background #dbdbdb
+//     --text-primary   12.56  ok
+//     --text-secondary  4.79  ok, and the reason 0.14 is a ceiling
+//     --text-accent     3.65  FAILS — which is why the eyebrow and the link
+//                              use --text-accent-on-texture (orange-800)
+//   dark half, screen 20% -> worst background #525150
+//     --text-primary    7.52  ok
+//     --text-secondary  5.31  ok
+//     --text-accent     4.25  FAILS — same substitution, orange-300
+//
+// The zoom deliberately does not raise these opacities. Doing so was the first
+// instinct and it would have deepened a failure that was already there.
 
 .split__body {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  max-inline-size: 26ch;
-}
-
-.split__panel--end .split__body {
-  margin-inline-start: auto;
+  max-inline-size: 34ch;
 }
 
 .split__title {
@@ -74,14 +120,15 @@
   text-wrap: balance;
   // t-h1's leading and tracking are optically right for a heading set on one
   // line. Stacked over two in a narrow column they read as crushed, so both
-  // open up here. The scale still governs the size; only the compensation that
-  // depends on line count is adjusted.
-  line-height: 1.16;
-  letter-spacing: -0.015em;
+  // open up here, and the title is allowed to run wider than the paragraph —
+  // nothing says they must share a measure.
+  max-inline-size: 20ch;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .split__eyebrow {
-  color: var(--text-accent);
+  color: var(--text-accent-on-texture);
   margin-block-end: var(--space-1);
 }
 
@@ -96,9 +143,9 @@
   gap: var(--space-2);
   align-self: flex-start;
   min-block-size: 2.75rem;
-  color: var(--text-accent);
-  text-decoration: none;
   margin-block-start: var(--space-2);
+  color: var(--text-accent-on-texture);
+  text-decoration: none;
 }
 
 // The whole half is the target. It is identified by its content, not by a
@@ -113,20 +160,22 @@
   transition: translate var(--motion-state) var(--ease-state);
 }
 
-// Nothing here is illustrated, so the hover has to come from the surface
-// itself: a half-step of lift on the accent wash, and the arrow leading.
 @media (hover: hover) and (pointer: fine) {
-  .split__panel:hover {
-    background: var(--accent-wash);
+  // The entrance overrides the exit's duration and curve. Near-linear over five
+  // seconds: a decelerating curve spends most of its distance in the first
+  // second, which is what made the previous attempt read as fast-then-stalled
+  // rather than slow.
+  .split__panel:hover .split__media {
+    scale: 1.09;
+    transition: scale var(--motion-zoom-in) var(--ease-zoom-in);
   }
 
+  // The zoom does not travel alone. The arrow leads on the state duration, so
+  // the half answers immediately while the image keeps moving underneath — the
+  // acknowledgement is instant, the atmosphere is slow.
   .split__panel:hover .split__arrow {
-    translate: var(--space-1) 0;
+    translate: var(--space-2) 0;
   }
-}
-
-.split__panel {
-  transition: background-color var(--motion-state) var(--ease-state);
 }
 
 .split__link:focus-visible {
@@ -138,45 +187,48 @@
   outline-offset: -3px;
 }
 
-// Below the fold-width the diagonal runs the other way: a vertical split on a
-// 360px screen leaves two columns too narrow to set a heading in.
-@media (max-width: 47.999rem) {
+// From here the divide stands up and the halves sit side by side.
+@media (min-width: 48rem) {
+  .split__panel {
+    align-content: center;
+    min-block-size: 24rem;
+    padding-block: var(--space-6);
+  }
+
   .split__panel--start {
     clip-path: polygon(
       0 0,
-      100% 0,
-      100% calc(var(--split-top) - var(--split-lean)),
-      0 calc(var(--split-top) + var(--split-lean))
+      calc(var(--split-top) + var(--split-lean)) 0,
+      calc(var(--split-top) - var(--split-lean)) 100%,
+      0 100%
     );
-    padding-inline: var(--page-inline);
-    padding-block: var(--space-6) calc(var(--space-6) + var(--split-lean) * 2);
-    align-content: start;
+    // The content stays clear of the diagonal: at the bottom the edge has moved
+    // inward by twice the lean, so the inline end has to give that back.
+    padding-inline: var(--page-inline) calc(var(--page-inline) + var(--split-lean) * 2);
   }
 
   .split__panel--end {
     clip-path: polygon(
-      0 calc(var(--split-top) + var(--split-lean)),
-      100% calc(var(--split-top) - var(--split-lean)),
+      calc(var(--split-top) + var(--split-lean)) 0,
+      100% 0,
       100% 100%,
-      0 100%
+      calc(var(--split-top) - var(--split-lean)) 100%
     );
-    padding-inline: var(--page-inline);
-    padding-block: calc(var(--space-6) + var(--split-lean) * 2) var(--space-6);
-    align-content: end;
-  }
-
-  .split__panel {
-    min-block-size: 20rem;
+    padding-inline: calc(var(--page-inline) + var(--split-lean) * 2) var(--page-inline);
   }
 
   .split__panel--end .split__body {
-    margin-inline-start: 0;
+    margin-inline-start: auto;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .split__arrow,
-  .split__panel {
+  .split__media,
+  .split__arrow {
     transition: none;
+  }
+
+  .split__panel:hover .split__media {
+    scale: 1;
   }
 }

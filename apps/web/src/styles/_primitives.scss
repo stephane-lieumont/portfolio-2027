@@ -105,6 +105,13 @@
   --motion-menu-items: 300ms;
   --motion-menu-lead: 350ms;
   --motion-menu-edge: 900ms; // 2022: 0.2s bulge + 0.7s elastic return
+
+  // The split's hover zoom. The entrance is long and near-linear so the motion
+  // is continuous rather than front-loaded; the exit is short because the
+  // cursor always leaves mid-travel and a long return reads as a drag.
+  --motion-zoom-in: 5000ms;
+  --motion-zoom-out: 320ms;
+  --ease-zoom-in: cubic-bezier(0.4, 0.05, 0.6, 0.95);
   --ease-menu: cubic-bezier(0.77, 0, 0.175, 1); // ~ Power3.easeInOut
   --stagger-list: 60ms;
   --stagger-grid: 40ms;
@@ -131,7 +138,7 @@
   // at the same fraction, so the divide reads as continuing the menu's own
   // left edge rather than crossing it at random.
   --split-top: 46%;
-  --split-lean: 4%;
+  --split-lean: 3%;
 }
 
 @media (min-width: 48rem) {
