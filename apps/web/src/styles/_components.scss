@@ -105,9 +105,9 @@
 // A link drops its underline only when it is alone in a navigation container,
 // never in a flow of text.
 // Discreet at rest: the navigation is a tool, not a headline. Secondary ink and
-// small type keep it from competing with the page, and it steps up to primary
-// on hover so it never asks to be read twice.
+// small type keep it from competing with the page.
 .nav-link {
+  position: relative;
   display: inline-flex;
   align-items: center;
   min-block-size: 2.75rem;
@@ -118,10 +118,37 @@
   transition: color var(--motion-state) var(--ease-state);
 }
 
+// A rule that grows from the leading edge. The ink alone cannot carry the hover
+// everywhere: over the home page's dark half the resting ink is already primary
+// for legibility, so a colour step has nowhere to go — and stepping *down* to
+// the accent would drop contrast, which §3.4 forbids. The rule works in both
+// cases, and it is the cue a navigation link is expected to have.
+.nav-link::after {
+  content: '';
+  position: absolute;
+  inset-inline: var(--space-2);
+  inset-block-end: 0.65rem;
+  block-size: 2px;
+  background: currentcolor;
+  scale: 0 1;
+  transform-origin: left;
+  transition: scale var(--motion-state) var(--ease-state);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .nav-link:hover {
     color: var(--text-primary);
   }
+
+  .nav-link:hover::after {
+    scale: 1 1;
+  }
+}
+
+// The current page already carries a rule of its own; a second one on hover
+// would just thicken it.
+.nav-link[aria-current='page']::after {
+  content: none;
 }
 
 // State is never carried by colour alone: the weight moves with the rule.

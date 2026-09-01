@@ -47,6 +47,20 @@
   color-scheme: dark;
 }
 
+// Over the split the links sit on an image, not on a flat surface. Secondary
+// ink clears AA there on the worst pixel (5.31) but reads faint at small size
+// against picture detail — discreet is a size and a weight, not a low contrast.
+// Primary ink keeps the restraint and takes the worst case to 7.52.
+.site-header--overlay:not(.site-header--settled) .nav-link {
+  color: var(--text-primary);
+}
+
+// The active item keeps carrying the accent, but the accent alone measures 4.25
+// over the texture. On the overlay it steps to the ink that survives one.
+.site-header--overlay:not(.site-header--settled) .nav-link[aria-current='page'] {
+  color: var(--text-accent-on-texture);
+}
+
 .scroll-sentinel {
   block-size: 1px;
   margin-block-end: -1px;
