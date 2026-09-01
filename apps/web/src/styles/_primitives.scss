@@ -141,13 +141,14 @@
   // and on the same curves as the zoom, so the two are one gesture rather than
   // an instant answer sitting beside a five-second one.
   //
-  // The release is tied to the zoom's rather than tuned on its own. Two legs of
-  // one movement left together and landed 2.1s apart — scale still travelling
-  // while the light had already flipped back. What read as a brutal zoom-out
-  // was that: the lighting snapping while the image drifted. They now release
-  // as one, and retuning the zoom carries the light with it.
+  // The release is deliberately much shorter than the zoom's. Tying the two
+  // together was an earlier, wrong answer to "the zoom-out is brutal": the
+  // actual cause was a shorthand in home.scss stripping the transition off
+  // `scale` entirely, so it snapped in one frame. With that fixed the light can
+  // go back to being the fast half of the pair — it is the acknowledgement, the
+  // zoom is the atmosphere, and they are not meant to move at the same speed.
   --motion-recede-in: 900ms;
-  --motion-recede-out: var(--motion-zoom-out);
+  --motion-recede-out: 700ms;
 
   // The home page's entrance. Long enough to read as a structure assembling
   // rather than a panel appearing, short enough that nobody waits for it — it
@@ -155,7 +156,8 @@
   // The home entrance, phase by phase. Structure, then left words, then right
   // words, then the header. Faster than the first attempt at 1.2s, which read
   // as slow — an entrance is a way in, not a performance.
-  --motion-entrance: 520ms; // the wedge travelling, on its own
+  --motion-entrance: 520ms; // the wedge travelling in
+  --motion-entrance-lean: 900ms; // the edge tipping square to diagonal, outlasting it
   --motion-entrance-media: 1200ms; // the two textures, once the wedge has landed
   --motion-entrance-body: 300ms; // one line of one half
   --motion-entrance-line: 80ms; // between two lines of the same half
@@ -186,7 +188,13 @@
   // at the same fraction, so the divide reads as continuing the menu's own
   // left edge rather than crossing it at random.
   --split-top: 46%;
-  --split-lean: 3%;
+  // Two values on purpose. --split-lean-rest is the geometry; --split-lean is
+  // what the clip-paths read, registered in _home-entrance.scss so the entrance
+  // can interpolate it from square to diagonal. Only clip-path may use the
+  // second one — padding on an animated value would relay out the page every
+  // frame instead of re-cutting two shapes.
+  --split-lean: var(--split-lean-rest);
+  --split-lean-rest: 3%;
   // The width a half actually offers, in viewport units. Percentages resolve
   // against the element's own containing block, so the two halves — whose
   // content boxes differ because their paddings differ — computed different

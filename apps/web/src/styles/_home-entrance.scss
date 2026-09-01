@@ -30,9 +30,48 @@
 // without the cost.
 // ---------------------------------------------------------------------------
 
-// Phase 1 — the structure, as flat colour.
+// `inherits: false` keeps the interpolation off every element in the document:
+// registered and inheriting, animating this on <html> would invalidate the
+// computed style of the whole page on every frame. Scoped to the panels, one
+// frame re-cuts two clip-paths.
+@property --split-lean {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 3%;
+}
+
+// Phase 1 — the structure, as flat colour. The wedge travels in from the right
+// while the edge tips from square to diagonal, one movement rather than a slide
+// followed by a tilt.
+//
+// The lean is animated on the token both clip-paths are cut from, so a single
+// interpolation re-cuts the light half and the dark half in step — and the
+// mobile and desktop geometries alike. Two hand-written polygon keyframe sets
+// would have to be kept in sync by hand.
+//
+// It outlasts the sweep rather than ending with it. Three percent is a small
+// angle, and spent entirely underneath a panel that is itself still travelling
+// it does not register; the edge has to keep tipping after the wedge has landed
+// for the movement to be seen at all.
+:root[data-ready] .split__panel {
+  animation: split-lean-in var(--motion-entrance-lean) var(--ease-signature) both;
+}
+
+// One element, one `animation` property: the wedge's sweep has to be declared
+// alongside its lean or the rule above would replace it.
 :root[data-ready] .split__panel--end {
-  animation: split-sweep var(--motion-entrance) var(--ease-signature) both;
+  animation:
+    split-sweep var(--motion-entrance) var(--ease-signature) both,
+    split-lean-in var(--motion-entrance-lean) var(--ease-signature) both;
+}
+
+@keyframes split-lean-in {
+  from {
+    --split-lean: 0%;
+  }
+  to {
+    --split-lean: 3%;
+  }
 }
 
 // Phase 2 — both textures, once the diagonal has something behind it.

@@ -270,9 +270,9 @@
         // to it from another section re-creates the component, and a rule still
         // matching would replay the whole assembly every time — a tic.
         //
-        // 2200ms covers the longest chain — 660 lead, a 540ms first column,
-        // then the second wave's links stepping to 1520 and finishing at 1820 —
-        // with margin, and nothing depends on the attribute afterwards.
+        // 2200ms covers the longest chain — the textures, which start once the
+        // wedge has landed at 520 and surface slowly until 1720. The words are
+        // done just after, and nothing depends on the attribute afterwards.
         var ready = function () {
           var root = document.documentElement;
           root.setAttribute('data-ready', '');
