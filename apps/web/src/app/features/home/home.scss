@@ -8,7 +8,10 @@
 :host {
   display: flex;
   flex-direction: column;
-  min-block-size: 100dvh;
+  // Two viewports on a phone: each half owns a screen and the visitor scrolls
+  // from one to the other. Fitting both into one screen made each of them a
+  // strip, and a strip does not read as a choice — it reads as a list.
+  min-block-size: 200dvh;
   margin-block-start: calc(-1 * var(--header-height));
 }
 
@@ -47,8 +50,10 @@
     100% calc(var(--split-top) - var(--split-lean)),
     0 calc(var(--split-top) + var(--split-lean))
   );
-  padding-block: calc(var(--header-height) + var(--space-5))
-    calc(var(--space-5) + var(--split-lean) * 2);
+  // Content sits a fifth of the way down its own screen rather than hard
+  // against the top, so it is read as placed rather than as pushed up by the
+  // header.
+  padding-block: calc(var(--header-height) + 18dvh) calc(var(--space-5) + var(--split-lean) * 2);
   align-content: start;
 }
 
@@ -59,7 +64,7 @@
     100% 100%,
     0 100%
   );
-  padding-block: calc(var(--space-5) + var(--split-lean) * 2) var(--space-5);
+  padding-block: calc(var(--space-5) + var(--split-lean) * 2) 30dvh;
   align-content: end;
 }
 
@@ -200,6 +205,12 @@
 
 // From here the divide stands up and the halves sit side by side.
 @media (min-width: 48rem) {
+  // Side by side, both halves visible at once: on a wide screen the choice is
+  // presented rather than walked through.
+  :host {
+    min-block-size: 100dvh;
+  }
+
   .split__panel {
     align-content: center;
     min-block-size: 24rem;
