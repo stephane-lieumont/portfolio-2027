@@ -228,7 +228,7 @@
   // rather than slow. It is atmosphere, and atmosphere cannot also be
   // acknowledgement — at 180ms this zoom has covered 0.5% of its distance.
   .split__panel:hover .split__media {
-    scale: 1.09;
+    scale: var(--zoom-media);
     transition: scale var(--motion-zoom-in) var(--ease-zoom-in);
   }
 
@@ -333,15 +333,5 @@
     // margin instead left a gap between the diagonal and the first word.
     padding-inline: calc(var(--split-top) + var(--split-lean) + var(--page-inline))
       var(--page-inline);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  // Travel goes, feedback stays (spec 07 §11.3). The zoom is travel and is not
-  // painted at all; the recession is a state change with no vector, so it is
-  // kept — it is the only thing left telling a visitor which half is live, and
-  // --motion-nudge has already taken the arrow's 8px to zero.
-  .split__panel:hover .split__media {
-    scale: 1;
   }
 }

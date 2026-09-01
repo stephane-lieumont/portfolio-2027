@@ -11,8 +11,7 @@
 // deliberately not applied.
 
 :root[data-menu='open'] .shell {
-  // 0.9, as on the 2022 site.
-  scale: 0.9;
+  scale: var(--shell-scale);
   transition-duration: var(--motion-menu-panel);
 }
 
@@ -58,13 +57,14 @@
   transform: translateY(-7px) rotate(-45deg);
 }
 
+// The only accommodation tokens cannot express: the cross is built from a
+// transform, so zeroing the distance primitives does not reach it. Overriding
+// the transition alone would leave the rotation in force and the bars would
+// pivot anyway, in one step. The pastille fill and the middle bar's fade carry
+// the open state instead, and `aria-expanded` announces it either way.
 @media (prefers-reduced-motion: reduce) {
-  :root[data-menu='open'] .shell {
-    scale: 1;
-  }
-
-  :root[data-menu='open'] .offcanvas__item {
-    transition-delay: 0ms;
+  :root[data-menu='open'] .burger__bar {
+    transform: none;
   }
 }
 

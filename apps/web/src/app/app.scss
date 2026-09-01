@@ -242,9 +242,3 @@
     display: none;
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .offcanvas__item {
-    translate: none;
-  }
-}
