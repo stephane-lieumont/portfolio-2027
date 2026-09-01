@@ -94,6 +94,11 @@
   --motion-slide: 4rem; // menu item sweep: 320px was the 2022 value and it overflowed
   --motion-lift: 2px;
   --motion-press: 1px;
+  // Travel for an affordance that advances in place — the home split's link
+  // arrow. A motion token rather than --space-2 so the reduced variant can take
+  // it to zero; a literal in a component rule escapes the preference entirely
+  // (spec 07 §10.2, §11.1).
+  --motion-nudge: 0.5rem;
   --zoom-icon: 1.08;
 
   --stagger-menu: 50ms;
@@ -116,6 +121,14 @@
   // accelerates, which is right for something leaving the screen and wrong for
   // something returning to rest: it held still then snapped at the end.
   --ease-zoom-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  // The other half receding. Atmosphere, not acknowledgement: at --motion-state
+  // half the screen changed value in 180ms and read as a switch being thrown.
+  // Long enough to be a fade, short enough to still belong to the pointer —
+  // and on the same curves as the zoom, so the two are one gesture rather than
+  // an instant answer sitting beside a five-second one.
+  --motion-recede-in: 900ms;
+  --motion-recede-out: 500ms;
   --ease-menu: cubic-bezier(0.77, 0, 0.175, 1); // ~ Power3.easeInOut
   --stagger-list: 60ms;
   --stagger-grid: 40ms;
@@ -160,5 +173,13 @@
     --page-inline: var(--space-5);
     // The divide stands up, so a half is only as wide as its side of it.
     --split-usable: 43vw;
+  }
+}
+
+// Reduced motion removes travel, not feedback (spec 07 §11.3). Distances go to
+// zero here so no component rule has to know about the preference.
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-nudge: 0;
   }
 }

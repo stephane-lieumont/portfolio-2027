@@ -39,6 +39,16 @@
   color: var(--text-primary);
   isolation: isolate;
   overflow: hidden;
+
+  // Both are ceilings, not tastes, and both are the *worst pixel* the blend can
+  // produce — not the average surface. Measured against 4.5:1:
+  //   multiply on #ffffff : --text-secondary crosses 4.5 at 0.1664
+  //   screen on #252422   : --text-accent-on-texture crosses 4.5 at 0.2321
+  // The quiet value is the same texture stepped back. It only ever moves the
+  // worst pixel *toward* the clean surface, so every ratio rises with it — see
+  // the hover block for the numbers.
+  --panel-texture: 0.14;
+  --panel-texture-quiet: 0.05;
 }
 
 // Mobile-first: the divide runs horizontally. Two columns on a 360px screen are
@@ -66,15 +76,39 @@
   );
   padding-block: calc(var(--space-5) + var(--split-lean) * 2) 30dvh;
   align-content: end;
+
+  --panel-texture: 0.2;
+  --panel-texture-quiet: 0.07;
 }
 
-.split__media {
+// The compound selector is load-bearing. `img[width][height]` in _base.scss
+// resolves to (0,2,1) and outranked a bare `.split__media` even once Angular
+// scoped it to (0,2,0), so `block-size` here never applied at all: the image
+// laid out at its own aspect ratio, pinned to the panel's top edge. Measured
+// at 1440x900 that left 90px of flat colour below the dark half's render, and
+// at 375x812 a 148px strip floating across the brand.
+.split__panel .split__media {
   position: absolute;
-  inset: 0;
+  inset-inline: 0;
   inline-size: 100%;
-  block-size: 100%;
+  // Mobile-first the panel spans the whole 200dvh and is only *clipped* to its
+  // half, so filling it would fit a 2.53:1 screenshot into a 0.23:1 box —
+  // measured, 9% of the frame survives and the source is upscaled 3.7x in
+  // device pixels. The image takes a band at the outer edge of its own half
+  // instead, at an aspect the two sources can actually fill: at 375x812 the box
+  // is 375x406, and 36% (dev) and 52% (3D) of each frame survives, both still
+  // downscaled rather than stretched.
+  block-size: 50dvh;
+  inset-block: 0 auto;
   object-fit: cover;
   // The subject of both images sits above centre; a centred crop cuts it.
+  //
+  // Only X does any work below the ultra-wide desktop case. Both sources are
+  // wider than every box this panel produces up to 1600px, so `cover` scales on
+  // height and the vertical term is inert — the crossovers at 900px tall are
+  // 1600px wide for split-3d (1.78:1) and 2277px for split-dev (2.53:1). Past
+  // those the panel is wider than its image and 38% starts to bite, which is
+  // the case it was chosen for. In portrait it is simply not consulted.
   object-position: center 38%;
   z-index: -2;
   // The images are backgrounds, not photographs on display. Stripped of their
@@ -83,40 +117,50 @@
   // toward one of the two trades the way a full-colour render did.
   filter: grayscale(1) contrast(1.05);
   mix-blend-mode: multiply;
-  // 0.14 is a ceiling, not a taste: at 0.16 the secondary ink drops below 4.5
-  // against the worst pixel the texture can produce. Measured, see §Contrast.
-  opacity: 0.14;
+  opacity: var(--panel-texture);
+  // A band has a far edge, and at 14% a hard horizontal cut across the half
+  // reads as a seam rather than as texture. The mask is the one gradient on
+  // this page that costs nothing: it is static, it is rasterised once, and it
+  // lives in the opacity domain, so it can only ever *remove* texture — the
+  // worst pixel stays the one measured above and every ratio holds.
+  mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
   // The exit, and only the exit, lives here. The entrance is declared on the
   // hover rule so the two can differ: the cursor always leaves mid-travel, so
   // returning over the full 5s reads as a drag, while snapping back reads as a
   // recoil. 1100ms on a curve that decelerates from the first frame — a release
-  // rather than either.
-  transition: scale var(--motion-zoom-out) var(--ease-zoom-out);
+  // rather than either. The recession leaves on the standard state exit.
+  transition:
+    scale var(--motion-zoom-out) var(--ease-zoom-out),
+    opacity var(--motion-recede-out) var(--ease-zoom-out);
 }
 
 // multiply darkens, which is right on a light ground and wrong on a dark one:
-// there it would erase the image entirely. screen lifts instead.
-// 0.20 for the same reason as above: the accent ink fails past 0.23 here.
+// there it would erase the image entirely. screen lifts instead. The band sits
+// at the bottom of this half, so its mask fades the other way.
 .split__panel--end .split__media {
+  inset-block: auto 0;
   mix-blend-mode: screen;
-  opacity: 0.2;
+  mask-image: linear-gradient(to top, #000 0%, #000 55%, transparent 100%);
 }
 
 // No scrim. Blended this low the image is a texture rather than a picture, so
 // the text sits on the panel's own surface — but not on a clean one, and that
-// is the trap. Measured against the worst pixel each blend can produce:
+// is the trap. Measured against the worst pixel each blend can produce, with
+// the WCAG 2.x relative-luminance formula in sRGB, which is the space the blend
+// composites in:
 //
 //   light half, multiply 14% -> worst background #dbdbdb
-//     --text-primary   12.56  ok
-//     --text-secondary  4.79  ok, and the reason 0.14 is a ceiling
-//     --text-accent     3.65  FAILS — which is why the eyebrow and the link
-//                              use --text-accent-on-texture (orange-800)
-//   dark half, screen 20% -> worst background #525150
+//     --text-primary   12.60  ok
+//     --text-secondary  4.80  ok, and the reason 0.14 is a ceiling (4.50 @ .1664)
+//     --text-accent     3.66  FAILS — which is why the eyebrow and the link
+//                              use --text-accent-on-texture (orange-800, 5.60)
+//   dark half, screen 20% -> worst background #51504e
 //     --text-primary    7.52  ok
-//     --text-secondary  5.31  ok
-//     --text-accent     4.25  FAILS — same substitution, orange-300
+//     --text-secondary  5.47  ok
+//     --text-accent     4.39  FAILS — same substitution, orange-300 (5.02),
+//                              itself the ceiling here (4.50 @ .2321)
 //
-// The zoom deliberately does not raise these opacities. Doing so was the first
+// The hover deliberately does not raise these opacities. Doing so was the first
 // instinct and it would have deepened a failure that was already there.
 
 .split__body {
@@ -172,25 +216,59 @@
   inset: 0;
 }
 
+// Base rule times the exit, the state rule times the entrance — spec 07 §10.1.
 .split__arrow {
-  transition: translate var(--motion-state) var(--ease-state);
+  transition: translate var(--motion-exit-state) var(--ease-state);
 }
 
 @media (hover: hover) and (pointer: fine) {
   // The entrance overrides the exit's duration and curve. Near-linear over five
   // seconds: a decelerating curve spends most of its distance in the first
   // second, which is what made the previous attempt read as fast-then-stalled
-  // rather than slow.
+  // rather than slow. It is atmosphere, and atmosphere cannot also be
+  // acknowledgement — at 180ms this zoom has covered 0.5% of its distance.
   .split__panel:hover .split__media {
     scale: 1.09;
     transition: scale var(--motion-zoom-in) var(--ease-zoom-in);
   }
 
-  // The zoom does not travel alone. The arrow leads on the state duration, so
-  // the half answers immediately while the image keeps moving underneath — the
-  // acknowledgement is instant, the atmosphere is slow.
+  // So the acknowledgement is the *other* half going quiet.
+  //
+  // Neither half can be made louder. Each already sits at the extreme of its
+  // own value range — the light one is white, the dark one is the darkest
+  // surface the ramp offers — and each ink is measured against the worst pixel
+  // its texture can produce at the ceiling above. Any wash, gradient or lift
+  // moves that pixel the wrong way. Stepping the *unhovered* texture back moves
+  // it toward the clean surface instead, so the receding half gains contrast
+  // while it loses presence:
+  //
+  //   light  0.14 -> 0.05   worst pixel #dbdbdb -> #f2f2f2   every ink +24%
+  //     --text-primary  12.60 -> 15.57   --text-secondary 4.80 -> 5.94
+  //     --text-accent-on-texture 5.60 -> 6.92
+  //   dark   0.20 -> 0.07   worst pixel #51504e -> #343331   every ink +55%
+  //     --text-primary   7.75 -> 12.05   --text-secondary 5.47 -> 8.50
+  //     --text-accent-on-texture 5.02 -> 7.81
+  //
+  // On a binary choice attenuating the other side is also the more legible
+  // gesture, and nothing about the half being *read* moves.
+  //
+  // The timing is atmosphere, not acknowledgement. At --motion-state half the
+  // screen changed value in 180ms and read as a switch being thrown — which is
+  // what "trop brutale" was. It now shares the zoom's curves, so the ground and
+  // the texture behave as one slow gesture instead of an instant answer sitting
+  // beside a five-second one. The arrow keeps the fast response; it is the
+  // control, and a control should answer at once.
+  .split__list:has(.split__panel:hover) .split__panel:not(:hover) .split__media {
+    opacity: var(--panel-texture-quiet);
+    transition: opacity var(--motion-recede-in) var(--ease-zoom-in);
+  }
+
+  // The arrow leads on the state duration, so the half answers at the control
+  // as well as at the ground. --motion-nudge rather than a spacing token so
+  // prefers-reduced-motion can reach it (spec 07 §10.2, §11.1).
   .split__panel:hover .split__arrow {
-    translate: var(--space-2) 0;
+    translate: var(--motion-nudge) 0;
+    transition-duration: var(--motion-state);
   }
 }
 
@@ -217,6 +295,17 @@
     // The header now floats over the top of the panel, so its height is added
     // back as padding — otherwise the first line would sit beneath the menu.
     padding-block: calc(var(--header-height) + var(--space-6)) var(--space-6);
+  }
+
+  // The panel is one viewport tall now, not two, so its own box is already a
+  // landscape frame the sources can fill: at 1440x900 the surviving frame is
+  // 63% (dev) and 90% (3D). The band and its mask were answers to the stacked
+  // geometry and both go.
+  .split__panel .split__media,
+  .split__panel--end .split__media {
+    block-size: 100%;
+    inset-block: 0;
+    mask-image: none;
   }
 
   .split__panel--start {
@@ -248,11 +337,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .split__media,
-  .split__arrow {
-    transition: none;
-  }
-
+  // Travel goes, feedback stays (spec 07 §11.3). The zoom is travel and is not
+  // painted at all; the recession is a state change with no vector, so it is
+  // kept — it is the only thing left telling a visitor which half is live, and
+  // --motion-nudge has already taken the arrow's 8px to zero.
   .split__panel:hover .split__media {
     scale: 1;
   }
