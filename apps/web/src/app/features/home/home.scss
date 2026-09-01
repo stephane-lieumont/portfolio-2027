@@ -1,9 +1,15 @@
 // The split is the whole page. Nothing sits above it competing for the first
 // look: the visitor lands on the choice itself.
+//
+// It runs *under* the header rather than starting below it. That is what makes
+// the transparent header work: the links need the dark half beneath them, and
+// while the split started at the header's lower edge they were white ink on the
+// white page background — transparent, and invisible.
 :host {
   display: flex;
   flex-direction: column;
-  min-block-size: calc(100dvh - var(--header-height));
+  min-block-size: 100dvh;
+  margin-block-start: calc(-1 * var(--header-height));
 }
 
 .split {
@@ -41,7 +47,8 @@
     100% calc(var(--split-top) - var(--split-lean)),
     0 calc(var(--split-top) + var(--split-lean))
   );
-  padding-block: var(--space-5) calc(var(--space-5) + var(--split-lean) * 2);
+  padding-block: calc(var(--header-height) + var(--space-5))
+    calc(var(--space-5) + var(--split-lean) * 2);
   align-content: start;
 }
 
@@ -75,10 +82,11 @@
   // against the worst pixel the texture can produce. Measured, see §Contrast.
   opacity: 0.14;
   // The exit, and only the exit, lives here. The entrance is declared on the
-  // hover rule so the two can have different durations: the cursor always
-  // leaves mid-travel, and returning over 5s reads as a drag rather than a
-  // release. 320ms out against 5000ms in.
-  transition: scale var(--motion-zoom-out) var(--ease-exit);
+  // hover rule so the two can differ: the cursor always leaves mid-travel, so
+  // returning over the full 5s reads as a drag, while snapping back reads as a
+  // recoil. 1100ms on a curve that decelerates from the first frame — a release
+  // rather than either.
+  transition: scale var(--motion-zoom-out) var(--ease-zoom-out);
 }
 
 // multiply darkens, which is right on a light ground and wrong on a dark one:
@@ -110,7 +118,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  max-inline-size: 34ch;
+  // The body fills its own half and no more. Both panels occupy the same grid
+  // cell, so a plain 100% is the full viewport and the two texts land on top of
+  // each other — the width has to come from where the divide actually is, in
+  // viewport units so both halves resolve it identically.
+  max-inline-size: calc(var(--split-usable) - var(--page-inline) * 2);
 }
 
 .split__title {
@@ -122,7 +134,6 @@
   // line. Stacked over two in a narrow column they read as crushed, so both
   // open up here, and the title is allowed to run wider than the paragraph —
   // nothing says they must share a measure.
-  max-inline-size: 20ch;
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
@@ -192,7 +203,9 @@
   .split__panel {
     align-content: center;
     min-block-size: 24rem;
-    padding-block: var(--space-6);
+    // The header now floats over the top of the panel, so its height is added
+    // back as padding — otherwise the first line would sit beneath the menu.
+    padding-block: calc(var(--header-height) + var(--space-6)) var(--space-6);
   }
 
   .split__panel--start {
@@ -214,11 +227,12 @@
       100% 100%,
       calc(var(--split-top) - var(--split-lean)) 100%
     );
-    padding-inline: calc(var(--page-inline) + var(--split-lean) * 2) var(--page-inline);
-  }
-
-  .split__panel--end .split__body {
-    margin-inline-start: auto;
+    // The panel is full width and only clipped, so its padding is measured from
+    // the viewport edge, not from the divide. Starting the text at the divide
+    // plus the page gutter mirrors the left half; pushing it right with an auto
+    // margin instead left a gap between the diagonal and the first word.
+    padding-inline: calc(var(--split-top) + var(--split-lean) + var(--page-inline))
+      var(--page-inline);
   }
 }
 
