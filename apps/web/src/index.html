@@ -265,8 +265,20 @@
       // that plays under the loader has not been seen.
       (function () {
         var boot = document.getElementById('boot');
+        // The stamp is deliberately short-lived. The entrance belongs to
+        // arriving at the site, not to arriving at the home page: coming back
+        // to it from another section re-creates the component, and a rule still
+        // matching would replay the whole assembly every time — a tic.
+        //
+        // 2000ms covers the longest chain — 620 lead + 140 step + 380 chrome +
+        // 300 body = 1440 — with margin, and nothing depends on the attribute
+        // afterwards.
         var ready = function () {
-          document.documentElement.setAttribute('data-ready', '');
+          var root = document.documentElement;
+          root.setAttribute('data-ready', '');
+          setTimeout(function () {
+            root.removeAttribute('data-ready');
+          }, 2000);
         };
         if (!boot) return ready();
 

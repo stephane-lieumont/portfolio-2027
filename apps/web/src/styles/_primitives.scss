@@ -147,8 +147,14 @@
   // The home page's entrance. Long enough to read as a structure assembling
   // rather than a panel appearing, short enough that nobody waits for it — it
   // starts only once the loader has gone, so it is the first thing seen.
-  --motion-entrance: 900ms;
-  --motion-entrance-lead: 320ms;
+  // The home entrance, phase by phase. Structure, then left words, then right
+  // words, then the header. Faster than the first attempt at 1.2s, which read
+  // as slow — an entrance is a way in, not a performance.
+  --motion-entrance: 520ms; // the wedge travelling in with its own texture
+  --motion-entrance-body: 300ms; // one half's words
+  --motion-entrance-lead: 620ms; // before the left half speaks
+  --motion-entrance-step: 140ms; // right half, one step behind left
+  --motion-entrance-chrome: 380ms; // the header, once the page has assembled
   --ease-menu: cubic-bezier(0.77, 0, 0.175, 1); // ~ Power3.easeInOut
   --stagger-list: 60ms;
   --stagger-grid: 40ms;

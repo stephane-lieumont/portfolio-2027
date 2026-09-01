@@ -5,51 +5,81 @@
 // away and it silently never matches. Measured before this move: every one of
 // these animations computed to `animation-name: none`. The menu's recession hit
 // the identical trap; see _menu-state.scss.
-
+//
 // ---------------------------------------------------------------------------
-// The entrance: the structure builds itself.
+// The order, and why it is this order
 //
-// 2022 did this by retracting a panel from 100% to 50% of the width while the
-// other faded in. The geometry is gone — there are no two equal columns any
-// more — but the intention translates: something arrives and, in arriving,
-// reveals that there are two choices rather than one.
+// Structure first, then reading.
 //
-// Here the dark wedge sweeps in from the right along its own diagonal, and the
-// two bodies follow it. `--ease-signature` is the 2022 curve, kept.
+// The wedge arrives carrying its own texture, and nothing else moves with it.
+// The left image waits for it: that half is clipped by a diagonal whose other
+// side is still empty while the wedge is in flight, so fading it up early shows
+// a picture cut against nothing. It comes in once the edge it is cut by has
+// something on the far side of it.
 //
-// Everything is `translate` and `opacity`. The original animated `flex-basis`,
-// which lays out the page on every frame; spec 07 forbids it and this is the
-// equivalent gesture without the cost.
+// Then the left words, then the right.
 //
-// It is keyed on `[data-ready]`, stamped by the loader when it retires. Timing
-// them independently would play the entrance underneath the loader, where
-// nobody would see it. If the stamp never arrives — script blocked, failsafe
-// path — nothing animates and the page is simply there, which is the right way
-// to fail.
+// The two texts are deliberately not simultaneous. Left before right is the
+// order the page is read in, and a stagger of one short step is enough to lead
+// the eye without anyone waiting for it.
+//
+// Everything is `translate` and `opacity`, and every phase carries a fade —
+// nothing appears by simply existing. 2022 animated `flex-basis`, which lays
+// out the page on every frame; spec 07 forbids it and this is the same gesture
+// without the cost.
+//
+// Total 1.3s from the loader leaving, in five phases that each wait for the one
+// before to mean something. Faster than the 1.2s first attempt felt, because
+// nothing overlaps ambiguously — an entrance is a way in, not a performance.
 // ---------------------------------------------------------------------------
 
+// Phase 1 — the structure arrives, carrying its own texture.
 :root[data-ready] .split__panel--end {
   animation: split-sweep var(--motion-entrance) var(--ease-signature) both;
 }
 
+:root[data-ready] .split__panel--end .split__media {
+  animation: split-media-in var(--motion-entrance) var(--ease-signature) both;
+}
+
+// Phase 2 — the left texture, once the diagonal has something behind it.
+:root[data-ready] .split__panel--start .split__media {
+  animation: split-media-in var(--motion-entrance-body) var(--ease-signature) both;
+  animation-delay: var(--motion-entrance);
+}
+
+// Phase 3 — the left half speaks.
 :root[data-ready] .split__panel--start .split__body {
-  animation: split-settle var(--motion-enter) var(--ease-signature) both;
+  animation: split-settle var(--motion-entrance-body) var(--ease-signature) both;
   animation-delay: var(--motion-entrance-lead);
 }
 
+// Phase 4 — then the right.
 :root[data-ready] .split__panel--end .split__body {
-  animation: split-settle var(--motion-enter) var(--ease-signature) both;
-  // One step behind the light half, so the eye reads left then right rather
-  // than both at once — the order the page wants to be read in.
-  animation-delay: calc(var(--motion-entrance-lead) + var(--stagger-list));
+  animation: split-settle var(--motion-entrance-body) var(--ease-signature) both;
+  animation-delay: calc(var(--motion-entrance-lead) + var(--motion-entrance-step));
 }
 
 @keyframes split-sweep {
   from {
     translate: 100% 0;
+    opacity: 0;
   }
   to {
     translate: 0 0;
+    opacity: 1;
+  }
+}
+
+// Ends on the panel's own texture level rather than on 1: the media is a
+// background at 14% or 20%, and fading it to full would flash the image at
+// four times its resting weight before settling back.
+@keyframes split-media-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: var(--panel-texture);
   }
 }
 
@@ -66,10 +96,10 @@
 
 // The wedge still arrives — it is the structure, and losing it would leave the
 // page looking broken rather than calm — but it arrives without travel, and
-// the bodies simply appear.
+// everything else simply fades.
 @media (prefers-reduced-motion: reduce) {
   :root[data-ready] .split__panel--end {
-    animation: none;
+    animation-name: split-fade;
   }
 
   :root[data-ready] .split__panel--start .split__body,
@@ -84,5 +114,31 @@
     to {
       opacity: 1;
     }
+  }
+}
+
+// Phase 5 — the header last.
+//
+// It is chrome: it says where you can go, which only matters once you have seen
+// where you are. Arriving with the structure it would compete with it, and
+// arriving first it would announce a page that is not there yet.
+//
+// Scoped to the home page. Everywhere else the header is simply present, and a
+// route change that faded its own navigation back in each time would be a tic.
+:root[data-ready] .site-header--overlay .brand,
+:root[data-ready] .site-header--overlay .nav-desktop,
+:root[data-ready] .site-header--overlay ~ .burger {
+  animation: split-fade-in var(--motion-entrance-body) var(--ease-signature) both;
+  animation-delay: calc(
+    var(--motion-entrance-lead) + var(--motion-entrance-step) + var(--motion-entrance-chrome)
+  );
+}
+
+@keyframes split-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
