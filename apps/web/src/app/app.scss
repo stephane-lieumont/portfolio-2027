@@ -165,10 +165,12 @@
 
 .offcanvas__item {
   opacity: 0;
-  // Each item travels its own full width while the panel carries it the same
-  // distance. The travel is doubled, and that redundancy is exactly what makes
-  // the menu read as a sweep rather than a fade — kept on Stéphane's call.
-  translate: 100% 0;
+  // Sweep and fade together. The 2022 items slid their own full width — 320px
+  // — while the panel carried them the same distance again; that doubled
+  // travel overflowed the panel early in the gesture. --motion-slide keeps the
+  // direction and the sweep without the escape, and the opacity is what makes
+  // the arrival read as one wave.
+  translate: var(--motion-slide) 0;
   transition:
     opacity var(--motion-menu-items) var(--ease-menu),
     translate var(--motion-menu-items) var(--ease-menu);

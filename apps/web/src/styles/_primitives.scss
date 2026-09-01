@@ -91,20 +91,19 @@
 
   --motion-rise: 1rem;
   --motion-rise-tight: 0.5rem;
-  --motion-slide: 4rem; // provisional — 24 / 64 / 320px to be compared in browser
+  --motion-slide: 4rem; // menu item sweep: 320px was the 2022 value and it overflowed
   --motion-lift: 2px;
   --motion-press: 1px;
   --zoom-icon: 1.08;
 
-  --stagger-menu: 100ms; // the 2022 off-canvas cadence, kept deliberately
+  --stagger-menu: 50ms;
   --motion-menu-panel: 900ms; // 2022: 0.9s in, Power3.easeInOut
   --motion-menu-dismiss: 700ms; // 2022: 0.7s out
-  // 2022 ran items at 500ms from t=0, so the first landed at 500ms while the
-  // panel was still arriving at 900ms. Lead 180 + 320 duration + 4 x 100ms
-  // stagger puts the last item down at exactly 900ms, with none of them
-  // arriving before the surface that carries them.
-  --motion-menu-items: 320ms;
-  --motion-menu-lead: 180ms;
+  // The lines only fade. A short stagger reads as one wave rather than five
+  // arrivals; 50ms x 4 plus the 300ms fade lands the last one at 850ms, just
+  // inside the panel's own 900ms travel.
+  --motion-menu-items: 300ms;
+  --motion-menu-lead: 350ms;
   --motion-menu-edge: 900ms; // 2022: 0.2s bulge + 0.7s elastic return
   --ease-menu: cubic-bezier(0.77, 0, 0.175, 1); // ~ Power3.easeInOut
   --stagger-list: 60ms;
