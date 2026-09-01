@@ -143,16 +143,22 @@
   // left edge rather than crossing it at random.
   --split-top: 46%;
   --split-lean: 3%;
-  // The same two numbers in viewport units. Percentages resolve against the
-  // element's own containing block, so the two halves — whose content boxes
-  // differ because their paddings differ — computed different widths from the
-  // same expression: 520px on the left, 241px on the right. Anything sizing
-  // against the divide has to use these. Move them together with the two above.
-  --split-usable: 43vw;
+  // The width a half actually offers, in viewport units. Percentages resolve
+  // against the element's own containing block, so the two halves — whose
+  // content boxes differ because their paddings differ — computed different
+  // widths from the same expression: 520px on the left, 241px on the right.
+  // Anything sizing against the divide uses this instead.
+  //
+  // Mobile-first: while the divide runs horizontally each half spans the full
+  // width, so there is nothing to subtract. Move this with --split-top and
+  // --split-lean, they describe one geometry.
+  --split-usable: 100vw;
 }
 
 @media (min-width: 48rem) {
   :root {
     --page-inline: var(--space-5);
+    // The divide stands up, so a half is only as wide as its side of it.
+    --split-usable: 43vw;
   }
 }

@@ -145,17 +145,20 @@
   }
 }
 
-// The current page already carries a rule of its own; a second one on hover
-// would just thicken it.
-.nav-link[aria-current='page']::after {
-  content: none;
-}
+// Hovering the current page changes nothing: its rule is already open, and
+// thickening or recolouring it would say the page had somewhere to go.
 
 // State is never carried by colour alone: the weight moves with the rule.
+// The rule itself is the same ::after the hover uses, held open — two
+// mechanisms at two heights is how they came out misaligned.
 .nav-link[aria-current='page'] {
   color: var(--text-accent);
   font-weight: 600;
-  box-shadow: inset 0 -2px 0 0 var(--accent-rim);
+}
+
+.nav-link[aria-current='page']::after {
+  background: var(--accent-rim);
+  scale: 1 1;
 }
 
 .field {
