@@ -106,6 +106,8 @@ Images are no longer squeezed into a 250px box: the container adopts the media's
 
 **Contents.** Form (name, email, message), location, CV link, direct email and LinkedIn links — not everyone wants to fill in a form.
 
+**No phone number.** Settled by Stéphane on 2026-08-31. Contact goes through the form, email or LinkedIn, and nowhere does the site invite a call. This also applies to the structured data: no `telephone` property in the JSON-LD, and no `tel:` link anywhere.
+
 **Form — requirements.**
 
 - A `<label>` associated with every field. Floating labels do not remove the need for a real `<label>`.
