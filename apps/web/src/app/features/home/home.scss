@@ -1,104 +1,182 @@
-.specimen {
+// The split is the whole page. Nothing sits above it competing for the first
+// look: the visitor lands on the choice itself.
+:host {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  padding-block: var(--space-6) var(--space-8);
+  min-block-size: calc(100dvh - var(--header-height));
 }
 
-.specimen__head {
+.split {
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
 }
 
-.specimen__eyebrow {
-  color: var(--text-secondary);
-}
-
-.specimen__section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.specimen__scale {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  margin: 0;
-  padding: 0;
-}
-
-.specimen__row {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding-block-end: var(--space-3);
-  border-block-end: 1px solid var(--border-subtle);
-}
-
-.specimen__token {
-  color: var(--text-secondary);
-}
-
-.specimen__note {
-  color: var(--text-secondary);
-}
-
-.specimen__row-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.specimen__swatches {
+.split__list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-  gap: var(--space-3);
+  flex: 1;
   margin: 0;
   padding: 0;
 }
 
-.specimen__swatch {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-block-size: 6rem;
-  padding: var(--space-3);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+// Both halves occupy the same cell and each clips itself, so the diagonal is a
+// single shared edge rather than two shapes hoping to meet.
+.split__panel {
+  grid-area: 1 / 1;
+  display: grid;
+  align-content: center;
+  min-block-size: 24rem;
+  padding-block: var(--space-6);
+  background: var(--surface-page);
   color: var(--text-primary);
+  position: relative;
+  isolation: isolate;
 }
 
-.specimen__form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: var(--space-4);
-  max-inline-size: var(--measure);
+.split__panel--start {
+  clip-path: polygon(
+    0 0,
+    calc(var(--split-top) + var(--split-lean)) 0,
+    calc(var(--split-top) - var(--split-lean)) 100%,
+    0 100%
+  );
+  // The content stays clear of the diagonal: at the bottom the edge has moved
+  // inward by 2 x $lean, so the inline end has to give that back.
+  padding-inline: var(--page-inline) calc(var(--page-inline) + var(--split-lean) * 2);
+  justify-items: start;
 }
 
-.specimen__section--dark {
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
+.split__panel--end {
+  clip-path: polygon(
+    calc(var(--split-top) + var(--split-lean)) 0,
+    100% 0,
+    100% 100%,
+    calc(var(--split-top) - var(--split-lean)) 100%
+  );
+  padding-inline: calc(var(--page-inline) + var(--split-lean) * 2) var(--page-inline);
+  justify-items: start;
 }
 
-.specimen__card {
+.split__body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-4);
-  max-inline-size: 20rem;
+  gap: var(--space-3);
+  max-inline-size: 26ch;
 }
 
-@media (min-width: 48rem) {
-  .specimen__row {
-    flex-direction: row;
-    align-items: baseline;
-    gap: var(--space-4);
+.split__panel--end .split__body {
+  margin-inline-start: auto;
+}
+
+.split__title {
+  // The columns are narrow by construction — the diagonal takes width from both
+  // sides — so the heading balances its own lines rather than leaving one word
+  // stranded.
+  text-wrap: balance;
+  // t-h1's leading and tracking are optically right for a heading set on one
+  // line. Stacked over two in a narrow column they read as crushed, so both
+  // open up here. The scale still governs the size; only the compensation that
+  // depends on line count is adjusted.
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+}
+
+.split__eyebrow {
+  color: var(--text-accent);
+  margin-block-end: var(--space-1);
+}
+
+.split__pitch {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.split__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  min-block-size: 2.75rem;
+  color: var(--text-accent);
+  text-decoration: none;
+  margin-block-start: var(--space-2);
+}
+
+// The whole half is the target. It is identified by its content, not by a
+// border, and this is the single control carrying the accessible name.
+.split__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.split__arrow {
+  transition: translate var(--motion-state) var(--ease-state);
+}
+
+// Nothing here is illustrated, so the hover has to come from the surface
+// itself: a half-step of lift on the accent wash, and the arrow leading.
+@media (hover: hover) and (pointer: fine) {
+  .split__panel:hover {
+    background: var(--accent-wash);
   }
 
-  .specimen__token {
-    flex: 0 0 7rem;
+  .split__panel:hover .split__arrow {
+    translate: var(--space-1) 0;
+  }
+}
+
+.split__panel {
+  transition: background-color var(--motion-state) var(--ease-state);
+}
+
+.split__link:focus-visible {
+  outline: none;
+}
+
+.split__panel:has(.split__link:focus-visible) {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: -3px;
+}
+
+// Below the fold-width the diagonal runs the other way: a vertical split on a
+// 360px screen leaves two columns too narrow to set a heading in.
+@media (max-width: 47.999rem) {
+  .split__panel--start {
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(var(--split-top) - var(--split-lean)),
+      0 calc(var(--split-top) + var(--split-lean))
+    );
+    padding-inline: var(--page-inline);
+    padding-block: var(--space-6) calc(var(--space-6) + var(--split-lean) * 2);
+    align-content: start;
+  }
+
+  .split__panel--end {
+    clip-path: polygon(
+      0 calc(var(--split-top) + var(--split-lean)),
+      100% calc(var(--split-top) - var(--split-lean)),
+      100% 100%,
+      0 100%
+    );
+    padding-inline: var(--page-inline);
+    padding-block: calc(var(--space-6) + var(--split-lean) * 2) var(--space-6);
+    align-content: end;
+  }
+
+  .split__panel {
+    min-block-size: 20rem;
+  }
+
+  .split__panel--end .split__body {
+    margin-inline-start: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split__arrow,
+  .split__panel {
+    transition: none;
   }
 }

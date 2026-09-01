@@ -11,11 +11,12 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { filter } from 'rxjs';
 
 import { Menu } from './shell/menu';
+import { ScrollSentinel } from './shell/scrolled';
 import { NAV_ITEMS } from './shell/nav-items';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ScrollSentinel],
   // Listening on the host catches keys from the burger and the panel alike,
   // and keeps handlers off elements that are not themselves focusable.
   host: { '(keydown)': 'onKeydown($event)' },
@@ -36,11 +37,16 @@ export class App implements AfterViewInit {
   // route change is silent to a screen reader and drops the keyboard back to
   // the top of the document.
   protected readonly announcement = signal('');
+
+  // The home page is a full-height split and nothing follows it. A footer under
+  // it would either float in empty space or push the split off the fold.
+  protected readonly bare = signal(true);
   protected readonly year = new Date().getFullYear();
 
   constructor() {
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
       this.announcement.set(this.document_title());
+      this.bare.set(this.router.url.split('?')[0] === '/');
       this.main().nativeElement.focus({ preventScroll: true });
     });
 

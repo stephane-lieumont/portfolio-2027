@@ -127,6 +127,11 @@
   --width-wide: 90rem;
   --page-inline: var(--space-4);
   --header-height: 4rem;
+  // Where the home page's diagonal meets the top edge. The navigation starts
+  // at the same fraction, so the divide reads as continuing the menu's own
+  // left edge rather than crossing it at random.
+  --split-top: 46%;
+  --split-lean: 4%;
 }
 
 @media (min-width: 48rem) {

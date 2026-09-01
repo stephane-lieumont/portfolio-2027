@@ -1,58 +1,72 @@
-import { TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import axe from 'axe-core';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Home } from './home';
 
 describe('Home', () => {
+  let fixture: ComponentFixture<Home>;
+
+  const host = (): HTMLElement => fixture.nativeElement as HTMLElement;
+
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [Home] }).compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [Home],
+      providers: [provideZonelessChangeDetection(), provideRouter([])],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Home);
+    fixture.detectChanges();
   });
 
-  it('exposes the type scale and the surfaces it documents', () => {
-    const fixture = TestBed.createComponent(Home);
-    fixture.detectChanges();
-
-    const rows = fixture.nativeElement.querySelectorAll('.specimen__row');
-    const swatches = fixture.nativeElement.querySelectorAll('.specimen__swatch');
-
-    expect(rows.length).toBeGreaterThan(0);
-    expect(swatches.length).toBeGreaterThan(0);
+  it('names the page once, without letting the name compete with the split', () => {
+    // The split is the whole page; a display-sized hook above it was taking the
+    // first look away from the choice the page exists to offer.
+    const headings = host().querySelectorAll('h1');
+    expect(headings).toHaveLength(1);
+    expect(headings[0].textContent).toContain('Stéphane Lieumont');
+    expect(headings[0].classList.contains('visually-hidden')).toBe(true);
   });
 
-  it('keeps the submit button full-strength while busy rather than disabling it', () => {
-    const fixture = TestBed.createComponent(Home);
-    fixture.detectChanges();
+  it('offers both paths as the two halves of one split', () => {
+    const panels = host().querySelectorAll('.split__panel');
+    expect(panels).toHaveLength(2);
 
-    const button: HTMLButtonElement = fixture.nativeElement.querySelectorAll(
-      '.specimen__row-buttons button',
-    )[4];
+    for (const panel of Array.from(panels)) {
+      expect(panel.querySelector('h2')?.textContent?.trim().length).toBeGreaterThan(0);
+      expect(panel.querySelector('a[href]')).not.toBeNull();
+    }
+  });
 
-    expect(button.textContent?.trim()).toBe('Envoyer');
-    expect(button.getAttribute('aria-busy')).toBeNull();
+  it('carries the theme each section will use onto its own half', () => {
+    const themes = Array.from(host().querySelectorAll('.split__panel')).map((p) =>
+      p.getAttribute('data-theme'),
+    );
+    expect(themes).toEqual(['light', 'dark']);
+  });
 
-    button.click();
-    fixture.detectChanges();
+  it('illustrates neither half, so neither outweighs the other', () => {
+    // The 3D renders were pulling the page toward one of the two trades.
+    expect(host().querySelectorAll('.split__panel img')).toHaveLength(0);
+  });
 
-    // aria-busy rather than [disabled]: a disabled fill has no visible boundary,
-    // and the control has to stay focusable to explain itself.
-    expect(button.getAttribute('aria-busy')).toBe('true');
-    expect(button.disabled).toBe(false);
-    expect(button.textContent?.trim()).toBe('Envoi en cours…');
+  it('routes both halves', () => {
+    const paths = Array.from(host().querySelectorAll('a[href]')).map((a) => a.getAttribute('href'));
+    expect(paths).toContain('/developpeur');
+    expect(paths).toContain('/graphisme-3d');
   });
 
   it('has no detectable accessibility violation', async () => {
-    const fixture = TestBed.createComponent(Home);
-    fixture.detectChanges();
-
-    document.body.appendChild(fixture.nativeElement);
-    const results = await axe.run(fixture.nativeElement, {
+    document.body.appendChild(host());
+    const results = await axe.run(host(), {
       resultTypes: ['violations'],
-      // Contrast is computed from the token stylesheet, which is not loaded in
-      // jsdom. It is verified against the measured tables in spec 06 instead.
+      // jsdom loads no stylesheet, so contrast cannot be computed here. Both
+      // halves use the measured token pairs from spec 06 §3.1 and §3.2.
       rules: { 'color-contrast': { enabled: false } },
     });
-    document.body.removeChild(fixture.nativeElement);
+    document.body.removeChild(host());
 
     expect(results.violations).toEqual([]);
   });

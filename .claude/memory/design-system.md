@@ -77,6 +77,19 @@ These are not matters of taste: the site is losing information and visitors.
 6. **Main navigation locked inside a burger even at 1920px.**
 7. **Type hierarchy collapses on mobile**: body rises to 16px while headings drop to 19.2px — the ratio falls from 1.7× to 1.2×.
 
+## The ambition — raised on 2026-09-01
+
+Stéphane changed the brief once the shell was standing. In his words: **the site has to catch the eye and hook the visitor, make people want to discover both the 3D and the development work, and be « le portfolio le plus beau du web ».**
+
+That is a real change from "modernize respectfully". It does not license decoration for its own sake — the guiding principle below still holds, and gratuitous animation on a portfolio suggests you are compensating for thin content. What it licenses is **ambition in composition**: full-bleed work, type at a scale that commits, entries into each section that show the work rather than describing it.
+
+The operative test for every page: **does a visitor who lands here want to see more?** A page that is merely correct fails it.
+
+Two things follow that were not true before:
+
+- **The home page must preview both bodies of work, not just offer two buttons to them.** Wanting to discover something requires seeing a piece of it first.
+- **Restraint stays the method, not the goal.** The renders are the spectacle; the interface earns its beauty by getting out of their way and by being flawless where it does show — type, spacing, states, motion.
+
 ## Guiding principle
 
 **The design is the frame, the images are the product.** If an interface element competes with a render, the element is wrong.

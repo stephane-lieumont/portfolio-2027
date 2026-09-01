@@ -20,10 +20,21 @@
   min-block-size: var(--header-height);
   padding-inline: var(--page-inline);
   padding-block: var(--space-2);
-  // Opaque from the start: the current site's transparent fixed header passes
-  // over the coloured skill logos and its title becomes unreadable.
+  // Opaque from the first frame, and its border only appears once something has
+  // scrolled under it — so the top of the page carries no seam, and nothing
+  // ever passes unreadably beneath a transparent bar the way it does today.
   background: var(--surface-page);
-  border-block-end: 1px solid var(--border-subtle);
+  border-block-end: 1px solid transparent;
+  transition: border-color var(--motion-state) var(--ease-state);
+}
+
+.site-header--settled {
+  border-block-end-color: var(--border-subtle);
+}
+
+.scroll-sentinel {
+  block-size: 1px;
+  margin-block-end: -1px;
 }
 
 .brand {
@@ -32,7 +43,9 @@
   gap: 2px;
   text-decoration: none;
   color: var(--text-primary);
-  margin-inline-end: auto;
+  // The brand takes the fraction the divide starts at, so the navigation and
+  // the diagonal share one vertical.
+  flex: 0 0 var(--split-top);
 }
 
 .brand__role {
