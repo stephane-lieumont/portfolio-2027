@@ -9,55 +9,77 @@
 // ---------------------------------------------------------------------------
 // The order, and why it is this order
 //
-// Structure first, then reading.
+// Structure, then surface, then reading.
 //
-// The wedge arrives carrying its own texture, and nothing else moves with it.
-// The left image waits for it: that half is clipped by a diagonal whose other
-// side is still empty while the wedge is in flight, so fading it up early shows
-// a picture cut against nothing. It comes in once the edge it is cut by has
-// something on the far side of it.
+// The wedge travels alone, as flat colour. Both textures wait for it: each half
+// is cut by a diagonal whose other side is still empty while the wedge is in
+// flight, so fading an image up early shows a picture clipped against nothing.
+// They arrive once the edge that cuts them has something behind it.
 //
-// Then the left words, then the right.
+// Then the words, one line at a time — overline, title, pitch, link — because a
+// block that resolves all at once is a slide, and a block that resolves in
+// reading order is a sentence. This is the 2022 site's gesture, kept.
 //
-// The two texts are deliberately not simultaneous. Left before right is the
-// order the page is read in, and a stagger of one short step is enough to lead
-// the eye without anyone waiting for it.
+// The two halves do not overlap. The right one starts where the left one
+// finishes, so the eye is never asked to follow two things at once — it reads
+// one offer, then the other, in the order the page is read in.
 //
 // Everything is `translate` and `opacity`, and every phase carries a fade —
 // nothing appears by simply existing. 2022 animated `flex-basis`, which lays
 // out the page on every frame; spec 07 forbids it and this is the same gesture
 // without the cost.
-//
-// Total 1.3s from the loader leaving, in five phases that each wait for the one
-// before to mean something. Faster than the 1.2s first attempt felt, because
-// nothing overlaps ambiguously — an entrance is a way in, not a performance.
 // ---------------------------------------------------------------------------
 
-// Phase 1 — the structure arrives, carrying its own texture.
+// Phase 1 — the structure, as flat colour.
 :root[data-ready] .split__panel--end {
   animation: split-sweep var(--motion-entrance) var(--ease-signature) both;
 }
 
-:root[data-ready] .split__panel--end .split__media {
-  animation: split-media-in var(--motion-entrance) var(--ease-signature) both;
-}
-
-// Phase 2 — the left texture, once the diagonal has something behind it.
-:root[data-ready] .split__panel--start .split__media {
-  animation: split-media-in var(--motion-entrance-body) var(--ease-signature) both;
+// Phase 2 — both textures, once the diagonal has something behind it.
+//
+// Long, and on the curve that barely moves at first — the same one the hover
+// zoom releases on. A texture sitting at 14% opacity has very little distance
+// to travel, so any brisk curve spends it all at once and the image simply
+// appears. It should surface, not switch on.
+:root[data-ready] .split__media {
+  animation: split-media-in var(--motion-entrance-media) var(--ease-zoom-out) both;
   animation-delay: var(--motion-entrance);
 }
 
-// Phase 3 — the left half speaks.
-:root[data-ready] .split__panel--start .split__body {
-  animation: split-settle var(--motion-entrance-body) var(--ease-signature) both;
-  animation-delay: var(--motion-entrance-lead);
+// Phases 3 and 4 — the words, line by line, one half after the other.
+//
+// A column's full span: its first line starting to its last line landing. The
+// second wave is offset by exactly this, so the two never speak over each
+// other, and retuning a line's duration or step keeps that true on its own.
+:root[data-ready] {
+  --enter-column: calc(3 * var(--motion-entrance-line) + var(--motion-entrance-body));
+  --enter-second: calc(var(--motion-entrance-lead) + var(--enter-column));
 }
 
-// Phase 4 — then the right.
-:root[data-ready] .split__panel--end .split__body {
+:root[data-ready] .split__body > * {
+  --line: 0;
   animation: split-settle var(--motion-entrance-body) var(--ease-signature) both;
-  animation-delay: calc(var(--motion-entrance-lead) + var(--motion-entrance-step));
+  animation-delay: calc(var(--enter-lead) + var(--line) * var(--motion-entrance-line));
+}
+
+:root[data-ready] .split__panel--start .split__body {
+  --enter-lead: var(--motion-entrance-lead);
+}
+
+:root[data-ready] .split__panel--end .split__body {
+  --enter-lead: var(--enter-second);
+}
+
+:root[data-ready] .split__body > :nth-child(2) {
+  --line: 1;
+}
+
+:root[data-ready] .split__body > :nth-child(3) {
+  --line: 2;
+}
+
+:root[data-ready] .split__body > :nth-child(4) {
+  --line: 3;
 }
 
 @keyframes split-sweep {
@@ -98,12 +120,10 @@
 // page looking broken rather than calm — but it arrives without travel, and
 // everything else simply fades.
 @media (prefers-reduced-motion: reduce) {
-  :root[data-ready] .split__panel--end {
-    animation-name: split-fade;
-  }
-
-  :root[data-ready] .split__panel--start .split__body,
-  :root[data-ready] .split__panel--end .split__body {
+  :root[data-ready] .split__panel--end,
+  :root[data-ready] .split__body > *,
+  :root[data-ready] .site-header--overlay .nav-desktop li,
+  :root[data-ready] .site-header--overlay ~ .burger {
     animation-name: split-fade;
   }
 
@@ -117,28 +137,33 @@
   }
 }
 
-// Phase 5 — the header last.
+// Phase 4 (continued) — the menu, one link at a time.
 //
 // It is chrome: it says where you can go, which only matters once you have seen
-// where you are. Arriving with the structure it would compete with it, and
-// arriving first it would announce a page that is not there yet.
+// where you are. Arriving with the structure it would compete with it.
+//
+// The brand is deliberately not in this list. It is not navigation — it is
+// whose page this is, and that is the one thing worth reading while the rest
+// assembles. It is painted from the first frame.
+//
+// The links ride the second wave, alongside the right column and on the same
+// step and rise, so the menu is part of that movement rather than a flourish
+// appended to it. The burger is the same phase on the other side of the
+// breakpoint, so it takes the base delay with no step of its own.
 //
 // Scoped to the home page. Everywhere else the header is simply present, and a
 // route change that faded its own navigation back in each time would be a tic.
-:root[data-ready] .site-header--overlay .brand,
-:root[data-ready] .site-header--overlay .nav-desktop,
+:root[data-ready] .site-header--overlay .nav-desktop li,
 :root[data-ready] .site-header--overlay ~ .burger {
-  animation: split-fade-in var(--motion-entrance-body) var(--ease-signature) both;
-  animation-delay: calc(
-    var(--motion-entrance-lead) + var(--motion-entrance-step) + var(--motion-entrance-chrome)
-  );
+  --line: 0;
+  animation: split-settle var(--motion-entrance-body) var(--ease-signature) both;
+  animation-delay: calc(var(--enter-second) + var(--line) * var(--motion-entrance-line));
 }
 
-@keyframes split-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
+// One rule per position rather than sibling-index(), which is too new to rely
+// on here. Covers more items than the nav has, so adding a link keeps working.
+@for $i from 2 through 6 {
+  :root[data-ready] .site-header--overlay .nav-desktop li:nth-child(#{$i}) {
+    --line: #{$i - 1};
   }
 }

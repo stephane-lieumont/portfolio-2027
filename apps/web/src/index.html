@@ -270,15 +270,15 @@
         // to it from another section re-creates the component, and a rule still
         // matching would replay the whole assembly every time — a tic.
         //
-        // 2000ms covers the longest chain — 620 lead + 140 step + 380 chrome +
-        // 300 body = 1440 — with margin, and nothing depends on the attribute
-        // afterwards.
+        // 2200ms covers the longest chain — 660 lead, a 540ms first column,
+        // then the second wave's links stepping to 1520 and finishing at 1820 —
+        // with margin, and nothing depends on the attribute afterwards.
         var ready = function () {
           var root = document.documentElement;
           root.setAttribute('data-ready', '');
           setTimeout(function () {
             root.removeAttribute('data-ready');
-          }, 2000);
+          }, 2200);
         };
         if (!boot) return ready();
 

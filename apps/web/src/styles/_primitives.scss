@@ -114,10 +114,9 @@
   --motion-menu-edge: 900ms; // 2022: 0.2s bulge + 0.7s elastic return
 
   // The split's hover zoom. The entrance is long and near-linear so the motion
-  // is continuous rather than front-loaded; the exit is short because the
-  // cursor always leaves mid-travel and a long return reads as a drag.
+  // is continuous rather than front-loaded.
   --motion-zoom-in: 5000ms;
-  --motion-zoom-out: 2600ms;
+  --motion-zoom-out: 3800ms;
   --ease-zoom-in: cubic-bezier(0.4, 0.05, 0.6, 0.95);
   // The release eases out of the held state and settles into rest — gentle at
   // both ends, which is the only shape that does not jolt.
@@ -130,10 +129,10 @@
   // first 10%. The image snapped halfway back in about a tenth of a second and
   // crawled the rest. This curve covers 2% in the same window.
   //
-  // With the shape right, the duration could finally be lengthened: 1500ms
-  // still read as short, and at 2600ms the release is a slow letting-go rather
-  // than a return. Lengthening the old curve would only have stretched the
-  // crawl after the jolt — the shape had to come first.
+  // With the shape right, the duration could be lengthened: 1500ms still read
+  // as short, 2600ms still read as abrupt, and at 3800ms the release is a slow
+  // letting-go rather than a return. Lengthening the old curve would only have
+  // stretched the crawl after the jolt — the shape had to come first.
   --ease-zoom-out: cubic-bezier(0.45, 0, 0.25, 1);
 
   // The other half receding. Atmosphere, not acknowledgement: at --motion-state
@@ -141,8 +140,14 @@
   // Long enough to be a fade, short enough to still belong to the pointer —
   // and on the same curves as the zoom, so the two are one gesture rather than
   // an instant answer sitting beside a five-second one.
+  //
+  // The release is tied to the zoom's rather than tuned on its own. Two legs of
+  // one movement left together and landed 2.1s apart — scale still travelling
+  // while the light had already flipped back. What read as a brutal zoom-out
+  // was that: the lighting snapping while the image drifted. They now release
+  // as one, and retuning the zoom carries the light with it.
   --motion-recede-in: 900ms;
-  --motion-recede-out: 500ms;
+  --motion-recede-out: var(--motion-zoom-out);
 
   // The home page's entrance. Long enough to read as a structure assembling
   // rather than a panel appearing, short enough that nobody waits for it — it
@@ -150,11 +155,11 @@
   // The home entrance, phase by phase. Structure, then left words, then right
   // words, then the header. Faster than the first attempt at 1.2s, which read
   // as slow — an entrance is a way in, not a performance.
-  --motion-entrance: 520ms; // the wedge travelling in with its own texture
-  --motion-entrance-body: 300ms; // one half's words
-  --motion-entrance-lead: 620ms; // before the left half speaks
-  --motion-entrance-step: 140ms; // right half, one step behind left
-  --motion-entrance-chrome: 380ms; // the header, once the page has assembled
+  --motion-entrance: 520ms; // the wedge travelling, on its own
+  --motion-entrance-media: 1200ms; // the two textures, once the wedge has landed
+  --motion-entrance-body: 300ms; // one line of one half
+  --motion-entrance-line: 80ms; // between two lines of the same half
+  --motion-entrance-lead: 660ms; // before the left half speaks
   --ease-menu: cubic-bezier(0.77, 0, 0.175, 1); // ~ Power3.easeInOut
   --stagger-list: 60ms;
   --stagger-grid: 40ms;
