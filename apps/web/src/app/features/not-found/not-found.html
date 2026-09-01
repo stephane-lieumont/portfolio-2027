@@ -1,0 +1,36 @@
+<article class="page section not-found">
+  <header class="section__head">
+    <p class="t-overline section__eyebrow">Erreur 404</p>
+    <h1 class="t-display not-found__code">404</h1>
+    <p class="t-lead not-found__joke">Page not found — Where is the intercom&nbsp;?</p>
+    <p class="t-body measure section__lead">
+      Cette page n’existe pas, ou plus. Les adresses de l’ancien site ont changé : si tu arrives
+      d’un lien, il pointe probablement vers l’une des sections ci-dessous.
+    </p>
+  </header>
+
+  <!-- The easter egg, carried over from the 2022 site. It is the one place on
+       the portfolio where the tone breaks, and that is exactly why it works —
+       a 404 is the only page nobody chose to visit. -->
+  <img
+    class="not-found__gif"
+    src="/medias/travolta-confused.gif"
+    alt="John Travolta cherchant son chemin, perplexe"
+    width="490"
+    height="476"
+    loading="lazy"
+    decoding="async"
+  />
+
+  <nav class="section__block" aria-label="Sections du site">
+    <h2 class="t-h3">Où aller</h2>
+    <ul class="not-found__links" role="list">
+      @for (item of items; track item.path) {
+        <li>
+          <a class="button button--secondary" [routerLink]="item.path">{{ item.label }}</a>
+        </li>
+      }
+      <li><a class="button button--primary" routerLink="/">Accueil</a></li>
+    </ul>
+  </nav>
+</article>

@@ -72,29 +72,52 @@
         }
       }
 
+      /* The dot lane. `overflow: hidden` is what lets a dot disappear rather
+         than drift past Pac-Man and out the far side, which is what it did
+         before: the 2022 container was `overflow: visible`. */
       .boot__track {
+        position: relative;
         display: flex;
         align-items: center;
         inline-size: 9.375rem;
         block-size: 2.8125rem;
+        overflow: hidden;
       }
 
       /* The 2022 Pac-Man, unchanged: two half-discs built from borders, opening
          and closing against a row of dots that travels the other way. */
+      /* Pac-Man sits over the lane and carries an opaque patch the width of his
+         own mouth, so a dot is *eaten* — it goes behind him and does not come
+         out. Before this the dots crossed straight through the open jaw. */
       .boot__pac {
-        position: relative;
+        position: absolute;
+        inset-inline-start: 0;
+        inset-block-start: 50%;
         inline-size: 0;
         block-size: 0;
-        translate: -5px 0;
-        z-index: 1;
+        z-index: 2;
+      }
+
+      .boot__pac::before,
+      .boot__pac::after,
+      .boot__pac > i {
+        content: '';
+        position: absolute;
+        display: block;
+      }
+
+      .boot__pac > i {
+        inset-block-start: -22px;
+        inset-inline-start: -2px;
+        inline-size: 46px;
+        block-size: 44px;
+        background: #ffffff;
+        z-index: -1;
       }
 
       .boot__pac::before,
       .boot__pac::after {
-        content: '';
-        position: absolute;
         inset-block-start: -20px;
-        display: block;
         inline-size: 0;
         block-size: 0;
         border: 20px solid #f2a154;
@@ -113,16 +136,26 @@
         animation: boot-chunk-bottom 0.5s ease infinite;
       }
 
+      /* One period of travel per cycle, so the loop has no seam and the stream
+         is genuinely endless. The 2022 version slid the whole row by half its
+         width and jumped back, which is visible as a reset. */
       .boot__dots {
+        --boot-dot: 8px;
+        --boot-gap: 26px;
+        position: absolute;
+        inset-inline-start: 46px;
+        inset-block-start: 50%;
         display: flex;
-        justify-content: space-around;
-        inline-size: 100%;
-        animation: boot-eat 0.5s linear infinite;
+        align-items: center;
+        gap: calc(var(--boot-gap) - var(--boot-dot));
+        translate: 0 -50%;
+        animation: boot-eat 0.55s linear infinite;
       }
 
       .boot__dots span {
-        inline-size: 0.5rem;
-        block-size: 0.5rem;
+        flex: none;
+        inline-size: var(--boot-dot);
+        block-size: var(--boot-dot);
         border-radius: 50%;
         background: #7b756f;
       }
@@ -148,11 +181,8 @@
       }
 
       @keyframes boot-eat {
-        0% {
-          transform: translateX(50%);
-        }
-        100% {
-          transform: translateX(-50%);
+        to {
+          transform: translateX(calc(-1 * var(--boot-gap)));
         }
       }
 
@@ -206,7 +236,7 @@
   <body>
     <div class="boot" id="boot" aria-hidden="true">
       <div class="boot__track">
-        <div class="boot__pac"></div>
+        <div class="boot__pac"><i></i></div>
         <div class="boot__dots">
           <span></span><span></span><span></span><span></span><span></span><span></span><span></span
           ><span></span>
