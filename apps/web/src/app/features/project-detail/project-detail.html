@@ -1,0 +1,65 @@
+<article class="page section project-page">
+  <nav class="project-page__back" aria-label="Fil d’Ariane">
+    <a class="t-label back-link" routerLink="/developpeur">
+      <span class="back-link__arrow" aria-hidden="true">←</span>
+      Réalisations
+    </a>
+  </nav>
+
+  <header class="section__head">
+    @if (project().series) {
+      <p class="t-overline section__eyebrow">{{ project().series }}</p>
+    }
+    <h1 class="t-h1">{{ project().title }}</h1>
+    <p class="t-meta tabular project-page__meta">
+      {{ year(project().releasedAt) }} · {{ project().role }}
+    </p>
+    <p class="t-lead measure section__lead">{{ project().context }}</p>
+
+    @if (project().demoUrl; as demo) {
+      <p class="project-page__actions">
+        <a class="button button--primary" [href]="demo">Voir la démo</a>
+      </p>
+    }
+  </header>
+
+  <section class="section__block" aria-labelledby="titre-mission">
+    <h2 id="titre-mission" class="t-h3">Ma mission</h2>
+    <p class="t-body measure">{{ project().mission }}</p>
+    <ol class="steps">
+      @for (step of project().missionSteps; track step) {
+        <li class="t-body steps__item">{{ step }}</li>
+      }
+    </ol>
+  </section>
+
+  <section class="section__block" aria-labelledby="titre-technos">
+    <h2 id="titre-technos" class="t-h3">Technologies</h2>
+    <ul class="chips" role="list">
+      @for (tech of technologies(); track tech.slug) {
+        <li><app-tech-chip [entry]="tech" /></li>
+      }
+    </ul>
+  </section>
+
+  @if (siblings().length) {
+    <section class="section__block" aria-labelledby="titre-serie">
+      <h2 id="titre-serie" class="t-h3">Dans la même série</h2>
+      <ul class="siblings" role="list">
+        @for (other of siblings(); track other.slug) {
+          <li>
+            <a class="siblings__link" [routerLink]="['/developpeur', other.slug]">
+              <span class="t-h4">{{ other.title }}</span>
+              <span class="t-meta tabular">{{ year(other.releasedAt) }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <aside class="section__cta">
+    <p class="t-lead">Un poste, une mission, une question ?</p>
+    <a class="button button--primary" routerLink="/contact">Me contacter</a>
+  </aside>
+</article>
