@@ -29,7 +29,7 @@
             [alt]="project.cover.alt"
             [width]="project.cover.width"
             [height]="project.cover.height"
-            [loading]="$index < 2 ? 'eager' : 'lazy'"
+            [attr.loading]="$index < 2 ? 'eager' : 'lazy'"
             decoding="async"
           />
           <div class="project__body">

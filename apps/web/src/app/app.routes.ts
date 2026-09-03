@@ -2,6 +2,18 @@ import { Routes } from '@angular/router';
 
 import { PROJECTS } from './core/static-content';
 
+/**
+ * Whether the second URL segment names a project we actually have.
+ *
+ * Named and exported rather than inlined into `canMatch` so it can be tested
+ * for what it decides — an unknown slug reaching the 404 instead of rendering
+ * an empty detail page — without reconstructing Angular's guard signature.
+ */
+export function projectSlugExists(segments: readonly { readonly path: string }[]): boolean {
+  const slug = segments[1]?.path;
+  return slug !== undefined && PROJECTS.some((p) => p.slug === slug);
+}
+
 export const routes: Routes = [
   {
     path: '',
@@ -18,8 +30,7 @@ export const routes: Routes = [
   {
     path: 'developpeur/:slug',
     canMatch: [
-      (_route: unknown, segments: readonly { path: string }[]) =>
-        PROJECTS.some((p) => p.slug === segments[1]?.path),
+      (_route: unknown, segments: readonly { path: string }[]) => projectSlugExists(segments),
     ],
     loadComponent: () =>
       import('./features/project-detail/project-detail').then((m) => m.ProjectDetail),
