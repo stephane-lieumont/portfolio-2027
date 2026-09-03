@@ -86,6 +86,19 @@
   --burger-gap: 5px; // with the stroke, this sets the cross's arm offset
   --rule-marker: 2px; // a state rule: the nav underline, the drawer's marker
 
+  // The layout tier spec 06 §5 specifies and nothing implemented. Measured
+  // before this: the distance between a heading and the content it introduces
+  // was 16px in a page head, 24px in a block and 16px in a CTA — three answers
+  // to one question on the same page. And the gap between sections was frozen
+  // at 64px from 360px to 1920px while the type scale opens from 1.25 to 1.333,
+  // so the rhythm tightened as the page got wider.
+  --heading-gap: var(--space-4); // a heading to what it introduces, everywhere
+  --section-gap: var(--space-6); // between sections; steps up with the viewport
+  // The tool marks sit directly on the page, no plate — 2022's answer, and
+  // Stéphane's. 70px on a phone rising to 100px, which are the two sizes the
+  // 2022 site used (`size: 100` capped at 70px below the small breakpoint).
+  --tech-logo-size: 4.375rem;
+
   // Motion — see docs/specs/07-motion.md §3
   --duration-90: 90ms;
   --duration-125: 125ms;
@@ -167,6 +180,24 @@
   // The home entrance, phase by phase. Structure, then left words, then right
   // words, then the header. Faster than the first attempt at 1.2s, which read
   // as slow — an entrance is a way in, not a performance.
+  // The section reveal. 2022 used 400ms with a 200ms step between siblings;
+  // the step is halved because six tool tiles at 200ms took 1.2s to finish
+  // arriving, and the last one landed long after the reader got there.
+  --motion-reveal: 420ms;
+  --motion-reveal-step: 100ms;
+  --reveal-rise: 20px; // 2022: translateY(20px)
+
+  // The tool marks, kept at the 2022 values because that is the arrival
+  // Stéphane recognises. `ease-in` is not a placeholder: --ease-signature is a
+  // steep ease-out, and applying it to each segment of a bounce makes every
+  // segment leave at speed, which reads as a stutter rather than a bounce.
+  --motion-bubble: 400ms; // 2022: 0.4s
+  --motion-bubble-label: 200ms; // 2022: 0.2s on the name
+  --ease-bubble: ease-in; // 2022, exactly
+  --stagger-bubble: 150ms; // 2022: 150ms * index
+  --bubble-lead: 300ms; // 2022: + 300ms before the first
+  --bubble-rise: 10px; // 2022: translateY(10px) on the name
+
   --motion-entrance: 520ms; // the wedge travelling in
   --motion-entrance-lean: 900ms; // the edge tipping square to diagonal, outlasting it
   --motion-entrance-media: 1200ms; // the two textures, once the wedge has landed

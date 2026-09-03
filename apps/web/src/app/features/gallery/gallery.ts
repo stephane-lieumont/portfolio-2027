@@ -4,11 +4,12 @@ import { softwareOf } from '@portfolio/shared-types/registries';
 
 import { mediaUrl } from '../../core/media.config';
 import { ARTWORKS } from '../../core/static-content';
+import { Reveal } from '../../shared/reveal';
 import { TechChip } from '../../shared/tech-chip';
 
 @Component({
   selector: 'app-gallery',
-  imports: [RouterLink, TechChip],
+  imports: [Reveal, RouterLink, TechChip],
   templateUrl: './gallery.html',
   styleUrl: './gallery.scss',
   host: { 'data-theme': 'dark' },

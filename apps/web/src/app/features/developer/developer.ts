@@ -4,11 +4,13 @@ import { technologyOf } from '@portfolio/shared-types/registries';
 
 import { mediaUrl } from '../../core/media.config';
 import { HIGHLIGHTED_TECHNOLOGIES, PROJECTS } from '../../core/static-content';
+import { Reveal } from '../../shared/reveal';
 import { TechChip } from '../../shared/tech-chip';
+import { TechLogo } from '../../shared/tech-logo';
 
 @Component({
   selector: 'app-developer',
-  imports: [RouterLink, TechChip],
+  imports: [Reveal, RouterLink, TechChip, TechLogo],
   templateUrl: './developer.html',
   styleUrl: './developer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

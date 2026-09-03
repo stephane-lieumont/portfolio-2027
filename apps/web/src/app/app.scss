@@ -120,6 +120,16 @@
   padding-block: var(--space-5);
   border-block-start: 1px solid var(--border-subtle);
   color: var(--text-secondary);
+  // One line of credit, centred. Left-aligned it reads as the start of a
+  // column that never comes — the pages above it are a measure-wide column and
+  // the footer is not part of it.
+  text-align: center;
+  // A ground of its own, so the page ends rather than simply stopping. The
+  // inset surface is 1.22:1 from the page — the same separation Stéphane
+  // approved for the render letterbox as enough to read as a distinct frame,
+  // and the only one of the three light grounds that carries a band at all
+  // (raised is 1.04, sunken 1.09).
+  background: var(--surface-inset);
 }
 
 .burger {

@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { Reveal } from '../../shared/reveal';
+
 import { NAV_ITEMS } from '../../shell/nav-items';
 
 @Component({
   selector: 'app-not-found',
-  imports: [RouterLink],
+  imports: [Reveal, RouterLink],
   templateUrl: './not-found.html',
   styleUrl: './not-found.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

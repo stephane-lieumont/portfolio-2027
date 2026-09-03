@@ -1,5 +1,5 @@
 <article class="page section">
-  <header class="section__head">
+  <header class="section__head reveal-lines" appReveal>
     <p class="t-overline section__eyebrow">Développement</p>
     <h1 class="t-h1">Lead Tech, Angular et .NET</h1>
     <p class="t-lead measure section__lead">
@@ -10,19 +10,29 @@
   </header>
 
   <section class="section__block" aria-labelledby="titre-stack">
-    <h2 id="titre-stack" class="t-h3">Ce avec quoi je travaille</h2>
-    <ul class="chips" role="list">
+    <h2 id="titre-stack" class="t-h3" appReveal>Ce avec quoi je travaille</h2>
+    <!-- Marks rather than chips, the 2022 site's treatment. Each tile carries
+         its own reveal index, so they arrive one after another instead of the
+         row appearing whole. -->
+    <ul class="tech-logos" role="list">
       @for (tech of highlighted; track tech.slug) {
-        <li><app-tech-chip [entry]="tech" /></li>
+        <li class="reveal--bubble" [appReveal]="$index + 1">
+          <app-tech-logo [entry]="tech" />
+        </li>
       }
     </ul>
   </section>
 
   <section class="section__block" aria-labelledby="titre-realisations">
-    <h2 id="titre-realisations" class="t-h3">Réalisations</h2>
+    <h2 id="titre-realisations" class="t-h3" appReveal>Réalisations</h2>
+    <!-- No stagger index on the cards. Each one is observed on its own and
+         enters the viewport at its own scroll position, so an index would make
+         the sixth card wait 600ms after it had already arrived — a delay with
+         nothing to stagger against. The stagger belongs to groups that arrive
+         together: the page head and the tool row. -->
     <ul class="projects" role="list">
       @for (project of projects; track project.slug) {
-        <li class="project card">
+        <li class="project card" appReveal>
           <img
             class="project__cover"
             [src]="mediaUrl(project.cover.key)"
@@ -56,8 +66,21 @@
     </ul>
   </section>
 
-  <aside class="section__cta">
-    <p class="t-lead">Un poste, une mission, une question ?</p>
-    <a class="button button--primary" routerLink="/contact">Me contacter</a>
+  <aside class="section__cta" appReveal>
+    <div class="section__cta__body">
+      <p class="t-lead">Un poste, une mission, une question&nbsp;?</p>
+      <a class="button button--primary" routerLink="/contact">Me contacter</a>
+    </div>
+    <!-- Transparent PNG, so he stands on the page rather than in a box. Last in
+         the DOM and last on the page: the offer is read before the face. -->
+    <img
+      class="section__cta__portrait"
+      src="/medias/portrait-stephane.png"
+      alt="Stéphane Lieumont"
+      width="500"
+      height="392"
+      loading="lazy"
+      decoding="async"
+    />
   </aside>
 </article>

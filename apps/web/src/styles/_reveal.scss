@@ -1,0 +1,182 @@
+// The section reveal, carried over from the 2022 site.
+//
+// There: `.reveal { opacity: 0; transform: translateY(20px) }` plus fifty
+// generated `.reveal--N` classes, each adding `transition-delay: 200ms * N`.
+// The stagger is kept; the fifty classes are not — one custom property does the
+// same arithmetic without growing the stylesheet by fifty rules.
+//
+// The hidden state is gated on `data-reveal-ready`, stamped on <html> by the
+// first Reveal directive to run. With no script, no observer or a failed
+// bundle, nothing hides: a page's own prose must never sit behind a capability
+// check. The 2022 version hid it unconditionally in CSS and revealed it from
+// React, so a broken bundle meant a blank page.
+//
+// These rules are global rather than component-scoped on purpose. They are
+// keyed on state that lives on <html>, and Angular's emulated encapsulation
+// would scope them away without any error — the trap that has already cost
+// this project the menu recession and the home entrance twice over. See
+// .claude/memory/traps.md.
+:root[data-reveal-ready] .reveal {
+  opacity: 0;
+}
+
+// Prose and cards rise on their transition. The marks do not: their two inner
+// animations carry the rise themselves, and a transition on the wrapper writing
+// `translate` at the same time would fight them.
+:root[data-reveal-ready] .reveal:not(.reveal--bubble) {
+  translate: 0 var(--reveal-rise);
+}
+
+// The wrapper is only a trigger — it never hides or moves, or it would fade the
+// two inner animations in behind a third one.
+:root[data-reveal-ready] .reveal--bubble {
+  opacity: 1;
+}
+
+.reveal {
+  transition:
+    opacity var(--motion-reveal) var(--ease-signature),
+    translate var(--motion-reveal) var(--ease-signature);
+  transition-delay: calc(var(--reveal-index, 0) * var(--motion-reveal-step));
+}
+
+:root[data-reveal-ready] .reveal--in {
+  opacity: 1;
+}
+
+// `:not(.reveal--bubble)` on both sides, and not only on the hidden rule.
+// `:not()` carries the specificity of its argument, so the hidden state was
+// (0,4,0) against a (0,3,0) shown state and won: measured, a revealed card
+// reached `opacity: 1` while `translate` stayed at 20px. It faded in without
+// ever rising, which is exactly the half of the gesture nobody notices is
+// missing.
+:root[data-reveal-ready] .reveal--in:not(.reveal--bubble) {
+  translate: 0 0;
+}
+
+// The 2022 logo arrival, restored part for part.
+//
+// Two animations, not one, because 2022 animated the picture and its name
+// separately: the mark bubbles, the name only rises. Scaling the whole tile
+// from zero drags the label with it, and text scaling up from nothing reads as
+// rubbery — which is what "pas aussi fluide" was.
+//
+// These target classes belong to the TechLogo component, and the trigger sits
+// on its ancestor, so the rules cannot live in that component's stylesheet:
+// emulated encapsulation would scope them away without an error. Same trap as
+// the menu recession and the home entrance. See .claude/memory/traps.md.
+:root[data-reveal-ready] .reveal--bubble .tech-logo__tile,
+:root[data-reveal-ready] .reveal--bubble .tech-logo__name {
+  opacity: 0;
+}
+
+:root[data-reveal-ready] .reveal--in.reveal--bubble .tech-logo__tile {
+  animation: reveal-bubble var(--motion-bubble) var(--ease-bubble) both;
+  animation-delay: calc(var(--bubble-lead) + var(--reveal-index, 0) * var(--stagger-bubble));
+}
+
+:root[data-reveal-ready] .reveal--in.reveal--bubble .tech-logo__name {
+  animation: reveal-bubble-label var(--motion-bubble-label) var(--ease-exit) both;
+  animation-delay: calc(var(--bubble-lead) + var(--reveal-index, 0) * var(--stagger-bubble));
+}
+
+@keyframes reveal-bubble {
+  0% {
+    opacity: 0;
+    scale: 0;
+    translate: 0 var(--reveal-rise);
+  }
+
+  60% {
+    scale: 1.1;
+  }
+
+  85% {
+    opacity: 1;
+    scale: 0.9;
+  }
+
+  100% {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes reveal-bubble-label {
+  from {
+    opacity: 0;
+    translate: 0 var(--bubble-rise);
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+// The arrival still happens — it is how the page says a section has begun —
+// but nothing travels and nothing bounces. 2022 left both transforms in force
+// here, so a visitor who asked for less movement got the full slide and the
+// full bounce anyway.
+@media (prefers-reduced-motion: reduce) {
+  :root[data-reveal-ready] .reveal:not(.reveal--bubble) {
+    translate: 0 0;
+  }
+
+  :root[data-reveal-ready] .reveal--in.reveal--bubble .tech-logo__tile,
+  :root[data-reveal-ready] .reveal--in.reveal--bubble .tech-logo__name {
+    animation-name: reveal-fade;
+  }
+
+  @keyframes reveal-fade {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// A page's own head, arriving in reading order.
+//
+// One attribute on the container instead of one per line: the children take
+// their index from `:nth-child`, so a head keeps working when a page adds or
+// drops a line. Same mechanism as the off-canvas menu's items — worth reusing
+// rather than inventing, since both are "a short list arriving in order".
+//
+// The container itself must not hide: it is the trigger, and hiding it would
+// fade its children in behind a second animation.
+// ---------------------------------------------------------------------------
+:root[data-reveal-ready] .reveal-lines {
+  opacity: 1;
+}
+
+:root[data-reveal-ready] .reveal-lines > * {
+  opacity: 0;
+  translate: 0 var(--reveal-rise);
+  transition:
+    opacity var(--motion-reveal) var(--ease-signature),
+    translate var(--motion-reveal) var(--ease-signature);
+  transition-delay: calc(var(--reveal-line, 0) * var(--motion-reveal-step));
+}
+
+:root[data-reveal-ready] .reveal-lines.reveal--in > * {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@for $i from 2 through 6 {
+  :root[data-reveal-ready] .reveal-lines > :nth-child(#{$i}) {
+    --reveal-line: #{$i - 1};
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-reveal-ready] .reveal-lines > * {
+    translate: 0 0;
+  }
+}

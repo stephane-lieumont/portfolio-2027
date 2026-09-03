@@ -6,7 +6,7 @@
     </a>
   </nav>
 
-  <header class="section__head">
+  <header class="section__head reveal-lines" appReveal>
     @if (project().series) {
       <p class="t-overline section__eyebrow">{{ project().series }}</p>
     }
@@ -68,8 +68,21 @@
     </section>
   }
 
-  <aside class="section__cta">
-    <p class="t-lead">Un poste, une mission, une question ?</p>
-    <a class="button button--primary" routerLink="/contact">Me contacter</a>
+  <aside class="section__cta" appReveal>
+    <div class="section__cta__body">
+      <p class="t-lead">Un poste, une mission, une question&nbsp;?</p>
+      <a class="button button--primary" routerLink="/contact">Me contacter</a>
+    </div>
+    <!-- Transparent PNG, so he stands on the page rather than in a box. Last in
+         the DOM and last on the page: the offer is read before the face. -->
+    <img
+      class="section__cta__portrait"
+      src="/medias/portrait-stephane.png"
+      alt="Stéphane Lieumont"
+      width="500"
+      height="392"
+      loading="lazy"
+      decoding="async"
+    />
   </aside>
 </article>
