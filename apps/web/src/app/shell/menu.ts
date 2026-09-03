@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, effect, inject, signal } from '@angular/core';
+import { DOCUMENT, DestroyRef, Injectable, effect, inject, signal } from '@angular/core';
 
 // ~ GSAP Power3.easeInOut, the 2022 panel curve.
 const EASE_MENU = 'cubic-bezier(0.77, 0, 0.175, 1)';
@@ -23,36 +23,100 @@ export class Menu {
   private readonly document = inject(DOCUMENT);
   private animation?: Animation;
   private panel?: HTMLElement;
+  private shell?: HTMLElement;
+  private closing?: ReturnType<typeof setTimeout>;
+  private readonly repin = () => this.pinToViewport();
 
   readonly open = signal(false);
 
   constructor() {
+    // The scroll listener below outlives a close if nobody takes it down. One
+    // root instance lives as long as the app, so in production this is
+    // housekeeping — but it is real: a test proved listeners accumulate across
+    // instances, each still re-measuring a shell that no longer exists.
+    inject(DestroyRef).onDestroy(() => {
+      clearTimeout(this.closing);
+      this.document.removeEventListener('scroll', this.repin);
+    });
+
     effect(() => {
       const root = this.document.documentElement;
+      clearTimeout(this.closing);
+
       if (this.open()) {
         root.setAttribute('data-menu', 'open');
-      } else {
-        root.removeAttribute('data-menu');
+        return;
       }
+
+      // The shell is still travelling back from 0.9 to 1 after the attribute
+      // would otherwise go, and the clip below has to outlive that or the
+      // scrolled-past page flashes into view on the way out. `closing` keeps
+      // the clip and drops everything else.
+      if (root.getAttribute('data-menu') === null) return;
+      root.setAttribute('data-menu', 'closing');
+      const dismiss = msOf(getComputedStyle(root).getPropertyValue('--motion-menu-dismiss'));
+      this.closing = setTimeout(() => root.removeAttribute('data-menu'), dismiss);
     });
   }
 
-  register(panel: HTMLElement): void {
+  register(panel: HTMLElement, shell: HTMLElement): void {
     this.panel = panel;
+    this.shell = shell;
     panel.style.translate = '100% 0';
+  }
+
+  /**
+   * Ties the recession to what the visitor is actually looking at.
+   *
+   * The shell is as tall as the whole document, and both defaults betray that.
+   * `transform-origin: center` resolves against the shell's own box, so on a
+   * long page the recession converges on a point far below the fold. And
+   * shrinking a document-tall box to 0.9 pulls its off-screen parts inward:
+   * scroll down the home page, open the menu, and the split slides in above
+   * the header — content already scrolled past, reappearing.
+   *
+   * Both are fixed by describing the viewport in the shell's own coordinates:
+   * the origin sits at its centre, and a clip keeps only the band that was on
+   * screen. `clip-path` is applied before the transform, so the visible
+   * rectangle is what recedes, and nothing outside it can ever be painted.
+   *
+   * Measured with `offsetTop` and `offsetHeight`, never `getBoundingClientRect`.
+   * A rect reports the *transformed* box, so reopening while the previous
+   * recession was still easing back read the shell at 0.9 and produced an
+   * offset that was not merely off by a few pixels — measured once, it put the
+   * clip at the wrong end of the page entirely. Layout offsets ignore
+   * transforms, which is the only property that makes them safe here.
+   */
+  private pinToViewport(): void {
+    const root = this.document.documentElement;
+    const view = this.document.defaultView;
+    const shell = this.shell;
+    if (!view || !shell) return;
+
+    const viewport = view.innerHeight;
+    const above = Math.max(0, root.scrollTop - shell.offsetTop);
+    const below = Math.max(0, shell.offsetHeight - above - viewport);
+
+    root.style.setProperty('--menu-origin-y', `${Math.round(above + viewport / 2)}px`);
+    root.style.setProperty('--menu-clip-top', `${Math.round(above)}px`);
+    root.style.setProperty('--menu-clip-bottom', `${Math.round(below)}px`);
   }
 
   toggle(open: boolean): void {
     this.open.set(open);
 
-    // `transform-origin: center` resolves against the shell's own box, which is
-    // the whole document — on a page taller than the viewport the recession
-    // then converges on a point far below the fold and reads as off-centre.
-    // Pin the origin to the middle of what the visitor is actually looking at.
+    // The clip is a measurement, and a measurement taken once goes stale. The
+    // root is `overflow: hidden` while the menu is open, which stops a finger
+    // but not a programmatic scroll — a focus jump, a scrollIntoView, the
+    // browser restoring a position. Any of those moves the page behind the
+    // panel while the band stays where it was, and the sticky header slides
+    // out of it: the page reappears above the header. Re-measuring on scroll
+    // makes the band self-correcting whatever moved it.
     if (open) {
-      const root = this.document.documentElement;
-      const centre = root.scrollTop + this.document.defaultView!.innerHeight / 2;
-      root.style.setProperty('--menu-origin-y', `${Math.round(centre)}px`);
+      this.pinToViewport();
+      this.document.addEventListener('scroll', this.repin, { passive: true });
+    } else {
+      this.document.removeEventListener('scroll', this.repin);
     }
 
     const panel = this.panel;

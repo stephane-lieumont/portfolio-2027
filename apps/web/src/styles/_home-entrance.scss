@@ -40,9 +40,15 @@
   initial-value: 3%;
 }
 
-// Phase 1 — the structure, as flat colour. The wedge travels in from the right
-// while the edge tips from square to diagonal, one movement rather than a slide
-// followed by a tilt.
+// Phase 1 — the structure, as flat colour. The wedge travels in while its edge
+// tips from square to diagonal, one movement rather than a slide followed by a
+// tilt.
+//
+// The sweep follows the divide, which is not the same axis at both sizes. Below
+// 48rem the split stacks and the boundary runs across the page, so the dark
+// half arrives from *below*; from 48rem the divide is vertical and it arrives
+// from the right. Sliding in horizontally on a phone crossed the layout instead
+// of building it.
 //
 // The lean is animated on the token both clip-paths are cut from, so a single
 // interpolation re-cuts the light half and the dark half in step — and the
@@ -58,10 +64,11 @@
 }
 
 // One element, one `animation` property: the wedge's sweep has to be declared
-// alongside its lean or the rule above would replace it.
+// alongside its lean or the rule above would replace it. The same reason the
+// breakpoint below re-states both names rather than just the sweep's.
 :root[data-ready] .split__panel--end {
   animation:
-    split-sweep var(--motion-entrance) var(--ease-signature) both,
+    split-sweep-block var(--motion-entrance) var(--ease-signature) both,
     split-lean-in var(--motion-entrance-lean) var(--ease-signature) both;
 }
 
@@ -121,7 +128,19 @@
   --line: 3;
 }
 
-@keyframes split-sweep {
+// Mobile-first, as ADR-0011 requires: the stacked layout's axis is the default.
+@keyframes split-sweep-block {
+  from {
+    translate: 0 100%;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+@keyframes split-sweep-inline {
   from {
     translate: 100% 0;
     opacity: 0;
@@ -129,6 +148,14 @@
   to {
     translate: 0 0;
     opacity: 1;
+  }
+}
+
+// Same breakpoint the split itself turns at, in home.scss. The two have to move
+// together: a sweep on the wrong axis is worse than no sweep.
+@media (min-width: 48rem) {
+  :root[data-ready] .split__panel--end {
+    animation-name: split-sweep-inline, split-lean-in;
   }
 }
 

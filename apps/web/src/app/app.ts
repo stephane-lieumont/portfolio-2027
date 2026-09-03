@@ -30,6 +30,7 @@ export class App implements AfterViewInit {
   protected readonly items = NAV_ITEMS;
 
   private readonly panel = viewChild.required<ElementRef<HTMLElement>>('panel');
+  private readonly shell = viewChild.required<ElementRef<HTMLElement>>('shell');
   private readonly burger = viewChild.required<ElementRef<HTMLButtonElement>>('burger');
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
 
@@ -58,7 +59,7 @@ export class App implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.menu.register(this.panel().nativeElement);
+    this.menu.register(this.panel().nativeElement, this.shell().nativeElement);
   }
 
   protected closeFromLink(): void {

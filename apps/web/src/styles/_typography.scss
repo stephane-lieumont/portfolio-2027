@@ -102,3 +102,14 @@
 .measure {
   max-inline-size: var(--measure);
 }
+
+// The drawer's navigation lines. h3 *size*, because the drawer is the whole
+// screen and the gesture needs the scale; not h3 *weight*, because five lines
+// at 25px and 600 is a stack of headlines rather than a menu. Instrument Sans
+// is variable 400–700, so 500 is a real instance and not a synthesised one.
+.t-nav-drawer {
+  font-size: var(--text-h3);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}

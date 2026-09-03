@@ -75,6 +75,17 @@
   --radius-lg: 1.5rem;
   --radius-pill: 100vmax; // a shape, not a scale step
 
+  // The burger and the cross it becomes. These are DRAWN dimensions; the hit
+  // area is --control-target and does not move with them. Box in rem so it
+  // grows with the reader's text size, glyph in px because an optical mark
+  // should not — the same split the motion hairlines already use.
+  --control-target: 3rem; // 48px: ADR-0010's 44px minimum plus 4px of margin
+  --burger-disc: 2rem; // the painted pastille inside that target
+  --burger-arm: 20px;
+  --burger-stroke: 1.5px;
+  --burger-gap: 5px; // with the stroke, this sets the cross's arm offset
+  --rule-marker: 2px; // a state rule: the nav underline, the drawer's marker
+
   // Motion — see docs/specs/07-motion.md §3
   --duration-90: 90ms;
   --duration-125: 125ms;

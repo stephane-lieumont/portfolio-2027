@@ -10,6 +10,33 @@
 // and strand the links. The recalibrated timings are documented in spec 07 and
 // deliberately not applied.
 
+// Scrolling is locked for as long as the clip is in force, and the two are
+// keyed on the same attribute because they are one mechanism. The clip is
+// measured once, at open; if the page then scrolls behind the panel, the band
+// no longer matches the viewport and the sticky header slides out of it —
+// content reappears above the header, which is exactly what "on voit le texte
+// derrière le header" was. A drawer should not let the page move behind it
+// anyway; `inert` blocks interaction with the shell but not scrolling.
+//
+// `overflow: hidden` on the root keeps scrollTop, so nothing jumps: the shell
+// is already offset by the transform and the clip, and unlocking returns the
+// visitor exactly where they were.
+:root[data-menu] {
+  overflow: hidden;
+}
+
+// The clip is keyed on the attribute being *present*, not on 'open', so it
+// survives the dismiss: the shell is still travelling back from 0.9 to 1 after
+// the menu has logically closed, and dropping the clip early flashes the
+// scrolled-past page into view on the way out.
+//
+// It keeps only the band that was on screen when the menu opened. Without it,
+// shrinking a document-tall box pulls its off-screen parts inward — scroll the
+// home page, open the menu, and the split appears above the header.
+:root[data-menu] .shell {
+  clip-path: inset(var(--menu-clip-top, 0) 0 var(--menu-clip-bottom, 0) 0);
+}
+
 :root[data-menu='open'] .shell {
   scale: var(--shell-scale);
   transition-duration: var(--motion-menu-panel);
@@ -32,7 +59,9 @@
   transition-delay: calc(var(--motion-menu-lead) + var(--stagger-menu) * var(--item-index, 0));
 }
 
-:root[data-menu='open'] .burger {
+// The fill lands on the disc, not on the button: the target stays 48px while
+// what is painted is 32px.
+:root[data-menu='open'] .burger::before {
   background: var(--accent-wash);
   transition-duration: var(--motion-state);
   transition-timing-function: var(--ease-state);
@@ -43,8 +72,14 @@
   transition-timing-function: var(--ease-state);
 }
 
+// The offset is the expression the 7px literal always was. In a flex column of
+// three bars of height h with gap g, the outer centres sit at ±(h + g) — with
+// the old 2px + 5px that is exactly 7. At a 1.5px stroke it has to be 6.5, and
+// leaving the literal would part the two arms by half a pixel so the cross
+// never closes. A size expression, not a motion change: the angles, durations
+// and easings are untouched.
 :root[data-menu='open'] .burger__bar:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
+  transform: translateY(calc(var(--burger-stroke) + var(--burger-gap))) rotate(45deg);
 }
 
 // The one deliberate desync: the middle bar leaves in 90ms while the outer two
@@ -54,7 +89,7 @@
 }
 
 :root[data-menu='open'] .burger__bar:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
+  transform: translateY(calc(-1 * (var(--burger-stroke) + var(--burger-gap)))) rotate(-45deg);
 }
 
 // The only accommodation tokens cannot express: the cross is built from a

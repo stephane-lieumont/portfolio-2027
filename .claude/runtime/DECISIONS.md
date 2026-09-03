@@ -5,6 +5,12 @@ an inference — if it is not sourced to something he said, it does not belong.
 
 ## Settled
 
+**2026-09-03 — The active menu item stays orange.** "dans le menu garder le
+orenge pour la page active", against a recommendation to give it the strongest
+ink and demote the accent to a marker. The inversion that recommendation was
+solving disappeared anyway: the siblings dropped from 16.68:1 to 6.36:1, so the
+accent at 4.85:1 now reads as marked rather than disabled.
+
 **2026-09-03 — Media lives in MinIO, not in the repository.** "c'est image
 doivent etre dans un serveur minio", against a recommendation to ship them in
 `public/` for V1. The bucket is the store of record; the site reads bucket keys

@@ -24,6 +24,17 @@
   // bar is how the current site makes its own title unreadable.
   background: var(--surface-page);
   border-block-end: 1px solid transparent;
+  // Asymmetric on purpose. Gaining the background is instant: the sentinel
+  // fires at one pixel of scroll, but a 180ms fade means the page slides under
+  // a still-translucent bar for those 180ms, and on a phone with momentum that
+  // reads as the image passing behind the header. Losing it keeps the fade —
+  // arriving back at the top is a rest, not a correction.
+  transition:
+    background-color 0s,
+    border-color 0s;
+}
+
+.site-header:not(.site-header--settled) {
   transition:
     background-color var(--motion-state) var(--ease-state),
     border-color var(--motion-state) var(--ease-state);
@@ -120,9 +131,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  inline-size: 3rem; // 48px — 44px minimum plus 4px of margin
-  block-size: 3rem;
+  gap: var(--burger-gap);
+  inline-size: var(--control-target);
+  block-size: var(--control-target);
   padding: 0;
   border: 0;
   border-radius: var(--radius-pill);
@@ -131,10 +142,34 @@
   transition: background-color var(--motion-exit-state) var(--ease-exit);
 }
 
+// The painted control, deliberately smaller than the target that owns it.
+// "Le bouton close trop gros" was not the glyph — the cross is already smaller
+// than the burger — it was this: a 48px filled pastille, 18% of the panel's
+// width and by area the largest painted object in the drawer. It is now 32px,
+// which is 56% less area for the same affordance. The button's own box stays at
+// 48px, so 2.5.8 is met by the target and not by what the eye reads.
+//
+// The disc measures 1.14:1 against the panel and is decorative: the control's
+// boundary is the bars at 16.68:1, and its open state is the glyph morph plus
+// `aria-expanded`. That was already true at 48px.
+.burger::before {
+  content: '';
+  position: absolute;
+  inline-size: var(--burger-disc);
+  block-size: var(--burger-disc);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  z-index: -1;
+  transition: background-color var(--motion-exit-state) var(--ease-exit);
+}
+
 .burger__bar {
-  inline-size: 22px;
-  block-size: 2px;
-  border-radius: 1px;
+  inline-size: var(--burger-arm);
+  // Thinner because the same 2px reads chunkier rotated than flat: 9.1% of a
+  // 22px arm closed, 12.8% of a 15.6px box open. 1.5px brings the open ratio to
+  // 10.6% and the two states look like one control.
+  block-size: var(--burger-stroke);
+  border-radius: var(--burger-stroke);
   // Never #f2a154: that is 2.10:1 on white, a failure for a control's own
   // boundary. The bars keep their colour and the pastille carries the state.
   background: var(--text-primary);
@@ -201,7 +236,8 @@
 .offcanvas ul {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  // 24px between two 25px lines. At 16px the five items read as one slab.
+  gap: var(--space-4);
   margin: 0;
   padding: 0;
 }
@@ -219,15 +255,56 @@
     translate var(--motion-menu-items) var(--ease-menu);
 }
 
+// Secondary ink at rest — the same ink `.nav-link` uses, so the drawer and the
+// desktop navigation finally speak in one register. It was primary: #1b1a18 on
+// the panel's #fbfaf9 measures 16.68:1 where 3.0 applies at this size and
+// weight, five and a half times the threshold. Secondary is 6.36:1, still 1.4x
+// the strict 4.5 bar with no reliance on the large-text exemption.
+//
+// _components.scss already says this out loud for the desktop nav: "the
+// navigation is a tool, not a headline". The drawer was the same navigation
+// using the strongest ink and a heading class.
 .offcanvas__link {
+  position: relative;
   display: block;
   padding-block: var(--space-2);
-  color: var(--text-primary);
+  color: var(--text-secondary);
   text-decoration: none;
+  transition: color var(--motion-state) var(--ease-state);
 }
 
+// Once rest is secondary, a state that raises contrast is no longer optional.
+// The drawer had neither hover nor focus ink. Hover is gated as everything else
+// here is; focus is not, because a keyboard user on a narrow window has none.
+@media (hover: hover) and (pointer: fine) {
+  .offcanvas__link:hover {
+    color: var(--text-primary);
+  }
+}
+
+.offcanvas__link:focus-visible {
+  color: var(--text-primary);
+}
+
+// The accent stays the ink for the current page — Stéphane's call, and lowering
+// the siblings is what makes it work. The inversion it used to create is gone
+// by arithmetic rather than by repainting this rule: the accent measures 4.85:1
+// on the panel against siblings that were 16.68:1 and are now 6.36:1. It reads
+// as the marked item instead of the disabled one, and weight and the rule below
+// carry the state for anyone who cannot separate the two hues.
 .offcanvas__link[aria-current='page'] {
   color: var(--text-accent);
+  font-weight: 600;
+}
+
+.offcanvas__link[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: calc(-1 * var(--space-3));
+  inset-block: var(--space-2);
+  inline-size: var(--rule-marker);
+  border-radius: var(--rule-marker);
+  background: var(--text-accent);
 }
 
 @media (min-width: 48rem) {
