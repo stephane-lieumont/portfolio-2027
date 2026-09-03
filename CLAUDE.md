@@ -18,7 +18,7 @@ apps/api              Fastify + SQLite — projects, media, contact
 packages/shared-types Zod schemas + types: source of truth for the domain
 docs/adr              Architecture decisions and their reasoning
 docs/specs            What the site must do
-.claude/memory        Durable project context
+.claude/memory        Durable project context, including traps.md
 .claude/runtime       Where the project stands: built, missing, awaiting a decision
 ```
 
@@ -35,6 +35,17 @@ nvm use && pnpm install && pnpm infra:up && pnpm dev
 Node 22 is required (`.nvmrc`). The public npm registry is forced by the project's `.npmrc`.
 
 Use `pnpm verify` to run the checks — `pnpm ci` is a built-in pnpm command that wipes `node_modules`.
+
+## Debugging visual behaviour
+
+**Read `.claude/memory/traps.md` first.** It lists the bugs this project has already paid for — each one typechecked, linted, and looked correct on the page. Two of them recurred because the lesson was not written down.
+
+The rule those bugs produced: **measure, do not read.** Query the live DOM for computed styles, sample a transition over time, drive an animation's `currentTime`. Every visual bug in this repository so far survived a careful reading of the CSS and was found by measurement. Reading the code tells you what you wrote; measuring tells you what the browser did.
+
+Two specific traps, because they cost the most:
+
+- Rules keyed on document state (`:root[data-*]`) **must** live in `src/styles/`. Angular's emulated encapsulation scopes them away from component stylesheets silently — `animation-name` computes to `none` and nothing errors.
+- `requestAnimationFrame` does not fire in a backgrounded tab. Check `document.visibilityState` before concluding a performance problem: a working feature was once reverted over this.
 
 ## Code style
 
@@ -106,6 +117,8 @@ Four dedicated experts in `.claude/agents/`:
 | `design-expert`        | tokens, visual hierarchy, art direction                  |
 | `communication-expert` | any visitor-facing text, copy, SEO                       |
 | `motion-design-expert` | animation, transitions, `prefers-reduced-motion`         |
+
+Skills: `add-project` to publish work, `new-adr` to record a decision, `verify-visual` to measure a visual change instead of reading it.
 
 **Work as an orchestrator, not as a lone author.** Consult the relevant experts throughout — not once at the start — and **set them against each other when one drifts**. This is a standing instruction from Stéphane, and it exists because a specialist left alone optimizes for its own axis and quietly propagates whatever premise it was handed.
 

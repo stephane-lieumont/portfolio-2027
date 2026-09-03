@@ -7,6 +7,25 @@ description: Add a project to the portfolio end to end — write the copy, uploa
 
 A project is made of **copy** (written), **media** (uploaded to MinIO) and a **database entry** (created through the API). All three must be consistent before publishing.
 
+## The API does not exist yet
+
+Read `.claude/runtime/STATUS.md` before following anything below. As of
+2026-09-03 the API is a skeleton with only `/health`, and there is no back
+office: **content lives in `apps/web/src/app/core/static-content.ts`** and every
+addition is a commit. The steps below describe the intended flow; the interim
+one is:
+
+1. Add the entry to `static-content.ts`, shaped like spec 03's entities.
+2. Put the image in the MinIO bucket. Media is **never** committed to the
+   repository — the bucket is the store of record. Add the source-to-key line to
+   `apps/api/src/scripts/seed-media.ts` and run
+   `pnpm --filter @portfolio/api media:seed`, or upload it directly.
+3. The content holds the **bucket key** (`projects/<slug>.jpg`), never a URL,
+   plus the image's intrinsic `width` and `height` so nothing reflows on load.
+4. Write alt text that describes the picture. Not the title again — a test
+   fails if alt equals the title beside it.
+5. `pnpm verify`, then look at the page in the browser.
+
 ## Before starting
 
 Check that the environment is running:
