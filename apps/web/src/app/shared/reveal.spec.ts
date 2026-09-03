@@ -88,14 +88,56 @@ describe('Reveal', () => {
     expect(disconnects).toBe(1);
   });
 
-  it('ignores an entry that is not intersecting', async () => {
-    const host = await render();
+  // jsdom lays nothing out, so the rect has to be stated. That is the point of
+  // these two: the observer's margin says "not yet" while the element is
+  // plainly on screen, and only one of those answers is right at arrival.
+  function placeAt(element: Element, top: number, height = 200): void {
+    element.getBoundingClientRect = () =>
+      ({ top, bottom: top + height, height }) as unknown as DOMRect;
+  }
 
+  it('reveals what is already on screen at arrival, margin or not', async () => {
+    const host = await render();
+    const first = host.querySelector('.reveal')!;
+
+    // In the bottom third of the first viewport: the margin excludes it, so on
+    // a page short enough not to scroll it would wait for a scroll that never
+    // comes and never appear at all.
+    placeAt(first, window.innerHeight - 100);
     callbacks[0]([{ isIntersecting: false }]);
     TestBed.tick();
 
-    expect(host.querySelectorAll('.reveal--in')).toHaveLength(0);
+    expect(first.classList.contains('reveal--in')).toBe(true);
+    expect(disconnects).toBe(1);
+  });
+
+  it('leaves alone what is genuinely below the fold', async () => {
+    const host = await render();
+    const first = host.querySelector('.reveal')!;
+
+    placeAt(first, window.innerHeight + 400);
+    callbacks[0]([{ isIntersecting: false }]);
+    TestBed.tick();
+
+    expect(first.classList.contains('reveal--in')).toBe(false);
     expect(disconnects).toBe(0);
+  });
+
+  it('stops crediting arrival after the first report', async () => {
+    const host = await render();
+    const first = host.querySelector('.reveal')!;
+
+    placeAt(first, window.innerHeight + 400);
+    callbacks[0]([{ isIntersecting: false }]);
+
+    // Now on screen, but this is a scroll report: only the observer's own
+    // verdict counts from here, or the reveal would fire a third of a viewport
+    // too early again.
+    placeAt(first, window.innerHeight - 100);
+    callbacks[0]([{ isIntersecting: false }]);
+    TestBed.tick();
+
+    expect(first.classList.contains('reveal--in')).toBe(false);
   });
 
   it('waits until the element is a third into the viewport', async () => {

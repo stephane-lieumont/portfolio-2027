@@ -183,9 +183,16 @@
   // The section reveal. 2022 used 400ms with a 200ms step between siblings;
   // the step is halved because six tool tiles at 200ms took 1.2s to finish
   // arriving, and the last one landed long after the reader got there.
-  --motion-reveal: 420ms;
-  --motion-reveal-step: 100ms;
-  --reveal-rise: 20px; // 2022: translateY(20px)
+  // One rise, one duration, one step for everything that arrives — a page
+  // head, a section heading, a card. Only the stagger index differs, so two
+  // headings on the same page cannot move at two speeds.
+  //
+  // Not 2022's 400ms/20px: those were tuned against a 14px body. At this scale
+  // a 20px rise under a 57px heading is not a movement, and 100ms between two
+  // lines does not read as two beats.
+  --motion-reveal: 380ms;
+  --motion-reveal-step: 150ms;
+  --reveal-rise: 1.75rem;
 
   // The tool marks, kept at the 2022 values because that is the arrival
   // Stéphane recognises. `ease-in` is not a placeholder: --ease-signature is a
@@ -272,6 +279,7 @@
     // Travel and scale go to zero. The state change itself stays: an element
     // that arrives without sliding is calm, one that jumps is not.
     --motion-rise: 0px;
+    --reveal-rise: 0px;
     --motion-rise-tight: 0px;
     --motion-slide: 0px;
     --motion-lift: 0px;

@@ -46,6 +46,11 @@ function staggerIndex(value: unknown): number {
 export class Reveal {
   private readonly element = inject(ElementRef<HTMLElement>).nativeElement as HTMLElement;
 
+  private withinViewport(view: Window): boolean {
+    const rect = this.element.getBoundingClientRect();
+    return rect.top < view.innerHeight && rect.bottom > 0;
+  }
+
   /** Position in a staggered group. Each step adds one delay unit. */
   readonly index = input(0, { alias: 'appReveal', transform: staggerIndex });
 
@@ -63,17 +68,30 @@ export class Reveal {
 
     this.element.ownerDocument.documentElement.setAttribute('data-reveal-ready', '');
 
+    // Two different questions, answered by one observer.
+    //
+    // On arrival: is this already on screen? If so it belongs to the page's
+    // entrance and plays now. The margin below must not apply here — content
+    // sitting in the bottom third of the first viewport would wait for a scroll
+    // that, on a page short enough not to scroll, never comes. It would simply
+    // never appear.
+    //
+    // Afterwards: has it come properly into view? A third of the viewport, not
+    // a sliver. At -10% an element revealed the moment its top edge crossed the
+    // fold, so the transition had finished before anyone was looking at it —
+    // the animation was there and nobody saw it.
+    let arrival = true;
+
     const observer = new view.IntersectionObserver(
       (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return;
+        const intersecting = entries.some((entry) => entry.isIntersecting);
+        const onScreenNow = arrival && this.withinViewport(view);
+        arrival = false;
+
+        if (!intersecting && !onScreenNow) return;
         this.shown.set(true);
         observer.disconnect();
       },
-      // A third of the viewport, not a sliver. At -10% an element revealed the
-      // moment its top edge crossed the fold, so by the time it was actually
-      // being looked at the transition had already finished — the animation was
-      // there and nobody saw it. Pulling the bottom edge up a third means the
-      // element has to come properly into view before it moves.
       { rootMargin: '0px 0px -33% 0px' },
     );
 
