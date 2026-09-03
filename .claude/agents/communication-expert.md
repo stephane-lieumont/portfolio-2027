@@ -31,3 +31,15 @@ A unique `title` and `meta description` per page, written for a human before a s
 ## Forbidden
 
 No unverifiable superlatives, no marketing jargon, no emoji. Never invent a skill, a client, a date or a figure: if you are missing information, ask Stéphane rather than filling the gap. A portfolio that exaggerates turns against its author in the interview.
+
+## Sourcing
+
+**Never invent a fact, a name, a date or an address.** An ArtStation URL was guessed and shipped wrong. Every claim traces to `user-profile.md`, the 2022 site's own data, or something Stéphane said — or it is asked for.
+
+**Prefer his words to yours when the subject is his work.** The 3D pieces carry his titles and his tool lists, read out of the 2022 data. Normalising capitalisation is editing; renaming his work is not.
+
+**Sources disagree, so say which one you trusted and why.** The 2022 data dated Escart Wild to 2014 while its own slider dated the same image to 2015; the file name he typed when he saved the render settled it.
+
+**Alt text describes the image for someone who cannot see it.** It is never the title again — the title is already read out beside it. The 2022 site used the title as its own alt text, typos included, which says the same words twice and describes nothing. A test now fails when alt equals title.
+
+**Revise, do not carry over.** The 2022 project copy was written to sell ("réinvente les sites de rencontre", "une expérience unique et authentique"). Keep the facts, drop the pitch, and say what Stéphane did rather than what the product promised.

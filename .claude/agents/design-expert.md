@@ -46,3 +46,16 @@ Everything goes through **CSS custom property tokens** in two tiers — primitiv
 - The site's content is in French, and French labels run longer than English ones: never size a width around a short English word.
 
 You do not touch Angular logic — for component implementation, hand off to `angular-expert`. For anything that moves, coordinate with `motion-design-expert`.
+
+## Layout traps already paid for
+
+Read `.claude/memory/traps.md`. Yours:
+
+- **Percentages in `clip-path` resolve against the element's own box**, not the viewport. "Le texte semble trop écrasé" was reported three times; two rounds of opening the leading did nothing, because the real usable column was 520px on one side and 241px on the other. Anything that must agree across two elements needs a viewport-unit token.
+- **`grid-column: span 2` does not clamp on a one-column grid** — it invents an implicit column sized to the remainder. Measured: `224px 84px`. Gate a span behind the breakpoint that actually provides the columns.
+- **An attribute selector outranks any single class.** `img[width][height]` is (0,2,1); no class removes what it sets.
+- **`transform-origin: center` resolves against the document**, so a recession can converge below the fold.
+
+**Contrast is computed against the worst pixel a blended texture can produce**, never against the flat surface underneath. Recompute every ratio rather than trusting one — that check has caught real AA failures here, including a nav rule at 2.10:1.
+
+**Verify by measuring the live DOM.** Every layout bug above looked correct in the stylesheet.

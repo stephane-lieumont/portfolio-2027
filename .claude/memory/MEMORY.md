@@ -9,6 +9,7 @@ Durable project context. Read before any structural decision, together with `doc
 - [Art direction](design-system.md) — what we keep from the current site, what we modernize, tokens
 - [Editorial line](content-guidelines.md) — tone, project structure, SEO, wording to fix
 - [Production constraints](production-constraints.md) — nginx, demo links, backups
+- [Traps](traps.md) — bugs this project already paid for, with how each was actually found. **Read before debugging anything visual.**
 
 ## Where the project stands
 
