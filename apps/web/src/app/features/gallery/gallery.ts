@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { softwareOf } from '@portfolio/shared-types/registries';
 
+import { mediaUrl } from '../../core/media.config';
 import { ARTWORKS } from '../../core/static-content';
 import { TechChip } from '../../shared/tech-chip';
 
@@ -14,6 +15,7 @@ import { TechChip } from '../../shared/tech-chip';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Gallery {
+  protected readonly mediaUrl = mediaUrl();
   protected readonly artworks = ARTWORKS;
   protected readonly softwareOf = softwareOf;
 

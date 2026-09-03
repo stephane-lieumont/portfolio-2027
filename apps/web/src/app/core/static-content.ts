@@ -31,11 +31,31 @@ export interface StaticProject {
    * never an absolute URL — the demos move with the site (see ADR-0005).
    */
   readonly demoUrl?: string;
+  readonly cover: StaticImage;
+}
+
+/** A rendered image with its intrinsic size, so nothing reflows once it loads. */
+export interface StaticImage {
+  /**
+   * Object key inside the MinIO bucket, never a URL. The origin serving it
+   * differs between development and production, so the base is injected
+   * (MEDIA_BASE_URL) and joined at render time — see media-url.ts.
+   */
+  readonly key: string;
+  /**
+   * Describes the picture for someone who cannot see it — never a repeat of the
+   * title, which is already read out beside it. The 2022 alt text was the title
+   * again, typos included.
+   */
+  readonly alt: string;
+  readonly width: number;
+  readonly height: number;
 }
 
 export interface StaticArtwork {
   readonly slug: string;
   readonly title: string;
+  readonly image: StaticImage;
   readonly software: readonly SoftwareSlug[];
   readonly releasedAt: string;
   readonly featured: boolean;
@@ -46,6 +66,12 @@ export interface StaticArtwork {
 export const PROJECTS: readonly StaticProject[] = [
   {
     slug: 'case-tes-potes-mobile',
+    cover: {
+      key: 'projects/case-tes-potes-mobile.jpg',
+      alt: 'Écrans de l’application mobile Case Tes Potes',
+      width: 400,
+      height: 300,
+    },
     title: 'Case Tes Potes — application mobile',
     summary:
       'Une application de rencontre où ce sont les amis qui présentent. J’ai défini la stratégie technique, écrit les user stories et la roadmap, et mené le développement avec deux développeurs.',
@@ -67,6 +93,12 @@ export const PROJECTS: readonly StaticProject[] = [
   },
   {
     slug: 'case-tes-potes-landing-page',
+    cover: {
+      key: 'projects/case-tes-potes-landing-page.jpg',
+      alt: 'Landing page de préinscription de Case Tes Potes',
+      width: 400,
+      height: 329,
+    },
     title: 'Case Tes Potes — landing page',
     summary:
       'La page d’entrée de la campagne de préinscription. Développée en React, adossée à une API Koa qui alimente la base de contacts et déclenche les envois.',
@@ -90,6 +122,12 @@ export const PROJECTS: readonly StaticProject[] = [
   },
   {
     slug: 'case-tes-potes-web-app',
+    cover: {
+      key: 'projects/case-tes-potes-web-app.jpg',
+      alt: 'Formulaire de témoignage de la web app Case Tes Potes',
+      width: 400,
+      height: 300,
+    },
     title: 'Case Tes Potes — web app',
     summary:
       'Une application accessible par lien d’invitation, pour que les proches d’un célibataire complètent son profil sans installer l’application mobile.',
@@ -111,6 +149,12 @@ export const PROJECTS: readonly StaticProject[] = [
   },
   {
     slug: 'kasa-openclassrooms',
+    cover: {
+      key: 'projects/kasa-openclassrooms.jpg',
+      alt: 'Page d’accueil de la plateforme de location Kasa',
+      width: 500,
+      height: 375,
+    },
     title: 'Kasa — OpenClassrooms',
     summary:
       'Une plateforme de location entre particuliers, réalisée dans le cadre de ma formation. L’occasion de poser proprement une architecture React et un typage strict.',
@@ -130,6 +174,12 @@ export const PROJECTS: readonly StaticProject[] = [
   },
   {
     slug: 'portfolio-3d-2018',
+    cover: {
+      key: 'projects/portfolio-3d-2018.jpg',
+      alt: 'Page d’accueil du portfolio 3D de 2018',
+      width: 400,
+      height: 300,
+    },
     title: 'Portfolio 3D',
     summary:
       'Ma première vitrine, écrite sans framework. Elle m’a appris ce que coûte une animation mal pensée bien avant que je sache le nommer.',
@@ -148,6 +198,12 @@ export const PROJECTS: readonly StaticProject[] = [
   },
   {
     slug: 'pixmodels',
+    cover: {
+      key: 'projects/pixmodels.jpg',
+      alt: 'Site vitrine de Pixmodels',
+      width: 400,
+      height: 300,
+    },
     title: 'Pixmodels',
     summary:
       'Un service de communication audiovisuelle : site vitrine et outils de gestion, à une époque où je faisais encore de la 3D à plein temps.',
@@ -167,52 +223,105 @@ export const PROJECTS: readonly StaticProject[] = [
   },
 ];
 
+/**
+ * The sixteen pieces the current site shows, with Stéphane's own titles and
+ * tool lists, carried over on his instruction: "conserve ce qui est présent
+ * actuellement." Nine more renders sit unused in the 2022 repository and are
+ * deliberately not here — the selection is his, not ours.
+ *
+ * Years come from the file names rather than from the 2022 `released` field,
+ * which contradicts itself: that data dated Escart Wild to 2014 while its own
+ * slider dated the same image to 2015. The file name is what he typed when he
+ * saved the render.
+ */
 export const ARTWORKS: readonly StaticArtwork[] = [
+  {
+    slug: 'legos-minions',
+    title: 'Légos : les Minions',
+    image: {
+      key: 'cgi/legos-minions.jpg',
+      alt: 'Les Minions reconstitués en Légos',
+      width: 1200,
+      height: 675,
+    },
+    software: ['3dsmax', 'vray', 'photoshop', 'illustrator'],
+    releasedAt: '2016-01-01',
+    featured: true,
+  },
+  {
+    slug: 'extraterrestre',
+    title: 'Extraterrestre',
+    image: {
+      key: 'cgi/extraterrestre.jpg',
+      alt: 'Extraterrestre de science-fiction photoréaliste',
+      width: 1200,
+      height: 675,
+    },
+    software: ['3dsmax', 'vray', 'photoshop', 'substance-painter'],
+    releasedAt: '2016-01-01',
+    featured: true,
+  },
   {
     slug: 'escart-wild',
     title: 'Escart Wild',
-    software: ['zbrush', '3dsmax', 'vray'],
+    image: {
+      key: 'cgi/escart-wild.jpg',
+      alt: 'Escargot cartoon photoréaliste',
+      width: 1280,
+      height: 720,
+    },
+    software: ['3dsmax', 'vray', 'zbrush', 'photoshop'],
     releasedAt: '2015-01-01',
     featured: true,
-  },
-  {
-    slug: 'maison-moderne',
-    title: 'Maison moderne',
-    software: ['3dsmax', 'vray'],
-    releasedAt: '2014-01-01',
-    featured: true,
-  },
-  {
-    slug: 'legos-minions',
-    title: 'Légos — les Minions',
-    software: ['3dsmax', 'vray'],
-    releasedAt: '2016-01-01',
-    featured: false,
-  },
-  {
-    slug: 'immeuble',
-    title: 'Immeuble',
-    software: ['3dsmax', 'vray'],
-    releasedAt: '2015-01-01',
-    featured: false,
   },
   {
     slug: 'beebop',
     title: 'Beebop',
-    software: ['zbrush', '3dsmax'],
+    image: {
+      key: 'cgi/beebop.jpg',
+      alt: 'Le robot Beebop, sculpté et texturé',
+      width: 1280,
+      height: 720,
+    },
+    software: ['3dsmax', 'substance-painter', 'zbrush', 'photoshop'],
     releasedAt: '2015-01-01',
     featured: false,
   },
   {
     slug: 'gorgotte',
     title: 'Gorgotte',
-    software: ['zbrush', 'substance-painter'],
+    image: {
+      key: 'cgi/gorgotte.jpg',
+      alt: 'Créature monstrueuse sculptée en 3D',
+      width: 1280,
+      height: 696,
+    },
+    software: ['3dsmax', 'zbrush', 'photoshop'],
     releasedAt: '2015-01-01',
     featured: false,
   },
   {
-    slug: 'salon',
-    title: 'Architecture d’intérieur — salon',
+    slug: 'immeuble',
+    title: 'Immeuble',
+    image: {
+      key: 'cgi/immeuble.jpg',
+      alt: 'Immeuble d’habitation photoréaliste',
+      width: 1280,
+      height: 1078,
+    },
+    software: ['3dsmax', 'vray'],
+    releasedAt: '2015-01-01',
+    featured: false,
+  },
+  {
+    slug: 'salon-nuit',
+    title: 'Architecture d’intérieur — salon, nuit',
+    image: {
+      key: 'cgi/salon-nuit.jpg',
+      alt: 'Salon décoré, éclairage de nuit',
+      width: 1280,
+      height: 720,
+    },
     software: ['3dsmax', 'vray'],
     releasedAt: '2015-01-01',
     featured: false,
@@ -220,64 +329,118 @@ export const ARTWORKS: readonly StaticArtwork[] = [
   {
     slug: 'chambre',
     title: 'Architecture d’intérieur — chambre',
+    image: {
+      key: 'cgi/chambre.jpg',
+      alt: 'Chambre décorée, lumière du jour',
+      width: 1280,
+      height: 720,
+    },
     software: ['3dsmax', 'vray'],
     releasedAt: '2015-01-01',
     featured: false,
   },
   {
-    slug: 'entree',
-    title: 'Architecture d’intérieur — entrée',
+    slug: 'salon-jour',
+    title: 'Architecture d’intérieur — salon, jour',
+    image: {
+      key: 'cgi/salon-jour.jpg',
+      alt: 'Salon décoré, lumière du jour',
+      width: 1280,
+      height: 720,
+    },
     software: ['3dsmax', 'vray'],
     releasedAt: '2015-01-01',
-    featured: false,
-  },
-  {
-    slug: 'exterieur',
-    title: 'Extérieur',
-    software: ['3dsmax', 'vray'],
-    releasedAt: '2015-01-01',
-    featured: false,
-  },
-  {
-    slug: 'ampoule',
-    title: 'Ampoule',
-    software: ['3dsmax', 'vray'],
-    releasedAt: '2015-01-01',
-    featured: false,
-  },
-  {
-    slug: 'tomates',
-    title: 'Tomates',
-    software: ['3dsmax', 'vray'],
-    releasedAt: '2015-01-01',
-    featured: false,
-  },
-  {
-    slug: 'extraterrestre',
-    title: 'Extraterrestre',
-    software: ['zbrush', 'substance-painter'],
-    releasedAt: '2016-01-01',
     featured: false,
   },
   {
     slug: 'caricature',
     title: 'Caricature',
-    software: ['zbrush'],
-    releasedAt: '2015-01-01',
+    image: {
+      key: 'cgi/caricature.jpg',
+      alt: 'Caricature 3D de Stéphane Lieumont',
+      width: 1280,
+      height: 720,
+    },
+    software: ['3dsmax', 'vray', 'zbrush', 'photoshop'],
+    releasedAt: '2014-01-01',
+    featured: false,
+  },
+  {
+    slug: 'maison-moderne',
+    title: 'Maison moderne',
+    image: {
+      key: 'cgi/maison-moderne.jpg',
+      alt: 'Maison moderne photoréaliste, vue extérieure',
+      width: 1280,
+      height: 720,
+    },
+    software: ['3dsmax', 'vray'],
+    releasedAt: '2014-01-01',
+    featured: true,
+  },
+  {
+    slug: 'entree',
+    title: 'Architecture d’intérieur — entrée',
+    image: {
+      key: 'cgi/entree.jpg',
+      alt: 'Entrée d’habitation aux murs blancs',
+      width: 1280,
+      height: 864,
+    },
+    software: ['3dsmax', 'vray'],
+    releasedAt: '2014-01-01',
+    featured: false,
+  },
+  {
+    slug: 'exterieur',
+    title: 'Extérieur',
+    image: {
+      key: 'cgi/exterieur.jpg',
+      alt: 'Extérieur avec herbe photoréaliste',
+      width: 1200,
+      height: 848,
+    },
+    software: ['3dsmax', 'vray', 'photoshop'],
+    releasedAt: '2014-01-01',
+    featured: false,
+  },
+  {
+    slug: 'ampoule',
+    title: 'Ampoule',
+    image: {
+      key: 'cgi/ampoule.jpg',
+      alt: 'Ampoule photoréaliste sur fond neutre',
+      width: 1280,
+      height: 720,
+    },
+    software: ['3dsmax', 'vray'],
+    releasedAt: '2014-01-01',
     featured: false,
   },
   {
     slug: 'support-marketing',
     title: 'Support marketing',
-    software: ['3dsmax', 'photoshop'],
-    releasedAt: '2015-01-01',
+    image: {
+      key: 'cgi/support-marketing.jpg',
+      alt: 'Canette Pixmodels, visuel publicitaire',
+      width: 1280,
+      height: 720,
+    },
+    software: ['3dsmax', 'vray', 'photoshop'],
+    releasedAt: '2014-01-01',
     featured: false,
   },
   {
-    slug: 'maison-abandonnee',
-    title: 'Maison abandonnée',
-    software: ['3dsmax', 'vray'],
-    releasedAt: '2015-01-01',
+    slug: 'tomates',
+    title: 'Tomates',
+    image: {
+      key: 'cgi/tomates.jpg',
+      alt: 'Tomates photoréalistes',
+      width: 1280,
+      height: 720,
+    },
+    software: ['3dsmax', 'vray', 'photoshop'],
+    releasedAt: '2014-01-01',
     featured: false,
   },
 ];

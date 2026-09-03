@@ -26,8 +26,16 @@
 }
 
 // Emphasis, not sequence: the one thing a ratio cannot express.
-.tile--featured {
-  grid-column: span 2;
+//
+// Only once there are two columns to span. On a single-column grid `span 2`
+// does not clamp — it invents an implicit second column and sizes it to
+// whatever is left, so the explicit track shrinks to its minimum and every
+// unfeatured tile ends up with a hundred pixels of dead space beside it.
+// Measured on a 372px viewport: `grid-template-columns: 224px 84px`.
+@media (min-width: 48rem) {
+  .tile--featured {
+    grid-column: span 2;
+  }
 }
 
 .tile__body {
@@ -39,4 +47,29 @@
 
 .tile__meta {
   color: var(--text-secondary);
+}
+
+// The image is the tile. `aspect-ratio` with `object-fit: cover` keeps a grid
+// of mixed 16:9, 4:3 and near-square renders on one baseline without letterbox
+// bars, and the intrinsic width/height attributes stay on the element so the
+// row does not reflow when a lazy image lands.
+.tile {
+  overflow: hidden;
+}
+
+.tile__image {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: var(--surface-sunken);
+}
+
+// A featured piece gets the room, not a different treatment: same tile, twice
+// the span. Two ways of drawing the same idea would read as two ideas.
+@media (min-width: 48rem) {
+  .tile--featured .tile__image {
+    aspect-ratio: 16 / 9;
+  }
 }

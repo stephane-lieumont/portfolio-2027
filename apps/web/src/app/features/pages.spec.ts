@@ -4,6 +4,8 @@ import { provideRouter } from '@angular/router';
 import axe from 'axe-core';
 import { describe, expect, it } from 'vitest';
 
+import { MEDIA_BASE_URL } from '../core/media.config';
+
 import { Contact } from './contact/contact';
 import { Developer } from './developer/developer';
 import { Gallery } from './gallery/gallery';
@@ -11,7 +13,11 @@ import { Gallery } from './gallery/gallery';
 async function render<T>(component: Type<T>): Promise<HTMLElement> {
   await TestBed.configureTestingModule({
     imports: [component],
-    providers: [provideZonelessChangeDetection(), provideRouter([])],
+    providers: [
+      provideZonelessChangeDetection(),
+      provideRouter([]),
+      { provide: MEDIA_BASE_URL, useValue: '/medias' },
+    ],
   }).compileComponents();
 
   const fixture = TestBed.createComponent(component);

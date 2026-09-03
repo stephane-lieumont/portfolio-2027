@@ -19,18 +19,21 @@ export default tseslint.config(
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
-      // Les plugins et handlers Fastify sont async par contrat, même sans await.
+      // Fastify plugins and handlers are async by contract, await or not.
       '@typescript-eslint/require-await': 'off',
       'no-console': 'error',
     },
   },
   {
     files: ['**/*.test.ts'],
-    // describe/it de node:test renvoient des promesses qu'on ne consomme pas.
+    // node:test's describe/it return promises nobody is expected to consume.
     rules: { '@typescript-eslint/no-floating-promises': 'off' },
   },
   {
-    files: ['src/lib/hash-password.ts'],
+    // Command-line entry points. Their output *is* the interface — a seeding
+    // script that reports nothing cannot be told apart from one that did
+    // nothing. Everything else in the API logs through Fastify.
+    files: ['src/lib/hash-password.ts', 'src/scripts/**/*.ts'],
     rules: { 'no-console': 'off' },
   },
 );

@@ -23,6 +23,16 @@
     }
   </header>
 
+  <img
+    class="project-page__cover"
+    [src]="mediaUrl(project().cover.key)"
+    [alt]="project().cover.alt"
+    [width]="project().cover.width"
+    [height]="project().cover.height"
+    fetchpriority="high"
+    decoding="async"
+  />
+
   <section class="section__block" aria-labelledby="titre-mission">
     <h2 id="titre-mission" class="t-h3">Ma mission</h2>
     <p class="t-body measure">{{ project().mission }}</p>

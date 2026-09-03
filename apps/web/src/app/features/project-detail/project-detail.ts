@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import { technologyOf } from '@portfolio/shared-types/registries';
 
+import { mediaUrl } from '../../core/media.config';
 import { PROJECTS } from '../../core/static-content';
 import { TechChip } from '../../shared/tech-chip';
 
@@ -13,6 +14,7 @@ import { TechChip } from '../../shared/tech-chip';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectDetail {
+  protected readonly mediaUrl = mediaUrl();
   // Bound from the route parameter by withComponentInputBinding(). The route
   // only matches known slugs, so this always resolves; an unknown one falls
   // through to the 404 rather than rendering an empty page here.

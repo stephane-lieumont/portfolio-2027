@@ -23,6 +23,15 @@
     <ul class="projects" role="list">
       @for (project of projects; track project.slug) {
         <li class="project card">
+          <img
+            class="project__cover"
+            [src]="mediaUrl(project.cover.key)"
+            [alt]="project.cover.alt"
+            [width]="project.cover.width"
+            [height]="project.cover.height"
+            [loading]="$index < 2 ? 'eager' : 'lazy'"
+            decoding="async"
+          />
           <div class="project__body">
             @if (project.series) {
               <p class="t-overline project__series">{{ project.series }}</p>
