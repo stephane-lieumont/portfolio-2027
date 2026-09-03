@@ -22,7 +22,12 @@ five-phase entrance behind the Pac-Man loader.
 **Pages** — Developer (list), Gallery (list), Contact, project detail at
 `/developpeur/<slug>`, 404 with the Travolta easter egg.
 
-**Tests** — 65 passing, 100% lines, 98.8% statements, axe on every page.
+**Media** — 16 renders and 6 project covers in MinIO, served through `/medias`
+(nginx in production, the dev server's proxy locally). Bucket policy is
+read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
+The CV PDF is served from the repository.
+
+**Tests** — 120 passing, 100% lines, 98.8% statements, axe on every page.
 
 ## Missing
 
@@ -43,4 +48,5 @@ Ordered by what hurts most on the day the site goes live.
 
 - Decorative SVG shapes (triangle, bubbles) from the 2022 site — Stéphane wanted
   to see the detail pages first.
-- MinIO — earns its place with the back office, not before. See DECISIONS.md.
+- Nine further renders sit unused in the 2022 repository. The sixteen shown are
+  Stéphane's selection, not ours.

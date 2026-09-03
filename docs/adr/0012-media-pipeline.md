@@ -93,3 +93,39 @@ Finally, video encoding remains **a manual act**. Nothing in the code guarantees
 **HLS or DASH for the demo** — adaptive streaming is the right answer for a video catalogue. For a single two-minute demo played on demand, two MP4 renditions and nginx's byte-range requests are enough, with no manifest, no segmentation and no JavaScript player to ship.
 
 **`ffmpeg` embedded in the API to transcode video the way we transcode images** — coherent on paper. Rejected as disproportionate: a markedly heavier Docker image and a blocking transcode of several minutes, in the service of a file that changes once a year and that Stéphane already knows how to encode better than a generic preset would.
+
+## Amendment — 2026-09-03
+
+The static site now serves real media, and it does **not** yet follow the
+pipeline above. Recording the gap rather than leaving the ADR to read as done.
+
+**What is built.** The sixteen renders and six project covers the current site
+shows are in the bucket under flat, slug-derived keys — `cgi/escart-wild.jpg`,
+`projects/kasa-openclassrooms.jpg` — uploaded once by
+`pnpm --filter @portfolio/api media:seed`. One format, one width, the original
+JPEG. Served with the immutable cache header this ADR asks for, through
+`/medias`: nginx in production, the dev server's proxy locally. The bucket
+policy allows anonymous `GetObject` and nothing else; an anonymous `PUT`
+returns 403.
+
+The content model holds the object key and the intrinsic width and height, so
+`<img>` reserves its box and nothing reflows on load. Alternative text is
+written per image and tested to never simply repeat the title beside it.
+
+**What is not built.** No `sharp`, no AVIF or WebP, no width variants, no
+`srcset`, no `NgOptimizedImage`, no dominant colour, no `ready` state. The keys
+are flat rather than `media/{id}/…`, because there is no media identifier yet —
+these objects were seeded, not uploaded through the API.
+
+**Why stop here.** Derivatives are generated _at upload time_ by the API, and
+nothing uploads yet: the back office does not exist. Building the pipeline now
+would mean building it against a seeding script that will be deleted, and
+guessing at the profile of images that are already fixed. The cost of waiting
+is measurable and bounded — the gallery ships 16 full-size JPEGs, around 5 MB
+across the page, lazy-loaded below the fold.
+
+**What this obliges.** The flat keys are interim. When the back office lands,
+media move to `media/{id}/…` and the seeded objects are re-uploaded through the
+API so they gain derivatives like any other. That migration is the price of
+shipping images before the pipeline, and it is accepted knowingly rather than
+discovered later.

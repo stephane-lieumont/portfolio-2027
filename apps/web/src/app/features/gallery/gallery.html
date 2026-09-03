@@ -28,6 +28,16 @@
     <ul class="tiles" role="list">
       @for (artwork of artworks; track artwork.slug) {
         <li class="tile card" [class.tile--featured]="artwork.featured">
+          <img
+            class="tile__image"
+            [src]="mediaUrl(artwork.image.key)"
+            [alt]="artwork.image.alt"
+            [width]="artwork.image.width"
+            [height]="artwork.image.height"
+            [loading]="$index < 4 ? 'eager' : 'lazy'"
+            [attr.fetchpriority]="$index < 4 ? 'high' : null"
+            decoding="async"
+          />
           <div class="tile__body">
             <h3 class="t-label">{{ artwork.title }}</h3>
             <p class="t-meta tabular tile__meta">
@@ -48,7 +58,9 @@
   <aside class="section__cta">
     <p class="t-lead">Le reste du travail 3D est sur ArtStation.</p>
     <div class="chips">
-      <a class="button button--secondary" href="https://s-lieumont.artstation.com/">ArtStation</a>
+      <a class="button button--secondary" href="https://www.artstation.com/s-lieumont"
+        >ArtStation</a
+      >
       <a class="button button--primary" routerLink="/contact">Me contacter</a>
     </div>
   </aside>

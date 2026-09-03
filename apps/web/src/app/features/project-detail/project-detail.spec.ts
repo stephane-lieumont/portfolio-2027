@@ -4,13 +4,19 @@ import { provideRouter } from '@angular/router';
 import axe from 'axe-core';
 import { describe, expect, it } from 'vitest';
 
+import { MEDIA_BASE_URL } from '../../core/media.config';
+
 import { PROJECTS } from '../../core/static-content';
 import { ProjectDetail } from './project-detail';
 
 async function render(slug: string): Promise<HTMLElement> {
   await TestBed.configureTestingModule({
     imports: [ProjectDetail],
-    providers: [provideZonelessChangeDetection(), provideRouter([])],
+    providers: [
+      provideZonelessChangeDetection(),
+      provideRouter([]),
+      { provide: MEDIA_BASE_URL, useValue: '/medias' },
+    ],
   }).compileComponents();
 
   const fixture = TestBed.createComponent(ProjectDetail);
@@ -49,6 +55,16 @@ describe.each(PROJECTS.map((p) => [p.slug, p] as const))('project %s', (slug, pr
     } else {
       expect(demo).toBeNull();
     }
+  });
+
+  it('resolves its cover through the injected media base', async () => {
+    const host = await render(slug);
+    const cover = host.querySelector<HTMLImageElement>('.project-page__cover');
+
+    // The key is a bucket path, never a URL — the origin differs between
+    // development and production, so joining it is the app's job and this is
+    // where a double slash or a missing base would show up.
+    expect(cover?.getAttribute('src')).toBe(`/medias/${project.cover.key}`);
   });
 
   it('has no skipped heading level', async () => {

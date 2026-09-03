@@ -1,0 +1,8 @@
+{
+  "/medias": {
+    "target": "http://localhost:9000/portfolio-media",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": { "^/medias": "" }
+  }
+}
