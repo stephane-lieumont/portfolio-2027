@@ -105,7 +105,7 @@
     @for (item of items; track item.path; let i = $index) {
       <li class="offcanvas__item" [style.--item-index]="i">
         <a
-          class="offcanvas__link t-h3"
+          class="offcanvas__link t-nav-drawer"
           [routerLink]="item.path"
           routerLinkActive
           #active="routerLinkActive"
@@ -118,7 +118,7 @@
     }
     <li class="offcanvas__item" [style.--item-index]="items.length">
       <a
-        class="offcanvas__link t-h3"
+        class="offcanvas__link t-nav-drawer"
         href="/cv-stephane-lieumont.pdf"
         download
         (click)="closeFromLink()"

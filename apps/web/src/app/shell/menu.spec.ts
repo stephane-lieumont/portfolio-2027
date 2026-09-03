@@ -184,6 +184,33 @@ describe('Menu', () => {
       }
     });
 
+    it('re-measures when the page moves behind the panel', () => {
+      document.documentElement.scrollTop = 300;
+      menu.toggle(true);
+      expect(document.documentElement.style.getPropertyValue('--menu-clip-top')).toBe('300px');
+
+      // The root is overflow:hidden while open, which stops a finger but not a
+      // programmatic scroll — a focus jump, a scrollIntoView, the browser
+      // restoring a position. Left stale, the band no longer matches the
+      // viewport and the sticky header slides out of it, so the page reappears
+      // above the header.
+      document.documentElement.scrollTop = 815;
+      document.dispatchEvent(new Event('scroll'));
+
+      expect(document.documentElement.style.getPropertyValue('--menu-clip-top')).toBe('815px');
+    });
+
+    it('stops re-measuring once closed', () => {
+      menu.toggle(true);
+      current.playState = 'finished';
+      menu.toggle(false);
+
+      document.documentElement.scrollTop = 500;
+      document.dispatchEvent(new Event('scroll'));
+
+      expect(document.documentElement.style.getPropertyValue('--menu-clip-top')).toBe('0px');
+    });
+
     it('measures from layout offsets, not from the transformed box', () => {
       // Reopening while the previous recession was still easing back read the
       // shell at 0.9 through getBoundingClientRect and put the clip at the

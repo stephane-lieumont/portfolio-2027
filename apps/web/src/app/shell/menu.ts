@@ -1,4 +1,4 @@
-import { DOCUMENT, Injectable, effect, inject, signal } from '@angular/core';
+import { DOCUMENT, DestroyRef, Injectable, effect, inject, signal } from '@angular/core';
 
 // ~ GSAP Power3.easeInOut, the 2022 panel curve.
 const EASE_MENU = 'cubic-bezier(0.77, 0, 0.175, 1)';
@@ -25,10 +25,20 @@ export class Menu {
   private panel?: HTMLElement;
   private shell?: HTMLElement;
   private closing?: ReturnType<typeof setTimeout>;
+  private readonly repin = () => this.pinToViewport();
 
   readonly open = signal(false);
 
   constructor() {
+    // The scroll listener below outlives a close if nobody takes it down. One
+    // root instance lives as long as the app, so in production this is
+    // housekeeping — but it is real: a test proved listeners accumulate across
+    // instances, each still re-measuring a shell that no longer exists.
+    inject(DestroyRef).onDestroy(() => {
+      clearTimeout(this.closing);
+      this.document.removeEventListener('scroll', this.repin);
+    });
+
     effect(() => {
       const root = this.document.documentElement;
       clearTimeout(this.closing);
@@ -95,7 +105,19 @@ export class Menu {
   toggle(open: boolean): void {
     this.open.set(open);
 
-    if (open) this.pinToViewport();
+    // The clip is a measurement, and a measurement taken once goes stale. The
+    // root is `overflow: hidden` while the menu is open, which stops a finger
+    // but not a programmatic scroll — a focus jump, a scrollIntoView, the
+    // browser restoring a position. Any of those moves the page behind the
+    // panel while the band stays where it was, and the sticky header slides
+    // out of it: the page reappears above the header. Re-measuring on scroll
+    // makes the band self-correcting whatever moved it.
+    if (open) {
+      this.pinToViewport();
+      this.document.addEventListener('scroll', this.repin, { passive: true });
+    } else {
+      this.document.removeEventListener('scroll', this.repin);
+    }
 
     const panel = this.panel;
     if (!panel) return;
