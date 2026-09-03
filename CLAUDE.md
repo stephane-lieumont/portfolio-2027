@@ -19,9 +19,12 @@ packages/shared-types Zod schemas + types: source of truth for the domain
 docs/adr              Architecture decisions and their reasoning
 docs/specs            What the site must do
 .claude/memory        Durable project context
+.claude/runtime       Where the project stands: built, missing, awaiting a decision
 ```
 
 **Before any structural decision**, read `.claude/memory/` and `docs/adr/`. The answer is often already there, with its reasons.
+
+**Before picking up work**, read `.claude/runtime/STATUS.md`. It says what actually exists, which is not the same as what has been decided — ADR-0008 settled on prerendering and it stayed unbuilt for weeks behind a comment claiming otherwise. Update it in the same commit as the work, never afterwards: a status file that lags is read as true.
 
 ## Getting started
 

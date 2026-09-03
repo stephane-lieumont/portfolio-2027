@@ -9,3 +9,9 @@ Durable project context. Read before any structural decision, together with `doc
 - [Art direction](design-system.md) — what we keep from the current site, what we modernize, tokens
 - [Editorial line](content-guidelines.md) — tone, project structure, SEO, wording to fix
 - [Production constraints](production-constraints.md) — nginx, demo links, backups
+
+## Where the project stands
+
+These files hold what stays true. For what is _built_, what is missing and what
+is awaiting a decision, read [`.claude/runtime/`](../runtime/README.md) — it is
+updated as work lands, and this directory deliberately is not.
