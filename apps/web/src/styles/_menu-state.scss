@@ -10,6 +10,18 @@
 // and strand the links. The recalibrated timings are documented in spec 07 and
 // deliberately not applied.
 
+// The clip is keyed on the attribute being *present*, not on 'open', so it
+// survives the dismiss: the shell is still travelling back from 0.9 to 1 after
+// the menu has logically closed, and dropping the clip early flashes the
+// scrolled-past page into view on the way out.
+//
+// It keeps only the band that was on screen when the menu opened. Without it,
+// shrinking a document-tall box pulls its off-screen parts inward — scroll the
+// home page, open the menu, and the split appears above the header.
+:root[data-menu] .shell {
+  clip-path: inset(var(--menu-clip-top, 0) 0 var(--menu-clip-bottom, 0) 0);
+}
+
 :root[data-menu='open'] .shell {
   scale: var(--shell-scale);
   transition-duration: var(--motion-menu-panel);

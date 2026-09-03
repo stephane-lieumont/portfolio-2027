@@ -4,7 +4,7 @@
      descendants: a transform on an ancestor makes it the containing block for
      any position:fixed inside, which is the trap that makes the current site's
      menu links unreachable the moment its animation misfires. -->
-<div class="shell" [attr.inert]="menu.open() || null">
+<div #shell class="shell" [attr.inert]="menu.open() || null">
   <!-- Zero-height marker: once it leaves the viewport the header has something
        under it and earns its background. Before that it floats over the hero
        with no border, and the name lives large inside the hero instead. -->
