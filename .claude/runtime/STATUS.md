@@ -27,7 +27,13 @@ five-phase entrance behind the Pac-Man loader.
 read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository.
 
-**Tests** — 120 passing, 100% lines, 98.8% statements, axe on every page.
+**Tests** — 158 passing on the web side, 99.8% lines, 93.8% branches, 93.4%
+functions; axe on every page. Every route, the 404, the detail guard, the API
+client, the gallery, contact and the tool chips now have their own specs.
+
+What the numbers do not cover, deliberately: the `aria-busy` branch on the
+contact submit is unreachable until the form is wired, and three handlers in
+`app.html` fire only on real keyboard events.
 
 ## Missing
 

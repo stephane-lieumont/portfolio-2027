@@ -34,7 +34,7 @@
             [alt]="artwork.image.alt"
             [width]="artwork.image.width"
             [height]="artwork.image.height"
-            [loading]="$index < 4 ? 'eager' : 'lazy'"
+            [attr.loading]="$index < 4 ? 'eager' : 'lazy'"
             [attr.fetchpriority]="$index < 4 ? 'high' : null"
             decoding="async"
           />
