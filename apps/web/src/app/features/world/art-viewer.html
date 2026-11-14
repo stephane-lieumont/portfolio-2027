@@ -1,0 +1,90 @@
+<dialog
+  #dialog
+  class="lb"
+  data-lenis-prevent
+  aria-label="Visionneuse des rendus 3D"
+  (cancel)="onCancel($event)"
+  (close)="onClose()"
+>
+  <button
+    class="show__btn lb__close"
+    type="button"
+    aria-label="Fermer la visionneuse"
+    (click)="closing.emit()"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+  </button>
+  <div class="show" role="group" aria-roledescription="carrousel" aria-label="Rendus 3D">
+    <div
+      #stage
+      class="show__stage"
+      tabindex="0"
+      aria-label="Rendu affiché. Flèches gauche et droite pour changer de rendu."
+      (keydown)="onKey($event)"
+      (pointerdown)="onPointerDown($event)"
+      (pointerup)="onPointerUp($event)"
+    >
+      @for (piece of pieces(); track piece.slug; let i = $index) {
+        <figure class="show__slide plate plate--contain" [style.--plate-tone]="piece.tone">
+          @if (warmed().has(i)) {
+            <img
+              class="show__img"
+              appPlate="viewer"
+              [src]="piece.src"
+              [srcset]="piece.srcset"
+              sizes="min(100vw, 1920px)"
+              [alt]="piece.alt"
+              [width]="piece.width"
+              [height]="piece.height"
+              [attr.fetchpriority]="i === index() ? 'high' : 'low'"
+              decoding="async"
+            />
+            <span class="plate__fallback" aria-hidden="true">
+              <span class="plate__fallback-label">Image indisponible</span>
+              <span class="plate__fallback-alt">{{ piece.alt }}</span>
+            </span>
+          }
+        </figure>
+      }
+    </div>
+    <div #caption class="row__cap show__cap" [style.counter-reset]="'work ' + (index() + 1)">
+      <span class="row__title">{{ piece().title }}</span>
+      <span class="row__year">{{ piece().year }}</span>
+      <span class="row__tools">
+        @for (tool of piece().tools; track tool.slug) {
+          <span class="tool">
+            @if (tool.mask) {
+              <span class="tool__icon" [style.--mask]="tool.mask" aria-hidden="true"></span>
+            }
+            {{ tool.label }}
+          </span>
+        }
+      </span>
+    </div>
+    <div class="show__bar">
+      <p class="show__count" aria-hidden="true">
+        <span #counter class="show__now">{{ now() }}</span> / {{ total() }}
+      </p>
+      <div class="show__ticks">
+        @for (piece of pieces(); track piece.slug) {
+          <button
+            type="button"
+            class="show__tick"
+            [attr.aria-label]="'Rendu ' + ($index + 1) + ' : ' + piece.title"
+            [attr.aria-current]="$index === index() ? 'true' : null"
+            (click)="goTo($index)"
+          >
+            <span></span>
+          </button>
+        }
+      </div>
+      <button class="show__btn" type="button" aria-label="Rendu précédent" (click)="step(-1)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+      </button>
+      <button class="show__btn" type="button" aria-label="Rendu suivant" (click)="step(1)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </button>
+    </div>
+    <p class="show__status" aria-live="polite" aria-atomic="true">{{ status() }}</p>
+  </div>
+</dialog>

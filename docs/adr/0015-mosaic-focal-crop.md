@@ -15,7 +15,16 @@ The 3D world's work section was then redesigned as a composed mosaic: renders pa
 - **The mosaic may crop.** Its tiles use `object-fit: cover`, positioned by a focal point.
 - **The crop is never the only way to see a piece.** Every tile opens the viewer, which always shows the whole render at its own ratio. ADR-0012's rule stands everywhere else.
 - **Each artwork view carries a focal point**: `focal: { x, y }` in `[0, 1]`, defaulting to the centre. It is content, editable in the back office next to the view it belongs to (spec 03).
-- **The layout is a pattern of six tiles in five shapes (16:9, 4:3, 8:3, 2:3, 2:1 — two tiles are 4:3), repeated** in `releasedAt` order across all published pieces. A piece's tile shape follows from its position in that order, not from a field.
+- **The layout is a pattern of six tiles in five shapes (16:9, 4:3, 8:3, 2:3, 2:1 — two tiles are 4:3), repeated** in `releasedAt` order across all published pieces. A piece's tile shape follows from its position in that order, not from a field. _Shapes amended below (2026-11-14): blocks of eight, every tile between 4:3 and 2:1._
+
+### Amendment — 2026-11-14, after sixteen real renders
+
+Stéphane saw the mockup's pattern repeated over the sixteen real pieces: « une image full width se retrouve trop croppée ». The renders are nearly all 16:9 (1200×675, 1280×720; one 1280×1078, one 1280×696), and the mockup's 8:3 band and 2:3 column cut away up to 62% of a 16:9 render (2:3) and 33% (8:3). The pattern changes; the principle (cover around a focal point, the viewer shows the whole render) does not.
+
+- **Every tile is between 4:3 and 2:1.** A twelve-column grid whose rows are three quarters of a column tall, so every shape is a whole-cell span: a 16:9 hero (8 × 6) with two 16:9 tiles stacked beside it, a row of three 4:3 tiles, a row of two 2:1 tiles. Blocks of eight, the hero alternating sides; a short last block closes with full rows, a lone tile in 16:9. Below 900px, 4:3 tiles in pairs and 16:9 bands.
+- **Measured on the sixteen pieces, from 900px:** no crop above 27.5% (Gorgotte, 1280×696 in a 4:3), 25% for a 16:9 render in a 4:3, 11% in a 2:1, none in the 16:9 tiles. The 1280×1078 render falls in a 4:3 tile (11%).
+- **On a phone:** the half-width tiles are 4:3 (25%, Gorgotte 27.5%). A full-width band would be 16:9, which cut the near-square Immeuble by 33% (measured at 390px); a band now takes its render's own ratio, clamped between 4:3 and 16:9, so Immeuble loses 11%.
+- This departs from the approved mockup's six shapes; the deviation is listed in STATUS.
 
 ## Consequences
 

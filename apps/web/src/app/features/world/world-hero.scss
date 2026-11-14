@@ -1,0 +1,91 @@
+// The mockup's hero, recalibrated on viewport height as well (Stéphane: on a
+// laptop the first section did not fit). svh, not dvh: a phone's URL bar
+// must not resize the name mid-scroll. The entrance keyframes are keyed on the
+// document's `js-motion` and live in src/styles/_world-page.scss (traps.md).
+:host {
+  display: block;
+  padding-block: clamp(24px, min(6vw, 5svh), 72px) clamp(16px, min(3vw, 3svh), 40px);
+}
+
+.eyebrow {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--world-muted);
+}
+
+.eyebrow::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: var(--world-rule);
+  transform-origin: 0 50%;
+}
+
+.name {
+  margin: clamp(20px, min(3vw, 3.6svh), 40px) 0 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  // The floor keeps the name growing with the browser's zoom once the
+  // viewport units have shrunk below it (from about 300%).
+  font-size: max(2rem, min(8.4vw, 10svh, 104px));
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+// Clipped below the baseline box only: the accent on É and the descender room
+// stay visible while the letters rise out of the line.
+.name__word {
+  display: inline-block;
+  white-space: nowrap;
+  clip-path: inset(-0.5em -0.3em 0 -0.3em);
+}
+
+.name__char {
+  display: inline-block;
+  transform-origin: 0 100%;
+}
+
+.word {
+  margin: clamp(8px, 1.2vw, 14px) 0 0;
+  font-weight: 600;
+  font-stretch: 75%;
+  font-variation-settings: 'wdth' 75;
+  font-size: max(1.5rem, min(6.4vw, 7.2svh, 72px));
+  line-height: 0.95;
+  color: var(--world-muted);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  perspective: 900px;
+}
+
+.word__char {
+  display: inline-block;
+  transform-origin: 50% 60% -0.3em;
+  backface-visibility: hidden;
+}
+
+// Accent ink in the developer world, the ink itself on the orange ground
+// (_world.scss holds the per-world value).
+.word__char--italic {
+  font-family: var(--font-italic);
+  font-style: italic;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: -0.04em;
+  color: var(--world-accent);
+}
+
+.word__space {
+  display: inline-block;
+  width: 0.22em;
+}

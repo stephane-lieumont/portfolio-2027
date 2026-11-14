@@ -46,7 +46,7 @@ The current header is fixed and transparent with no scrolled state: on the Devel
 
 The new header stays reachable while scrolling but **takes an opaque background as soon as the page scrolls**, guaranteeing the contrast of its contents whatever passes underneath. It does not shrink enough to shift the layout.
 
-> **Amended 2026-11-14 (« Bascule » shell).** The header is the mockup's glass — 72% of the world's ground with a blur — rather than opaque, because Stéphane approved it. The guarantee is kept by measurement instead of by opacity, through the one deviation from the mockup allowed for accessibility: the role line is set in the world's ink, not its muted tone, which fell to 2.35:1 over a white image. Measured against the worst pixel under each line, over project covers and 3D renders: 5.25:1 at worst.
+> **Amended 2026-11-14 (« Bascule » shell), revised the same day.** The header is the mockup's glass, 72% of the world's ground with a blur, rather than opaque, because Stéphane approved it. The role line is set in the world's muted tone and the links at the mockup's 32–36px height, both shipped as the mockup on purpose (Stéphane: « sois iso maquette, on verra plus tard pour les contrastes »). Over a passing image the muted role falls below AA (2.35:1 worst over a light cover); the contrast and the 44px targets are deferred debt, listed with their measurements in `.claude/runtime/STATUS.md`.
 
 A **skip link** to the main content precedes it in tab order, visible on focus.
 

@@ -1,6 +1,6 @@
 import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
 
-import { PROJECTS } from './core/static-content';
+import { ARTWORKS, PROJECTS } from './core/static-content';
 
 /**
  * Every route is prerendered at build time and nothing is rendered on demand:
@@ -14,6 +14,12 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
     getPrerenderParams: async () => PROJECTS.map((project) => ({ slug: project.slug })),
     // An unknown slug is nginx's 404, not a page rendered on the fly.
+    fallback: PrerenderFallback.None,
+  },
+  {
+    path: 'graphisme-3d/:slug',
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: async () => ARTWORKS.map((artwork) => ({ slug: artwork.slug })),
     fallback: PrerenderFallback.None,
   },
   {

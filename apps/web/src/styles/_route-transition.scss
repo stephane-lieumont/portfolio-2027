@@ -115,3 +115,11 @@
     animation: vt-appear var(--motion-state) var(--ease-state) var(--motion-exit-state) both;
   }
 }
+
+// Nothing changes on screen (a step inside the 3D viewer): the transition ends
+// as soon as it starts, and the page underneath animates on its own.
+:root[data-vt='none']::view-transition-group(*),
+:root[data-vt='none']::view-transition-old(*),
+:root[data-vt='none']::view-transition-new(*) {
+  animation: none;
+}

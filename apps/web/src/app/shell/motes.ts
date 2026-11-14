@@ -13,6 +13,7 @@ import {
 
 import { FrameLoop } from '../core/motion/frame-loop';
 import { ReducedMotion } from '../core/motion/reduced-motion';
+import { CloudState } from '../core/world/cloud-state';
 import { ActiveWorld } from '../core/world/world';
 
 const MAX = 120;
@@ -25,6 +26,16 @@ const JUMP = 120;
 /** The sweep's lean: 20% of the viewport width across its height. */
 const LEAN = 0.2;
 const MAX_DPR = 1.5;
+/** Motes fade out over this distance as they approach the hero's stage. */
+const FADE = 72;
+
+/** A box in viewport pixels the motes keep clear of. */
+export interface Avoid {
+  readonly left: number;
+  readonly top: number;
+  readonly right: number;
+  readonly bottom: number;
+}
 
 export type MoteSurface = Pick<
   CanvasRenderingContext2D,
@@ -90,7 +101,13 @@ export class MoteField {
   }
 
   /** Moves by `delta` ms and draws. `still` draws where they stand, for reduced motion. */
-  draw(surface: MoteSurface, delta: number, scrollY: number, still: boolean): void {
+  draw(
+    surface: MoteSurface,
+    delta: number,
+    scrollY: number,
+    still: boolean,
+    avoid: Avoid | null = null,
+  ): void {
     if (!this.count) return;
     const shift = still ? 0 : Math.max(-JUMP, Math.min(JUMP, scrollY - this.scrollY));
     this.scrollY = scrollY;
@@ -123,8 +140,16 @@ export class MoteField {
       // Not rounded: a drift of 4px a second would visibly step.
       const x = this.x[i] - this.uy * sway;
       const y = this.y[i] + this.ux * sway;
+      let alpha = 0.3 + 0.7 * d;
+      // The cloud's own points must not be confused with strays: the motes
+      // thin out as they near the stage, and are gone over it.
+      if (avoid) {
+        const gap = Math.max(avoid.left - x, x - avoid.right, avoid.top - y, y - avoid.bottom, 0);
+        if (gap < FADE) alpha *= gap / FADE;
+      }
+      if (alpha < 0.01) continue;
       const size = (1.2 + 1.8 * d) * this.sizeK;
-      surface.globalAlpha = 0.3 + 0.7 * d;
+      surface.globalAlpha = alpha;
       surface.fillRect(x - size / 2, y - size / 2, size, size);
     }
     surface.globalAlpha = 1;
@@ -148,6 +173,7 @@ export class Motes {
   private readonly frames = inject(FrameLoop);
   private readonly motion = inject(ReducedMotion);
   private readonly active = inject(ActiveWorld);
+  private readonly cloud = inject(CloudState);
 
   private readonly field = new MoteField();
   private readonly size = signal<{ width: number; height: number } | null>(null);
@@ -210,13 +236,24 @@ export class Motes {
       this.field.sizeK = world === 'cgi' ? 1.4 : 1;
 
       const view = this.document.defaultView;
+      // Measured again only when the page scrolled, the stage changed or the
+      // canvas was refitted: a read per frame would force layout per frame.
+      let measured: { stage: HTMLElement | null; y: number; rect: Avoid | null } | null = null;
+      const avoid = (): Avoid | null => {
+        const stage = this.cloud.stage;
+        const y = view?.scrollY ?? 0;
+        if (!measured || measured.stage !== stage || measured.y !== y) {
+          measured = { stage, y, rect: stage?.getBoundingClientRect() ?? null };
+        }
+        return measured.rect;
+      };
       if (still) {
-        this.field.draw(surface, 0, view?.scrollY ?? 0, true);
+        this.field.draw(surface, 0, view?.scrollY ?? 0, true, avoid());
         return;
       }
       onCleanup(
         this.frames.add((_time, delta) =>
-          this.field.draw(surface, delta, view?.scrollY ?? 0, false),
+          this.field.draw(surface, delta, view?.scrollY ?? 0, false, avoid()),
         ),
       );
     });

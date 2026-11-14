@@ -17,6 +17,10 @@
   --world-ink: var(--text-primary);
   --world-muted: var(--text-secondary);
   --world-rule: color-mix(in srgb, var(--world-ink) 18%, transparent);
+  --world-accent: var(--world-ink);
+  --world-band: var(--world-ground);
+  // The copyright spine: muted where muted holds on the bare ground.
+  --world-spine: var(--world-muted);
 
   // The cap on the motes' opacity: canvas alpha never exceeds 1, so no overlap
   // of motes can pass it.
@@ -36,6 +40,9 @@
   --world-ground: var(--world-dev-ground);
   --world-ink: var(--world-dev-ink);
   --world-muted: var(--world-dev-muted);
+  --world-accent: var(--color-orange-500);
+  // The work band: a tonal step of the world's own ground, never an inversion.
+  --world-band: color-mix(in srgb, var(--world-dev-ink) 5%, var(--world-dev-ground));
   --motes-max: 0.28;
 }
 
@@ -43,13 +50,18 @@
   --world-ground: var(--world-cgi-ground);
   --world-ink: var(--world-cgi-ink);
   --world-muted: var(--world-cgi-muted);
+  --world-accent: var(--world-cgi-ink);
+  --world-band: color-mix(in srgb, var(--world-cgi-ink) 6%, var(--world-cgi-ground));
+  // A neutral, not the brown muted, as Stéphane asked: 5.7:1 on the orange.
+  --world-spine: var(--color-neutral-750);
   --motes-max: 0.5;
 }
 
-// Interim, until the world pages land: the gallery and contact pages were
-// designed on light or dark grounds, and secondary ink on the orange ground
-// measures 3.3:1. They keep a page surface under them in the 3D world.
-:root[data-world='cgi'] main {
+// Interim, until the contact page is redesigned (PR 6): it was designed on
+// light or dark grounds, and secondary ink on the orange ground measures 3.3:1,
+// so it keeps a page surface in the 3D world. The world pages paint nothing:
+// the motes behind the page show through them, as on the mockup.
+:root[data-world='cgi'] main:not(:has(> app-world-page)) {
   background: var(--surface-page);
 }
 

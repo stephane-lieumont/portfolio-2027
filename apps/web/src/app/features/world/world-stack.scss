@@ -1,0 +1,204 @@
+// The mockup's stack, value for value. Labels in the same mono voice as the
+// work and mastery heads, never a shouting title.
+:host {
+  display: block;
+}
+
+.stack {
+  padding-block: clamp(40px, 6vw, 88px) clamp(32px, 5vw, 64px);
+}
+
+.stack__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--world-rule);
+}
+
+.stack__head h2,
+.stack__head span,
+.mastery__label h3 {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--world-muted);
+}
+
+.marks {
+  margin: 0;
+  padding: clamp(24px, 4vw, 48px) 0 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(28px, 4vw, 48px) 16px;
+}
+
+.mark button {
+  // The mockup's buttons kept the browser's 13.33px; it sets their line box.
+  font-size: 13.3333px;
+  appearance: none;
+  border: 0;
+  background: none;
+  color: var(--world-ink);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 4px;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 260ms;
+}
+
+.mark button[aria-selected='true'] {
+  background: color-mix(in srgb, var(--world-ink) 6%, transparent);
+}
+
+.mark__icon {
+  display: block;
+}
+
+.mark__mask {
+  display: block;
+  width: clamp(36px, 4vw, 52px);
+  aspect-ratio: 1;
+  background: currentColor;
+  -webkit-mask: var(--mask) center / contain no-repeat;
+  mask: var(--mask) center / contain no-repeat;
+  forced-color-adjust: none;
+  transition:
+    scale 420ms var(--ease-world),
+    opacity 260ms;
+}
+
+// Only the icon dims: the name keeps its contrast.
+.mark button:not([aria-selected='true']) .mark__mask {
+  opacity: 0.5;
+}
+
+.mark__name {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--world-muted);
+  text-wrap: balance;
+}
+
+.mark button[aria-selected='true'] .mark__name {
+  color: var(--world-ink);
+}
+
+@media (hover: hover) {
+  .mark button:hover .mark__mask {
+    opacity: 1;
+    scale: 1.12;
+  }
+}
+
+// Same skeleton as the work: a label column, then a numbered two-column list.
+.mastery {
+  display: grid;
+  gap: 24px;
+  margin-top: clamp(32px, 5vw, 56px);
+  padding-top: 32px;
+  border-top: 1px solid var(--world-rule);
+}
+
+.mastery__names,
+.mastery__lists {
+  display: grid;
+}
+
+// Stacked in one cell: the box is as tall as the tallest, only one is seen.
+.mastery__name,
+.mastery__list {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+
+.mastery__name.is-current,
+.mastery__list.is-current {
+  visibility: visible;
+}
+
+.mastery__names {
+  margin: 10px 0 0;
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 600;
+  font-stretch: 75%;
+  font-variation-settings: 'wdth' 75;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.mastery__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 18px;
+  counter-reset: n;
+}
+
+.mastery__list li {
+  counter-increment: n;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 8px;
+  max-width: 70ch;
+}
+
+.mastery__list li::before {
+  content: counter(n, decimal-leading-zero);
+  padding-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--world-muted);
+}
+
+.mastery__list p {
+  margin: 0;
+  color: color-mix(in srgb, var(--world-ink) 82%, transparent);
+}
+
+.mastery__list b {
+  color: var(--world-ink);
+  font-weight: 600;
+}
+
+@media (min-width: 720px) {
+  .marks {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .mastery {
+    grid-template-columns: 1fr 3fr;
+  }
+  .mastery__list {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 40px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .marks {
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark button,
+  .mark__mask {
+    transition: none;
+  }
+}

@@ -50,6 +50,12 @@ export interface StaticImage {
   readonly alt: string;
   readonly width: number;
   readonly height: number;
+  /**
+   * The picture's mean colour (`#rrggbb`), painted on its frame while it
+   * loads, so a wall of images arrives as a wall of their own tones rather
+   * than of grey boxes. Measured on the originals (sharp channel means).
+   */
+  readonly averageColor?: string;
 }
 
 export interface StaticArtwork {
@@ -59,6 +65,11 @@ export interface StaticArtwork {
   readonly software: readonly SoftwareSlug[];
   readonly releasedAt: string;
   readonly featured: boolean;
+  /**
+   * Where the mosaic crops around, each axis in [0, 1]; the centre when absent
+   * (spec 03, ADR-0015). The viewer always shows the whole render.
+   */
+  readonly focal?: { readonly x: number; readonly y: number };
 }
 
 // Ordered by releasedAt descending, as spec 03 settles. No manual sort field:
@@ -68,6 +79,7 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: 'case-tes-potes-mobile',
     cover: {
       key: 'projects/case-tes-potes-mobile.jpg',
+      averageColor: '#bcc0ca',
       alt: 'Écrans de l’application mobile Case Tes Potes',
       width: 400,
       height: 300,
@@ -95,6 +107,7 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: 'case-tes-potes-landing-page',
     cover: {
       key: 'projects/case-tes-potes-landing-page.jpg',
+      averageColor: '#3f3862',
       alt: 'Landing page de préinscription de Case Tes Potes',
       width: 400,
       height: 329,
@@ -124,6 +137,7 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: 'case-tes-potes-web-app',
     cover: {
       key: 'projects/case-tes-potes-web-app.jpg',
+      averageColor: '#f3ecec',
       alt: 'Formulaire de témoignage de la web app Case Tes Potes',
       width: 400,
       height: 300,
@@ -151,6 +165,7 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: 'kasa-openclassrooms',
     cover: {
       key: 'projects/kasa-openclassrooms.jpg',
+      averageColor: '#bab5b4',
       alt: 'Page d’accueil de la plateforme de location Kasa',
       width: 500,
       height: 375,
@@ -176,6 +191,7 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: 'portfolio-3d-2018',
     cover: {
       key: 'projects/portfolio-3d-2018.jpg',
+      averageColor: '#312d18',
       alt: 'Page d’accueil du portfolio 3D de 2018',
       width: 400,
       height: 300,
@@ -200,6 +216,7 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: 'pixmodels',
     cover: {
       key: 'projects/pixmodels.jpg',
+      averageColor: '#4e4f36',
       alt: 'Site vitrine de Pixmodels',
       width: 400,
       height: 300,
@@ -240,6 +257,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Légos : les Minions',
     image: {
       key: 'cgi/legos-minions.jpg',
+      averageColor: '#33605d',
       alt: 'Les Minions reconstitués en Légos',
       width: 1200,
       height: 675,
@@ -253,6 +271,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Extraterrestre',
     image: {
       key: 'cgi/extraterrestre.jpg',
+      averageColor: '#1f363c',
       alt: 'Extraterrestre de science-fiction photoréaliste',
       width: 1200,
       height: 675,
@@ -266,6 +285,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Escart Wild',
     image: {
       key: 'cgi/escart-wild.jpg',
+      averageColor: '#807a3b',
       alt: 'Escargot cartoon photoréaliste',
       width: 1280,
       height: 720,
@@ -279,6 +299,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Beebop',
     image: {
       key: 'cgi/beebop.jpg',
+      averageColor: '#858281',
       alt: 'Le robot Beebop, sculpté et texturé',
       width: 1280,
       height: 720,
@@ -292,6 +313,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Gorgotte',
     image: {
       key: 'cgi/gorgotte.jpg',
+      averageColor: '#c5ccc6',
       alt: 'Créature monstrueuse sculptée en 3D',
       width: 1280,
       height: 696,
@@ -305,6 +327,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Immeuble',
     image: {
       key: 'cgi/immeuble.jpg',
+      averageColor: '#afbdbf',
       alt: 'Immeuble d’habitation photoréaliste',
       width: 1280,
       height: 1078,
@@ -318,6 +341,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Architecture d’intérieur — salon, nuit',
     image: {
       key: 'cgi/salon-nuit.jpg',
+      averageColor: '#605246',
       alt: 'Salon décoré, éclairage de nuit',
       width: 1280,
       height: 720,
@@ -331,6 +355,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Architecture d’intérieur — chambre',
     image: {
       key: 'cgi/chambre.jpg',
+      averageColor: '#676468',
       alt: 'Chambre décorée, lumière du jour',
       width: 1280,
       height: 720,
@@ -344,6 +369,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Architecture d’intérieur — salon, jour',
     image: {
       key: 'cgi/salon-jour.jpg',
+      averageColor: '#746c6a',
       alt: 'Salon décoré, lumière du jour',
       width: 1280,
       height: 720,
@@ -357,6 +383,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Caricature',
     image: {
       key: 'cgi/caricature.jpg',
+      averageColor: '#a1a6ad',
       alt: 'Caricature 3D de Stéphane Lieumont',
       width: 1280,
       height: 720,
@@ -370,6 +397,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Maison moderne',
     image: {
       key: 'cgi/maison-moderne.jpg',
+      averageColor: '#4e4d3c',
       alt: 'Maison moderne photoréaliste, vue extérieure',
       width: 1280,
       height: 720,
@@ -383,6 +411,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Architecture d’intérieur — entrée',
     image: {
       key: 'cgi/entree.jpg',
+      averageColor: '#ada39a',
       alt: 'Entrée d’habitation aux murs blancs',
       width: 1280,
       height: 864,
@@ -396,6 +425,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Extérieur',
     image: {
       key: 'cgi/exterieur.jpg',
+      averageColor: '#5b6e3e',
       alt: 'Extérieur avec herbe photoréaliste',
       width: 1200,
       height: 848,
@@ -409,6 +439,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Ampoule',
     image: {
       key: 'cgi/ampoule.jpg',
+      averageColor: '#d2d2d2',
       alt: 'Ampoule photoréaliste sur fond neutre',
       width: 1280,
       height: 720,
@@ -422,6 +453,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Support marketing',
     image: {
       key: 'cgi/support-marketing.jpg',
+      averageColor: '#191817',
       alt: 'Canette Pixmodels, visuel publicitaire',
       width: 1280,
       height: 720,
@@ -435,6 +467,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     title: 'Tomates',
     image: {
       key: 'cgi/tomates.jpg',
+      averageColor: '#cfbfc0',
       alt: 'Tomates photoréalistes',
       width: 1280,
       height: 720,

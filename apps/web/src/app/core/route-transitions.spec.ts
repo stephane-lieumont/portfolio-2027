@@ -34,11 +34,28 @@ describe('classifyTransition', () => {
   it('skips a navigation that changes nothing on screen', () => {
     expect(classifyTransition(dev, dev)).toBe('none');
   });
+
+  it('morphs the plate when the viewer opens on a piece or closes back to the wall', () => {
+    const piece = { path: '/graphisme-3d/beebop', world: 'cgi' } as const;
+    expect(classifyTransition(cgi, piece)).toBe('viewer');
+    expect(classifyTransition(piece, cgi)).toBe('viewer');
+  });
+
+  it('leaves a step between two pieces to the viewer’s own animation', () => {
+    const from = { path: '/graphisme-3d/beebop', world: 'cgi' } as const;
+    expect(classifyTransition(from, { path: '/graphisme-3d/gorgotte', world: 'cgi' })).toBe('none');
+  });
 });
 
 describe('RouteTransitions', () => {
   const root = document.documentElement;
-  let navigation: ReturnType<typeof signal<{ trigger: string; finalUrl: UrlTree } | null>>;
+  let navigation: ReturnType<
+    typeof signal<{
+      trigger: string;
+      finalUrl: UrlTree;
+      extras: { scroll?: 'manual' };
+    } | null>
+  >;
   let jumpTo: ReturnType<typeof vi.fn>;
 
   function fakeTransition() {
@@ -54,9 +71,9 @@ describe('RouteTransitions', () => {
     return { transition, finish, update };
   }
 
-  function start(to: string, trigger = 'imperative') {
+  function start(to: string, trigger = 'imperative', extras: { scroll?: 'manual' } = {}) {
     const router = TestBed.inject(Router);
-    navigation.set({ trigger, finalUrl: router.parseUrl(to) });
+    navigation.set({ trigger, finalUrl: router.parseUrl(to), extras });
     const fake = fakeTransition();
     TestBed.inject(RouteTransitions).onCreated({
       transition: fake.transition,
@@ -111,10 +128,47 @@ describe('RouteTransitions', () => {
     expect(jumpTo).not.toHaveBeenCalled();
   });
 
-  it('skips the transition when the page does not change', () => {
-    const { transition } = start('/developpeur?filtre=angular');
-    expect(transition.skipTransition).toHaveBeenCalled();
-    expect(root.dataset['vt']).toBeUndefined();
+  it('lets the cloud ride above the band only between two pages that show it', () => {
+    start('/graphisme-3d');
+    expect(root.dataset['vtCloud']).toBe('');
+    TestBed.inject(ActiveWorld).enter('/contact');
+    start('/graphisme-3d');
+    expect(root.dataset['vtCloud']).toBeUndefined();
+    TestBed.inject(ActiveWorld).enter('/developpeur');
+    start('/developpeur/kasa');
+    expect(root.dataset['vtCloud']).toBeUndefined();
+  });
+
+  it('keeps the scroll of a navigation that asks to, the viewer over the wall', async () => {
+    TestBed.inject(ActiveWorld).enter('/graphisme-3d');
+    const { update } = start('/graphisme-3d/beebop', 'imperative', { scroll: 'manual' });
+    expect(root.dataset['vt']).toBe('viewer');
+    update();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(jumpTo).not.toHaveBeenCalled();
+  });
+
+  it('says when the transition under way is over, so the morph names can be cleared', async () => {
+    const transitions = TestBed.inject(RouteTransitions);
+    const { finish } = start('/graphisme-3d');
+    let settled = false;
+    void transitions.settled().then(() => (settled = true));
+    await Promise.resolve();
+    expect(settled).toBe(false);
+    finish();
+    await vi.waitFor(() => expect(settled).toBe(true));
+  });
+
+  it('animates nothing and stays put when the page does not change, without skipping', async () => {
+    const { transition, update } = start('/developpeur?filtre=angular');
+    expect(root.dataset['vt']).toBe('none');
+    // A skipped transition rejects, and the router reports it as an error.
+    expect(transition.skipTransition).not.toHaveBeenCalled();
+    update();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(jumpTo).not.toHaveBeenCalled();
   });
 
   it('does not let an earlier transition clear a later one', async () => {

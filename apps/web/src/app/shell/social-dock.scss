@@ -2,7 +2,7 @@
   position: fixed;
   inset-inline-end: max(var(--space-3), env(safe-area-inset-right, 0px));
   inset-block-end: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
-  z-index: 20;
+  z-index: 50;
   padding: var(--space-1);
   border-radius: var(--radius-pill);
   border: 1px solid color-mix(in srgb, var(--world-ink) 14%, transparent);

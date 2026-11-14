@@ -1,0 +1,244 @@
+// The world pages' document-keyed motion (traps.md: rules keyed on <html> live
+// here, never in a component). Every value is the approved mockup's.
+
+// ---------------------------------------------------------------------------
+// Entrance. Played on CSS from first paint, so the prerendered page moves
+// before the bundle arrives and nothing waits on script. `js-motion` is set in
+// the document head and withdrawn if bootstrap fails; without it, nothing
+// animates and nothing hides. The page stamps `entrance--intro` on the page
+// the site was loaded on, `entrance--build` after a sweep, and the base delay
+// in --entrance-base.
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: no-preference) {
+  :root.js-motion .entrance--intro .eyebrow::after {
+    animation: world-rule-draw 900ms var(--ease-settle) backwards;
+  }
+
+  :root.js-motion .entrance--intro .name__char {
+    animation: world-name-rise 1150ms var(--ease-settle) calc(260ms + var(--c) * 38ms) backwards;
+  }
+
+  :root.js-motion :is(.entrance--intro, .entrance--build) .word__char {
+    animation: world-role-flip 620ms linear calc(var(--entrance-base) + var(--c) * 42ms) backwards;
+  }
+
+  :root.js-motion :is(.entrance--intro, .entrance--build) .enter-line {
+    animation: world-line-rise 520ms var(--ease-world)
+      calc(var(--entrance-base) + 180ms + var(--line) * 45ms) backwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root.js-motion .entrance--intro .name {
+    animation: world-fade 400ms linear backwards;
+  }
+}
+
+@keyframes world-rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes world-name-rise {
+  from {
+    transform: translateY(115%) rotate(7deg);
+  }
+}
+
+// The mockup's flip is a Web Animation whose easing, cubic-bezier(0.22, 1,
+// 0.36, 1), runs over the whole effect: -92° → 12° at 70% → 0°. CSS applies a
+// timing function to each segment instead, which stopped the letters at 70%
+// and eased them again into the end — the snap Stéphane saw. The curve is
+// sampled here into linear steps (generated, not hand-tuned), so the motion is
+// the mockup's whatever the segment.
+@keyframes world-role-flip {
+  0% {
+    transform: rotateX(-92deg);
+    opacity: 0;
+  }
+  2% {
+    transform: rotateX(-78.77deg);
+    opacity: 0.127;
+  }
+  4% {
+    transform: rotateX(-66.13deg);
+    opacity: 0.249;
+  }
+  6% {
+    transform: rotateX(-54.15deg);
+    opacity: 0.364;
+  }
+  8% {
+    transform: rotateX(-42.9deg);
+    opacity: 0.472;
+  }
+  10% {
+    transform: rotateX(-32.41deg);
+    opacity: 0.573;
+  }
+  13% {
+    transform: rotateX(-18.17deg);
+    opacity: 0.71;
+  }
+  16% {
+    transform: rotateX(-5.75deg);
+    opacity: 0.829;
+  }
+  20% {
+    transform: rotateX(8.13deg);
+    opacity: 0.963;
+  }
+  25% {
+    transform: rotateX(9.41deg);
+    opacity: 1;
+  }
+  30% {
+    transform: rotateX(6.71deg);
+    opacity: 1;
+  }
+  35% {
+    transform: rotateX(4.74deg);
+    opacity: 1;
+  }
+  40% {
+    transform: rotateX(3.31deg);
+    opacity: 1;
+  }
+  50% {
+    transform: rotateX(1.54deg);
+    opacity: 1;
+  }
+  60% {
+    transform: rotateX(0.65deg);
+    opacity: 1;
+  }
+  70% {
+    transform: rotateX(0.23deg);
+    opacity: 1;
+  }
+  80% {
+    transform: rotateX(0.06deg);
+    opacity: 1;
+  }
+  90% {
+    transform: rotateX(0.01deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes world-line-rise {
+  from {
+    transform: translateY(18px);
+    opacity: 0;
+  }
+}
+
+@keyframes world-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Scroll reveal. WorldReveal stamps `data-reveal="pending"` only on what starts
+// below the fold, after render, in the browser.
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: no-preference) {
+  :root.js-motion :is(.stack__head, .mastery)[data-reveal] {
+    border-color: transparent;
+    background: linear-gradient(var(--world-rule), var(--world-rule)) no-repeat border-box;
+    background-size: 0% 1px;
+  }
+
+  :root.js-motion .stack__head[data-reveal] {
+    background-position: 0 100%;
+  }
+
+  :root.js-motion .mastery[data-reveal] {
+    background-position: 0 0;
+  }
+
+  :root.js-motion :is(.work__head, .stack__head)[data-reveal='pending'] > *,
+  :root.js-motion .mastery[data-reveal='pending'] [data-reveal-part] {
+    opacity: 0;
+  }
+
+  :root.js-motion .row[data-reveal='pending'] .row__img {
+    clip-path: inset(0 0 0 100%);
+  }
+
+  :root.js-motion .tile[data-reveal='pending'] .tile__img {
+    opacity: 0;
+  }
+}
+
+@media print {
+  [data-reveal],
+  [data-reveal] * {
+    opacity: 1 !important;
+    clip-path: none !important;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The point cloud across a sweep (ADR-0014). During a sweep between two pages
+// that both show it (RouteTransitions stamps `data-vt-cloud`), its canvas
+// carries its own view-transition name, so it stays live above the band, as
+// the mockup's stage rose above its sweep: the new page's cloud carries on the
+// morph from the shape the old one left (CloudState) while the band passes,
+// and the old frozen frame gives way at once. Named on every navigation, the
+// old cloud floated frozen above the contact wipe and the viewer's morph; on
+// those it now stays in the page's snapshot and goes with it.
+// ---------------------------------------------------------------------------
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-vt^='sweep'][data-vt-cloud] app-point-cloud canvas {
+    view-transition-name: world-cloud;
+  }
+
+  :root[data-vt^='sweep'][data-vt-cloud]::view-transition-group(world-cloud) {
+    animation-duration: var(--motion-sweep);
+    animation-timing-function: var(--ease-sweep);
+  }
+
+  :root[data-vt^='sweep'][data-vt-cloud]::view-transition-old(world-cloud) {
+    animation: vt-out 150ms linear both;
+  }
+
+  :root[data-vt^='sweep'][data-vt-cloud]::view-transition-new(world-cloud) {
+    animation: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The 3D viewer. The page under the dialog does not scroll, and opening or
+// closing it morphs the plate from or into its tile (spec 07 §9.4): the router
+// stamps `viewer`, the root crossfades, the plate travels.
+// ---------------------------------------------------------------------------
+html:has(.lb[open]) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+:root[data-vt='viewer']::view-transition-old(root) {
+  animation: vt-out 250ms ease both;
+}
+
+:root[data-vt='viewer']::view-transition-new(root) {
+  animation: world-fade 250ms ease both;
+}
+
+::view-transition-group(lb-plate) {
+  animation-duration: 560ms;
+  animation-timing-function: var(--ease-settle);
+}
+
+::view-transition-old(lb-plate),
+::view-transition-new(lb-plate) {
+  height: 100%;
+  object-fit: cover;
+}

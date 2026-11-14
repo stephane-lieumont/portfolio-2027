@@ -78,7 +78,10 @@ svg {
 // any single class, so a component cannot take it back. A placeholder that
 // needs one belongs on the container, which knows whether its image is a
 // cut-out or a photograph.
-img[width][height] {
+// Zero specificity: an image a component sizes (a tile filling its cell) must
+// win. At (0,2,1) this rule beat every component class and left the mosaic's
+// renders at their intrinsic ratio inside taller tiles (traps.md).
+:where(img[width][height]) {
   block-size: auto;
 }
 
