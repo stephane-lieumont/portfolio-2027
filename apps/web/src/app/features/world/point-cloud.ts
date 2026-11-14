@@ -8,6 +8,7 @@ import {
   effect,
   inject,
   input,
+  signal,
   viewChild,
 } from '@angular/core';
 import type { WorldKey } from '@portfolio/shared-types';
@@ -18,6 +19,8 @@ import { CloudState } from '../../core/world/cloud-state';
 
 const GLYPH_W = 240;
 const GLYPH_H = 150;
+/** CSS pixels a touch travels before it counts as a sideways grab or a scroll. */
+const TOUCH_SLOP = 10;
 const GLYPH_FONT = '700 132px "JetBrains Mono", ui-monospace, Menlo, monospace';
 
 /** Where the glyph `</>` is opaque, every other pixel, on a 240 × 150 raster. */
@@ -46,6 +49,10 @@ function sampleGlyph(document: Document): [number, number][] {
  * The hero's stage. The shape and every point live in CloudState, so the page
  * of the other world picks the morph up where this one left it. Nothing is
  * drawn while prerendering; under reduced motion one still frame.
+ *
+ * In the 3D world the torus can be grabbed and turned, then springs back onto
+ * its auto-rotation. Mouse, pen and a sideways touch; a vertical touch still
+ * scrolls the page. Decorative like the canvas, so not keyboard reachable.
  */
 @Component({
   selector: 'app-point-cloud',
@@ -66,6 +73,14 @@ function sampleGlyph(document: Document): [number, number][] {
       height: 100%;
       display: block;
     }
+    :host([data-grab]) canvas {
+      cursor: grab;
+      touch-action: pan-y pinch-zoom;
+      user-select: none;
+    }
+    :host([data-grab='held']) canvas {
+      cursor: grabbing;
+    }
     @media (min-width: 900px) {
       :host {
         position: sticky;
@@ -75,11 +90,15 @@ function sampleGlyph(document: Document): [number, number][] {
       }
     }
   `,
-  host: { class: 'stage' },
+  host: {
+    class: 'stage',
+    '[attr.data-grab]': "world() === 'cgi' ? (grabbing() ? 'held' : 'free') : null",
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PointCloud {
   readonly world = input.required<WorldKey>();
+  protected readonly grabbing = signal(false);
 
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -146,14 +165,77 @@ export class PointCloud {
         mouse = { clientX: event.clientX, clientY: event.clientY };
         place();
       };
+      let grip: { id: number; x: number; y: number } | null = null;
+      // A touch is only taken once it heads sideways: until then it may be
+      // the start of a vertical scroll the browser has not claimed yet.
+      let touch: { id: number; x: number; y: number } | null = null;
+      const take = (event: PointerEvent) => {
+        grip = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        canvas.setPointerCapture(event.pointerId);
+        model.grab();
+        this.grabbing.set(true);
+      };
+      const onGrab = (event: PointerEvent) => {
+        if (this.world() !== 'cgi' || grip || touch || !event.isPrimary) return;
+        if (event.pointerType === 'touch') {
+          touch = { id: event.pointerId, x: event.clientX, y: event.clientY };
+          return;
+        }
+        if (event.button !== 0) return;
+        // No text selection and no native drag starting under the hand.
+        event.preventDefault();
+        take(event);
+      };
+      const onDrag = (event: PointerEvent) => {
+        if (touch && event.pointerId === touch.id) {
+          const dx = Math.abs(event.clientX - touch.x);
+          const dy = Math.abs(event.clientY - touch.y);
+          if (Math.max(dx, dy) < TOUCH_SLOP) return;
+          touch = null;
+          if (dx > dy) take(event);
+          return;
+        }
+        if (!grip || event.pointerId !== grip.id) return;
+        // A lost pointerup (a ctrl-click's context menu) shows as a move with no button down.
+        if (event.pointerType !== 'touch' && (event.buttons & 1) === 0) {
+          letGo();
+          return;
+        }
+        // A full stage width is half a turn.
+        const perPixel = Math.PI / (width || 1);
+        model.turn(-(event.clientX - grip.x) * perPixel, (event.clientY - grip.y) * perPixel);
+        grip.x = event.clientX;
+        grip.y = event.clientY;
+        drawnStill = false;
+      };
+      const letGo = () => {
+        touch = null;
+        if (!grip) return;
+        const id = grip.id;
+        grip = null;
+        if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
+        model.release();
+        this.grabbing.set(false);
+        drawnStill = false;
+      };
       const onLeave = () => {
         mouse = null;
         field = null;
       };
+      const onBlur = () => {
+        onLeave();
+        letGo();
+      };
       const onScroll = () => place();
       view.addEventListener('pointermove', onMove, { passive: true });
       view.addEventListener('scroll', onScroll, { passive: true });
-      view.addEventListener('blur', onLeave);
+      view.addEventListener('blur', onBlur);
+      canvas.addEventListener('pointerdown', onGrab);
+      canvas.addEventListener('pointermove', onDrag);
+      canvas.addEventListener('pointerup', letGo);
+      canvas.addEventListener('pointercancel', letGo);
+      canvas.addEventListener('lostpointercapture', letGo);
+      canvas.addEventListener('contextmenu', letGo);
       this.document.documentElement.addEventListener('pointerleave', onLeave);
 
       const resize =
@@ -185,12 +267,13 @@ export class PointCloud {
 
       destroyRef.onDestroy(() => {
         alive = false;
+        letGo();
         stop?.();
         resize?.disconnect();
         seen?.disconnect();
         view.removeEventListener('pointermove', onMove);
         view.removeEventListener('scroll', onScroll);
-        view.removeEventListener('blur', onLeave);
+        view.removeEventListener('blur', onBlur);
         this.document.documentElement.removeEventListener('pointerleave', onLeave);
         if (this.state.stage === this.host) this.state.stage = null;
       });

@@ -13,6 +13,18 @@ const SWEEP_WIDTH = 0.1;
 const FIELD_RADIUS = 0.45;
 const FIELD_PUSH = 0.2;
 const MORPH_MS = 1500;
+const SPIN = 0.45;
+const PITCH = 1.05;
+const PITCH_SWAY = 0.15;
+const PITCH_SWAY_RATE = 0.3;
+/** Face-on to edge-on: a held torus never turns past either. */
+const PITCH_MIN = 0;
+const PITCH_MAX = Math.PI / 2;
+/** The return's critically damped spring: within 1% of the live pose in ~1s. */
+const RETURN_OMEGA = 6.5;
+/** How fast a release may head back toward the live pose: overshoot stays under 2°. */
+const RETURN_FLING = 0.5;
+const FLING_MAX = 3;
 /**
  * The torus's farthest projected point, in units of its scale, over every
  * rotation and tilt it takes: R 1 + r 0.42, magnified by the perspective
@@ -36,10 +48,16 @@ export interface CloudView {
   readonly width: number;
   readonly height: number;
   readonly dpr: number;
-  /** Pointer position over the viewport, each axis in [-0.5, 0.5]. */
+  /** Pointer position over the viewport, each axis in [-0.5, 0.5], tilting the glyph. */
   readonly pointer: readonly [number, number];
   /** The mouse over the canvas in CSS pixels, or null when it is not a mouse or it left. */
   readonly field: { readonly x: number; readonly y: number } | null;
+}
+
+/** The torus's rotation: `yaw` about the vertical axis, `pitch` toward the viewer. */
+export interface CloudPose {
+  readonly yaw: number;
+  readonly pitch: number;
 }
 
 const ease = (x: number): number => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
@@ -100,6 +118,14 @@ export class CloudModel {
   private readonly sx = new Float32Array(CLOUD_POINTS);
   private readonly sy = new Float32Array(CLOUD_POINTS);
   private readonly sz = new Float32Array(CLOUD_POINTS);
+  /** Where the torus was drawn last frame. */
+  pose: CloudPose = { yaw: 0, pitch: PITCH };
+  /** The pose a hand holds the torus at, or null when it is free. */
+  private held: { yaw: number; pitch: number } | null = null;
+  private heldBefore: CloudPose = this.pose;
+  private heldVelocity = { yaw: 0, pitch: 0 };
+  /** The held or released torus's offset from the auto-rotation, and its speed. */
+  private offset = { yaw: 0, pitch: 0, vYaw: 0, vPitch: 0 };
   private inkAt = Number.NaN;
   private inkStyle = '';
 
@@ -161,6 +187,39 @@ export class CloudModel {
     this.t = this.target = world === 'cgi' ? 1 : 0;
   }
 
+  get grabbed(): boolean {
+    return this.held !== null;
+  }
+
+  /** A hand takes the torus where it stands; the auto-rotation clock runs on underneath. */
+  grab(): void {
+    this.held = { ...this.pose };
+    this.heldBefore = this.pose;
+    this.heldVelocity = { yaw: 0, pitch: 0 };
+  }
+
+  /** Turns the held torus by these angles, in radians. */
+  turn(yaw: number, pitch: number): void {
+    if (!this.held) return;
+    this.held.yaw += yaw;
+    this.held.pitch = Math.min(PITCH_MAX, Math.max(PITCH_MIN, this.held.pitch + pitch));
+  }
+
+  /** Lets go: the torus springs back onto the live auto-rotation, keeping the hand's speed. */
+  release(): void {
+    if (!this.held) return;
+    this.held = null;
+    const o = this.offset;
+    // Unwind the shorter way: whole turns are exact at any morph stage. Fully
+    // a torus, half a turn is too (its points are a 60 × 20 grid, symmetric
+    // both ways); mid-morph each point is paired with a glyph point, so not.
+    const period = this.t === 1 ? Math.PI : 2 * Math.PI;
+    o.yaw -= period * Math.round(o.yaw / period);
+    const autoPitchSpeed = Math.cos(this.clock * PITCH_SWAY_RATE) * PITCH_SWAY * PITCH_SWAY_RATE;
+    o.vYaw = settleSpeed(o.yaw, this.heldVelocity.yaw - SPIN);
+    o.vPitch = settleSpeed(o.pitch, this.heldVelocity.pitch - autoPitchSpeed);
+  }
+
   /** Advances by `delta` ms and draws. `still` draws the settled shape, for reduced motion. */
   frame(surface: CloudSurface, delta: number, view: CloudView, still: boolean): void {
     if (!this.ready || !view.width) return;
@@ -183,8 +242,12 @@ export class CloudModel {
     // (±310px in a 575px stage at 1440): it gets its own scale, fitted inside.
     const torusScale = Math.min(scale, (TORUS_MARGIN * Math.min(cx, cy, H - cy)) / TORUS_EXTENT);
     const clock = this.clock;
-    const ay = clock * 0.45 + pointer[0] * 0.8;
-    const ax = 1.05 + Math.sin(clock * 0.3) * 0.15 + pointer[1] * 0.5;
+    const autoYaw = clock * SPIN;
+    const autoPitch = PITCH + Math.sin(clock * PITCH_SWAY_RATE) * PITCH_SWAY;
+    this.follow(autoYaw, autoPitch, delta, still);
+    const ay = autoYaw + this.offset.yaw;
+    const ax = autoPitch + this.offset.pitch;
+    this.pose = { yaw: ay, pitch: ax };
     const cyA = Math.cos(ay);
     const syA = Math.sin(ay);
     const cxA = Math.cos(ax);
@@ -215,7 +278,8 @@ export class CloudModel {
 
     // Capped so the springs stay stable through a dropped frame.
     const h = Math.min(0.033, delta / 1000);
-    const fieldOn = view.field !== null && !still && this.t < 1;
+    // The field answers the glyph only: in the 3D world the hand grabs instead.
+    const fieldOn = view.field !== null && !still && this.t < 1 && this.target === 0;
     const gx = ((view.field?.x ?? 0) - cx) / scale;
     const gy = ((view.field?.y ?? 0) - cy) / scale;
     const { dx, dy, vx, vy, heat } = this;
@@ -308,6 +372,47 @@ export class CloudModel {
     }
     surface.globalAlpha = 1;
   }
+
+  private follow(autoYaw: number, autoPitch: number, delta: number, still: boolean): void {
+    const o = this.offset;
+    const held = this.held;
+    if (held) {
+      if (delta > 0 && !still) {
+        const s = delta / 1000;
+        const v = this.heldVelocity;
+        v.yaw = mix(v.yaw, (held.yaw - this.heldBefore.yaw) / s, 0.5);
+        v.pitch = mix(v.pitch, (held.pitch - this.heldBefore.pitch) / s, 0.5);
+      }
+      this.heldBefore = { ...held };
+      o.yaw = held.yaw - autoYaw;
+      o.pitch = held.pitch - autoPitch;
+      return;
+    }
+    // Reduced motion: no return animation, the still pose at once.
+    if (still) {
+      o.yaw = o.pitch = o.vYaw = o.vPitch = 0;
+      return;
+    }
+    const s = delta / 1000;
+    [o.yaw, o.vYaw] = spring(o.yaw, o.vYaw, s);
+    [o.pitch, o.vPitch] = spring(o.pitch, o.vPitch, s);
+  }
+}
+
+/** One step of a critically damped spring toward 0, solved exactly so any frame length is stable. */
+function spring(x: number, v: number, s: number): [number, number] {
+  if (Math.abs(x) < 1e-4 && Math.abs(v) < 1e-3) return [0, 0];
+  const c = v + RETURN_OMEGA * x;
+  const decay = Math.exp(-RETURN_OMEGA * s);
+  return [(x + c * s) * decay, (v - RETURN_OMEGA * c * s) * decay];
+}
+
+/** The release speed, capped so a fling toward the live pose barely overshoots it. */
+function settleSpeed(offset: number, speed: number): number {
+  const capped = Math.min(FLING_MAX, Math.max(-FLING_MAX, speed));
+  const toward = -Math.sign(offset) * capped;
+  const limit = RETURN_OMEGA * Math.abs(offset) + RETURN_FLING;
+  return toward > limit ? -Math.sign(offset) * limit : capped;
 }
 
 /**
@@ -328,9 +433,9 @@ export class CloudState {
   /** Whether the page being shown took the cloud over from the page before it. */
   continuing = false;
   /**
-   * The pointer over the viewport, each axis in [-0.5, 0.5], turning and
-   * tilting the cloud. Kept here and not in the page: a new page starting it
-   * at the centre snapped the torus by up to 0.4 rad at every world switch.
+   * The pointer over the viewport, each axis in [-0.5, 0.5], tilting the
+   * glyph. Kept here and not in the page: a new page starting it at the centre
+   * would snap the glyph mid-morph.
    */
   pointer: [number, number] = [0, 0];
 

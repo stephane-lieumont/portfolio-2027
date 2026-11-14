@@ -89,18 +89,33 @@ mockup's unreset 8px body margin. In order:
   flip's whole-effect easing is sampled into linear keyframes (the per-segment
   CSS easing made the end snap; measured after: steps decay 0.45° → 0 with no
   jump). After a sweep the role flips once the band has covered (640ms).
-- Point cloud (`</>` → torus, assembly, pointer field, accent sweep every 7s,
-  still frame under reduced motion) on the shared frame loop, its state in a
-  root `CloudState`. On a direct dev ↔ cgi switch the cloud's canvas rides
+- Point cloud (`</>` → torus, assembly, pointer field on the glyph only,
+  accent sweep every 7s, still frame under reduced motion) on the shared frame
+  loop, its state in a root `CloudState`. The torus has no hover effect: it is
+  grabbed and turned (mouse, pen, a sideways touch; a full stage width is half a
+  turn, pitch held between face-on and edge-on) and on release springs back
+  onto the live auto-rotation, whose clock runs on during the hold (critically
+  damped, release speed kept). Measured at 1440: drag yaw −1.6404 for −1.6404
+  expected; release from 0.91/0.37 rad off, within 1% at 983ms, no overshoot,
+  largest step 0.028 rad/frame, ink 31.9–540.2 → 31.7–540.6 across the
+  release; frames 16.7/16.8/16.8 ms. A long hold unwinds the short way (the
+  torus repeats every half turn); mid-morph only whole turns are unwound
+  (measured: released at morph 0.69 after 2.3 stage widths, peak return
+  3.1 rad/s). A touch is taken only once it heads sideways past 10px; at 390 a
+  vertical swipe on the stage scrolls (300 → 495) with the torus untouched
+  (offset 0 on every frame), and pinch-zoom stays available
+  (`pan-y pinch-zoom`). A move with no button down, or a context menu, lets
+  go. Text is not selected by a drag. Under reduced motion the hand turns
+  the still frame and the release snaps back. Not keyboard reachable: the
+  canvas is decorative and `aria-hidden`. On a direct dev ↔ cgi switch the cloud's canvas rides
   above the band (its own view-transition group) and the new page carries on
   the morph: measured ink 243 → 190 → 80 → 17 over 1.5s, one canvas at any
   frame. From or to any page without the cloud (contact, a project, the 404) it
   stays in the page snapshot and starts settled in its world's shape (contact →
   cgi: ink 17 from the first sample). The assembly plays once per visit. The
   torus has its own scale fitted to the canvas (it overflowed the 575px stage
-  by ±23px on the mockup too). The pointer turning it is kept across the
-  switch (a new page restarting it at the centre snapped the torus by up to
-  0.4 rad). Morph frame times, 3 runs each at 1440: mockup median 16.7 / p95
+  by ±23px on the mockup too). The pointer tilting the glyph is kept across
+  the switch, so the morph does not snap. Morph frame times, 3 runs each at 1440: mockup median 16.7 / p95
   16.7 / max 16.8 ms; build 16.7 / 16.7 / 33.4 ms (one dropped frame at the
   handover), no long task on either. A shared layout route keeping one cloud
   instance was evaluated and not built: the handover costs 19ms of script,
@@ -159,6 +174,8 @@ Deviations from the mockup, each on purpose:
   mockup sampled four.
 - Labels « RxJS / Signals » and « .NET / C# » in the stack come from the
   mockup, not the registry.
+- The torus is grabbed and turned instead of following the pointer, and its
+  hover field is gone (the glyph keeps both): Stéphane, 2026-11-15.
 - No technical caption under the cloud's stage (« 1 200 points · … »):
   removed at Stéphane's request.
 - The stack is a tab list rather than toggle buttons: one tool at a time is a
