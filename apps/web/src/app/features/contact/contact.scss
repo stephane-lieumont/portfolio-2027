@@ -1,45 +1,266 @@
-.contact__grid {
+// The contact view of the approved « Bascule » mockup, value for value.
+// Rules keyed on the document's world live in src/styles/_contact.scss.
+
+// The mockup's body keeps the browser's 8px margin inside its 16px padding:
+// content stands 24px from the edge below 1352px.
+:host {
+  display: block;
+  padding-inline: calc(8px + max(16px, env(safe-area-inset-left, 0px)))
+    calc(8px + max(16px, env(safe-area-inset-right, 0px)));
+  color: var(--world-ink);
+  font-size: 16px;
+  line-height: 1.5;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+// The entrance waits for the band covering the old page to leave
+// (RouteTransitions): the mockup plays it as the new page is uncovered.
+.contact {
+  --enter: 0ms;
+
   display: grid;
-  gap: var(--space-6);
+  gap: clamp(32px, 5vw, 72px);
+  max-inline-size: 1320px;
+  margin-inline: auto;
+  padding-block: clamp(32px, 6vw, 88px) max(clamp(48px, 8vw, 120px), var(--dock-clearance));
 }
 
-.contact__form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  max-inline-size: var(--measure);
+.contact[data-arrival='wipe'] {
+  --enter: var(--motion-wipe);
 }
 
-.contact__submit {
-  align-self: flex-start;
+.contact[data-arrival='sweep'] {
+  --enter: var(--motion-sweep);
 }
 
-.contact__note {
-  color: var(--text-secondary);
-}
-
-.contact__aside {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-3);
-}
-
-.contact__links {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+.mono {
   margin: 0;
-  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--world-muted);
 }
 
-.contact__place {
-  color: var(--text-secondary);
+.contact__main {
+  min-inline-size: 0;
+  display: grid;
+  gap: clamp(32px, 4vw, 48px);
 }
 
-@media (min-width: 64rem) {
-  .contact__grid {
-    grid-template-columns: 1fr auto;
-    gap: var(--space-7);
+.contact__title {
+  margin: 10px 0 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: min(7vw, 64px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.contact__lede {
+  margin: 16px 0 0;
+  max-inline-size: 52ch;
+  color: color-mix(in srgb, var(--world-ink) 82%, var(--world-ground));
+  font-size: 17px;
+}
+
+// The mockup renders in quirks mode, where a form keeps a 1em bottom margin:
+// the approved layout has it between the form and the socials.
+.form {
+  display: grid;
+  gap: 28px;
+  margin-block-end: 1em;
+}
+
+.form__field {
+  display: grid;
+  gap: 8px;
+}
+
+.form__control {
+  inline-size: 100%;
+  padding: 10px 0;
+  border: 0;
+  border-block-end: 1px solid var(--world-muted);
+  border-radius: 0;
+  background: none;
+  color: var(--world-ink);
+  font: 400 18px/1.4 var(--font-sans);
+}
+
+// The rule thickens and turns ink on focus: an indicator that is not colour alone.
+.form__control:focus {
+  outline: none;
+  border-block-end: 2px solid var(--world-ink);
+  padding-block-end: 9px;
+}
+
+// Grows with its text and only scrolls past ~14 lines.
+textarea.form__control {
+  field-sizing: content;
+  min-block-size: calc(5lh + 20px);
+  max-block-size: calc(14lh + 20px);
+  resize: none;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--world-ink) 35%, transparent) transparent;
+
+  // Browsers without scrollbar-color.
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--world-ink) 35%, transparent);
+  }
+}
+
+.form__control[aria-invalid='true'] {
+  border-block-end-style: dashed;
+  border-block-end-color: var(--world-ink);
+}
+
+.form__error {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+
+  &::before {
+    content: '↳ ';
+  }
+}
+
+.form__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.form__submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--world-ink);
+  color: var(--world-ground);
+  font: 500 14px/1 var(--font-sans);
+  cursor: pointer;
+  transition: scale 200ms var(--ease-out);
+
+  &::after {
+    content: '';
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+.form__status {
+  margin: 0;
+  font-size: 15px;
+  color: color-mix(in srgb, var(--world-ink) 82%, var(--world-ground));
+}
+
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.socials__link {
+  display: grid;
+  place-items: center;
+  inline-size: 52px;
+  block-size: 52px;
+  border: 1px solid var(--world-rule);
+  border-radius: 999px;
+  color: var(--world-ink);
+  transition:
+    background-color 220ms var(--ease-out),
+    color 220ms var(--ease-out),
+    translate 320ms var(--ease-out);
+}
+
+.socials__icon {
+  inline-size: 20px;
+  block-size: 20px;
+  fill: currentColor;
+}
+
+.socials__icon--stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.form__submit:focus-visible,
+.socials__link:focus-visible {
+  outline: 2px solid var(--world-ink);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .form__submit:hover {
+    scale: 1.04;
+  }
+
+  .socials__link:hover {
+    background: var(--world-ink);
+    color: var(--world-ground);
+    translate: 0 -3px;
+  }
+}
+
+@media (min-width: 900px) {
+  .contact {
+    grid-template-columns: 5fr 7fr;
+    align-items: start;
+  }
+
+  app-contact-portrait {
+    position: sticky;
+    inset-block-start: 96px;
+  }
+}
+
+// The mockup's entrance, as CSS so it plays from the prerendered page's first
+// paint, script or not. Every keyframe ends on the resting state. The
+// portrait's part is in contact-portrait.scss.
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: contact-rise 620ms var(--ease-out) calc(var(--enter) + 80ms + var(--i) * 90ms)
+      backwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form__submit,
+  .socials__link {
+    transition: none;
+  }
+
+  .form__submit:hover,
+  .socials__link:hover {
+    scale: none;
+    translate: none;
+  }
+}
+
+@keyframes contact-rise {
+  from {
+    transform: translateY(22px);
+    opacity: 0;
   }
 }

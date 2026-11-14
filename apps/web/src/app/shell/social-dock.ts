@@ -12,7 +12,7 @@ export interface DockLink {
   readonly icon: Icon;
 }
 
-const NETWORK_NAMES: Readonly<Record<SocialKind, string>> = {
+export const NETWORK_NAMES: Readonly<Record<SocialKind, string>> = {
   linkedin: 'LinkedIn',
   github: 'GitHub',
   artstation: 'ArtStation',

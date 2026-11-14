@@ -1,0 +1,89 @@
+// The mockup's portrait. The plate's colour in the 3D world is keyed on the
+// document and lives in src/styles/_contact.scss. --enter comes from the page.
+
+:host {
+  display: block;
+  max-inline-size: 460px;
+}
+
+figure {
+  display: grid;
+  gap: 24px;
+}
+
+.portrait {
+  position: relative;
+  aspect-ratio: 500 / 470;
+  isolation: isolate;
+}
+
+.portrait__plate {
+  position: absolute;
+  inset: 38% 0 3% 0;
+  z-index: -1;
+  background: var(--color-orange-500);
+  clip-path: polygon(24% 0, 100% 0, 76% 100%, 0 100%);
+}
+
+// mask-clip defaults to border-box: this both fades the base and hides the
+// figure below the baseline during its rise.
+.portrait__mask {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: linear-gradient(to top, transparent 0, #000 7%);
+  mask-image: linear-gradient(to top, transparent 0, #000 7%);
+}
+
+.portrait__img {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-end: 0;
+  inline-size: 100%;
+  block-size: auto;
+  translate: -50% 0;
+}
+
+figcaption {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--world-muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .portrait__plate {
+    animation: plate-wipe 800ms cubic-bezier(0.76, 0, 0.24, 1) calc(var(--enter, 0ms) + 120ms)
+      backwards;
+  }
+
+  // The mockup eases the whole effect, so its opacity key at 0.55 lands 140ms
+  // in. CSS eases each interval: this curve is the same stretch of
+  // cubic-bezier(0.16, 1, 0.3, 1), cut at y = 0.55 and rescaled.
+  .portrait__img {
+    animation:
+      figure-rise 1200ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--enter, 0ms) + 480ms) backwards,
+      figure-fade 139.56ms cubic-bezier(0.3215, 0.4249, 0.6336, 0.7505)
+        calc(var(--enter, 0ms) + 480ms) backwards;
+  }
+}
+
+@keyframes plate-wipe {
+  from {
+    clip-path: polygon(100% 0, 100% 0, 76% 100%, 76% 100%);
+  }
+}
+
+@keyframes figure-rise {
+  from {
+    translate: -50% 12%;
+    scale: 0.985;
+    filter: blur(8px);
+  }
+}
+
+@keyframes figure-fade {
+  from {
+    opacity: 0;
+  }
+}

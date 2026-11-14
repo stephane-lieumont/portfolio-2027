@@ -6,8 +6,6 @@ import type {
   WorldStack,
 } from '@portfolio/shared-types';
 
-import type { StaticImage } from '../static-content';
-
 /**
  * Editorial content of the two worlds and the contact page, held in the app
  * until the back office exists. Shaped exactly like the shared-types schemas so
@@ -19,13 +17,23 @@ import type { StaticImage } from '../static-content';
 
 const UPDATED_AT = '2026-11-14T00:00:00.000Z';
 
+/** An image shipped from public/, served from the site's own origin. */
+export interface PublicImage {
+  /** Root-relative; never under /medias, which is the bucket's. */
+  readonly src: string;
+  readonly alt: string;
+  readonly width: number;
+  readonly height: number;
+}
+
 /**
  * Assets referenced by id, as the API will. Until media are records, the ids
- * are fixed placeholders resolved here to the bucket key and its metadata.
+ * are fixed placeholders resolved here. The portrait ships from public/ until
+ * the media pipeline (ADR-0012) takes it over.
  */
-export const STATIC_ASSETS: Readonly<Record<string, StaticImage>> = {
+export const STATIC_ASSETS: Readonly<Record<string, PublicImage>> = {
   '6b7c2a0e-1f3d-4c5a-9e8b-2d4f6a8c0e11': {
-    key: 'portrait-stephane-pensif.png',
+    src: '/images/portrait-stephane-pensif.png',
     alt: 'Stéphane Lieumont, pensif, la main au menton',
     width: 500,
     height: 392,

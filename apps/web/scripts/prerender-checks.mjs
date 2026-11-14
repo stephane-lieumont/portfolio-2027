@@ -37,7 +37,10 @@ export const EXPECTED = new Map([
   ...ARTWORKS.map((a) => [`graphisme-3d/${a.slug}`, { h1: NAME, text: [a.title] }]),
   [
     'contact',
-    { h1: 'Un projet, une question ou juste un Hello World ?', text: ['Je réponds à tout'] },
+    {
+      h1: 'Un projet, une question ou juste un Hello World ?',
+      text: ['Je réponds à tout, y compris pour dire non.', 'Nom', 'Email', 'Message', 'Envoyer'],
+    },
   ],
   ...PROJECTS.map((p) => [`developpeur/${p.slug}`, { h1: p.title, text: [p.context, p.mission] }]),
   ['404', { h1: 'Page introuvable', text: ['Erreur 404'], noindex: true }],
@@ -94,6 +97,10 @@ export function checkPage(route, html) {
       }
     }
   }
+
+  // Stéphane's address is never published (ADR-0007, spec 03): the contact
+  // form is the way in.
+  if (document.querySelector('a[href^="mailto:" i]')) fail('publishes a mailto link');
 
   // The reveal's hidden state needs these marks; the server must never set them.
   if (document.querySelector('[data-reveal-ready]'))
