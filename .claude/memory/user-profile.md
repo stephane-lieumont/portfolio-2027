@@ -27,6 +27,8 @@ That trajectory is an argument, not an anecdote: it explains an engineer's rigor
 
 Angular, TypeScript, RxJS/Signals, .NET/C#, Docker, CI/CD, Git, and **React** (which he can still use).
 
+Added 2026-11-14, at his request: **AWS** and **Claude Code** belong in the displayed stack. On AWS, his own words: he administers EC2 instances, AWS Secrets (Secrets Manager), S3, and deployment pipelines with Azure (Azure DevOps delivering to AWS).
+
 **Flutter comes off the highlighted specialties** — he no longer wants to be approached for it. The Case Tes Potes Mobile project does stay in the work section: it is a fact of his career, and the one carrying the most responsibility.
 
 The specialties displayed in 2022 (Vue.js, React.js, Flutter, Webpack, Sass, Node.js) are **out of date** and must not be carried over.

@@ -65,8 +65,10 @@ A piece carries several views: angles of the same model, or **process stages —
 That last case is worth stating plainly, because it is why the field exists. The 3D section's job is to prove an ability to learn independently ([00-vision](00-vision.md)). A finished render proves taste; the sequence that produced it proves method. Process views are the strongest content this section can carry.
 
 ```
-view: { assetId, label?, position }
+view: { assetId, label?, position, focal? }
 ```
+
+`focal` is `{ x, y }` in `[0, 1]`, centre by default: where the mosaic crops the view around (ADR-0015). The viewer always shows the whole render.
 
 `label` is optional French text — `"Wireframe"`, `"Clay"`, `"Render final"`, `"Vue de nuit"`. Empty for a plain alternate angle.
 
@@ -89,6 +91,47 @@ Entities store slugs. Zod validates against the registry, so a typo fails at the
 A lookup table would solve nothing: the icon is an SVG in the repository either way, so adding a technology is a commit regardless. Making that explicit is more honest than pretending it is data.
 
 **Two separate registries.** `technologies` (Angular, TypeScript, .NET, Docker, React…) and `software` (Zbrush, 3ds Max, V-Ray, Substance…). They never appear in the same filter or the same list.
+
+---
+
+## World content — added 2026-11-14
+
+The world pages approved on the « Bascule Dev / 3D » mockup carry editorial content that is neither a `Project` nor an `Artwork`. It is administrable like them. Schemas: `packages/shared-types/src/world.ts`.
+
+All four are **singletons**: a page always exists, so they have no `draft`/`published` status. Their `updatedAt` feeds the same « Publié, en attente de mise en ligne » state as the entities above (`updatedAt > lastBuildAt`).
+
+**Order is array order.** Facts, tools and mastery points have no date to sort on, and their order is the editorial argument (Angular first). The array is the only source of truth, as for `missionSteps` and `views`.
+
+All text is plain text, never markup. A bold lead is its own field.
+
+### `WorldPage` — one per world (`dev`, `cgi`)
+
+| Field          | Type                         | Notes                                                                     |
+| -------------- | ---------------------------- | ------------------------------------------------------------------------- |
+| `world`        | `dev` \| `cgi`               | Discriminator.                                                            |
+| `roleWord`     | 2–16 capitals, digits, space | Flips under the name at display size: « LEAD TECH », « GRAPHISTE 3D ».    |
+| `eyebrowTools` | slug[], 1–4                  | From `technologies` for `dev`, from `software` for `cgi` — never crossed. |
+| `lede`         | `{ lead, text }`             | `lead` ≤ 80, set in bold; `text` ≤ 200.                                   |
+| `scrub`        | string, 20–220, ≤ 35 words   | The sentence coloured word by word on scroll.                             |
+| `facts`        | `{ label, value }[]`, 3–6    | Labels unique, ≤ 24; values ≤ 80.                                         |
+
+### `WorldStack` — one per world
+
+`entries`: 3–10 `{ tool, points }`, one entry per tool, `tool` from the world's own registry. `points`: 2–6 `{ lead ≤ 60, text ≤ 220 }`, rendered as the numbered « Maîtrise » panel.
+
+### `ContactPage` — singleton
+
+`title` ≤ 120, `lede` ≤ 280, `portraitAssetId` (a cut-out with a transparent background, it stands on the diagonal plate), `portraitCaption` ≤ 60.
+
+### `SiteSettings` — singleton
+
+`socials`: `{ kind, url }[]`, `kind` among `linkedin`, `github`, `artstation`, each once, `https` only. **No email kind**: Stéphane's address is never published in the HTML (decided 2026-11-14); visitors write through the contact form, which the API relays (ADR-0007). `cvAssetId`: the CV file.
+
+### Kept out of the model
+
+Presentation, not content: the name « Stéphane Lieumont », the switch and section labels, the italic accent letters, the point-cloud glyph and torus, colours and sweep direction, the two CTAs (their targets are `/contact` and `cvAssetId`), form labels and messages, social icons and their accessible names (derived from `kind`). The work counts (« 04 projets · 2021 – 2022 ») are derived from the published `Project` and `Artwork` records.
+
+The dev world's work grid lists published `Project`s and the 3D world's mosaic lists published `Artwork`s, both by `releasedAt` descending.
 
 ---
 

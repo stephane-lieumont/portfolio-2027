@@ -41,6 +41,10 @@ export const TECHNOLOGIES = [
   { slug: 'angular', label: 'Angular', glyph: null, logo: null },
   { slug: 'dotnet', label: '.NET', glyph: null, logo: null },
   { slug: 'csharp', label: 'C#', glyph: null, logo: null },
+  // Added 2026-11-14 for the world stack (user-profile.md): no glyph, no PNG yet.
+  { slug: 'rxjs', label: 'RxJS', glyph: null, logo: null },
+  { slug: 'aws', label: 'AWS', glyph: null, logo: null },
+  { slug: 'claude-code', label: 'Claude Code', glyph: null, logo: null },
   { slug: 'typescript', label: 'TypeScript', glyph: '\\e927', logo: null },
   { slug: 'react', label: 'React', glyph: '\\e919', logo: LOGO('react') },
   { slug: 'vue', label: 'Vue.js', glyph: '\\e918', logo: LOGO('vue') },

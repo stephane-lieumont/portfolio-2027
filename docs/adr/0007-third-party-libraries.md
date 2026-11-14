@@ -1,6 +1,6 @@
 # ADR-0007 — Policy on third-party libraries
 
-- **Status**: Accepted
+- **Status**: Accepted — amended by ADR-0013 (smooth scrolling)
 - **Date**: 2026-08-30
 
 ## Context

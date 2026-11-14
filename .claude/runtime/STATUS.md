@@ -1,7 +1,7 @@
 # Status
 
-Last updated 2026-11-14. `main` at the merge of PR #15; this file describes it
-with `feat/dev-page-reveal` merged.
+Last updated 2026-11-14. `main` at the merge of PR #16; this file describes it
+with `feat/world-content-model` merged.
 
 ## Works today
 
@@ -47,6 +47,52 @@ client, the gallery, contact and the tool chips now have their own specs.
 What the numbers do not cover, deliberately: the `aria-busy` branch on the
 contact submit is unreachable until the form is wired, and three handlers in
 `app.html` fire only on real keyboard events.
+
+## In progress — the « Bascule » world pages
+
+A mockup approved with Stéphane on 2026-11-14 (artifact « Bascule Dev / 3D »)
+redesigns the developer and 3D pages as two worlds sharing one skeleton, a
+diagonal sweep between them, a 3D mosaic with a full-screen viewer, a stack
+with « Maîtrise » panels, a contact page with a cut-out portrait, background
+motes and smooth scrolling. It ships as six PRs:
+
+1. **ADRs and content model** — this PR. ADR-0013 (Lenis), ADR-0014 (worlds
+   are routes, the sweep is the route transition), ADR-0015 (mosaic crops
+   around a focal point). `world.ts` schemas in shared-types; static content in
+   `apps/web/src/app/core/content/world-content.ts`, parsed against them in a
+   spec. Nothing renders it yet.
+2. Shell: header world switch (links, `aria-current`), sweep transition,
+   social dock, motes, Lenis. **Prerendering (ADR-0008) must land first**, or
+   the browser-only code is untested.
+3. World page: hero, role word, point cloud, scrub, facts.
+4. Work: dev grid, 3D mosaic, viewer at `/graphisme-3d/<slug>` (spec 01).
+5. Stack and « Maîtrise ».
+6. Contact: portrait, form, no published email.
+
+**Content review at the end of the integration** (Stéphane, 2026-11-14: the
+copy is reviewed once, after the six PRs). Collected so far:
+
+- Mastery points flagged « à valider » on the mockup: RxJS « L’interop
+  maîtrisée »; .NET points 2–4; React points 2–4; V-Ray « Les matières ».
+- **Claims the repository contradicts today** — must change or become true
+  before they render: « 80 % de couverture imposés en CI » and « Une CI qui fait
+  foi » (there is no CI, only the local `pnpm verify`); « Les mêmes conteneurs du
+  poste de développement au serveur » (nothing is deployed); « Une commande pour
+  lancer l’infrastructure locale » (`pnpm infra:up` is broken, see Missing).
+- Unsourced: « Fontenilles, France » under the portrait (not in user-profile);
+  « Sans école et sans commande » contradicts the Pixmodels commission (2015).
+- « Zoneless » sits under RxJS; it belongs with Angular.
+- « Les seize rendus » hard-codes a count spec 03 says is derived.
+- French typography: no non-breaking spaces before « : », « ? », « ! ».
+
+**Gaps in the model:** `focal` on artwork views is specified (spec 03,
+ADR-0015) but `Artwork` has no Zod schema in shared-types yet. The contact
+portrait placeholder (`portrait-stephane-pensif.png`) is neither seeded in
+MinIO nor in the ADR-0012 pipeline; PR 6 uploads it.
+
+**Registry:** `rxjs`, `aws`, `claude-code` added, with no glyph or logo yet.
+The stack's marks need SVG logos (ADR-0012); the mockup used Simple Icons
+(CC0).
 
 ## Missing
 

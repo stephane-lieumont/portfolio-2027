@@ -1575,3 +1575,13 @@ Only the things that need his eye. Everything else above is settled by a measure
 ---
 
 **One ADR needs a superseding note:** ADR-0012's "the video leaves the bundle and leaves autoplay behind". The bundle half stands; the autoplay half was reversed by Stéphane on 2026-08-31 and is now recorded in spec 02 and here.
+
+## 15. Amendments — the « Bascule » world pages (2026-11-14)
+
+The world pages were redesigned on a mockup Stéphane approved on 2026-11-14. Three of its choices override this spec; each is recorded where the decision lives.
+
+- **§2, tier 4 (« A library — not needed »)** — amended by ADR-0013: Lenis smooths wheel scrolling. Still no animation library; the sequencing stays CSS and Web Animations.
+- **§4.1 (scroll-scrubbed reveals rejected)** — one exception, the world page's large sentence coloured word by word on scroll. It does not break the reason §4.1 exists: a word that is not yet reached is drawn at 55 % of the ink mixed into the ground, never lower, which keeps every word at or above 3:1 at every scroll position (large text, WCAG 1.4.3). The sentence is complete and readable at rest; the scrub only darkens it to full ink. Measured on the mockup at about 5.8:1 on the dark ground and 3.5:1 on the orange ground; to be re-measured on the real tokens.
+- **§9.1–9.3 (route transitions)** — amended by ADR-0014 between `/developpeur`, `/graphisme-3d` and `/contact`: a diagonal sweep at the home split's angle, about 1.3 s, every new navigation landing at the top. All other routes keep §9.2's crossfade. §9.4 (the lightbox opening from its tile) stands.
+
+Two moving parts this spec did not foresee also ship with the world pages: a background particle canvas and the hero point cloud, each a `requestAnimationFrame` loop. They share one frame loop with Lenis, stop when the tab is hidden, and draw a single still frame under `prefers-reduced-motion`.
