@@ -16,15 +16,30 @@ export interface RouteEnd {
  *   between the two worlds (ADR-0014).
  * - `wipe`: the same band in ink, into contact and back to the world it was
  *   opened from.
+ * - `viewer`: the 3D viewer opening from its tile or closing back to it; the
+ *   plate morphs between the two (spec 07 §9.4).
  * - `fade`: spec 07 §9.2's crossfade, for everything else.
- * - `none`: nothing changes on screen, so no transition at all.
+ * - `none`: nothing changes on screen, so nothing animates — including a step
+ *   from one piece to the next inside the viewer, which animates itself.
  */
-export type RouteTransitionKind = 'sweep-dev' | 'sweep-cgi' | 'wipe' | 'fade' | 'none';
+export type RouteTransitionKind = 'sweep-dev' | 'sweep-cgi' | 'wipe' | 'viewer' | 'fade' | 'none';
 
 const CONTACT = '/contact';
+const GALLERY = '/graphisme-3d';
+
+const isPiece = (path: string): boolean => path.startsWith(`${GALLERY}/`);
+
+/** Whether a page shows the point cloud: the two world pages, the viewer over the wall. */
+export function showsCloud(path: string): boolean {
+  return path === '/developpeur' || path === GALLERY || isPiece(path);
+}
 
 export function classifyTransition(from: RouteEnd, to: RouteEnd): RouteTransitionKind {
   if (from.path === to.path) return 'none';
+  if (isPiece(from.path) && isPiece(to.path)) return 'none';
+  if ((from.path === GALLERY && isPiece(to.path)) || (isPiece(from.path) && to.path === GALLERY)) {
+    return 'viewer';
+  }
   if (from.world !== to.world) {
     return to.world === 'cgi' ? 'sweep-cgi' : 'sweep-dev';
   }
@@ -44,6 +59,7 @@ export class RouteTransitions {
   private readonly world = inject(ActiveWorld);
   private readonly smooth = inject(SmoothScroll);
   private stamp = 0;
+  private current: Promise<void> = Promise.resolve();
 
   constructor() {
     // An easing still in flight when the visitor clicks would keep scrolling
@@ -51,6 +67,11 @@ export class RouteTransitions {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationStart))
       .subscribe(() => this.smooth.settle());
+  }
+
+  /** Resolves once the transition under way, if any, has finished either way. */
+  settled(): Promise<void> {
+    return this.current;
   }
 
   onCreated({ transition }: ViewTransitionInfo): void {
@@ -64,18 +85,29 @@ export class RouteTransitions {
       { path: toPath, world: this.world.worldFor(toPath) },
     );
 
-    if (kind === 'none') {
-      transition.skipTransition();
-      return;
-    }
-
     const root = this.document.documentElement;
     const stamp = ++this.stamp;
     root.dataset['vt'] = kind;
+    // The cloud may ride above the band only when both pages show it: then
+    // the new one carries on the old one's morph. From or to any other page it
+    // stays in the page's snapshot and arrives with it.
+    if (showsCloud(this.world.path()) && showsCloud(toPath)) root.dataset['vtCloud'] = '';
+    else delete root.dataset['vtCloud'];
     const clear = () => {
-      if (stamp === this.stamp) delete root.dataset['vt'];
+      if (stamp !== this.stamp) return;
+      delete root.dataset['vt'];
+      delete root.dataset['vtCloud'];
     };
     transition.finished.then(clear, clear);
+    this.current = transition.finished.then(
+      () => undefined,
+      () => undefined,
+    );
+
+    // Nothing changes on screen: the transition runs with no animation rather
+    // than being skipped. A skipped transition rejects its promises, which the
+    // router reports with console.error even in production.
+    if (kind === 'none') return;
 
     // Not here: the old page is captured after this callback, and would be
     // captured already scrolled to the top. Once the update is done the old
@@ -83,7 +115,9 @@ export class RouteTransitions {
     // under the cover (measured: scrollY 0 before `ready`). Back and forward
     // keep the position the router restores. A rejected update is the
     // router's to report.
-    if (navigation?.trigger === 'popstate') return;
+    // A navigation asking to keep its scroll (the viewer opening and closing
+    // over the gallery) stays where it is too.
+    if (navigation?.trigger === 'popstate' || navigation?.extras.scroll === 'manual') return;
     transition.updateCallbackDone.then(
       () => this.smooth.jumpTo(0),
       () => undefined,

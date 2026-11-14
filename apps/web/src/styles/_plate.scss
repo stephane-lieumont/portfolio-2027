@@ -1,0 +1,61 @@
+// A picture's frame while it loads, and if it fails (the design-expert spec,
+// 2026-11-14). The frame carries the picture's mean colour (`--plate-tone`) and
+// the state (`data-plate`, set by PlateImage in the browser only), so the
+// prerendered page shows its images as any page would. Global because three
+// components share it. No transition on the images' opacity: every arrival is a
+// Web Animation, started once the picture is decoded.
+.plate {
+  position: relative;
+  background-color: var(--plate-tone, color-mix(in srgb, var(--world-ink) 6%, transparent));
+}
+
+.plate:is([data-plate='loading'], [data-plate='error']) img {
+  opacity: 0;
+}
+
+.plate[data-plate='error'] {
+  background-color: color-mix(in srgb, var(--world-ink) 6%, transparent);
+}
+
+// The viewer shows a render whole on its 16:9 plate: once it is there, the
+// tone around a non-16:9 render gives way to the dark ground.
+.plate--contain[data-plate='ready'] {
+  background-color: transparent;
+  transition: background-color 400ms linear 400ms;
+}
+
+.plate__fallback {
+  display: none;
+}
+
+.plate[data-plate='error'] .plate__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 16px;
+  color: var(--world-ink);
+}
+
+.plate__fallback-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.plate__fallback-alt {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+@media (min-width: 900px) {
+  .plate__fallback-alt {
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+  }
+}

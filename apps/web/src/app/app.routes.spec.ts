@@ -1,7 +1,8 @@
+import { ActivatedRouteSnapshot, convertToParamMap } from '@angular/router';
 import { describe, expect, it } from 'vitest';
 
-import { PROJECTS } from './core/static-content';
-import { projectSlugExists, routes } from './app.routes';
+import { ARTWORKS, PROJECTS } from './core/static-content';
+import { artworkSlugExists, projectSlugExists, routes } from './app.routes';
 
 function segmentsOf(path: string): { readonly path: string }[] {
   return path.split('/').map((p) => ({ path: p }));
@@ -74,5 +75,26 @@ describe('the project detail guard', () => {
 
   it('survives a request with no slug segment at all', () => {
     expect(match('developpeur')).toBe(false);
+  });
+});
+
+describe('a 3D piece’s address', () => {
+  const gallery = routes.find((r) => r.path === 'graphisme-3d')!;
+  const piece = gallery.children!.find((r) => r.path === ':slug')!;
+
+  it('matches every published piece, and only those, so an unknown one reaches the 404', () => {
+    for (const artwork of ARTWORKS) expect(artworkSlugExists([{ path: artwork.slug }])).toBe(true);
+    expect(artworkSlugExists([{ path: 'nope' }])).toBe(false);
+    expect(artworkSlugExists([])).toBe(false);
+  });
+
+  it('titles the page after the piece and describes it by its alt text', () => {
+    const snapshot = {
+      paramMap: convertToParamMap({ slug: ARTWORKS[2].slug }),
+    } as ActivatedRouteSnapshot;
+    const title = piece.title as (route: ActivatedRouteSnapshot) => string;
+    const description = piece.resolve!['description'] as (route: ActivatedRouteSnapshot) => string;
+    expect(title(snapshot)).toBe(ARTWORKS[2].title);
+    expect(description(snapshot)).toBe(ARTWORKS[2].image.alt);
   });
 });

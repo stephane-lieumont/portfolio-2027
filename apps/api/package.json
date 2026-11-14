@@ -15,7 +15,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "admin:hash": "tsx src/lib/hash-password.ts",
-    "media:seed": "node src/scripts/seed-media.ts"
+    "media:seed": "node src/scripts/seed-media.ts",
+    "media:derive": "node src/scripts/derive-media.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.2",
@@ -29,6 +30,7 @@
     "fastify": "^5.12.1",
     "fastify-plugin": "^6.0.0",
     "minio": "^8.0.7",
+    "sharp": "0.34.4",
     "zod": "^4.5.4"
   },
   "devDependencies": {

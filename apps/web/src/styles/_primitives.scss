@@ -12,6 +12,7 @@
   --color-neutral-500: #7b756f;
   --color-neutral-600: #605c57;
   --color-neutral-700: #46423f;
+  --color-neutral-750: #3a3633; // the copyright on the orange ground: 5.7:1
   --color-neutral-800: #2e2b29;
   --color-neutral-850: #252422;
   --color-neutral-900: #1b1a18;
@@ -53,9 +54,10 @@
   --font-sans:
     'Instrument Sans', 'Instrument Sans Fallback', system-ui, -apple-system, 'Segoe UI', roboto,
     'Helvetica Neue', arial, sans-serif;
-  // The mockup's mono for labels. JetBrains Mono ships in public/fonts but is
-  // not wired yet; until it is, the system mono stands in.
+  // The mockup's mono for labels, and its serif italic for the accent letters
+  // of the role word. Both self-hosted (_fonts.scss).
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', menlo, monospace;
+  --font-italic: 'Instrument Serif', georgia, 'Times New Roman', serif;
 
   --text-display: clamp(3rem, 2.4167rem + 2.5926vw, 4.75rem);
   --text-h1: clamp(2.375rem, 1.9792rem + 1.7593vw, 3.5625rem);
@@ -94,10 +96,6 @@
   // so the rhythm tightened as the page got wider.
   --heading-gap: var(--space-4); // a heading to what it introduces, everywhere
   --section-gap: var(--space-6); // between sections; steps up with the viewport
-  // The tool marks sit directly on the page, no plate — 2022's answer, and
-  // Stéphane's. 70px on a phone rising to 100px, which are the two sizes the
-  // 2022 site used (`size: 100` capped at 70px below the small breakpoint).
-  --tech-logo-size: 4.375rem;
 
   // Motion — see docs/specs/07-motion.md §3
   --duration-90: 90ms;
@@ -137,17 +135,6 @@
   --motion-reveal-step: 150ms;
   --reveal-rise: 1.75rem;
 
-  // The tool marks, kept at the 2022 values because that is the arrival
-  // Stéphane recognises. `ease-in` is not a placeholder: --ease-signature is a
-  // steep ease-out, and applying it to each segment of a bounce makes every
-  // segment leave at speed, which reads as a stutter rather than a bounce.
-  --motion-bubble: 400ms; // 2022: 0.4s
-  --motion-bubble-label: 200ms; // 2022: 0.2s on the name
-  --ease-bubble: ease-in; // 2022, exactly
-  --stagger-bubble: 150ms; // 2022: 150ms * index
-  --bubble-lead: 300ms; // 2022: + 300ms before the first
-  --bubble-rise: 10px; // 2022: translateY(10px) on the name
-
   // The « Bascule » world change (ADR-0014), at the mockup's values: the band
   // covers in --motion-sweep, the contact wipe covers and uncovers in
   // --motion-wipe each, the switch's thumb slides in --motion-thumb.
@@ -156,6 +143,11 @@
   --motion-thumb: 520ms;
   --ease-sweep: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-thumb: cubic-bezier(0.22, 1, 0.36, 1);
+  // The world pages' easings, from the mockup: one out-curve for hovers and
+  // rises, the expo settle for long arrivals, the cut for diagonal wipes.
+  --ease-world: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-cut: cubic-bezier(0.76, 0, 0.24, 1);
   --stagger-list: 60ms;
   --stagger-grid: 40ms;
   --stagger-cap-list: 4;

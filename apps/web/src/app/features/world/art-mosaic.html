@@ -1,0 +1,61 @@
+<section class="work band" aria-labelledby="work-title">
+  <div class="work__head" appWorldReveal="lines">
+    <h2 id="work-title">Réalisations</h2>
+    <p class="work__count">
+      <b>{{ count.count }}</b> projets · {{ count.span }}
+    </p>
+  </div>
+  <ul #wall class="mosaic" role="list" [style.--rows]="rows">
+    @for (piece of pieces; track piece.slug) {
+      <li
+        class="tile plate enter-line"
+        [style.--plate-tone]="piece.tone"
+        [class.tile--wide]="piece.wide"
+        [style.--phone-ratio]="piece.phoneRatio"
+        [style.--area]="piece.area"
+        [style.--line]="lineStart() + $index"
+        appWorldReveal="tile"
+      >
+        <a
+          class="tile__btn"
+          [href]="piece.href"
+          [attr.aria-label]="piece.title + ' (' + piece.year + '), agrandir'"
+          (click)="open($index, $event)"
+        >
+          <img
+            class="tile__img"
+            appPlate="wall"
+            [src]="piece.src"
+            [srcset]="piece.srcset"
+            [sizes]="piece.sizes"
+            alt=""
+            [width]="piece.width"
+            [height]="piece.height"
+            [style.--focus]="piece.focus"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="plate__fallback" aria-hidden="true">
+            <span class="plate__fallback-label">Image indisponible</span>
+            <span class="plate__fallback-alt">{{ piece.alt }}</span>
+          </span>
+          <span class="tile__cap" aria-hidden="true">
+            <span class="row__title">{{ piece.title }}</span>
+            <span class="row__year">{{ piece.year }}</span>
+            <span class="row__tools">
+              @for (tool of piece.tools; track tool.slug) {
+                <span class="tool">
+                  @if (tool.mask) {
+                    <span class="tool__icon" [style.--mask]="tool.mask"></span>
+                  }
+                  {{ tool.label }}
+                </span>
+              }
+            </span>
+          </span>
+        </a>
+      </li>
+    }
+  </ul>
+  <app-art-viewer [pieces]="pieces" (moved)="moved($event)" (closing)="close()" />
+</section>

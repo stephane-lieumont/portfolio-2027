@@ -1,0 +1,86 @@
+// A piece's caption — counter, title, year, tools — shared by the developer
+// plates, the 3D tiles and the 3D viewer, so it is global: three components
+// set it in the same voice (the approved mockup's `.row__cap`).
+.row__cap {
+  position: relative;
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  column-gap: 8px;
+  row-gap: 4px;
+  align-items: baseline;
+  padding-top: 12px;
+  border-top: 1px solid var(--world-rule);
+}
+
+.row__cap::before {
+  content: counter(work, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--world-muted);
+  transition: color 300ms var(--ease-world);
+}
+
+// The accent hairline that draws over the rule on hover and focus.
+.row__cap::after {
+  content: '';
+  position: absolute;
+  inset: -1px 0 auto;
+  height: 1px;
+  background: var(--world-accent);
+  scale: 0 1;
+  transform-origin: left;
+  transition: scale 700ms var(--ease-world);
+}
+
+.row__title {
+  font-size: clamp(17px, 1.5vw, 20px);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.row__year {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--world-ink);
+}
+
+.row__tools {
+  grid-column: 2 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--world-muted);
+  transition: color 300ms var(--ease-world);
+}
+
+.tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+// Every mark is a mask filled with the current ink: Simple Icons SVGs and the
+// 3D tools' PNGs alike. Forced colours keep it in the system's text colour.
+.tool__icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  -webkit-mask: var(--mask) center / contain no-repeat;
+  mask: var(--mask) center / contain no-repeat;
+  forced-color-adjust: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row__cap::before,
+  .row__cap::after,
+  .row__tools {
+    transition: none;
+  }
+}

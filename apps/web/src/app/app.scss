@@ -1,8 +1,9 @@
 // The header of the approved « Bascule » mockup, value for value, written
-// mobile-first (ADR-0011). Two deliberate departures, both for accessibility:
-// every link is at least 44px tall (ADR-0010; the mockup's are 33–35px), and
-// the role line is in the world's ink rather than its muted tone, which fell to
-// 2.35:1 under the glass over a white image.
+// mobile-first (ADR-0011): 72% glass, the role line in the world's muted tone,
+// links 32–36px tall. Shipped as the mockup on purpose (Stéphane, 2026-11-14:
+// « sois iso maquette, on verra plus tard pour les contrastes »): the muted
+// role falls below AA over a passing image and the links are under the 44px
+// target of ADR-0010. Both are listed as deferred debt in STATUS.md.
 //
 // Rules keyed on the document's world (the switch's thumb and the ink on it)
 // live in src/styles/_world.scss: from here encapsulation would scope them away.
@@ -10,7 +11,10 @@
 .top {
   position: sticky;
   inset-block-start: env(safe-area-inset-top, 0px);
-  z-index: 10;
+  // The mockup's layers: the stage (20) passes under the header (30) and the
+  // dock (50), blurred by their glass; only the sweep lifts it, as its own
+  // view-transition group.
+  z-index: 30;
   padding-inline: max(16px, env(safe-area-inset-left, 0px))
     max(16px, env(safe-area-inset-right, 0px));
   color: var(--world-ink);
@@ -39,6 +43,7 @@
   line-height: 1.15;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--world-muted);
 }
 
 .top__end {
@@ -51,7 +56,6 @@
 .top__link {
   display: inline-flex;
   align-items: center;
-  min-block-size: 2.75rem;
   padding: 10px 6px;
   border-radius: 999px;
   font: 500 12px/1 var(--font-sans);
@@ -85,7 +89,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-block-size: 2.75rem;
   padding: 10px;
   border-radius: 999px;
   font: 500 12px/1 var(--font-sans);
@@ -119,21 +122,26 @@
 }
 
 // The copyright as a spine up the left gutter, read bottom to top like a French
-// book spine, its foot level with the dock. Quiet on purpose (Stéphane): muted,
-// sentence case. Muted fails AA on glass over a passing render (2.35:1), so the
-// strip is a solid tab of the world's ground instead: muted holds on it in
-// both worlds, and an opaque ground melts into the page better than glass.
+// book spine, its foot level with the dock. Quiet on purpose (Stéphane): no
+// ground of its own, sentence case, the world's spine tone (muted in the dev
+// world, 5.8:1 on the bare ground; a dark neutral on the orange, 5.7:1;
+// text-secondary elsewhere). Above everything (Stéphane: « la mention légale
+// doit être au z-index le plus haut »): over the header, the dock, the bands
+// and the mosaic, and its own view-transition group so the sweep's snapshots
+// do not cover it. Only the viewer's modal dialog sits higher: the top layer
+// wins by spec. Over a render it can fall below AA (STATUS, known debt).
+// Not interactive, so it never takes a click from what is under it.
 // Physical properties: in vertical-rl the element's own inline axis is vertical.
 .copyright {
   position: fixed;
   left: max(var(--space-1), env(safe-area-inset-left, 0px));
   bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
-  z-index: 20;
+  z-index: 100;
   margin: 0;
-  padding: var(--space-3) var(--space-1);
-  border-radius: var(--radius-sm);
-  background: var(--world-ground);
-  color: var(--world-muted);
+  padding-inline: var(--space-1);
+  pointer-events: none;
+  view-transition-name: copyright;
+  color: var(--world-spine);
   font: 400 12px/1 var(--font-mono);
   letter-spacing: 0.02em;
   white-space: nowrap;

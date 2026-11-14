@@ -1,0 +1,38 @@
+<div class="wrap">
+  <app-world-hero [page]="page()" />
+
+  <section class="body">
+    <app-point-cloud [world]="world()" />
+
+    <div class="text">
+      <p class="lede enter-line" style="--line: 2">
+        <strong>{{ page().lede.lead }}</strong> {{ page().lede.text }}
+      </p>
+      <app-scrub-sentence [text]="page().scrub" />
+      <dl class="facts">
+        @for (fact of page().facts; track fact.label) {
+          <div class="facts__row enter-line" [style.--line]="3 + $index">
+            <dt>{{ fact.label }}</dt>
+            <dd>{{ fact.value }}</dd>
+          </div>
+        }
+      </dl>
+      <div class="ctas">
+        <a class="btn" routerLink="/contact">Me contacter</a>
+        @if (cv) {
+          <a class="btn btn--ghost" [href]="cv" target="_blank" rel="noopener"
+            >Mon CV<span class="visually-hidden"> (PDF, nouvel onglet)</span></a
+          >
+        }
+      </div>
+    </div>
+  </section>
+
+  @if (world() === 'dev') {
+    <app-dev-work [lineStart]="workStart()" />
+  } @else {
+    <app-art-mosaic [lineStart]="workStart()" />
+  }
+
+  <app-world-stack [stack]="stack()" />
+</div>

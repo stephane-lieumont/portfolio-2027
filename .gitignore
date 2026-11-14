@@ -24,3 +24,6 @@ pnpm-debug.log*
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Local agent worktrees, never versioned
+.claude/worktrees/

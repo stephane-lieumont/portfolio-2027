@@ -9,6 +9,7 @@ allowBuilds:
   esbuild: true
   lmdb: true
   msgpackr-extract: true
+  sharp: true
 
 minimumReleaseAgeExclude:
   - '@angular-eslint/builder@22.2.0'

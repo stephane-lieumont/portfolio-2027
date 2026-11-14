@@ -1,0 +1,75 @@
+<section class="stack" aria-labelledby="stack-title">
+  <div class="stack__head" appWorldReveal="ruled">
+    <h2 id="stack-title">Stack</h2>
+    <span>{{ subtitle() }}</span>
+  </div>
+  <!-- A tab list: one tool chosen at a time, its points in the panel below.
+       Arrows, Home and End move between the marks (roving tabindex). -->
+  <ul #markList class="marks" role="tablist" aria-label="Outils">
+    @for (mark of marks(); track mark.slug) {
+      <li class="mark" role="presentation">
+        <button
+          type="button"
+          role="tab"
+          [id]="'mark-' + mark.slug"
+          [attr.aria-selected]="$index === selected()"
+          [attr.tabindex]="$index === selected() ? 0 : -1"
+          aria-controls="mastery"
+          (click)="select($index)"
+          (keydown)="onKey($event)"
+        >
+          <span class="mark__icon" aria-hidden="true">
+            <span class="mark__mask" [style.--mask]="mark.mask"></span>
+          </span>
+          <span class="mark__name">{{ mark.label }}</span>
+        </button>
+      </li>
+    }
+  </ul>
+  <!-- Every tool's points are rendered in one grid cell, only the chosen one
+       shown: the panel is as tall as the longest entry, so choosing a tool never
+       moves the page (Stéphane: « une hauteur fixe pour éviter d'avoir à
+       scroller »). -->
+  <div
+    #panel
+    id="mastery"
+    class="mastery"
+    role="tabpanel"
+    tabindex="0"
+    [attr.aria-labelledby]="'mark-' + marks()[selected()].slug"
+    appWorldReveal="ruled"
+  >
+    <div class="mastery__label" data-reveal-part>
+      <h3>Maîtrise</h3>
+      <p class="mastery__names">
+        @for (mark of marks(); track mark.slug) {
+          <span
+            class="mastery__name"
+            [class.is-current]="$index === selected()"
+            [attr.aria-hidden]="$index === selected() ? null : 'true'"
+            >{{ mark.label }}</span
+          >
+        }
+      </p>
+    </div>
+    <div class="mastery__lists">
+      @for (entry of stack().entries; track entry.tool; let i = $index) {
+        <ol
+          class="mastery__list"
+          role="list"
+          [class.is-current]="i === selected()"
+          [attr.inert]="i === selected() ? null : ''"
+          [attr.aria-hidden]="i === selected() ? null : 'true'"
+        >
+          @for (point of entry.points; track point.lead) {
+            <li [attr.data-reveal-part]="i === selected() ? '' : null">
+              <p>
+                <b>{{ point.lead }}</b> {{ point.text }}
+              </p>
+            </li>
+          }
+        </ol>
+      }
+    </div>
+  </div>
+</section>

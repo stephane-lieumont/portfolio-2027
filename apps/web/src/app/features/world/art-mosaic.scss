@@ -1,0 +1,209 @@
+// The mockup's mosaic: a full-bleed wall on the work band, the label stacked
+// above it, never sticky. One departure (Stéphane, 2026-11-14, on sixteen real
+// renders): tile shapes stay between 4:3 and 2:1, so no render loses more than
+// a quarter of itself — see mosaic-layout.ts and ADR-0015's amendment.
+.band {
+  margin-inline: calc(50% - 50vw);
+  padding-inline: calc(50vw - 50% + max(0px, 16px - (50vw - 50%)));
+  background: var(--world-band);
+  border-top: 1px solid color-mix(in srgb, var(--world-ink) 12%, transparent);
+}
+
+.work {
+  display: grid;
+  gap: clamp(32px, 4vw, 56px) 24px;
+  padding-block: clamp(32px, 5vw, 72px) clamp(48px, 8vw, 120px);
+}
+
+.work__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.work__head h2,
+.work__count {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--world-muted);
+}
+
+.work__count {
+  text-align: right;
+}
+
+.work__count b {
+  color: var(--world-ink);
+  font-weight: 500;
+}
+
+.mosaic {
+  list-style: none;
+  padding: 0;
+  width: 100vw;
+  margin: 0 calc(50% - 50vw);
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tile {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+}
+
+.tile--wide {
+  grid-column: span 2;
+  aspect-ratio: var(--phone-ratio, 16 / 9);
+}
+
+.tile__btn {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: zoom-in;
+}
+
+.tile__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--focus, 50% 50%);
+  transition:
+    scale 900ms var(--ease-world),
+    filter 400ms var(--ease-world);
+}
+
+// Overlay text on the developer ink over #12100f at 66% or more: 5.3:1 over
+// a white highlight.
+.tile__cap {
+  --world-ink: var(--world-dev-ink);
+  --world-muted: var(--world-dev-ink);
+  position: absolute;
+  inset: auto 0 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  align-items: baseline;
+  padding: 32px 16px 14px;
+  color: var(--world-ink);
+  background: linear-gradient(rgb(18 16 15 / 0), rgb(18 16 15 / 0.66) 32px, rgb(18 16 15 / 0.78));
+  opacity: 0;
+  translate: 0 24px;
+  transition:
+    opacity 300ms var(--ease-world),
+    translate 450ms var(--ease-world);
+}
+
+.tile__cap .row__title {
+  font-size: clamp(15px, 1.3vw, 18px);
+}
+
+.tile__cap .row__tools {
+  grid-column: 1 / -1;
+  margin-top: 0;
+}
+
+.tile__btn:focus-visible {
+  outline: none;
+}
+
+// An inset ring: the tile's overflow would clip an outline.
+.tile__btn:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow:
+    inset 0 0 0 3px var(--world-dev-ground),
+    inset 0 0 0 5px var(--world-dev-ink);
+}
+
+.tile__btn:focus-visible .tile__cap {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.mosaic:has(.tile__btn:focus-visible) .tile__btn:not(:focus-visible) .tile__img {
+  filter: brightness(0.55) saturate(0.5);
+}
+
+@media (hover: hover) {
+  .tile__btn:hover .tile__cap {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .mosaic:has(.tile__btn:hover) .tile__btn:not(:hover) .tile__img {
+    filter: brightness(0.55) saturate(0.5);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .tile__btn:hover .tile__img {
+    scale: 1.04;
+  }
+}
+
+// No hover on touch: title and year stay on the tile so the wall is never
+// anonymous; the tools are one tap away, in the viewer.
+@media (hover: none) {
+  .tile__cap {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .tile__cap .row__tools {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile__cap {
+    translate: none;
+    transition: opacity 150ms linear;
+  }
+  .tile__img {
+    transition: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .work__head {
+    flex-direction: column;
+    justify-content: start;
+    gap: 10px;
+  }
+  .work__count {
+    text-align: left;
+  }
+  .work__count b {
+    display: block;
+    margin-bottom: 8px;
+    font-family: var(--font-sans);
+    font-size: clamp(26px, 3vw, 40px);
+    font-weight: 600;
+    font-stretch: 75%;
+    font-variation-settings: 'wdth' 75;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  // Twelve columns, rows three quarters of a column tall: the wall's height
+  // follows its row count (12 / (rows × 0.75) = 16 / rows).
+  .mosaic {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+    aspect-ratio: 16 / var(--rows);
+  }
+  .tile {
+    grid-area: var(--area);
+    aspect-ratio: auto;
+  }
+}

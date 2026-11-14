@@ -3,7 +3,11 @@
 // quoting and nested markup are the HTML's business, not the check's.
 import { JSDOM } from 'jsdom';
 
-import { PROJECTS } from '../src/app/core/static-content.ts';
+import { WORLD_PAGES } from '../src/app/core/content/world-content.ts';
+import { ARTWORKS, PROJECTS } from '../src/app/core/static-content.ts';
+
+// Both worlds open on the name, set by the page itself.
+const NAME = 'Stéphane Lieumont';
 
 /**
  * Every route the site must ship, with text that proves its content was
@@ -19,11 +23,18 @@ export const EXPECTED = new Map([
   [
     'developpeur',
     {
-      h1: 'Lead Tech, Angular et .NET',
-      text: ['J’arbitre les choix techniques', ...PROJECTS.map((p) => p.title)],
+      h1: NAME,
+      text: [WORLD_PAGES.dev.lede.lead, WORLD_PAGES.dev.scrub, ...PROJECTS.map((p) => p.title)],
     },
   ],
-  ['graphisme-3d', { h1: 'Une pratique apprise seule', text: ['J’ai commencé la 3D'] }],
+  [
+    'graphisme-3d',
+    {
+      h1: NAME,
+      text: [WORLD_PAGES.cgi.lede.lead, WORLD_PAGES.cgi.scrub, ...ARTWORKS.map((a) => a.title)],
+    },
+  ],
+  ...ARTWORKS.map((a) => [`graphisme-3d/${a.slug}`, { h1: NAME, text: [a.title] }]),
   [
     'contact',
     { h1: 'Un projet, une question ou juste un Hello World ?', text: ['Je réponds à tout'] },

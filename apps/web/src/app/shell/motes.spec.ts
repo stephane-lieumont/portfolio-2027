@@ -92,6 +92,21 @@ describe('MoteField', () => {
     expect(risen).toBeGreaterThan(field.count * 0.9);
   });
 
+  it('keeps clear of the cloud’s stage, thinning out as motes approach it', () => {
+    const field = new MoteField(seeded());
+    field.resize(800, 600, 1);
+    const open = surface();
+    field.draw(open.fake, 0, 0, true);
+    const covered = surface();
+    field.draw(covered.fake, 0, 0, true, { left: -10, top: -10, right: 810, bottom: 610 });
+    const near = surface();
+    field.draw(near.fake, 0, 0, true, { left: 0, top: 0, right: 400, bottom: 600 });
+
+    expect(covered.rects).toHaveLength(0);
+    expect(near.rects.length).toBeLessThan(open.rects.length);
+    expect(near.rects.every((r) => r.x + r.size / 2 >= 400)).toBe(true);
+  });
+
   it('draws larger motes for the 3D world', () => {
     const field = new MoteField(seeded());
     field.resize(1280, 800, 1);

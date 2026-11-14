@@ -105,6 +105,12 @@ first; its corners sample at alpha 0.
 **Cause.** A reset rule `img[width][height] { background: … }` has specificity
 (0,2,1) and beats every class trying to remove it.
 
+**Hit again (2026-11-14, the 3D mosaic).** The same selector, now setting
+`block-size: auto`, beat `.tile__img { height: 100% }`, which emulated
+encapsulation scores (0,2,0): renders kept their 16:9 height inside 4:3 tiles
+(695×391 in a 695×521 tile). Found by comparing each img rect to its tile rect.
+**Fix.** Reset rules on element + attribute selectors go in `:where()`.
+
 ---
 
 ## A bezier with a control point at y=1 leaves at full speed

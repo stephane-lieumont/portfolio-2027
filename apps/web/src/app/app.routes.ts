@@ -1,6 +1,6 @@
 import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 
-import { PROJECTS } from './core/static-content';
+import { ARTWORKS, PROJECTS } from './core/static-content';
 
 /**
  * Whether the second URL segment names a project we actually have.
@@ -12,6 +12,16 @@ import { PROJECTS } from './core/static-content';
 export function projectSlugExists(segments: readonly { readonly path: string }[]): boolean {
   const slug = segments[1]?.path;
   return slug !== undefined && PROJECTS.some((p) => p.slug === slug);
+}
+
+/** Whether the first URL segment, under /graphisme-3d, names a piece we have. */
+export function artworkSlugExists(segments: readonly { readonly path: string }[]): boolean {
+  const slug = segments[0]?.path;
+  return slug !== undefined && ARTWORKS.some((a) => a.slug === slug);
+}
+
+function artworkOf(route: ActivatedRouteSnapshot) {
+  return ARTWORKS.find((a) => a.slug === route.paramMap.get('slug'));
 }
 
 // The route only matches known slugs, so the lookup cannot miss here; the
@@ -28,10 +38,11 @@ export const routes: Routes = [
     path: 'developpeur',
     title: 'Lead Tech, Angular et .NET',
     data: {
+      world: 'dev',
       description:
         'J’arbitre les choix techniques, j’encadre, et j’écris du code tous les jours. Quatorze ans dans l’aéronautique avant de basculer vers le développement : c’est de là que vient ma façon de travailler.',
     },
-    loadComponent: () => import('./features/developer/developer').then((m) => m.Developer),
+    loadComponent: () => import('./features/world/world-page').then((m) => m.WorldPage),
   },
   // Only known slugs match. An unknown one falls through to the 404 below
   // rather than rendering an empty detail page, which keeps the dead-link
@@ -51,12 +62,30 @@ export const routes: Routes = [
     path: 'graphisme-3d',
     title: 'Graphisme 3D',
     data: {
+      world: 'cgi',
       // Without the lead's « sans école et sans commande »: the Pixmodels
       // commission contradicts it, and it is on the content review list.
       description:
         'J’ai commencé la 3D bien avant le développement. C’est là que j’ai appris à apprendre seul — et à regarder une image jusqu’à voir ce qui ne va pas.',
     },
-    loadComponent: () => import('./features/gallery/gallery').then((m) => m.Gallery),
+    loadComponent: () => import('./features/world/world-page').then((m) => m.WorldPage),
+    // Each piece has its own address (spec 01), which opens the viewer over the
+    // wall. Children without a component: the page stays the same instance
+    // while the viewer opens, steps and closes.
+    children: [
+      { path: '', children: [] },
+      {
+        path: ':slug',
+        canMatch: [
+          (_route: unknown, segments: readonly { path: string }[]) => artworkSlugExists(segments),
+        ],
+        title: (route: ActivatedRouteSnapshot) => artworkOf(route)?.title ?? '',
+        resolve: {
+          description: (route: ActivatedRouteSnapshot) => artworkOf(route)?.image.alt ?? '',
+        },
+        children: [],
+      },
+    ],
   },
   {
     path: 'contact',

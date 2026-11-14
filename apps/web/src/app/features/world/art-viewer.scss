@@ -1,0 +1,235 @@
+// The mockup's lightbox, value for value, on the developer world's dark ground
+// whatever world opened it. Only the tokens are redefined; --world-rule too,
+// because :root resolved it against the root's ink.
+//
+// One departure, from ADR-0015: the plate is 16:9 but a render is never
+// cropped in here (`contain`), so the few renders that are not 16:9 sit on the
+// plate's ground instead of losing their edges.
+.lb {
+  --world-ground: var(--world-dev-ground);
+  --world-ink: var(--world-dev-ink);
+  --world-muted: var(--world-dev-muted);
+  --world-accent: var(--color-orange-500);
+  --world-rule: color-mix(in srgb, var(--world-ink) 18%, transparent);
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: max(16px, env(safe-area-inset-top)) 0 max(16px, env(safe-area-inset-bottom));
+  border: 0;
+  background: var(--world-ground);
+  color: var(--world-ink);
+  color-scheme: dark;
+  overscroll-behavior: contain;
+  opacity: 0;
+  transition:
+    opacity 320ms var(--ease-world),
+    display 320ms allow-discrete,
+    overlay 320ms allow-discrete;
+}
+.lb[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  opacity: 1;
+}
+@starting-style {
+  .lb[open] {
+    opacity: 0;
+  }
+}
+.lb::backdrop {
+  background: var(--world-dev-ground);
+}
+.lb__close {
+  justify-self: end;
+  margin-right: max(16px, env(safe-area-inset-right));
+}
+
+.show {
+  --show-plate: max(min(100%, 480px), min(100%, (100dvh - 260px) * 16 / 9, 1920px));
+  --show-text: min(var(--show-plate), 100% - 32px);
+  display: grid;
+  gap: 16px;
+  align-content: center;
+  justify-items: center;
+  min-height: 0;
+}
+.show__stage {
+  position: relative;
+  width: var(--show-plate);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--world-ink) 6%, transparent);
+  touch-action: pan-y;
+  isolation: isolate;
+}
+.show__stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border-radius: inherit;
+}
+.show__stage:focus-visible {
+  outline: none;
+}
+.show__stage:focus-visible::after {
+  box-shadow:
+    inset 0 0 0 2px var(--world-ink),
+    inset 0 0 0 5px var(--world-ground);
+}
+.show__slide {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  visibility: hidden;
+}
+.show__slide:is(.is-current, .is-leaving) {
+  visibility: visible;
+}
+.show__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.show__cap,
+.show__bar {
+  width: var(--show-text);
+}
+.show__cap::after {
+  scale: 1 1;
+}
+.show__cap::before {
+  color: var(--world-ink);
+}
+.show__bar {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 8px 16px;
+}
+.show__ticks {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+.show__count {
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--world-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.show__now {
+  display: inline-block;
+  color: var(--world-ink);
+}
+.show__tick {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: grid;
+  align-items: center;
+}
+.show__tick span {
+  position: relative;
+  display: block;
+  height: 2px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--world-ink) 55%, transparent);
+  transition:
+    background-color 200ms,
+    height 200ms var(--ease-world);
+}
+.show__tick span::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--world-ink);
+  scale: 0 1;
+  transform-origin: left;
+  transition: scale 700ms var(--ease-world);
+}
+.show__tick[aria-current='true'] span {
+  height: 4px;
+}
+.show__tick[aria-current='true'] span::after {
+  scale: 1 1;
+}
+.show__tick:focus-visible {
+  outline: 2px solid var(--world-ink);
+  outline-offset: 2px;
+}
+.show__btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--world-rule);
+  border-radius: 999px;
+  background: none;
+  color: var(--world-ink);
+  cursor: pointer;
+  transition:
+    background-color 200ms var(--ease-world),
+    color 200ms var(--ease-world);
+}
+.show__btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.show__status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (hover: hover) {
+  .show__tick:hover span {
+    background: color-mix(in srgb, var(--world-ink) 80%, transparent);
+  }
+  .show__btn:hover {
+    background: var(--world-ink);
+    color: var(--world-ground);
+  }
+}
+@media (min-width: 600px) {
+  .show__bar {
+    grid-template-columns: auto 1fr auto auto;
+  }
+  .show__ticks {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+@media (min-width: 900px) {
+  .show__stage {
+    border-radius: 4px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .show__tick span,
+  .show__tick span::after,
+  .show__btn {
+    transition: none;
+  }
+}
