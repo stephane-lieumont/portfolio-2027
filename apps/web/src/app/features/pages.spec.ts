@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -5,6 +7,7 @@ import type { WorldKey } from '@portfolio/shared-types';
 import axe from 'axe-core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { API_BASE_URL } from '../core/api.config';
 import { MEDIA_BASE_URL } from '../core/media.config';
 
 import { Contact } from './contact/contact';
@@ -17,6 +20,9 @@ async function render(page: Page): Promise<HTMLElement> {
     providers: [
       provideZonelessChangeDetection(),
       provideRouter([]),
+      provideHttpClient(),
+      provideHttpClientTesting(),
+      { provide: API_BASE_URL, useValue: '/api' },
       { provide: MEDIA_BASE_URL, useValue: '/medias' },
     ],
   }).compileComponents();

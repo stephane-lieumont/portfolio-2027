@@ -6,16 +6,20 @@ import { describe, it } from 'node:test';
 
 import { checkPage } from './prerender-checks.mjs';
 
+const FORM =
+  '<form><label>Nom</label><label>Email</label><label>Message</label><button>Envoyer</button></form>';
+
 const page = ({
   head = '<meta name="description" content="Un projet, une question.">',
   html = '',
   main = '',
   h1 = 'Un projet, une question ou juste un Hello World ?',
   lead = 'Je réponds à tout, y compris pour dire non.',
+  form = FORM,
   state = '<script id="ng-state" type="application/json">{}</script>',
 } = {}) => `<!doctype html><html lang="fr"${html}><head><title>Contact — Stéphane Lieumont</title>${head}</head>
 <body><app-root ngh="0"><div class="shell"><main id="contenu"${main}>
-<header class="reveal"><h1>${h1}</h1><p>${lead}</p></header></main></div></app-root>${state}</body></html>`;
+<header class="reveal"><h1>${h1}</h1><p>${lead}</p></header>${form}</main></div></app-root>${state}</body></html>`;
 
 describe('a prerendered page', () => {
   it('passes when complete', () => {
@@ -43,9 +47,15 @@ describe('a prerendered page', () => {
     page({ main: ' style="color: red; opacity: 0"' }),
   );
   caught('when the lead is gone', 'contact', page({ lead: '' }));
+  caught('when the form is gone', 'contact', page({ form: '' }));
   caught('when the heading is gone', 'contact', page({ h1: '' }));
   caught('when the reveal is stamped anywhere', 'contact', page({ main: ' data-reveal-ready' }));
   caught('when the script flag is baked in', 'contact', page({ html: ' class="js-motion"' }));
+  caught(
+    'when a mailto is published',
+    'contact',
+    page({ form: `${FORM}<a href="MAILTO:x@y.fr">Écrire</a>` }),
+  );
   caught('without hydration state', 'contact', page({ state: '' }));
   caught('without hydration annotations', 'contact', page().replace(' ngh="0"', ''));
   caught('without a description', 'contact', page({ head: '' }));

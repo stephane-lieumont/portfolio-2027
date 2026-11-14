@@ -44,6 +44,14 @@ describe('static world content', () => {
     expect(STATIC_FILES[SITE_SETTINGS.cvAssetId]).toBe('/cv-stephane-lieumont.pdf');
   });
 
+  // /medias is proxied to the bucket: a public/ file under it would 404 in
+  // production while working from the dev server's own static files.
+  it.each(Object.entries(STATIC_ASSETS))('serves asset %s from public/, root-relative', (_, a) => {
+    expect(a.src).toMatch(/^\/[a-z0-9/-]+\.(png|jpe?g|webp|avif)$/);
+    expect(a.src.startsWith('/medias/')).toBe(false);
+    expect(a.alt.trim()).not.toBe('');
+  });
+
   // Stéphane's address is never published in the HTML, so harvesters cannot
   // collect it; the contact form is the way in.
   it('publishes no email address', () => {

@@ -5,6 +5,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { routes } from '../app.routes';
+import { API_BASE_URL } from './api.config';
 import { MEDIA_BASE_URL } from './media.config';
 import { PageMetadata } from './page-metadata';
 import { PROJECTS } from './static-content';
@@ -31,6 +32,7 @@ describe('page metadata', () => {
         provideRouter(routes, withComponentInputBinding()),
         { provide: TitleStrategy, useClass: PageMetadata },
         { provide: MEDIA_BASE_URL, useValue: '/medias' },
+        { provide: API_BASE_URL, useValue: '/api' },
       ],
     });
     harness = await RouterTestingHarness.create();

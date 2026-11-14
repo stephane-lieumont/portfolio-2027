@@ -1,7 +1,7 @@
 # Status
 
-Last updated 2026-11-14. Describes `main` (PR #20, the shell, merged) with
-`feat/world-pages` (« Bascule » world pages) on top, not yet committed.
+Last updated 2026-11-15. Describes `main` (world pages, PR #21, merged) with
+`feat/contact-page` (« Bascule » PR 6, the contact page) on top.
 
 ## Works today
 
@@ -149,9 +149,30 @@ Deviations from the mockup, each on purpose:
 - The mockup has no viewport meta, so at 390px it lays out at 980px; the build
   follows its CSS rules below 900px.
 
-**Pages (interim)** — Contact and project detail at `/developpeur/<slug>`. In
-the dev world they follow the dark scheme on the world's ground; contact keeps
-a page surface in the 3D world, because secondary ink on orange is 3.3:1.
+**Contact (« Bascule » PR 6)** — the mockup's contact view, measured iso
+against it in headless Chrome at 1440 (every box of portrait, plate, figure,
+caption, eyebrow, title, lede, fields, button and socials within 0.1px, both
+worlds), 1024, 390 and 320 (no horizontal overflow). Two columns from 900px
+(5fr/7fr), portrait sticky at 96px. The portrait is the 2022 « pensif »
+cut-out, shipped from `public/images/` (not MinIO) until ADR-0012's pipeline
+takes it over. Form: Nom, Email, Message, Reactive Forms, the mockup's French
+messages, focus to the first invalid field, a flagged field re-checked on
+blur; `POST /api/contact` with `ContactMessage` (new in shared-types, the
+contract the API will validate); « Envoi en cours… » with `aria-busy`; 0, 404,
+405 and 501 answer « pas encore en service », anything else invites a retry.
+No mailto and no address anywhere: the prerender check now fails on a mailto.
+Socials: LinkedIn, GitHub, ArtStation, CV (download, as in the dock; the
+mockup's CV pointed at the old site). Entrance in CSS, so it plays from the
+prerendered page's first paint, script or not; after the ink wipe it waits
+for the uncover — sampled: every start and end lands at the mockup's time
+plus 565–588ms (the 560ms cover). Parallax on a mouse only, off under reduced
+motion (also when switched on mid-drift); amplitudes sampled identical to the
+mockup at five pointer positions. Deviations, all from the mockup's quirks mode: its 8px
+body margin (content 24px from the edge) and its form's 1em bottom margin are
+reproduced on purpose; its 3px horizontal overflow at 390 is not.
+
+**Pages (interim)** — project detail at `/developpeur/<slug>`, awaiting its
+redesign. In the dev world it follows the dark scheme on the world's ground.
 
 **Section reveal** — the 2022 scroll-in, on an IntersectionObserver. Content
 already on screen at arrival plays with the page's entrance; the rest waits
@@ -205,12 +226,11 @@ read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository. Locally the renders need
 `pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 293 passing on the web side, 94.9% lines, 82.2% branches, 90.2%
+**Tests** — 350 passing on the web side, 97.3% lines, 87.0% branches, 93.6%
 functions; axe on every page. Every route, the 404, the detail guard, the API
 client, the gallery, contact and the tool chips now have their own specs.
 
-What the numbers do not cover, deliberately: the `aria-busy` branch on the
-contact submit is unreachable until the form is wired. The motes run against
+What the numbers do not cover, deliberately: the motes run against
 a stubbed 2D context in the tests; what they look like is checked in a browser.
 
 **CI** — `.github/workflows/verify.yml` runs `pnpm verify` on every pull
@@ -242,12 +262,14 @@ motes and smooth scrolling. It ships as six PRs:
      l’accueil » are labels written for the interim page.
    - Not verified: Safari and Firefox (headless Chrome only), a real phone,
      a touch device (Lenis is wheel-only by design), frame timings under load.
-   - The old contact page still renders a `mailto`; PR 6 replaces it.
      3–5. World pages, work, viewer, stack: this branch (`feat/world-pages`), see
      « Works today ». Not verified: Safari, Firefox, a real phone, touch swipe on
      a device. The interim project page at `/developpeur/<slug>` awaits its
      redesign.
-3. Contact: portrait, form, no published email.
+3. Contact: portrait, form, no published email — `feat/contact-page`, see
+   « Works today ». Open: the copy of the three send outcomes (« Merci… »,
+   « pas encore en service », « Réessayez… ») was written here, not on the
+   mockup — to review. A real send needs the API route (Missing).
 
 **Content review at the end of the integration** (Stéphane, 2026-11-14: the
 copy is reviewed once, after the six PRs). Collected so far:
@@ -267,8 +289,8 @@ copy is reviewed once, after the six PRs). Collected so far:
 
 **Gaps in the model:** `focal` on artwork views is specified (spec 03,
 ADR-0015) but `Artwork` has no Zod schema in shared-types yet. The contact
-portrait placeholder (`portrait-stephane-pensif.png`) is neither seeded in
-MinIO nor in the ADR-0012 pipeline; PR 6 uploads it.
+portrait (`/images/portrait-stephane-pensif.png`) ships from `public/`, outside
+MinIO and the ADR-0012 pipeline; `STATIC_ASSETS` maps its placeholder id to it.
 
 **Registry:** `rxjs`, `aws`, `claude-code` added, with no glyph or logo yet.
 The stack's marks need SVG logos (ADR-0012); the mockup used Simple Icons
@@ -297,10 +319,25 @@ Ordered by what hurts most on the day the site goes live.
 | **SEO is partial**                     | Per-route `<title>` and meta description exist. Still no `robots.txt`, no `sitemap.xml`, no canonical, no Open Graph, no JSON-LD (ADR-0008, spec 01) — share previews are as broken as on the current site.                                                                                 |
 | **nginx not updated for prerendering** | Outside the repository. ADR-0005 (amended 2026-11-14) now prescribes `try_files $uri $uri/index.html =404;` and `error_page 404 /404/index.html;` for `/*`. The live config still has the `index.html` fallback, which would serve the prerendered home with a 200 under every unknown URL. |
 | **`pnpm infra:up` is broken**          | `minio/minio` no longer exists on Docker Hub (nor on quay.io), so the compose file cannot pull. `cgr.dev/chainguard/minio` runs the same binary and works with the seed script; switching to it is undecided.                                                                               |
-| **Contact form not wired**             | The form renders and goes nowhere. Needs a delivery service (ADR-0007 forbids sending from the browser).                                                                                                                                                                                    |
+| **Contact route missing in the API**   | The form posts to `/api/contact` and tells the visitor sending is not available yet. Needs the Fastify route: Zod `contactMessageSchema`, rate limit, relay to a mail service (ADR-0007).                                                                                                   |
 | **API is a skeleton**                  | Only `/health`. No projects, no media, no contact route.                                                                                                                                                                                                                                    |
 | **No back office**                     | Content lives in `apps/web/src/app/core/static-content.ts`. Every edit is a commit.                                                                                                                                                                                                         |
 | **Specs 04 and 05 missing**            | `00-vision.md` references a back-office spec and a content/SEO spec that were never written.                                                                                                                                                                                                |
+
+## Known accessibility debt — contact page
+
+Contrast that comes from the mockup's own values; Stéphane deferred these
+(2026-11-14: ship the mockup values, list them). Ratios computed from the
+live tokens.
+
+- **Contact text over a passing mote.** At rest every contact text passes AA
+  (muted labels, eyebrow, caption 5.82:1 dev / 5.67:1 3D; lede and status
+  11.17 / 6.55; ink 16.45 / 9.04). Under a mote at full `--motes-max` the
+  pixel behind a glyph drops to: muted 2.53 (dev) / 1.92 (3D), lede 4.86 /
+  2.22, ink 7.16 / 3.06. Transient and a few pixels wide, but measurable.
+- **Social buttons' ring** (`--world-rule`, 18% ink): 1.63:1 dev, 1.41:1 3D.
+  The icon (ink) identifies each control, so SC 1.4.11 holds through it;
+  the ring alone would not.
 
 ## Deferred on purpose
 
