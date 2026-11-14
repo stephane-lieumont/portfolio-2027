@@ -1,0 +1,51 @@
+// The pointer's wake (shell/thread.ts), value for value from the approved
+// « Bascule » mockup. Above the header (30) and the dock (50): a line that
+// ducks under a bar reads as clipped. The viewer's dialog, in the top layer,
+// still covers it. The canvas reads these tokens once, from <html>.
+
+:root {
+  --thread-ink-dev: var(--color-orange-500);
+  --thread-alpha-dev: 0.9;
+  --thread-width-dev: 1.5;
+  // White on the orange ground is ~2.1:1 against ~9:1 for orange on black:
+  // the 3D world draws it wider and opaque.
+  --thread-ink-cgi: var(--color-neutral-0);
+  --thread-alpha-cgi: 1;
+  --thread-width-cgi: 2;
+}
+
+.thread {
+  position: fixed;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  z-index: 60;
+  pointer-events: none;
+  // Its own view-transition group: left in the root snapshot, the line would
+  // freeze under the sweep, then vanish with the old page. As a group it
+  // stays live above the band, as the mockup's line rode above its sweep.
+  view-transition-name: thread;
+}
+
+@media not ((hover: hover) and (pointer: fine)) {
+  .thread {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (forced-colors: active), print {
+  .thread {
+    display: none;
+  }
+}
+
+// The live canvas only: the frozen frame of the old state would linger as a
+// second, motionless line, and the group has nowhere to move to.
+::view-transition-group(thread),
+::view-transition-new(thread) {
+  animation: none;
+}
+
+::view-transition-old(thread) {
+  display: none;
+}

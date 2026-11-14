@@ -18,10 +18,11 @@ import { ActiveWorld, currentness } from './core/world/world';
 import { Motes } from './shell/motes';
 import { NAV } from './shell/nav-items';
 import { SocialDock } from './shell/social-dock';
+import { Thread } from './shell/thread';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, SocialDock, Motes],
+  imports: [RouterOutlet, RouterLink, SocialDock, Motes, Thread],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
