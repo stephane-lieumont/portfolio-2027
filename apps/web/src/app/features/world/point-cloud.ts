@@ -19,6 +19,8 @@ import { CloudState } from '../../core/world/cloud-state';
 
 const GLYPH_W = 240;
 const GLYPH_H = 150;
+/** CSS pixels a touch travels before it counts as a sideways grab or a scroll. */
+const TOUCH_SLOP = 10;
 const GLYPH_FONT = '700 132px "JetBrains Mono", ui-monospace, Menlo, monospace';
 
 /** Where the glyph `</>` is opaque, every other pixel, on a 240 × 150 raster. */
@@ -73,7 +75,7 @@ function sampleGlyph(document: Document): [number, number][] {
     }
     :host([data-grab]) canvas {
       cursor: grab;
-      touch-action: pan-y;
+      touch-action: pan-y pinch-zoom;
       user-select: none;
     }
     :host([data-grab='held']) canvas {
@@ -164,18 +166,41 @@ export class PointCloud {
         place();
       };
       let grip: { id: number; x: number; y: number } | null = null;
-      const onGrab = (event: PointerEvent) => {
-        if (this.world() !== 'cgi' || grip || !event.isPrimary) return;
-        if (event.pointerType === 'mouse' && event.button !== 0) return;
-        // No text selection and no native drag starting under the hand.
-        event.preventDefault();
+      // A touch is only taken once it heads sideways: until then it may be
+      // the start of a vertical scroll the browser has not claimed yet.
+      let touch: { id: number; x: number; y: number } | null = null;
+      const take = (event: PointerEvent) => {
         grip = { id: event.pointerId, x: event.clientX, y: event.clientY };
         canvas.setPointerCapture(event.pointerId);
         model.grab();
         this.grabbing.set(true);
       };
+      const onGrab = (event: PointerEvent) => {
+        if (this.world() !== 'cgi' || grip || touch || !event.isPrimary) return;
+        if (event.pointerType === 'touch') {
+          touch = { id: event.pointerId, x: event.clientX, y: event.clientY };
+          return;
+        }
+        if (event.button !== 0) return;
+        // No text selection and no native drag starting under the hand.
+        event.preventDefault();
+        take(event);
+      };
       const onDrag = (event: PointerEvent) => {
+        if (touch && event.pointerId === touch.id) {
+          const dx = Math.abs(event.clientX - touch.x);
+          const dy = Math.abs(event.clientY - touch.y);
+          if (Math.max(dx, dy) < TOUCH_SLOP) return;
+          touch = null;
+          if (dx > dy) take(event);
+          return;
+        }
         if (!grip || event.pointerId !== grip.id) return;
+        // A lost pointerup (a ctrl-click's context menu) shows as a move with no button down.
+        if (event.pointerType !== 'touch' && (event.buttons & 1) === 0) {
+          letGo();
+          return;
+        }
         // A full stage width is half a turn.
         const perPixel = Math.PI / (width || 1);
         model.turn(-(event.clientX - grip.x) * perPixel, (event.clientY - grip.y) * perPixel);
@@ -184,6 +209,7 @@ export class PointCloud {
         drawnStill = false;
       };
       const letGo = () => {
+        touch = null;
         if (!grip) return;
         const id = grip.id;
         grip = null;
@@ -209,6 +235,7 @@ export class PointCloud {
       canvas.addEventListener('pointerup', letGo);
       canvas.addEventListener('pointercancel', letGo);
       canvas.addEventListener('lostpointercapture', letGo);
+      canvas.addEventListener('contextmenu', letGo);
       this.document.documentElement.addEventListener('pointerleave', onLeave);
 
       const resize =

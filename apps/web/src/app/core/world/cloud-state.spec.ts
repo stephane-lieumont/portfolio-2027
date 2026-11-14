@@ -256,6 +256,64 @@ describe('CloudModel grab', () => {
     expect(largestGap(rects(model), rects(free))).toBe(0);
   });
 
+  it('carries a fling on, and a fling back barely overshoots the live pose on either axis', () => {
+    const model = torus();
+    const free = torus();
+    const both = () => {
+      model.frame(surface(), 16, view, false);
+      free.frame(surface(), 16, view, false);
+    };
+    model.grab();
+    model.turn(1.2, 0.35);
+    for (let i = 0; i < 10; i++) both();
+    for (let i = 0; i < 5; i++) {
+      model.turn(-0.16, -0.05);
+      both();
+    }
+    const before = model.pose;
+    model.release();
+    both();
+    expect(model.pose.yaw).toBeLessThan(before.yaw);
+    expect(model.pose.pitch).toBeLessThan(before.pitch);
+
+    let yawGap = Infinity;
+    let pitchGap = Infinity;
+    for (let i = 0; i < 120; i++) {
+      both();
+      yawGap = Math.min(yawGap, model.pose.yaw - free.pose.yaw);
+      pitchGap = Math.min(pitchGap, model.pose.pitch - free.pose.pitch);
+    }
+    // Uncapped, this fling (≈ 10 rad/s yaw, 3 rad/s pitch) overshoots by 0.11 rad.
+    expect(yawGap).toBeGreaterThan(-0.035);
+    expect(pitchGap).toBeGreaterThan(-0.035);
+    expect(yawGap).toBeLessThan(0);
+  });
+
+  it('unwinds whole turns of a release mid-morph, so the torus does not whip back', () => {
+    const model = new CloudModel(seeded());
+    model.init(glyph, 240, 150, 'dev');
+    model.aim('cgi');
+    for (let i = 0; i < 40; i++) model.frame(surface(), 16, view, false);
+    model.grab();
+    model.turn(3 * Math.PI, 0);
+    model.frame(surface(), 16, view, false);
+    model.release();
+    expect(model.t).toBeLessThan(1);
+
+    let last = model.pose.yaw;
+    let fastest = 0;
+    for (let i = 0; i < 120; i++) {
+      model.frame(surface(), 16, view, false);
+      const step = model.pose.yaw - last;
+      // A whole turn is the same picture: only the turning shows.
+      const seen = step - 2 * Math.PI * Math.round(step / (2 * Math.PI));
+      fastest = Math.max(fastest, Math.abs(seen) / 0.016);
+      last = model.pose.yaw;
+    }
+    // From π off at most: ω·π/e ≈ 7.5 rad/s. Unwinding 3π would peak near 22.
+    expect(fastest).toBeLessThan(8);
+  });
+
   it('unwinds a long hold the short way: the torus repeats every half turn', () => {
     const model = torus();
     const free = torus();

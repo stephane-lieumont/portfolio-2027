@@ -210,11 +210,11 @@ export class CloudModel {
     if (!this.held) return;
     this.held = null;
     const o = this.offset;
-    // The torus looks the same turned by half a turn about its vertical axis
-    // (its points are a 60 × 20 grid, symmetric both ways): unwind the shorter
-    // way. Only once fully a torus, since mid-morph each point is paired with
-    // a glyph point.
-    if (this.t === 1) o.yaw -= Math.PI * Math.round(o.yaw / Math.PI);
+    // Unwind the shorter way: whole turns are exact at any morph stage. Fully
+    // a torus, half a turn is too (its points are a 60 × 20 grid, symmetric
+    // both ways); mid-morph each point is paired with a glyph point, so not.
+    const period = this.t === 1 ? Math.PI : 2 * Math.PI;
+    o.yaw -= period * Math.round(o.yaw / period);
     const autoPitchSpeed = Math.cos(this.clock * PITCH_SWAY_RATE) * PITCH_SWAY * PITCH_SWAY_RATE;
     o.vYaw = settleSpeed(o.yaw, this.heldVelocity.yaw - SPIN);
     o.vPitch = settleSpeed(o.pitch, this.heldVelocity.pitch - autoPitchSpeed);

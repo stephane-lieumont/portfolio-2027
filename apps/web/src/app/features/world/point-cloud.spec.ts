@@ -165,10 +165,17 @@ describe('PointCloud across a world switch', () => {
       y: number,
       {
         button = 0,
+        buttons = type === 'pointerup' ? 0 : 1,
         ...pointer
-      }: { button?: number; pointerType?: string; isPrimary?: boolean } = {},
+      }: { button?: number; buttons?: number; pointerType?: string; isPrimary?: boolean } = {},
     ) => {
-      const event = new MouseEvent(type, { clientX: x, clientY: y, cancelable: true, button });
+      const event = new MouseEvent(type, {
+        clientX: x,
+        clientY: y,
+        cancelable: true,
+        button,
+        buttons,
+      });
       Object.assign(event, { pointerId: 1, pointerType: 'mouse', isPrimary: true, ...pointer });
       canvas.dispatchEvent(event);
       return event;
@@ -224,12 +231,64 @@ describe('PointCloud across a world switch', () => {
       expect(captured.size).toBe(0);
     });
 
-    it('ignores other buttons and secondary touches', async () => {
+    it('ignores other buttons, a pen’s barrel button and secondary touches', async () => {
       const { canvas } = await stage('cgi');
       const model = TestBed.inject(CloudState).model;
       press(canvas, 'pointerdown', 100, 100, { button: 2 });
+      press(canvas, 'pointerdown', 100, 100, { button: 2, pointerType: 'pen' });
       press(canvas, 'pointerdown', 100, 100, { pointerType: 'touch', isPrimary: false });
+      press(canvas, 'pointermove', 200, 100, { pointerType: 'touch', isPrimary: false });
       expect(model.grabbed).toBe(false);
+    });
+
+    it('lets go when the button came up unseen, or a context menu opened', async () => {
+      const { canvas } = await stage('cgi');
+      const model = TestBed.inject(CloudState).model;
+
+      press(canvas, 'pointerdown', 100, 100);
+      press(canvas, 'pointermove', 150, 100, { buttons: 0 });
+      expect(model.grabbed).toBe(false);
+      expect(captured.size).toBe(0);
+
+      press(canvas, 'pointerdown', 100, 100);
+      canvas.dispatchEvent(new MouseEvent('contextmenu'));
+      expect(model.grabbed).toBe(false);
+    });
+
+    it('leaves a vertical touch to the page’s scroll: no grab, no turn', async () => {
+      const { canvas } = await stage('cgi');
+      const model = TestBed.inject(CloudState).model;
+      const touch = { pointerType: 'touch' };
+      press(canvas, 'pointerdown', 100, 100, touch);
+      press(canvas, 'pointermove', 102, 106, touch);
+      press(canvas, 'pointermove', 103, 114, touch);
+      frame(16);
+      press(canvas, 'pointercancel', 103, 114, touch);
+      press(canvas, 'pointermove', 300, 114, touch);
+      frame(16);
+
+      expect(model.grabbed).toBe(false);
+      expect(captured.size).toBe(0);
+      expect(model.pose.yaw).toBeCloseTo(model.clock * 0.45, 9);
+    });
+
+    it('takes a sideways touch once past the slop, without a jump', async () => {
+      const { canvas } = await stage('cgi');
+      const model = TestBed.inject(CloudState).model;
+      const touch = { pointerType: 'touch' };
+      const down = press(canvas, 'pointerdown', 100, 100, touch);
+      press(canvas, 'pointermove', 106, 101, touch);
+      expect(model.grabbed).toBe(false);
+
+      press(canvas, 'pointermove', 112, 102, touch);
+      expect(model.grabbed).toBe(true);
+      frame(16);
+      const taken = model.pose.yaw;
+      press(canvas, 'pointermove', 212, 102, touch);
+      frame(16);
+
+      expect(down.defaultPrevented).toBe(false);
+      expect(model.pose.yaw).toBeCloseTo(taken - Math.PI / 4, 6);
     });
 
     it('leaves the glyph of the dev world alone', async () => {

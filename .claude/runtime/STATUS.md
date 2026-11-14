@@ -99,8 +99,13 @@ mockup's unreset 8px body margin. In order:
   expected; release from 0.91/0.37 rad off, within 1% at 983ms, no overshoot,
   largest step 0.028 rad/frame, ink 31.9–540.2 → 31.7–540.6 across the
   release; frames 16.7/16.8/16.8 ms. A long hold unwinds the short way (the
-  torus repeats every half turn). At 390 a vertical touch still scrolls (185px,
-  no grab); text is not selected by a drag. Under reduced motion the hand turns
+  torus repeats every half turn); mid-morph only whole turns are unwound
+  (measured: released at morph 0.69 after 2.3 stage widths, peak return
+  3.1 rad/s). A touch is taken only once it heads sideways past 10px; at 390 a
+  vertical swipe on the stage scrolls (300 → 495) with the torus untouched
+  (offset 0 on every frame), and pinch-zoom stays available
+  (`pan-y pinch-zoom`). A move with no button down, or a context menu, lets
+  go. Text is not selected by a drag. Under reduced motion the hand turns
   the still frame and the release snaps back. Not keyboard reachable: the
   canvas is decorative and `aria-hidden`. On a direct dev ↔ cgi switch the cloud's canvas rides
   above the band (its own view-transition group) and the new page carries on
