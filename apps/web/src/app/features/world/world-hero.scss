@@ -35,7 +35,7 @@
   font-weight: 500;
   // The floor keeps the name growing with the browser's zoom once the
   // viewport units have shrunk below it (from about 300%).
-  font-size: max(2rem, min(8.4vw, 10svh, 104px));
+  font-size: max(2rem, min(5.8vw, 6.8svh, 80px));
   line-height: 0.95;
   letter-spacing: -0.035em;
   text-wrap: balance;
@@ -59,7 +59,7 @@
   font-weight: 600;
   font-stretch: 75%;
   font-variation-settings: 'wdth' 75;
-  font-size: max(1.5rem, min(6.4vw, 7.2svh, 72px));
+  font-size: max(1.5rem, min(4vw, 4.7svh, 54px));
   line-height: 0.95;
   color: var(--world-muted);
   letter-spacing: -0.02em;
