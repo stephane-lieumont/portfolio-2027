@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { WritableSignal, provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -97,14 +100,59 @@ describe('easingOf', () => {
 });
 
 describe('sweepEdge', () => {
-  it('starts off-screen on the side the band enters from and leaves past the other', () => {
-    const intoCgi = [sweepEdge('cgi', 0), sweepEdge('cgi', 1)];
-    expect(Math.min(intoCgi[0].top, intoCgi[0].bottom)).toBeGreaterThanOrEqual(1);
-    expect(Math.max(intoCgi[1].top, intoCgi[1].bottom)).toBeLessThanOrEqual(0);
+  const css = readFileSync(join(process.cwd(), 'src/styles/_route-transition.scss'), 'utf8');
 
-    const intoDev = [sweepEdge('dev', 0), sweepEdge('dev', 1)];
-    expect(Math.max(intoDev[0].top, intoDev[0].bottom)).toBeLessThanOrEqual(0);
-    expect(Math.min(intoDev[1].top, intoDev[1].bottom)).toBeGreaterThanOrEqual(1);
+  /** The polygon's vertices as [x, y] fractions, for one stop of a keyframes rule. */
+  function polygon(name: string, stop: 'from' | 'to'): number[][] {
+    const block = new RegExp(
+      `@keyframes ${name}\\s*{[^@]*?${stop}\\s*{\\s*clip-path:\\s*polygon\\(([^)]+)\\)`,
+    );
+    const points = block.exec(css)?.[1];
+    if (!points) throw new Error(`no ${stop} polygon in ${name}`);
+    return points.split(',').map((p) =>
+      p
+        .trim()
+        .split(/\s+/)
+        .map((v) => parseFloat(v) / 100),
+    );
+  }
+
+  // The edge vertices: leftward keeps its far side at x = -100%, so the edge
+  // is vertices 1 (top) and 2 (bottom); rightward keeps x = 200%, vertices 0 and 3.
+  const edgeOf = (name: string, stop: 'from' | 'to') => {
+    const p = polygon(name, stop);
+    return name === 'vt-cover-leftward'
+      ? { top: p[1][0], bottom: p[2][0] }
+      : { top: p[0][0], bottom: p[3][0] };
+  };
+
+  it.each([
+    ['cgi', 'vt-cover-leftward'],
+    ['dev', 'vt-cover-rightward'],
+  ] as const)('into %s follows the old snapshot’s clip in %s', (to, name) => {
+    const from = edgeOf(name, 'from');
+    const end = edgeOf(name, 'to');
+    const at = (p: number) => sweepEdge(to, p);
+
+    expect(at(0).top).toBeCloseTo(from.top);
+    expect(at(0).bottom).toBeCloseTo(from.bottom);
+    expect(at(0.5).top).toBeCloseTo((from.top + end.top) / 2);
+    expect(at(0.5).bottom).toBeCloseTo((from.bottom + end.bottom) / 2);
+    expect(at(1).top).toBeCloseTo(end.top);
+    expect(at(1).bottom).toBeCloseTo(end.bottom);
+  });
+
+  it('pins the values the mockup used', () => {
+    const close = (top: number, bottom: number) => ({
+      top: expect.closeTo(top),
+      bottom: expect.closeTo(bottom),
+    });
+    expect(sweepEdge('cgi', 0)).toEqual(close(1.4, 1.2));
+    expect(sweepEdge('cgi', 0.5)).toEqual(close(0.6, 0.4));
+    expect(sweepEdge('cgi', 1)).toEqual(close(-0.2, -0.4));
+    expect(sweepEdge('dev', 0)).toEqual(close(-0.4, -0.2));
+    expect(sweepEdge('dev', 0.5)).toEqual(close(0.5, 0.5));
+    expect(sweepEdge('dev', 1)).toEqual(close(1.4, 1.2));
   });
 });
 
@@ -201,6 +249,8 @@ describe('Thread', () => {
   const originalMatchMedia = window.matchMedia;
   let resize: () => void;
   let fineChange: (() => void) | undefined;
+  let densityChange: (() => void) | undefined;
+  let disconnected: boolean;
   let fine: boolean;
   let frames: Set<FrameCallback>;
   let reduced: WritableSignal<boolean>;
@@ -213,17 +263,30 @@ describe('Thread', () => {
       }
       observe = () => undefined;
       unobserve = () => undefined;
-      disconnect = () => undefined;
+      disconnect = () => {
+        disconnected = true;
+      };
     };
+    disconnected = false;
     fine = true;
-    window.matchMedia = () =>
-      ({
+    fineChange = undefined;
+    densityChange = undefined;
+    window.matchMedia = (query: string) => {
+      const density = query.startsWith('(resolution');
+      return {
         get matches() {
           return fine;
         },
-        addEventListener: (_: string, listener: () => void) => (fineChange = listener),
-        removeEventListener: () => (fineChange = undefined),
-      }) as unknown as MediaQueryList;
+        addEventListener: (_: string, listener: () => void) => {
+          if (density) densityChange = listener;
+          else fineChange = listener;
+        },
+        removeEventListener: () => {
+          if (density) densityChange = undefined;
+          else fineChange = undefined;
+        },
+      } as unknown as MediaQueryList;
+    };
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1280);
     vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(800);
 
@@ -367,6 +430,47 @@ describe('Thread', () => {
     expect(rec.strokes).toHaveLength(0);
   });
 
+  it('refits the backing store when the pixel ratio changes', async () => {
+    const fixture = await mount();
+    const canvas: HTMLCanvasElement = fixture.nativeElement.querySelector('canvas');
+    expect(canvas.width).toBe(1280);
+
+    vi.spyOn(window, 'devicePixelRatio', 'get').mockReturnValue(2);
+    densityChange?.();
+
+    expect(canvas.width).toBe(2560);
+    expect(densityChange).toBeDefined();
+  });
+
+  it('lets go of everything it listened to when destroyed', async () => {
+    const ours = new Set(['pointermove', 'blur', 'pointerleave', 'visibilitychange']);
+    const added: [string, unknown][] = [];
+    const removed: [string, unknown][] = [];
+    for (const target of [window, document, root]) {
+      const add = target.addEventListener.bind(target);
+      const remove = target.removeEventListener.bind(target);
+      vi.spyOn(target, 'addEventListener').mockImplementation((type, listener, options) => {
+        if (ours.has(type)) added.push([type, listener]);
+        add(type, listener, options);
+      });
+      vi.spyOn(target, 'removeEventListener').mockImplementation((type, listener, options) => {
+        if (ours.has(type)) removed.push([type, listener]);
+        remove(type, listener, options);
+      });
+    }
+    const fixture = await mount();
+    expect(added).toHaveLength(4);
+    expect(frames.size).toBe(1);
+
+    fixture.destroy();
+
+    expect(removed).toEqual(expect.arrayContaining(added));
+    expect(disconnected).toBe(true);
+    expect(fineChange).toBeUndefined();
+    expect(densityChange).toBeUndefined();
+    expect(frames.size).toBe(0);
+  });
+
   describe('across a route transition', () => {
     class FakeEffect {
       constructor(readonly pseudoElement: string) {}
@@ -397,6 +501,42 @@ describe('Thread', () => {
       pointer(730);
       for (const frame of frames) frame(0, 16);
 
+      expect(new Set(rec.strokes.map((s) => s.ink))).toEqual(new Set([DEV.ink, CGI.ink]));
+    });
+
+    it('follows the new sweep when Back interrupts the first one mid-band', async () => {
+      const first = {
+        effect: new FakeEffect('::view-transition-old(root)'),
+        currentTime: 320,
+        playState: 'running',
+      };
+      document.getAnimations = () => [first] as unknown as Animation[];
+      await mount('/developpeur');
+      sweepAcross();
+      root.dataset['vt'] = 'sweep-cgi';
+      TestBed.inject(ActiveWorld).enter('/graphisme-3d');
+      for (const frame of frames) frame(0, 16);
+
+      // The browser skips the first transition: its animation is cancelled.
+      Object.assign(first, { currentTime: null, playState: 'idle' });
+      const second = {
+        effect: new FakeEffect('::view-transition-old(root)'),
+        currentTime: 320,
+        playState: 'running',
+      };
+      document.getAnimations = () => [second] as unknown as Animation[];
+      root.dataset['vt'] = 'sweep-dev';
+      TestBed.inject(ActiveWorld).enter('/developpeur');
+      rec.strokes.length = 0;
+      rec.clips.length = 0;
+
+      pointer(500);
+      for (const frame of frames) frame(0, 16);
+
+      // Halfway into the developer world (linear here): the edge's top at 50% of 1280px.
+      expect(rec.clips[0][0]).toBeCloseTo(640);
+      // The uncovered side is the 3D world being left, drawn first.
+      expect(rec.strokes[0].ink).toBe(CGI.ink);
       expect(new Set(rec.strokes.map((s) => s.ink))).toEqual(new Set([DEV.ink, CGI.ink]));
     });
 

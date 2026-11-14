@@ -146,6 +146,11 @@ export class ThreadTrail {
     this.presence = 1;
   }
 
+  /** Out and fully faded: nothing to step or clear, and re-entry collapses the chain anyway. */
+  get idle(): boolean {
+    return !this.inside && !this.drawn;
+  }
+
   leave(): void {
     this.inside = false;
   }
@@ -159,8 +164,7 @@ export class ThreadTrail {
 
   /** Steps the chain by `delta` ms and draws it in `look`, split along the sweep's edge while one runs. */
   tick(surface: ThreadSurface, delta: number, look: ThreadLook, sweep: SweepSplit | null): void {
-    // Out and fully faded: nothing to step or clear, and re-entry collapses the chain anyway.
-    if (!this.inside && !this.drawn) return;
+    if (this.idle) return;
     if (!this.inside) this.presence *= Math.exp(-delta / LEAVE_TAU);
 
     this.acc += delta;
@@ -347,6 +351,21 @@ export class Thread {
       const observer = new view.ResizeObserver(fit);
       observer.observe(canvas);
 
+      // Moving the window to another screen changes the pixel ratio and not
+      // the size, which the observer does not report. The query is for the
+      // current ratio, so it is rebuilt each time it stops matching.
+      let density: MediaQueryList | undefined;
+      const watchDensity = () => {
+        density?.removeEventListener('change', onDensity);
+        density = view.matchMedia(`(resolution: ${view.devicePixelRatio}dppx)`);
+        density.addEventListener('change', onDensity);
+      };
+      const onDensity = () => {
+        fit();
+        watchDensity();
+      };
+      watchDensity();
+
       const fine = view.matchMedia(FINE_POINTER);
       const followFine = () => this.fine.set(fine.matches);
       followFine();
@@ -367,6 +386,7 @@ export class Thread {
 
       destroyRef.onDestroy(() => {
         observer.disconnect();
+        density?.removeEventListener('change', onDensity);
         fine.removeEventListener('change', followFine);
         view.removeEventListener('pointermove', move);
         view.removeEventListener('blur', leave);
@@ -387,6 +407,7 @@ export class Thread {
   }
 
   private frame(surface: ThreadSurface, looks: Record<WorldKey, ThreadLook>, delta: number): void {
+    if (this.trail.idle) return;
     if (!this.trail.width || this.document.querySelector('dialog[open]')) {
       if (this.trail.drawn || this.trail.presence) this.trail.reset(surface);
       return;
@@ -419,16 +440,23 @@ export class Thread {
       this.sweep = null;
       return null;
     }
+    const to: WorldKey = vt === 'sweep-cgi' ? 'cgi' : 'dev';
+    // A Back during the band starts the opposite sweep at once and cancels
+    // the first one: its animation goes idle, its currentTime null.
+    if (this.sweep && (this.sweep.to !== to || this.sweep.animation.playState === 'idle')) {
+      this.sweep = null;
+    }
     if (this.sweep || typeof KeyframeEffect === 'undefined') return this.sweep;
     // The pseudo-elements' animations exist only once the transition is ready.
     for (const animation of this.document.getAnimations()) {
       const effect = animation.effect;
       if (!(effect instanceof KeyframeEffect) || effect.pseudoElement !== SWEPT_SNAPSHOT) continue;
+      if (animation.playState === 'idle') continue;
       const duration = Number(effect.getTiming().duration);
       if (!duration) return null;
       this.sweep = {
         animation,
-        to: vt === 'sweep-cgi' ? 'cgi' : 'dev',
+        to,
         duration,
         // A CSS animation's timing function applies per keyframe, not to the effect.
         ease: easingOf(effect.getKeyframes()[0]?.easing),

@@ -49,8 +49,11 @@ print; cleared on a hidden tab, gone while the viewer is open. Its own
 view-transition group keeps it live above the sweep, split along the band's
 edge read from the old snapshot's running animation: measured at t=350ms
 into the cgi sweep, edge 376px at mid-height from the computed clip-path,
-orange 368–375px and white 376–439px on the canvas. The contact wipe leaves
-its colour alone. The copyright spine (bottom-left, vertical) has no ground of its
+orange 368–375px and white 376–439px on the canvas. A Back at 300ms into
+that sweep switches to the new one (measured at t=367ms of the dev sweep:
+edge 1033px, white 1033–1074px, orange 1000–1032px). The contact wipe leaves
+its colour alone. A pixel-ratio change refits it as for the motes (unit-tested
+only: Chrome's DPR emulation fires neither the media query nor the observer). The copyright spine (bottom-left, vertical) has no ground of its
 own and sits above everything (z-index 100, its own view-transition group,
 `pointer-events: none`): muted in the dev world, neutral 750 (#3a3633, 5.7:1)
 on the orange. Only the viewer's modal dialog covers it: the top layer wins by
