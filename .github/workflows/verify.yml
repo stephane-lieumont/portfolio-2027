@@ -1,0 +1,36 @@
+name: verify
+
+# The same gate as `pnpm verify` locally: typecheck, lint, format, tests with
+# the 80% coverage floor, and the prerendered build with its route check.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Read-only: this workflow never writes to the repository or its packages.
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reads the version from package.json's `packageManager`, so CI and the
+      # local toolchain cannot drift.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm verify

@@ -85,6 +85,13 @@ What the numbers do not cover, deliberately: the `aria-busy` branch on the
 contact submit is unreachable until the form is wired, and three handlers in
 `app.html` fire only on real keyboard events.
 
+**CI** — `.github/workflows/verify.yml` runs `pnpm verify` on every pull
+request and on `main`: typecheck, lint, format, tests with the 80% floor, and
+the prerendered build with its route check. Node from `.nvmrc`, pnpm from
+`packageManager`, frozen lockfile. Integration and end-to-end tests
+(Playwright) come once the « Bascule » design has landed, so they test the
+final journeys rather than ones about to be rewritten (Stéphane, 2026-11-14).
+
 ## In progress — the « Bascule » world pages
 
 A mockup approved with Stéphane on 2026-11-14 (artifact « Bascule Dev / 3D »)
@@ -113,8 +120,8 @@ copy is reviewed once, after the six PRs). Collected so far:
 - Mastery points flagged « à valider » on the mockup: RxJS « L’interop
   maîtrisée »; .NET points 2–4; React points 2–4; V-Ray « Les matières ».
 - **Claims the repository contradicts today** — must change or become true
-  before they render: « 80 % de couverture imposés en CI » and « Une CI qui fait
-  foi » (there is no CI, only the local `pnpm verify`); « Les mêmes conteneurs du
+  before they render. « 80 % de couverture imposés en CI » and « Une CI qui fait
+  foi » became true with the verify workflow; « Les mêmes conteneurs du
   poste de développement au serveur » (nothing is deployed); « Une commande pour
   lancer l’infrastructure locale » (`pnpm infra:up` is broken, see Missing).
 - Unsourced: « Fontenilles, France » under the portrait (not in user-profile);
