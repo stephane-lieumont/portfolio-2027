@@ -119,9 +119,10 @@
 }
 
 // The copyright as a spine up the left gutter, read bottom to top like a French
-// book spine: beside the dock rather than above it, at every width. A legal
-// line, so none of the dock's control cues; glass only because renders pass
-// under it, and the ink because muted on glass measures 2.35:1.
+// book spine, its foot level with the dock. Quiet on purpose (Stéphane): muted,
+// sentence case. Muted fails AA on glass over a passing render (2.35:1), so the
+// strip is a solid tab of the world's ground instead: muted holds on it in
+// both worlds, and an opaque ground melts into the page better than glass.
 // Physical properties: in vertical-rl the element's own inline axis is vertical.
 .copyright {
   position: fixed;
@@ -131,10 +132,10 @@
   margin: 0;
   padding: var(--space-3) var(--space-1);
   border-radius: var(--radius-sm);
-  color: var(--world-ink);
+  background: var(--world-ground);
+  color: var(--world-muted);
   font: 400 12px/1 var(--font-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
   white-space: nowrap;
   writing-mode: vertical-rl;
   rotate: 180deg;
