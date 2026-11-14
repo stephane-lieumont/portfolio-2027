@@ -1,4 +1,14 @@
-import { DestroyRef, Directive, ElementRef, inject, input, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import {
+  DestroyRef,
+  Directive,
+  ElementRef,
+  PLATFORM_ID,
+  afterNextRender,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 
 /**
  * Coerces the stagger index, defaulting anything unusable to 0.
@@ -30,16 +40,23 @@ function staggerIndex(value: unknown): number {
  * too (`if (!appearSectionSpecialities) setAppear…`).
  *
  * The element is visible with no JavaScript at all: `.reveal` sets the hidden
- * state only when the root carries `data-reveal-ready`, which this directive
- * stamps on construction. Without it — script blocked, observer missing — the
+ * state only when the root carries both `js-motion`, set in the document head,
+ * and `data-reveal-ready`, which this directive stamps once it has rendered.
+ * Without them — script blocked, observer missing, bootstrap failed — the
  * content is simply there, which is the only acceptable failure mode for a
- * page's own text.
+ * page's own text (spec 07 §4.2).
+ *
+ * The page is prerendered, so its content is painted before this runs. What
+ * is on screen and no longer under the loader has been seen: it settles where
+ * it stands and never drops to hidden. Only what is still covered, or below
+ * the fold, takes the hidden state.
  */
 @Directive({
   selector: '[appReveal]',
   host: {
     class: 'reveal',
     '[class.reveal--in]': 'shown()',
+    '[class.reveal--settled]': 'settled()',
     '[style.--reveal-index]': 'index()',
   },
 })
@@ -55,8 +72,13 @@ export class Reveal {
   readonly index = input(0, { alias: 'appReveal', transform: staggerIndex });
 
   protected readonly shown = signal(false);
+  protected readonly settled = signal(false);
 
   constructor() {
+    // Prerendering stamps nothing and adds no class, so the delivered HTML is
+    // readable with no script and matches what the browser starts from.
+    if (!isPlatformBrowser(inject(PLATFORM_ID))) return;
+
     const view = this.element.ownerDocument.defaultView;
 
     // No observer, no gating: show the content and stop. Never leave a page's
@@ -66,7 +88,22 @@ export class Reveal {
       return;
     }
 
-    this.element.ownerDocument.documentElement.setAttribute('data-reveal-ready', '');
+    const document = this.element.ownerDocument;
+
+    // Measured here, before anything is stamped: a hydrated element is the
+    // painted one, while a freshly created one has no box yet and reads as off
+    // screen, which is right — nobody has seen it.
+    if (!coveredByLoader(document) && this.withinViewport(view)) {
+      this.shown.set(true);
+      this.settled.set(true);
+      return;
+    }
+
+    // After the first render, so every settled element already carries its
+    // classes when the hidden state starts to apply. Stamped any earlier, the
+    // next element's measurement would compute them hidden, and the class
+    // arriving afterwards would fade them back in from zero.
+    afterNextRender(() => document.documentElement.setAttribute('data-reveal-ready', ''));
 
     // Two different questions, answered by one observer.
     //
@@ -98,4 +135,10 @@ export class Reveal {
     observer.observe(this.element);
     inject(DestroyRef).onDestroy(() => observer.disconnect());
   }
+}
+
+/** The inline loader in index.html, still opaque over the page. */
+function coveredByLoader(document: Document): boolean {
+  const boot = document.getElementById('boot');
+  return boot !== null && !boot.classList.contains('boot--done');
 }

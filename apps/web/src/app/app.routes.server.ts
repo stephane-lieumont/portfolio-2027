@@ -1,0 +1,26 @@
+import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
+
+import { PROJECTS } from './core/static-content';
+
+/**
+ * Every route is prerendered at build time and nothing is rendered on demand:
+ * nginx serves the files and no Node process runs in production (ADR-0008).
+ */
+export const serverRoutes: ServerRoute[] = [
+  {
+    // From the static content for now. ADR-0008 enumerates them from the API
+    // once it serves projects, which makes the API a build dependency.
+    path: 'developpeur/:slug',
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: async () => PROJECTS.map((project) => ({ slug: project.slug })),
+    // An unknown slug is nginx's 404, not a page rendered on the fly.
+    fallback: PrerenderFallback.None,
+  },
+  {
+    // The wildcard is rendered once, at /404, so nginx has a real file to
+    // serve with a real 404 status: `error_page 404 /404/index.html`.
+    path: '**',
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: async () => [{ '**': '404' }],
+  },
+];

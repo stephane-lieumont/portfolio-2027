@@ -1,8 +1,8 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  afterNextRender,
   inject,
   signal,
   viewChild,
@@ -24,7 +24,7 @@ import { NAV_ITEMS } from './shell/nav-items';
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App implements AfterViewInit {
+export class App {
   private readonly router = inject(Router);
   protected readonly menu = inject(Menu);
   protected readonly items = NAV_ITEMS;
@@ -56,10 +56,10 @@ export class App implements AfterViewInit {
     // an inert element fails silently — measured: the call ran, nothing moved.
     // The burger is the toggle, Tab enters the panel through the wrap below,
     // and Escape closes. One anchor, no race.
-  }
 
-  ngAfterViewInit(): void {
-    this.menu.register(this.panel().nativeElement, this.shell().nativeElement);
+    afterNextRender(() =>
+      this.menu.register(this.panel().nativeElement, this.shell().nativeElement),
+    );
   }
 
   protected closeFromLink(): void {

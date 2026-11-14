@@ -15,7 +15,7 @@ Operational summary of the choices. The full reasoning lives in `docs/adr/`.
 | ----------- | ------------------ | ----------------------------------------------------- |
 | Node        | 22.23.2 (`.nvmrc`) | Angular 22 requires ≥ 22.22.3                         |
 | pnpm        | 11.24.0            | workspaces, `allowBuilds` required for native modules |
-| Angular     | 22                 | standalone, zoneless, signals                         |
+| Angular     | 22                 | standalone, zoneless, signals, static output          |
 | TypeScript  | 6.0.x              | imposed by Angular 22 (`>=6.0 <6.1`)                  |
 | Fastify     | 5                  |                                                       |
 | Drizzle ORM | 0.45               | SQLite via `better-sqlite3`                           |
@@ -31,6 +31,23 @@ Operational summary of the choices. The full reasoning lives in `docs/adr/`.
 
 **The API boot depends on MinIO**: the `storage` plugin checks the bucket exists at startup and creates it if needed. `pnpm infra:up` must come before `pnpm dev:api`.
 
+**The web build is static prerendering, not SSR.** `outputMode: 'static'` with
+`@angular/ssr` and `@angular/platform-server` used only at build time
+(`main.server.ts`, `app.config.server.ts`, `app.routes.server.ts`). Every
+server route is `RenderMode.Prerender`; production serves files from nginx and
+runs no Node process (ADR-0008). Components therefore run once on the server
+during the build: anything touching the browser goes under `afterNextRender`
+or `isPlatformBrowser`. Hydration is on (`provideClientHydration`), so the
+first client render must produce the same DOM as the prerender. Versions are pinned
+exactly: `@angular/platform-server` to the installed `@angular/core`,
+`@angular/ssr` to the installed `@angular/build` (it ships with the CLI). Bump
+them in the same change as core and build, or the peers break.
+
+**The web package is `"type": "module"`** so the post-build check
+(`scripts/check-prerender.mjs`) can import the static content `.ts` directly.
+`pnpm verify` runs that build, so it takes a few seconds longer than the tests
+alone.
+
 **The verification script is called `verify`, not `ci`.** `pnpm ci` is a pnpm built-in command (clean reinstall) that silently shadows a script of the same name — it wipes `node_modules` instead of running the checks.
 
 ## Commands
@@ -38,7 +55,8 @@ Operational summary of the choices. The full reasoning lives in `docs/adr/`.
 ```bash
 pnpm dev                              # web + api in parallel
 pnpm infra:up                         # MinIO (console on :9001)
-pnpm verify                           # typecheck + lint + format + tests
+pnpm verify                           # typecheck + lint + format + tests + web build
+pnpm --filter @portfolio/web build    # prerender to dist/web/browser, then check every route
 pnpm --filter @portfolio/api db:generate   # migration after a Drizzle schema change
 pnpm --filter @portfolio/api admin:hash    # argon2 hash of the admin password
 ```

@@ -213,6 +213,9 @@
   // recession has nowhere to read. At 75 it keeps 90px and the edge moves
   // 14.4px — an order of magnitude over the perceptible threshold.
   inline-size: min(20rem, 75vw);
+  // Off screen before any script: the prerendered page carries the panel, and
+  // without this it would sit open and empty until Angular registered it.
+  translate: 100% 0;
   padding-inline: var(--page-inline);
   padding-block: calc(var(--header-height) + var(--space-4)) var(--space-5);
   // No background here: the SVG edge below paints the panel, so its left side
