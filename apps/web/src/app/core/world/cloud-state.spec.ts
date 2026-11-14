@@ -3,7 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { describe, expect, it } from 'vitest';
 
-import { CLOUD_POINTS, CloudModel, CloudState, type CloudSurface } from './cloud-state';
+import {
+  CLOUD_POINTS,
+  CloudModel,
+  CloudState,
+  type CloudSurface,
+  type CloudView,
+} from './cloud-state';
 
 function surface(): CloudSurface & { rects: number } {
   const s = {
@@ -169,5 +175,148 @@ describe('CloudModel framing', () => {
       expect(maxX).toBeLessThanOrEqual(width);
       expect(maxY).toBeLessThanOrEqual(height);
     }
+  });
+});
+
+describe('CloudModel grab', () => {
+  function torus(): CloudModel {
+    const model = new CloudModel(seeded());
+    model.init(glyph, 240, 150, 'cgi');
+    model.frame(surface(), 16, view, false);
+    return model;
+  }
+
+  function rects(model: CloudModel, frame: Partial<CloudView> = {}): number[] {
+    const out: number[] = [];
+    const s = { ...surface(), fillRect: (x: number, y: number) => out.push(x, y) };
+    model.frame(s, 16, { ...view, ...frame }, false);
+    return out;
+  }
+
+  const largestGap = (a: number[], b: number[]) =>
+    Math.max(...a.map((value, i) => Math.abs(value - b[i])));
+
+  it('holds the torus where the hand turned it while the auto-rotation runs on', () => {
+    const model = torus();
+    const before = model.pose;
+    model.grab();
+    model.turn(0.6, 0.2);
+    for (let i = 0; i < 30; i++) model.frame(surface(), 16, view, false);
+
+    expect(model.pose.yaw).toBeCloseTo(before.yaw + 0.6, 6);
+    expect(model.pose.pitch).toBeCloseTo(before.pitch + 0.2, 6);
+  });
+
+  it('stops the pitch between face-on and edge-on', () => {
+    const model = torus();
+    model.grab();
+    model.turn(0, 10);
+    model.frame(surface(), 16, view, false);
+    expect(model.pose.pitch).toBeCloseTo(Math.PI / 2, 6);
+    model.turn(0, -10);
+    model.frame(surface(), 16, view, false);
+    expect(model.pose.pitch).toBe(0);
+  });
+
+  it('springs back onto the live pose within ~1s of release, with no jump and no overshoot', () => {
+    const model = torus();
+    const free = torus();
+    model.grab();
+    model.turn(-1.2, 0.4);
+    for (let i = 0; i < 20; i++) {
+      model.frame(surface(), 16, view, false);
+      free.frame(surface(), 16, view, false);
+    }
+    const held = model.pose;
+    model.release();
+
+    let last = held;
+    let largestStep = 0;
+    const gaps: number[] = [];
+    for (let i = 0; i < 75; i++) {
+      model.frame(surface(), 16, view, false);
+      free.frame(surface(), 16, view, false);
+      largestStep = Math.max(
+        largestStep,
+        Math.abs(model.pose.pitch - last.pitch),
+        Math.abs(model.pose.yaw - last.yaw),
+      );
+      last = model.pose;
+      gaps.push(model.pose.pitch - free.pose.pitch);
+    }
+
+    expect(largestStep).toBeLessThan(0.06);
+    expect(Math.min(...gaps)).toBeGreaterThan(-0.01);
+    expect(Math.abs(gaps[61])).toBeLessThan(0.01);
+    for (let i = 0; i < 200; i++) {
+      model.frame(surface(), 16, view, false);
+      free.frame(surface(), 16, view, false);
+    }
+    expect(model.pose).toEqual(free.pose);
+    expect(largestGap(rects(model), rects(free))).toBe(0);
+  });
+
+  it('unwinds a long hold the short way: the torus repeats every half turn', () => {
+    const model = torus();
+    const free = torus();
+    model.grab();
+    for (let i = 0; i < 625; i++) {
+      model.frame(surface(), 16, view, false);
+      free.frame(surface(), 16, view, false);
+    }
+    model.release();
+    model.frame(surface(), 16, view, false);
+    free.frame(surface(), 16, view, false);
+
+    const behind = free.pose.yaw - model.pose.yaw;
+    expect(behind).toBeGreaterThan(0);
+    expect(behind).toBeLessThanOrEqual(Math.PI / 2);
+  });
+
+  it('returns at once under reduced motion', () => {
+    const model = torus();
+    model.frame(surface(), 16, view, true);
+    const still = model.pose;
+    model.grab();
+    model.turn(0.8, 0.3);
+    model.frame(surface(), 16, view, true);
+    expect(model.pose.yaw).toBeCloseTo(still.yaw + 0.8, 6);
+
+    model.release();
+    model.frame(surface(), 16, view, true);
+    expect(model.pose).toEqual(still);
+  });
+
+  it('no longer turns the torus with the pointer, nor pushes its points around it', () => {
+    const calm = rects(torus());
+    const hovered = rects(torus(), { pointer: [0.5, -0.5], field: { x: 200, y: 230 } });
+    expect(largestGap(hovered, calm)).toBeLessThan(1e-9);
+  });
+
+  it('keeps the glyph’s pointer field, and lets go of it once heading for the torus', () => {
+    const glyphModel = () => {
+      const model = new CloudModel(seeded());
+      model.init(glyph, 240, 150, 'dev');
+      model.frame(surface(), 16, view, false);
+      return model;
+    };
+    const field = { field: { x: 200, y: 230 } };
+    const pushed = glyphModel();
+    const calm = glyphModel();
+    for (let i = 0; i < 10; i++) {
+      rects(pushed, field);
+      rects(calm);
+    }
+    expect(largestGap(rects(pushed, field), rects(calm))).toBeGreaterThan(5);
+
+    const leaving = glyphModel();
+    const quiet = glyphModel();
+    leaving.aim('cgi');
+    quiet.aim('cgi');
+    for (let i = 0; i < 10; i++) {
+      rects(leaving, field);
+      rects(quiet);
+    }
+    expect(largestGap(rects(leaving, field), rects(quiet))).toBe(0);
   });
 });

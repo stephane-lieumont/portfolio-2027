@@ -146,6 +146,117 @@ describe('PointCloud across a world switch', () => {
     expect(fillRect).not.toHaveBeenCalled();
   });
 
+  describe('grabbing the torus', () => {
+    let captured: Set<number>;
+
+    beforeEach(() => {
+      captured = new Set();
+      Object.assign(HTMLCanvasElement.prototype, {
+        setPointerCapture: (id: number) => captured.add(id),
+        releasePointerCapture: (id: number) => captured.delete(id),
+        hasPointerCapture: (id: number) => captured.has(id),
+      });
+    });
+
+    const press = (
+      canvas: HTMLCanvasElement,
+      type: string,
+      x: number,
+      y: number,
+      {
+        button = 0,
+        ...pointer
+      }: { button?: number; pointerType?: string; isPrimary?: boolean } = {},
+    ) => {
+      const event = new MouseEvent(type, { clientX: x, clientY: y, cancelable: true, button });
+      Object.assign(event, { pointerId: 1, pointerType: 'mouse', isPrimary: true, ...pointer });
+      canvas.dispatchEvent(event);
+      return event;
+    };
+
+    async function stage(world: 'dev' | 'cgi') {
+      TestBed.inject(CloudState).arrive();
+      const fixture = await page(world);
+      frame(16);
+      const host: HTMLElement = fixture.nativeElement;
+      return { fixture, host, canvas: host.querySelector('canvas')! };
+    }
+
+    it('turns the torus with the hand: a full stage width is half a turn', async () => {
+      const { fixture, host, canvas } = await stage('cgi');
+      const model = TestBed.inject(CloudState).model;
+      expect(host.dataset['grab']).toBe('free');
+      const before = model.pose;
+
+      const down = press(canvas, 'pointerdown', 100, 100);
+      press(canvas, 'pointermove', 300, 150);
+      frame(16);
+      await fixture.whenStable();
+
+      expect(down.defaultPrevented).toBe(true);
+      expect(captured.has(1)).toBe(true);
+      expect(host.dataset['grab']).toBe('held');
+      expect(model.pose.yaw).toBeCloseTo(before.yaw - Math.PI / 2, 6);
+      expect(model.pose.pitch).toBeCloseTo(before.pitch + Math.PI / 8, 6);
+
+      press(canvas, 'pointerup', 300, 150);
+      await fixture.whenStable();
+      expect(model.grabbed).toBe(false);
+      expect(captured.size).toBe(0);
+      expect(host.dataset['grab']).toBe('free');
+    });
+
+    it('lets go on a cancelled pointer, a lost window, and a page leaving mid-drag', async () => {
+      const { fixture, canvas } = await stage('cgi');
+      const model = TestBed.inject(CloudState).model;
+
+      press(canvas, 'pointerdown', 100, 100);
+      press(canvas, 'pointercancel', 100, 100);
+      expect(model.grabbed).toBe(false);
+
+      press(canvas, 'pointerdown', 100, 100);
+      window.dispatchEvent(new Event('blur'));
+      expect(model.grabbed).toBe(false);
+
+      press(canvas, 'pointerdown', 100, 100);
+      fixture.destroy();
+      expect(model.grabbed).toBe(false);
+      expect(captured.size).toBe(0);
+    });
+
+    it('ignores other buttons and secondary touches', async () => {
+      const { canvas } = await stage('cgi');
+      const model = TestBed.inject(CloudState).model;
+      press(canvas, 'pointerdown', 100, 100, { button: 2 });
+      press(canvas, 'pointerdown', 100, 100, { pointerType: 'touch', isPrimary: false });
+      expect(model.grabbed).toBe(false);
+    });
+
+    it('leaves the glyph of the dev world alone', async () => {
+      const { host, canvas } = await stage('dev');
+      const model = TestBed.inject(CloudState).model;
+      const down = press(canvas, 'pointerdown', 100, 100);
+      press(canvas, 'pointermove', 300, 150);
+
+      expect(model.grabbed).toBe(false);
+      expect(down.defaultPrevented).toBe(false);
+      expect(host.dataset['grab']).toBeUndefined();
+    });
+
+    it('redraws the still frame as the hand turns it under reduced motion', async () => {
+      reduced.set(true);
+      const { canvas } = await stage('cgi');
+      const drawn = fillRect.mock.calls.length;
+      frame(16);
+      expect(fillRect.mock.calls.length).toBe(drawn);
+
+      press(canvas, 'pointerdown', 100, 100);
+      press(canvas, 'pointermove', 140, 100);
+      frame(16);
+      expect(fillRect.mock.calls.length).toBe(2 * drawn);
+    });
+  });
+
   it('lets the motes go when the page leaves: no stage, no frames', async () => {
     const state = TestBed.inject(CloudState);
     state.arrive();
