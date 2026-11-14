@@ -167,8 +167,7 @@ prerendered page's first paint, script or not; after the ink wipe it waits
 for the uncover — sampled: every start and end lands at the mockup's time
 plus 565–588ms (the 560ms cover). Parallax on a mouse only, off under reduced
 motion (also when switched on mid-drift); amplitudes sampled identical to the
-mockup at five pointer positions.
- Deviations, all from the mockup's quirks mode: its 8px
+mockup at five pointer positions. Deviations, all from the mockup's quirks mode: its 8px
 body margin (content 24px from the edge) and its form's 1em bottom margin are
 reproduced on purpose; its 3px horizontal overflow at 390 is not.
 
@@ -227,7 +226,7 @@ read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository. Locally the renders need
 `pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 293 passing on the web side, 94.9% lines, 82.2% branches, 90.2%
+**Tests** — 350 passing on the web side, 97.3% lines, 87.0% branches, 93.6%
 functions; axe on every page. Every route, the 404, the detail guard, the API
 client, the gallery, contact and the tool chips now have their own specs.
 
@@ -267,7 +266,7 @@ motes and smooth scrolling. It ships as six PRs:
      « Works today ». Not verified: Safari, Firefox, a real phone, touch swipe on
      a device. The interim project page at `/developpeur/<slug>` awaits its
      redesign.
-6. Contact: portrait, form, no published email — `feat/contact-page`, see
+3. Contact: portrait, form, no published email — `feat/contact-page`, see
    « Works today ». Open: the copy of the three send outcomes (« Merci… »,
    « pas encore en service », « Réessayez… ») was written here, not on the
    mockup — to review. A real send needs the API route (Missing).
