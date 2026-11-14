@@ -1,169 +1,138 @@
-import { provideZonelessChangeDetection } from '@angular/core';
+import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import axe from 'axe-core';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App } from './app';
-import { Menu } from './shell/menu';
-import { NAV_ITEMS } from './shell/nav-items';
+
+@Component({ template: '<h1>Page</h1>' })
+class Blank {}
 
 describe('App shell', () => {
   let fixture: ComponentFixture<App>;
+  let host: HTMLElement;
 
-  const query = <T extends HTMLElement>(selector: string): T =>
-    fixture.nativeElement.querySelector(selector);
-
-  beforeEach(async () => {
-    document.documentElement.removeAttribute('data-menu');
-    await TestBed.configureTestingModule({
-      imports: [App],
-      providers: [provideZonelessChangeDetection(), provideRouter([])],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-  });
-
-  it('keeps contact and the CV reachable at every width', () => {
-    // The current site hides both below 1200px and leaves them out of the
-    // burger, which makes contact unreachable from the navigation on mobile.
-    const labels = Array.from(fixture.nativeElement.querySelectorAll('.offcanvas__link')).map((a) =>
-      (a as HTMLElement).textContent?.trim(),
+  const nav = () => host.querySelector<HTMLElement>('nav[aria-label="Navigation principale"]')!;
+  const current = () =>
+    Array.from(nav().querySelectorAll('[aria-current]')).map(
+      (a) => `${a.getAttribute('href')}=${a.getAttribute('aria-current')}`,
     );
 
-    expect(labels).toContain('Contact');
-    expect(labels).toContain('Mon CV');
-    expect(labels.length).toBe(NAV_ITEMS.length + 1);
+  async function visit(url: string): Promise<void> {
+    await TestBed.inject(Router).navigateByUrl(url);
+    await fixture.whenStable();
+  }
+
+  beforeEach(async () => {
+    // jsdom has no canvas; the motes simply stay blank, as on a browser without one.
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideRouter([
+          { path: 'developpeur', component: Blank },
+          { path: 'developpeur/:slug', component: Blank, title: 'Kasa' },
+          { path: 'graphisme-3d', component: Blank },
+          { path: 'contact', component: Blank },
+        ]),
+      ],
+    });
+    fixture = TestBed.createComponent(App);
+    fixture.autoDetectChanges();
+    host = fixture.nativeElement;
+    document.body.appendChild(host);
   });
 
-  it('renders the menu panel outside the receding shell', () => {
-    // A transform on an ancestor becomes the containing block for a fixed
-    // descendant. Nesting the panel inside .shell is what strands the links on
-    // the current site the moment its animation misfires.
-    const shell = query('.shell');
-    const panel = query('#menu');
-
-    expect(shell.contains(panel)).toBe(false);
-    expect(query('.burger') && shell.contains(query('.burger'))).toBe(false);
+  afterEach(() => {
+    vi.restoreAllMocks();
+    host.remove();
+    document.documentElement.removeAttribute('data-world');
   });
 
-  it('moves inertness between the shell and the panel as the menu opens', () => {
-    const menu = TestBed.inject(Menu);
-    const shell = query('.shell');
-    const panel = query('#menu');
+  it('carries the mockup header: the role, Contact and the world switch', async () => {
+    await visit('/developpeur');
 
-    expect(shell.hasAttribute('inert')).toBe(false);
-    expect(panel.hasAttribute('inert')).toBe(true);
-
-    menu.open.set(true);
-    fixture.detectChanges();
-
-    expect(shell.hasAttribute('inert')).toBe(true);
-    expect(panel.hasAttribute('inert')).toBe(false);
+    expect(host.querySelector('header')?.textContent).toContain('Lead Tech & graphiste 3D');
+    expect(Array.from(nav().querySelectorAll('a')).map((a) => a.getAttribute('href'))).toEqual([
+      '/contact',
+      '/developpeur',
+      '/graphisme-3d',
+    ]);
+    // Plain links: nothing to open first, nothing that needs script.
+    expect(nav().querySelector('button')).toBeNull();
   });
 
-  it('announces the open state on the control that owns it', () => {
-    const menu = TestBed.inject(Menu);
-    const burger = query<HTMLButtonElement>('.burger');
+  it('marks the world the visitor is in, and its pages, in the switch', async () => {
+    await visit('/developpeur');
+    expect(current()).toEqual(['/developpeur=page']);
 
-    expect(burger.getAttribute('aria-expanded')).toBe('false');
-    expect(burger.getAttribute('aria-controls')).toBe('menu');
+    await visit('/developpeur/kasa');
+    expect(current()).toEqual(['/developpeur=true']);
 
-    menu.open.set(true);
-    fixture.detectChanges();
-
-    expect(burger.getAttribute('aria-expanded')).toBe('true');
-    expect(burger.textContent?.trim()).toBe('Fermer le menu');
+    await visit('/graphisme-3d');
+    expect(current()).toEqual(['/graphisme-3d=page']);
   });
 
-  it('carries a live region for route announcements', () => {
+  it('marks contact as the page while the switch keeps the world it was opened from', async () => {
+    await visit('/graphisme-3d');
+    await visit('/contact');
+
+    expect(current()).toEqual(['/contact=page']);
+    expect(document.documentElement.getAttribute('data-world')).toBe('cgi');
+  });
+
+  // The old footer is gone; the only contentinfo landmark is the copyright spine.
+  it('ends on the page, its only footer the copyright', async () => {
+    await visit('/contact');
+    const footers = host.querySelectorAll('footer');
+    expect(footers).toHaveLength(1);
+    expect(footers[0].textContent?.trim()).toMatch(/^© \d{4} Stéphane Lieumont$/);
+  });
+
+  // A notice frozen at the build year would go stale every January.
+  it('signs the copyright with the year it is viewed in', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2031-03-01T12:00:00Z'));
+    const later = TestBed.createComponent(App);
+    later.detectChanges();
+    vi.useRealTimers();
+
+    expect(later.nativeElement.querySelector('.copyright')?.textContent?.trim()).toBe(
+      '© 2031 Stéphane Lieumont',
+    );
+  });
+
+  it('leaves focus alone on the first page, so the first Tab is the skip link', async () => {
+    await visit('/developpeur');
+
+    expect(document.activeElement).not.toBe(host.querySelector('#contenu'));
+    expect(host.querySelector('[aria-live]')!.textContent).toBe('');
+  });
+
+  it('announces the title of the page a route change lands on', async () => {
     // A view transition does not move focus and the router does not announce,
-    // so without this a route change is silent to a screen reader.
-    const live = query('[aria-live]');
+    // so without this a route change is silent to a screen reader. The title,
+    // not a nav label: a project page has none.
+    await visit('/developpeur');
+    await visit('/developpeur/kasa');
+    await Promise.resolve();
+    fixture.detectChanges();
+    const live = host.querySelector('[aria-live]')!;
 
-    expect(live.getAttribute('aria-live')).toBe('polite');
     expect(live.getAttribute('aria-atomic')).toBe('true');
-  });
-
-  it('wraps Tab inside the open menu in both directions', () => {
-    // `inert` contains focus against the rest of the page but does not wrap it:
-    // Shift+Tab from the burger, or Tab from the last link, leaves the document
-    // for the browser chrome. The spec claimed otherwise; this is the hand-
-    // written wrap that makes the claim true.
-    const menu = TestBed.inject(Menu);
-    menu.open.set(true);
-    fixture.detectChanges();
-
-    document.body.appendChild(fixture.nativeElement);
-    const burger = query<HTMLButtonElement>('.burger');
-    const host = fixture.nativeElement as HTMLElement;
-    const links = Array.from(host.querySelectorAll<HTMLElement>('#menu a, #menu button'));
-    const last = links[links.length - 1];
-
-    burger.focus();
-    const backwards = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true });
-    burger.dispatchEvent(backwards);
-    expect(document.activeElement).toBe(last);
-
-    last.focus();
-    const forwards = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true });
-    last.dispatchEvent(forwards);
-    expect(document.activeElement).toBe(burger);
-
-    document.body.removeChild(fixture.nativeElement);
-  });
-
-  it('closes on Escape and returns focus to the control that opened it', () => {
-    const menu = TestBed.inject(Menu);
-    menu.open.set(true);
-    fixture.detectChanges();
-
-    document.body.appendChild(fixture.nativeElement);
-    const burger = query<HTMLButtonElement>('.burger');
-
-    query('#menu').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-    fixture.detectChanges();
-
-    expect(menu.open()).toBe(false);
-    expect(document.activeElement).toBe(burger);
-
-    document.body.removeChild(fixture.nativeElement);
-  });
-
-  it('ignores keys while the menu is closed', () => {
-    const menu = TestBed.inject(Menu);
-    query('.burger').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-    expect(menu.open()).toBe(false);
-  });
-
-  it('moves focus out of the panel before it goes inert on a link click', () => {
-    // Without this the focus lands silently on <body> and the next Tab
-    // restarts from the top of the document.
-    const menu = TestBed.inject(Menu);
-    menu.open.set(true);
-    fixture.detectChanges();
-
-    document.body.appendChild(fixture.nativeElement);
-    const burger = query<HTMLButtonElement>('.burger');
-    query<HTMLElement>('.offcanvas__link').click();
-    fixture.detectChanges();
-
-    expect(menu.open()).toBe(false);
-    expect(document.activeElement).toBe(burger);
-
-    document.body.removeChild(fixture.nativeElement);
+    expect(live.textContent).toBe('Kasa');
+    expect(document.activeElement).toBe(host.querySelector('#contenu'));
   });
 
   it('has no detectable accessibility violation', async () => {
-    document.body.appendChild(fixture.nativeElement);
-    const results = await axe.run(fixture.nativeElement, {
+    await visit('/developpeur');
+    const results = await axe.run(host, {
       resultTypes: ['violations'],
       // jsdom loads no stylesheet, so contrast cannot be computed here. It is
-      // verified against the measured tables in spec 06 instead.
+      // measured on the built site instead.
       rules: { 'color-contrast': { enabled: false } },
     });
-    document.body.removeChild(fixture.nativeElement);
 
     expect(results.violations).toEqual([]);
   });

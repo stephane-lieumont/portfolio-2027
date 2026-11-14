@@ -46,7 +46,6 @@ describe('Reveal', () => {
 
   afterEach(() => {
     window.IntersectionObserver = original;
-    document.getElementById('boot')?.remove();
     Element.prototype.getBoundingClientRect = measure;
   });
 
@@ -55,13 +54,6 @@ describe('Reveal', () => {
   function paintedOnScreen(): void {
     Element.prototype.getBoundingClientRect = () =>
       ({ top: 100, bottom: 300, height: 200 }) as unknown as DOMRect;
-  }
-
-  function loader(done: boolean): void {
-    const boot = document.createElement('div');
-    boot.id = 'boot';
-    if (done) boot.classList.add('boot--done');
-    document.body.append(boot);
   }
 
   async function render(platform = 'browser'): Promise<HTMLElement> {
@@ -187,27 +179,14 @@ describe('Reveal', () => {
     expect(host.querySelectorAll('.reveal--in')).toHaveLength(0);
   });
 
-  // The prerendered page was painted complete before the bundle arrived. If
-  // the loader has already gone, the visitor has read it: hiding it now would
-  // blink the page out and back.
+  // The prerendered page was painted complete before the bundle arrived, so
+  // the visitor has read it: hiding it now would blink the page out and back.
   it('never hides what the visitor has already seen', async () => {
     paintedOnScreen();
-    loader(true);
     const host = await render();
 
     expect(host.querySelectorAll('.reveal--in.reveal--settled')).toHaveLength(2);
     expect(observed).toHaveLength(0);
     expect(document.documentElement.hasAttribute('data-reveal-ready')).toBe(false);
-  });
-
-  it('still enters with the page while the loader covers it', async () => {
-    paintedOnScreen();
-    loader(false);
-    const host = await render();
-
-    expect(host.querySelectorAll('.reveal--settled')).toHaveLength(0);
-    expect(host.querySelectorAll('.reveal--in')).toHaveLength(0);
-    expect(observed).toHaveLength(2);
-    expect(document.documentElement.hasAttribute('data-reveal-ready')).toBe(true);
   });
 });

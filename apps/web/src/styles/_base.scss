@@ -8,7 +8,9 @@ html {
   // The 62.5% hack is gone: it made every rem in the codebase a lie and broke
   // anyone who had changed their browser's default size.
   font-size: 100%;
-  background: var(--surface-page);
+  // The ground is painted here and the body stays transparent, so the motes
+  // canvas at z-index -1 shows between the bands of the page (_world.scss).
+  background: var(--world-ground);
   scroll-padding-block-start: var(--header-height); // WCAG 2.2 SC 2.4.11
   -webkit-text-size-adjust: 100%;
 }
@@ -19,7 +21,6 @@ body {
   font-size: var(--text-body);
   line-height: 1.65;
   color: var(--text-primary);
-  background: var(--surface-page);
   -webkit-font-smoothing: antialiased;
 }
 

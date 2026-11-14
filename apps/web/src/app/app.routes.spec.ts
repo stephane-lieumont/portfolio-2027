@@ -9,9 +9,15 @@ function segmentsOf(path: string): { readonly path: string }[] {
 
 describe('routes', () => {
   it('resolves every section a visitor can reach from the navigation', () => {
-    for (const path of ['', 'developpeur', 'graphisme-3d', 'contact']) {
+    for (const path of ['developpeur', 'graphisme-3d', 'contact']) {
       expect(routes.some((r) => r.path === path)).toBe(true);
     }
+  });
+
+  it('opens the site on the developer world, as the mockup does', () => {
+    const root = routes.find((r) => r.path === '');
+    expect(root?.redirectTo).toBe('developpeur');
+    expect(root?.pathMatch).toBe('full');
   });
 
   // Calling each loader is the only way to find out that a lazy import points
@@ -19,7 +25,7 @@ describe('routes', () => {
   // expects. A renamed class typechecks here and fails at runtime, on the one
   // route nobody clicked before shipping.
   it('loads a real component for every route', async () => {
-    for (const route of routes) {
+    for (const route of routes.filter((r) => r.redirectTo === undefined)) {
       expect(route.loadComponent, `route "${route.path}" has no loader`).toBeDefined();
       const loaded = await route.loadComponent!();
       expect(loaded, `route "${route.path}" resolved nothing`).toBeTruthy();

@@ -3,7 +3,7 @@
 ## Site map
 
 ```
-/                                          Home
+/                                          Redirect to /developpeur (amended 2026-11-14)
 /developpeur                               Developer section
 /developpeur/<slug>                        Dev project detail
 /graphisme-3d                              3D Graphics section
@@ -38,11 +38,15 @@ Three corrections against the existing site, each driven by an observed defect:
 
 The active entry is marked with `aria-current="page"` and a visual cue that does not rely on colour alone.
 
+> **Superseded by the approved mockup, 2026-11-14.** Stéphane: « on doit être absolument iso avec la maquette » and « on ne garde rien de l'ancien projet ». The header carries exactly what the « Bascule » mockup carries: the role « Lead Tech & graphiste 3D » on the left, then « Contact » and the world switch (« Développement », « Graphisme 3D ») as links. There is no Home entry — `/` redirects to `/developpeur` — and no CV entry in the header: the CV is in the social dock on every page (and in the hero, PR 3). Nothing collapses at any width, so no entry needs script; below about 410px the right-hand group takes a second row because the mockup's own narrow layout leaves the role narrower than its longest word. Inside a section the switch marks its world with `aria-current="true"`, on the section page itself with `"page"`; the current entry is shown by the thumb or an underline, never by colour alone. Points 1–3 above are satisfied for Contact and the two worlds; for the CV, through the dock.
+
 ## Header
 
 The current header is fixed and transparent with no scrolled state: on the Developer section, the black title passes over the coloured skill logos and becomes unreadable.
 
 The new header stays reachable while scrolling but **takes an opaque background as soon as the page scrolls**, guaranteeing the contrast of its contents whatever passes underneath. It does not shrink enough to shift the layout.
+
+> **Amended 2026-11-14 (« Bascule » shell).** The header is the mockup's glass — 72% of the world's ground with a blur — rather than opaque, because Stéphane approved it. The guarantee is kept by measurement instead of by opacity, through the one deviation from the mockup allowed for accessibility: the role line is set in the world's ink, not its muted tone, which fell to 2.35:1 over a white image. Measured against the worst pixel under each line, over project covers and 3D renders: 5.25:1 at worst.
 
 A **skip link** to the main content precedes it in tab order, visible on focus.
 
@@ -52,11 +56,15 @@ GitHub, LinkedIn, ArtStation. Currently in a fixed sidebar at `opacity: .2` that
 
 They stay available on every page but **never overlap content**: the sidebar rejoins the document flow when it no longer has room in the margin. Each link carries an explicit accessible name ("Stéphane Lieumont's GitHub profile"), not just an icon.
 
+> **Amended 2026-11-14 — overlap accepted per the approved mockup.** The links live in a dock fixed at the bottom-right corner, always visible, with the contact page and the CV; content scrolls under it. `scroll-padding-block-end` keeps a focused element clear of it (WCAG 2.4.11). The accessible names follow the rule above (« Profil GitHub de Stéphane Lieumont (nouvel onglet) »).
+
 The **ArtStation** link deserves a readable placement: it is the reference for the 3D work.
 
 ## Footer
 
 Contents: identity, current year, legal notice link, social links, and a **contact prompt**.
+
+> **Superseded 2026-11-14 by the approved mockup:** there is no footer. The social links and the CV are in the dock; the contact prompt belongs to each page (PR 3 onwards). The legal notice link, when `/mentions-legales` exists, needs a home — open.
 
 The current footer reads "Designed & Developed on React ©2026" while the latest project dates from 2022. The year is rendered automatically, and the technology mention is updated — or dropped, since it tells the visitor nothing.
 
@@ -85,6 +93,8 @@ The lightbox meets the accessibility requirements: focus trapped, `Escape` close
 ## 404 page
 
 The current site redirects everything to the home page. A **real 404** is required: correct status code, an explanation, and links to the main sections.
+
+> **Interim, 2026-11-14.** The Travolta page is gone with the rest of the old site. Until a designed 404 lands, it is a mono eyebrow « Erreur 404 », a heading and one link back to `/developpeur`; the header carries the other sections. Still `noindex`, still emitted as `404/index.html`.
 
 ## Robots and indexing
 

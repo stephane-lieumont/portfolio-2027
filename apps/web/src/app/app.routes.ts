@@ -22,14 +22,8 @@ function projectOf(route: ActivatedRouteSnapshot) {
 
 // Descriptions reuse each page's own lead rather than separate marketing copy.
 export const routes: Routes = [
-  {
-    path: '',
-    data: {
-      description:
-        'Angular, TypeScript, .NET. Des applications menées de la décision technique à la mise en production. Modélisation, texturing, rendu. Une pratique apprise seule, qui nourrit mon regard de développeur.',
-    },
-    loadComponent: () => import('./features/home/home').then((m) => m.Home),
-  },
+  // The mockup opens on the developer world; there is no home page of its own.
+  { path: '', pathMatch: 'full', redirectTo: 'developpeur' },
   {
     path: 'developpeur',
     title: 'Lead Tech, Angular et .NET',

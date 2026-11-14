@@ -54,6 +54,18 @@ describe('a prerendered page', () => {
     'contact',
     page({ head: '<meta name="description" content="x"><meta content="noindex" name="robots">' }),
   );
-  caught('when the 404 is indexable', '404', page({ h1: '404', lead: 'Où aller' }));
+  caught('when the 404 is indexable', '404', page({ h1: 'Page introuvable', lead: 'Erreur 404' }));
+  caught('when the root renders a page instead of redirecting', '', page());
+  caught(
+    'when the root redirects elsewhere',
+    '',
+    '<html><head><meta http-equiv="refresh" content="0; url=/"></head></html>',
+  );
+
+  it('passes the root when it redirects to the developer world', () => {
+    const html =
+      '<html><head><meta http-equiv="refresh" content="0; url=/developpeur"></head></html>';
+    assert.deepEqual(checkPage('', html), []);
+  });
   caught('for a route the site does not have', 'nulle-part', page());
 });

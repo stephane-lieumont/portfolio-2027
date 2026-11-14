@@ -12,13 +12,10 @@ import { PROJECTS } from '../src/app/core/static-content.ts';
  * missing rather than silently absent from both sides.
  */
 export const EXPECTED = new Map([
-  [
-    '',
-    {
-      h1: 'Stéphane Lieumont — Lead Tech et graphiste 3D',
-      text: ['Ce que je construis', 'Ce que j’explore'],
-    },
-  ],
+  // The root has no page: the site opens on the developer world. Angular's
+  // static output writes a meta-refresh file there; nginx may answer with a
+  // 301 before it is ever read (ADR-0005).
+  ['', { redirect: '/developpeur' }],
   [
     'developpeur',
     {
@@ -32,7 +29,7 @@ export const EXPECTED = new Map([
     { h1: 'Un projet, une question ou juste un Hello World ?', text: ['Je réponds à tout'] },
   ],
   ...PROJECTS.map((p) => [`developpeur/${p.slug}`, { h1: p.title, text: [p.context, p.mission] }]),
-  ['404', { h1: '404', text: ['Où aller'], noindex: true }],
+  ['404', { h1: 'Page introuvable', text: ['Erreur 404'], noindex: true }],
 ]);
 
 const HIDING_STYLE =
@@ -48,6 +45,16 @@ export function checkPage(route, html) {
   const { document } = new JSDOM(html).window;
   const failures = [];
   const fail = (reason) => failures.push(reason);
+
+  if (expected.redirect) {
+    const refresh = Array.from(document.head.querySelectorAll('meta')).find(
+      (m) => m.getAttribute('http-equiv')?.toLowerCase() === 'refresh',
+    );
+    const target = /url=(\S+)/i.exec(refresh?.getAttribute('content') ?? '')?.[1];
+    if (target !== expected.redirect)
+      fail(`redirects to ${target ?? 'nowhere'}, expected ${expected.redirect}`);
+    return failures.map((reason) => `/: ${reason}`);
+  }
 
   const title = squash(document.title);
   if (!title) fail('no <title>');

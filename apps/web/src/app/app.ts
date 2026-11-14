@@ -7,100 +7,65 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { filter } from 'rxjs';
+import { Title } from '@angular/platform-browser';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { filter, skip } from 'rxjs';
 
-import { Menu } from './shell/menu';
-import { ScrollSentinel } from './shell/scrolled';
-import { NAV_ITEMS } from './shell/nav-items';
+import { SmoothScroll } from './core/motion/smooth-scroll';
+import { RouteTransitions } from './core/route-transitions';
+import { ActiveWorld, currentness } from './core/world/world';
+import { Motes } from './shell/motes';
+import { NAV } from './shell/nav-items';
+import { SocialDock } from './shell/social-dock';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ScrollSentinel],
-  // Listening on the host catches keys from the burger and the panel alike,
-  // and keeps handlers off elements that are not themselves focusable.
-  host: { '(keydown)': 'onKeydown($event)' },
+  imports: [RouterOutlet, RouterLink, SocialDock, Motes],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   private readonly router = inject(Router);
-  protected readonly menu = inject(Menu);
-  protected readonly items = NAV_ITEMS;
-
-  private readonly panel = viewChild.required<ElementRef<HTMLElement>>('panel');
-  private readonly shell = viewChild.required<ElementRef<HTMLElement>>('shell');
-  private readonly burger = viewChild.required<ElementRef<HTMLButtonElement>>('burger');
+  private readonly active = inject(ActiveWorld);
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
+
+  protected readonly nav = NAV;
+
+  // The prerendered HTML carries the build's year; the browser renders the
+  // current one. Hydration reuses the text node without comparing its value,
+  // so a page built last year corrects itself on load instead of erroring.
+  protected readonly year = new Date().getFullYear();
 
   // A view transition does not move focus and neither does the router, so a
   // route change is silent to a screen reader and drops the keyboard back to
   // the top of the document.
   protected readonly announcement = signal('');
 
-  // The home page is a full-height split and nothing follows it. A footer under
-  // it would either float in empty space or push the split off the fold.
-  protected readonly bare = signal(true);
-  protected readonly year = new Date().getFullYear();
-
   constructor() {
-    this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
-      this.announcement.set(this.document_title());
-      this.bare.set(this.router.url.split('?')[0] === '/');
-      this.main().nativeElement.focus({ preventScroll: true });
-    });
+    // Created now so it is listening before the first navigation ends.
+    inject(RouteTransitions);
 
-    // Focus deliberately stays on the burger when the menu opens. Moving it
-    // into the panel would have to wait for `inert` to be removed, and focusing
-    // an inert element fails silently — measured: the call ran, nothing moved.
-    // The burger is the toggle, Tab enters the panel through the wrap below,
-    // and Escape closes. One anchor, no race.
+    // Route changes only (spec 07 §9.5): on a direct load the page is already
+    // announced by the browser, and moving focus would skip the skip link and
+    // the navigation for the first Tab.
+    const title = inject(Title);
+    this.router.events
+      .pipe(
+        filter((e) => e instanceof NavigationEnd),
+        skip(1),
+      )
+      .subscribe(() => {
+        // The router writes the title right after emitting NavigationEnd.
+        queueMicrotask(() => this.announcement.set(title.getTitle()));
+        this.main().nativeElement.focus({ preventScroll: true });
+      });
 
-    afterNextRender(() =>
-      this.menu.register(this.panel().nativeElement, this.shell().nativeElement),
-    );
+    const smooth = inject(SmoothScroll);
+    afterNextRender(() => smooth.enable());
   }
 
-  protected closeFromLink(): void {
-    // Move focus out of the panel before it becomes inert, or it silently
-    // lands on <body> and the next Tab restarts from the top of the document.
-    this.burger().nativeElement.focus();
-    this.menu.toggle(false);
-  }
-
-  protected onKeydown(event: KeyboardEvent): void {
-    if (!this.menu.open()) return;
-
-    if (event.key === 'Escape') {
-      this.closeFromLink();
-      return;
-    }
-
-    if (event.key !== 'Tab') return;
-
-    // `inert` contains focus against the rest of the page but does not wrap it:
-    // Shift+Tab from the burger, or Tab from the last link, leaves the document
-    // for the browser chrome. The wrap is written by hand.
-    const focusable = [
-      this.burger().nativeElement,
-      ...Array.from(this.panel().nativeElement.querySelectorAll<HTMLElement>('a, button')),
-    ];
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    const active = this.panel().nativeElement.ownerDocument.activeElement;
-
-    if (event.shiftKey && active === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && active === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  }
-
-  private document_title(): string {
-    const path = this.router.url.split('?')[0];
-    return this.items.find((item) => item.path === path)?.label ?? 'Page';
+  protected current(link: string): 'page' | 'true' | null {
+    return currentness(this.active.path(), link);
   }
 }
