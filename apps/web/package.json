@@ -2,13 +2,14 @@
   "name": "@portfolio/web",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "dev": "ng serve",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build && node scripts/check-prerender.mjs",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "test": "ng test && node --test \"scripts/*.test.mjs\"",
     "typecheck": "tsc -b --noEmit",
     "lint": "ng lint"
   },
@@ -18,7 +19,9 @@
     "@angular/core": "^22.1.0",
     "@angular/forms": "^22.1.0",
     "@angular/platform-browser": "^22.1.0",
+    "@angular/platform-server": "22.1.4",
     "@angular/router": "^22.1.0",
+    "@angular/ssr": "22.1.6",
     "@portfolio/shared-types": "workspace:*",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

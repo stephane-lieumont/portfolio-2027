@@ -1,7 +1,7 @@
 # Status
 
-Last updated 2026-11-14. `main` at the merge of PR #16; this file describes it
-with `feat/world-content-model` merged.
+Last updated 2026-11-14. Describes `main` (PR #17 merged) with `feat/prerender`
+on top.
 
 ## Works today
 
@@ -34,13 +34,50 @@ else the icon-font glyph, else the tool's initial as a monogram (Angular and
 .NET today). Glyphs, monograms and names in `--text-secondary`: orange
 unboxed text is a tertiary button at rest in spec 06 §10, and these do nothing.
 
+**Prerendering (ADR-0008)** — `outputMode: 'static'`: the build writes one
+complete HTML file per route under `dist/web/browser` — `/`, `/developpeur`,
+`/graphisme-3d`, `/contact`, one per project (`developpeur/<slug>`, enumerated
+from the static `PROJECTS`; ADR-0008 says from the API once it serves them),
+and `/404/index.html` for nginx's `error_page`. No route renders on demand and
+no Node process runs in production. Client hydration with event replay keeps
+the prerendered DOM, so the loader's entrance plays on it untouched (measured:
+0 hydration mismatches on every route in the dev build, and no console
+output from the production build). With script disabled every
+page is readable, the reveal hides nothing and the drawer stays off screen.
+`pnpm verify` now ends with the web build, which fails unless every expected
+route was emitted with its own `<title>`, its heading and copy as text, a
+description (`noindex` on the 404 only), hydration data, and nothing hidden
+before script. The rules are tested against mutated pages
+(`scripts/prerender-checks.test.mjs`).
+
+Known limits, deliberately not fixed here:
+
+- The project list is read from the static `PROJECTS` in three places —
+  `app.routes.server.ts` (prerender params), the route resolvers and
+  `scripts/prerender-checks.mjs`. All three move to the API (ADR-0008).
+- Without script, the navigation is unreachable below 48rem: the burger needs
+  JavaScript. That contradicts spec 01; the shell PR fixes it.
+- The footer year is the build's year until the script runs.
+
+**Section reveal at boot** — the page is painted complete before the bundle
+arrives, so the reveal hides only what nobody has seen yet: content still under
+the loader, or below the fold. Content on screen once the loader has gone is
+settled where it stands (`reveal--settled`). Hiding needs `js-motion`, set in
+the document head and withdrawn if bootstrap fails, plus the directive's
+`data-reveal-ready` stamp, which comes after its first render (spec 07 §4.2).
+
+**Page metadata** — each route sets its `<title>` and meta description, in the
+prerendered HTML and on client navigation (`PageMetadata`, a `TitleStrategy`).
+Descriptions reuse each page's lead; a project's is its summary. The 404 is
+`noindex`.
+
 **Media** — 16 renders and 6 project covers in MinIO, served through `/medias`
 (nginx in production, the dev server's proxy locally). Bucket policy is
 read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository. Locally the renders need
 `pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 175 passing on the web side, 99.8% lines, 93.8% branches, 94.2%
+**Tests** — 198 passing on the web side, 100% lines, 93.4% branches, 95.8%
 functions; axe on every page. Every route, the 404, the detail guard, the API
 client, the gallery, contact and the tool chips now have their own specs.
 
@@ -62,8 +99,9 @@ motes and smooth scrolling. It ships as six PRs:
    `apps/web/src/app/core/content/world-content.ts`, parsed against them in a
    spec. Nothing renders it yet.
 2. Shell: header world switch (links, `aria-current`), sweep transition,
-   social dock, motes, Lenis. **Prerendering (ADR-0008) must land first**, or
-   the browser-only code is untested.
+   social dock, motes, Lenis. Prerendering (ADR-0008) has landed: any
+   browser-only code must run under `afterNextRender` or a platform check, and
+   be checked against the prerendered build, not only `ng serve`.
 3. World page: hero, role word, point cloud, scrub, facts.
 4. Work: dev grid, 3D mosaic, viewer at `/graphisme-3d/<slug>` (spec 01).
 5. Stack and « Maîtrise ».
@@ -98,15 +136,15 @@ The stack's marks need SVG logos (ADR-0012); the mockup used Simple Icons
 
 Ordered by what hurts most on the day the site goes live.
 
-| Gap                           | Consequence                                                                                                                                                                                                   |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **No SEO at all**             | No `robots.txt`, no `sitemap.xml`, no meta description, no per-route `<title>`, no Open Graph. The current site is indexed; replacing it with this loses that.                                                |
-| **No static prerendering**    | ADR-0008 settled it; `angular.json` has no `outputMode`. The build is a plain SPA, so there is nothing under the loader until Angular boots, and the 404 cannot return a real status.                         |
-| **`pnpm infra:up` is broken** | `minio/minio` no longer exists on Docker Hub (nor on quay.io), so the compose file cannot pull. `cgr.dev/chainguard/minio` runs the same binary and works with the seed script; switching to it is undecided. |
-| **Contact form not wired**    | The form renders and goes nowhere. Needs a delivery service (ADR-0007 forbids sending from the browser).                                                                                                      |
-| **API is a skeleton**         | Only `/health`. No projects, no media, no contact route.                                                                                                                                                      |
-| **No back office**            | Content lives in `apps/web/src/app/core/static-content.ts`. Every edit is a commit.                                                                                                                           |
-| **Specs 04 and 05 missing**   | `00-vision.md` references a back-office spec and a content/SEO spec that were never written.                                                                                                                  |
+| Gap                                    | Consequence                                                                                                                                                                                                                                                                                 |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **SEO is partial**                     | Per-route `<title>` and meta description exist. Still no `robots.txt`, no `sitemap.xml`, no canonical, no Open Graph, no JSON-LD (ADR-0008, spec 01) — share previews are as broken as on the current site.                                                                                 |
+| **nginx not updated for prerendering** | Outside the repository. ADR-0005 (amended 2026-11-14) now prescribes `try_files $uri $uri/index.html =404;` and `error_page 404 /404/index.html;` for `/*`. The live config still has the `index.html` fallback, which would serve the prerendered home with a 200 under every unknown URL. |
+| **`pnpm infra:up` is broken**          | `minio/minio` no longer exists on Docker Hub (nor on quay.io), so the compose file cannot pull. `cgr.dev/chainguard/minio` runs the same binary and works with the seed script; switching to it is undecided.                                                                               |
+| **Contact form not wired**             | The form renders and goes nowhere. Needs a delivery service (ADR-0007 forbids sending from the browser).                                                                                                                                                                                    |
+| **API is a skeleton**                  | Only `/health`. No projects, no media, no contact route.                                                                                                                                                                                                                                    |
+| **No back office**                     | Content lives in `apps/web/src/app/core/static-content.ts`. Every edit is a commit.                                                                                                                                                                                                         |
+| **Specs 04 and 05 missing**            | `00-vision.md` references a back-office spec and a content/SEO spec that were never written.                                                                                                                                                                                                |
 
 ## Deferred on purpose
 

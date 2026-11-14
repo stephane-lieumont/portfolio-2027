@@ -2,6 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-08-30
+- **Amended**: 2026-11-14 — the `index.html` fallback is replaced by prerendered files and a real 404 (see the amendment below)
 
 ## Context
 
@@ -47,3 +48,13 @@ Local development, by contrast, is cross-origin (Angular on 4200, API on 3000): 
 **Serving Angular from Fastify** — one service fewer, but Node would be serving static files that nginx serves better, and nginx would still be needed out front for TLS and the demo redirects.
 
 **Static site hosting (Vercel, Netlify) for the front end** — excellent for the front end alone, but the backend and MinIO would still need hosting elsewhere, and the demo links depend on the current nginx. You'd end up with two infrastructures for one site.
+
+## Amendment — 2026-11-14
+
+Prerendering (ADR-0008) is built: the Angular output is one HTML file per route (`<route>/index.html`) plus `404/index.html`. The `index.html` fallback in the table above is **withdrawn** for `/*`. `index.html` is now the prerendered home page: served under an unknown URL it answers 200 with the wrong page, which the browser then hydrates against the wrong route.
+
+| Path | Destination                                                                                        |
+| ---- | -------------------------------------------------------------------------------------------------- |
+| `/*` | Angular static files: `try_files $uri $uri/index.html =404;` and `error_page 404 /404/index.html;` |
+
+Everything else in this decision stands: `/api`, `/media` and `/demo` are matched before `/*`, and the rule that no fallback ever applies to them is unchanged. An unknown URL now gets a real 404 status with the site's 404 page, which is what spec 01 asks for. A direct visit to `/404/` answers 200; the page is `noindex`, so that is accepted.

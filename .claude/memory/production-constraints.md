@@ -17,9 +17,11 @@ metadata:
 
 ## The nginx configuration lives outside the repository
 
-Path-based routing (`/api`, `/media`, `/demo`, `index.html` fallback) is described in ADR-0005, but **the actual configuration is not versioned here**.
+Path-based routing (`/api`, `/media`, `/demo`, and the static site under `/*`) is described in ADR-0005, but **the actual configuration is not versioned here**.
 
-**Why it matters:** a badly ordered set of `location` blocks can make the API disappear behind the `index.html` fallback — the API would then return HTML instead of the expected JSON, and nothing in the code would point at the cause. It is a single point of failure invisible from the repo.
+The site is prerendered (ADR-0008), so `/*` has **no `index.html` fallback**: `try_files $uri $uri/index.html =404;` with `error_page 404 /404/index.html;` (ADR-0005, amendment of 2026-11-14). The old fallback would now serve the prerendered home page, with a 200, under every unknown URL.
+
+**Why it matters:** a badly ordered set of `location` blocks can make the API disappear behind the static site's `/*` block — the API would then return HTML instead of the expected JSON, and nothing in the code would point at the cause. It is a single point of failure invisible from the repo.
 
 **How to apply it:** when production behaves inexplicably (HTML response on an API route, missing media), suspect nginx before the code. This configuration deserves to be backed up with the same care as the database.
 

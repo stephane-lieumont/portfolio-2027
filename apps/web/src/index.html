@@ -14,6 +14,13 @@
     />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
+    <!-- Says the script is coming, before first paint. The reveal hides
+         nothing without it (spec 07 §4.2); main.ts withdraws it if bootstrap
+         fails. -->
+    <script>
+      document.documentElement.classList.add('js-motion');
+    </script>
+
     <!--
       The loader is inline, in the document head, and not in a component.
 
@@ -21,12 +28,9 @@
       settled — the webfont swapping in, the split's textures decoding, Angular
       booting. Without it the first second is a visible reflow.
 
-      ADR-0008 settles on static prerendering, which is NOT configured yet: the
-      build is a plain SPA today, so the markup underneath this overlay is empty
-      until Angular boots. That does not change what the loader does, but it does
-      change the third escape hatch below — with prerendering the content is
-      readable under the overlay from the first byte, and without it there is
-      nothing to read yet. Turning it on is the next step on this file.
+      Every route is prerendered (ADR-0008), so the page is already in the
+      markup underneath this overlay from the first byte, and readable as soon
+      as any of the escape hatches below fires — script or none.
 
       It must therefore paint on the first byte, before any stylesheet or script
       has been fetched, which is why it is here rather than in styles.scss.

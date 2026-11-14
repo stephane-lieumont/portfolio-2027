@@ -1,4 +1,4 @@
-import { Component, provideZonelessChangeDetection } from '@angular/core';
+import { Component, PLATFORM_ID, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -33,6 +33,7 @@ class Host {}
 
 describe('Reveal', () => {
   const original = window.IntersectionObserver;
+  const measure = Element.prototype.getBoundingClientRect;
 
   beforeEach(() => {
     callbacks = [];
@@ -45,15 +46,32 @@ describe('Reveal', () => {
 
   afterEach(() => {
     window.IntersectionObserver = original;
+    document.getElementById('boot')?.remove();
+    Element.prototype.getBoundingClientRect = measure;
   });
 
-  async function render(): Promise<HTMLElement> {
+  // Puts every element on screen before the directive measures it, as a
+  // hydrated, prerendered page is.
+  function paintedOnScreen(): void {
+    Element.prototype.getBoundingClientRect = () =>
+      ({ top: 100, bottom: 300, height: 200 }) as unknown as DOMRect;
+  }
+
+  function loader(done: boolean): void {
+    const boot = document.createElement('div');
+    boot.id = 'boot';
+    if (done) boot.classList.add('boot--done');
+    document.body.append(boot);
+  }
+
+  async function render(platform = 'browser'): Promise<HTMLElement> {
     await TestBed.configureTestingModule({
       imports: [Host],
-      providers: [provideZonelessChangeDetection()],
+      providers: [provideZonelessChangeDetection(), { provide: PLATFORM_ID, useValue: platform }],
     }).compileComponents();
     const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
+    await fixture.whenStable();
     return fixture.nativeElement as HTMLElement;
   }
 
@@ -157,5 +175,39 @@ describe('Reveal', () => {
 
     expect(host.querySelectorAll('.reveal--in')).toHaveLength(2);
     expect(document.documentElement.hasAttribute('data-reveal-ready')).toBe(false);
+  });
+
+  // The prerendered page is what a visitor without script gets, and what the
+  // browser hydrates: it must hide nothing and carry no revealed state.
+  it('leaves the prerendered page untouched', async () => {
+    const host = await render('server');
+
+    expect(observed).toHaveLength(0);
+    expect(document.documentElement.hasAttribute('data-reveal-ready')).toBe(false);
+    expect(host.querySelectorAll('.reveal--in')).toHaveLength(0);
+  });
+
+  // The prerendered page was painted complete before the bundle arrived. If
+  // the loader has already gone, the visitor has read it: hiding it now would
+  // blink the page out and back.
+  it('never hides what the visitor has already seen', async () => {
+    paintedOnScreen();
+    loader(true);
+    const host = await render();
+
+    expect(host.querySelectorAll('.reveal--in.reveal--settled')).toHaveLength(2);
+    expect(observed).toHaveLength(0);
+    expect(document.documentElement.hasAttribute('data-reveal-ready')).toBe(false);
+  });
+
+  it('still enters with the page while the loader covers it', async () => {
+    paintedOnScreen();
+    loader(false);
+    const host = await render();
+
+    expect(host.querySelectorAll('.reveal--settled')).toHaveLength(0);
+    expect(host.querySelectorAll('.reveal--in')).toHaveLength(0);
+    expect(observed).toHaveLength(2);
+    expect(document.documentElement.hasAttribute('data-reveal-ready')).toBe(true);
   });
 });
