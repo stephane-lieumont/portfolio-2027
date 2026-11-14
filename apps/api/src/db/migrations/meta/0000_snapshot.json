@@ -82,9 +82,7 @@
       "indexes": {
         "media_assets_object_key_unique": {
           "name": "media_assets_object_key_unique",
-          "columns": [
-            "object_key"
-          ],
+          "columns": ["object_key"],
           "isUnique": true
         }
       },
@@ -122,18 +120,12 @@
       "indexes": {
         "project_gallery_pk": {
           "name": "project_gallery_pk",
-          "columns": [
-            "project_id",
-            "asset_id"
-          ],
+          "columns": ["project_id", "asset_id"],
           "isUnique": true
         },
         "project_gallery_order_idx": {
           "name": "project_gallery_order_idx",
-          "columns": [
-            "project_id",
-            "position"
-          ],
+          "columns": ["project_id", "position"],
           "isUnique": false
         }
       },
@@ -142,12 +134,8 @@
           "name": "project_gallery_project_id_projects_id_fk",
           "tableFrom": "project_gallery",
           "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["project_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -155,12 +143,8 @@
           "name": "project_gallery_asset_id_media_assets_id_fk",
           "tableFrom": "project_gallery",
           "tableTo": "media_assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -309,17 +293,12 @@
       "indexes": {
         "projects_slug_unique": {
           "name": "projects_slug_unique",
-          "columns": [
-            "slug"
-          ],
+          "columns": ["slug"],
           "isUnique": true
         },
         "projects_kind_status_idx": {
           "name": "projects_kind_status_idx",
-          "columns": [
-            "kind",
-            "status"
-          ],
+          "columns": ["kind", "status"],
           "isUnique": false
         }
       },
@@ -328,12 +307,8 @@
           "name": "projects_cover_asset_id_media_assets_id_fk",
           "tableFrom": "projects",
           "tableTo": "media_assets",
-          "columnsFrom": [
-            "cover_asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["cover_asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }

@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   afterNextRender,
+  computed,
   inject,
   signal,
   viewChild,
@@ -31,6 +32,10 @@ export class App {
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
 
   protected readonly nav = NAV;
+
+  // The contact page carries the same networks in its own content; the dock
+  // would only repeat them (Stéphane, 2026-11-15).
+  protected readonly showDock = computed(() => this.active.path() !== '/contact');
 
   // The prerendered HTML carries the build's year; the browser renders the
   // current one. Hydration reuses the text node without comparing its value,

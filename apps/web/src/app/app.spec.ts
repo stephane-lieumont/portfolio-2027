@@ -74,6 +74,13 @@ describe('App shell', () => {
     expect(current()).toEqual(['/graphisme-3d=page']);
   });
 
+  it('drops the social dock on the contact page, which lists the same networks', async () => {
+    await visit('/developpeur');
+    expect(host.querySelector('app-social-dock')).not.toBeNull();
+    await visit('/contact');
+    expect(host.querySelector('app-social-dock')).toBeNull();
+  });
+
   it('marks contact as the page while the switch keeps the world it was opened from', async () => {
     await visit('/graphisme-3d');
     await visit('/contact');

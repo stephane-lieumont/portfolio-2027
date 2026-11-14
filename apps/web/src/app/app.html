@@ -43,7 +43,9 @@
   <router-outlet />
 </main>
 
-<app-social-dock />
+@if (showDock()) {
+  <app-social-dock />
+}
 
 <footer class="copyright">© {{ year }} Stéphane Lieumont</footer>
 
