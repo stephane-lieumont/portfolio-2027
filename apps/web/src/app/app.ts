@@ -32,6 +32,11 @@ export class App {
 
   protected readonly nav = NAV;
 
+  // The prerendered HTML carries the build's year; the browser renders the
+  // current one. Hydration reuses the text node without comparing its value,
+  // so a page built last year corrects itself on load instead of erroring.
+  protected readonly year = new Date().getFullYear();
+
   // A view transition does not move focus and neither does the router, so a
   // route change is silent to a screen reader and drops the keyboard back to
   // the top of the document.

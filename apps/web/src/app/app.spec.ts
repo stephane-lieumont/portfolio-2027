@@ -87,6 +87,19 @@ describe('App shell', () => {
     expect(host.querySelector('footer')).toBeNull();
   });
 
+  // A notice frozen at the build year would go stale every January.
+  it('signs the copyright with the year it is viewed in', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2031-03-01T12:00:00Z'));
+    const later = TestBed.createComponent(App);
+    later.detectChanges();
+    vi.useRealTimers();
+
+    expect(later.nativeElement.querySelector('.copyright')?.textContent?.trim()).toBe(
+      '© 2031 Stéphane Lieumont',
+    );
+  });
+
   it('leaves focus alone on the first page, so the first Tab is the skip link', async () => {
     await visit('/developpeur');
 
