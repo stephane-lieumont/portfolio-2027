@@ -82,9 +82,12 @@ describe('App shell', () => {
     expect(document.documentElement.getAttribute('data-world')).toBe('cgi');
   });
 
-  it('has no footer: the mockup ends on the page', async () => {
+  // The old footer is gone; the only contentinfo landmark is the copyright spine.
+  it('ends on the page, its only footer the copyright', async () => {
     await visit('/contact');
-    expect(host.querySelector('footer')).toBeNull();
+    const footers = host.querySelectorAll('footer');
+    expect(footers).toHaveLength(1);
+    expect(footers[0].textContent?.trim()).toMatch(/^© \d{4} Stéphane Lieumont$/);
   });
 
   // A notice frozen at the build year would go stale every January.
