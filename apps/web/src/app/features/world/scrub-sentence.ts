@@ -55,7 +55,7 @@ export function scrubLevels(
       display: block;
       margin: 0;
       font-family: var(--font-sans);
-      font-size: clamp(26px, min(3.4vw, 4.4svh), 46px);
+      font-size: clamp(22px, min(2.6vw, 3.7svh), 36px);
       line-height: 1.16;
       letter-spacing: -0.01em;
       font-weight: 500;

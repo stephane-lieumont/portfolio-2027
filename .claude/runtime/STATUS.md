@@ -57,12 +57,15 @@ element: same boxes to the pixel (name 899px, role 265 vs 264px, stage
 575×718, scrub 689×213, work head 324×94…), the only offset being the
 mockup's unreset 8px body margin. In order:
 
-- Hero recalibrated on the viewport's height as well as its width (Stéphane:
-  on his laptop the first section did not fit; svh, not dvh). Measured, name /
-  role / scrub px, hero bottom, stuck stage height: 1440×790 79/57/35, 343,
-  670 (≤694); 1512×872 87/63/38, 366, 718; 1728×1007 101/72/44, 404, 718;
-  1920×970 97/70/43, 394, 718; 390×844 33/25/26, 254, stage 358 (header
-  100); 820×1180 69/53/28, 331, 661. The scrub's ramp starts at 68% of the
+- Hero recalibrated on the viewport's height as well as its width, then scaled
+  down below the mockup (Stéphane, 2026-11-15: still too big on his 14-inch
+  laptop). Name, role and scrub shrink together so they keep their order
+  (name > role > scrub at every size; on a phone the scrub had been larger
+  than the role). Measured, name / role / scrub px and hero bottom: 1440×790
+  53/37/29, 299; 1512×771 52/36/28, 295; 1512×872 59/41/32, 318; 1728×1007
+  68/47/36, 348; 1920×970 66/45/36, 339; 820×1180 47/33/22, 291; 390×844
+  32/24/22, 253; 320×640 32/24/22, 271; no horizontal overflow. The scrub's
+  ramp starts at 68% of the
   viewport (mockup 85%) so it paints about a fifth lit at load (22% at
   1440×790, 28–36% on taller screens), ending where it did.
 - Hero: eyebrow (world label / eyebrow tools), the hairline drawing, the name
@@ -129,6 +132,8 @@ mockup's unreset 8px body margin. In order:
 
 Deviations from the mockup, each on purpose:
 
+- Hero type smaller than the mockup's (name capped at 80px instead of 104px,
+  role 54 instead of 72, scrub 36 instead of 46): Stéphane, 2026-11-15.
 - Mosaic shapes: tiles between 4:3 and 2:1 in blocks of eight (Stéphane, on 16
   real renders; ADR-0015 amended). Worst crop 27.5% (Gorgotte).
 - The viewer letterboxes non-16:9 renders (`contain`, ADR-0015), the mockup
