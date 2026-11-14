@@ -1,3 +1,32 @@
+// A row of marks, wrapping. `space-evenly` like 2022, but with a floor on the
+// item width so six tiles do not compress into a line of stamps on a phone.
+//
+// It sits midway between the heading above it and the next one below. Its own
+// heading is --heading-gap away and the next section is --section-gap away, so
+// the row was pinned to the top of its own space and read as belonging to the
+// heading rather than standing between the two. The offset is the difference,
+// which keeps working when either gap is retuned.
+.tech-logos {
+  margin-block-start: calc(var(--section-gap) - var(--heading-gap));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  gap: var(--space-4) var(--space-3);
+  margin: 0;
+  padding: 0;
+}
+
+.tech-logos > li {
+  min-inline-size: var(--tech-logo-size);
+}
+
+// 2022's two sizes: 70px on a phone, 100px above it.
+@media (min-width: 48rem) {
+  .tech-logos {
+    --tech-logo-size: 6.25rem;
+  }
+}
+
 // Shared page rhythm lives in _page.scss; only what is specific to this page
 // is here.
 // The whole card is clickable, but only the title is a link. A wrapping anchor

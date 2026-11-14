@@ -1,6 +1,7 @@
 # Status
 
-Last updated 2026-09-03. `main` at the merge of PR #10.
+Last updated 2026-11-14. `main` at the merge of PR #15; this file describes it
+with `feat/dev-page-reveal` merged.
 
 ## Works today
 
@@ -22,12 +23,24 @@ five-phase entrance behind the Pac-Man loader.
 **Pages** — Developer (list), Gallery (list), Contact, project detail at
 `/developpeur/<slug>`, 404 with the Travolta easter egg.
 
+**Section reveal** — the 2022 scroll-in, on an IntersectionObserver. Content
+already on screen at arrival plays with the page's entrance; the rest waits
+until it is a third into the viewport. One rise, duration and step for every
+reveal; travel zeroed under `prefers-reduced-motion`. Nothing hides without
+script.
+
+**Tool marks** — the Developer page's tools as mark and name: the 2022 PNG,
+else the icon-font glyph, else the tool's initial as a monogram (Angular and
+.NET today). Glyphs, monograms and names in `--text-secondary`: orange
+unboxed text is a tertiary button at rest in spec 06 §10, and these do nothing.
+
 **Media** — 16 renders and 6 project covers in MinIO, served through `/medias`
 (nginx in production, the dev server's proxy locally). Bucket policy is
 read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
-The CV PDF is served from the repository.
+The CV PDF is served from the repository. Locally the renders need
+`pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 158 passing on the web side, 99.8% lines, 93.8% branches, 93.4%
+**Tests** — 175 passing on the web side, 99.8% lines, 93.8% branches, 94.2%
 functions; axe on every page. Every route, the 404, the detail guard, the API
 client, the gallery, contact and the tool chips now have their own specs.
 
@@ -39,16 +52,15 @@ contact submit is unreachable until the form is wired, and three handlers in
 
 Ordered by what hurts most on the day the site goes live.
 
-| Gap                         | Consequence                                                                                                                                                                           |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **No images anywhere**      | The Gallery is a text list. A 3D portfolio with no pictures is not a portfolio. Assets exist in `Portfolio_2022`; see DECISIONS.md.                                                   |
-| **CV is a dead link**       | `/cv-stephane-lieumont.pdf` is linked from the header and Contact. The file is not in `public/`. The most prominent button on the site does nothing.                                  |
-| **No SEO at all**           | No `robots.txt`, no `sitemap.xml`, no meta description, no per-route `<title>`, no Open Graph. The current site is indexed; replacing it with this loses that.                        |
-| **No static prerendering**  | ADR-0008 settled it; `angular.json` has no `outputMode`. The build is a plain SPA, so there is nothing under the loader until Angular boots, and the 404 cannot return a real status. |
-| **Contact form not wired**  | The form renders and goes nowhere. Needs a delivery service (ADR-0007 forbids sending from the browser).                                                                              |
-| **API is a skeleton**       | Only `/health`. No projects, no media, no contact route.                                                                                                                              |
-| **No back office**          | Content lives in `apps/web/src/app/core/static-content.ts`. Every edit is a commit.                                                                                                   |
-| **Specs 04 and 05 missing** | `00-vision.md` references a back-office spec and a content/SEO spec that were never written.                                                                                          |
+| Gap                           | Consequence                                                                                                                                                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **No SEO at all**             | No `robots.txt`, no `sitemap.xml`, no meta description, no per-route `<title>`, no Open Graph. The current site is indexed; replacing it with this loses that.                                                |
+| **No static prerendering**    | ADR-0008 settled it; `angular.json` has no `outputMode`. The build is a plain SPA, so there is nothing under the loader until Angular boots, and the 404 cannot return a real status.                         |
+| **`pnpm infra:up` is broken** | `minio/minio` no longer exists on Docker Hub (nor on quay.io), so the compose file cannot pull. `cgr.dev/chainguard/minio` runs the same binary and works with the seed script; switching to it is undecided. |
+| **Contact form not wired**    | The form renders and goes nowhere. Needs a delivery service (ADR-0007 forbids sending from the browser).                                                                                                      |
+| **API is a skeleton**         | Only `/health`. No projects, no media, no contact route.                                                                                                                                                      |
+| **No back office**            | Content lives in `apps/web/src/app/core/static-content.ts`. Every edit is a commit.                                                                                                                           |
+| **Specs 04 and 05 missing**   | `00-vision.md` references a back-office spec and a content/SEO spec that were never written.                                                                                                                  |
 
 ## Deferred on purpose
 

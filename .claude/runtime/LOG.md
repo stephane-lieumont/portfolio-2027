@@ -6,7 +6,15 @@ Commit messages carry the reasoning; this is the index.
 
 ## 2026-09-03
 
-- **#11 — Media in MinIO.** The sixteen renders the current site shows plus six
+- **#15 — Test coverage of pages, routes and API client.** Three files were
+  never imported by a test, so 100% lines flattered the suite. The detail guard
+  is now the named `projectSlugExists`.
+- **#14 — Mobile drawer and entrance.** The menu recession is clipped to the
+  visible viewport, so scrolled-past content no longer reappears above the
+  header; the home entrance follows the divide.
+- **#13 — Traps.** `.claude/memory/traps.md` and the `verify-visual` skill:
+  measure, do not read.
+- **#12 — Media in MinIO.** The sixteen renders the current site shows plus six
   project covers, uploaded by a seeding script and served through `/medias`.
   Content holds bucket keys, never URLs. Fixed a gallery grid bug where
   `span 2` on a single-column grid invented an implicit 84px column.

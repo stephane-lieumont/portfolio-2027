@@ -3,14 +3,14 @@
 .section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  padding-block: var(--space-6) var(--space-7);
+  gap: var(--section-gap);
+  padding-block: var(--section-gap) var(--space-7);
 }
 
 .section__head {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--heading-gap);
 }
 
 .section__eyebrow {
@@ -24,16 +24,77 @@
 .section__block {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--heading-gap);
 }
 
+// The closing offer, and the face behind it. He is last in the DOM and last on
+// the page on purpose: the offer is read first, and a portrait placed above it
+// would be decoration in front of the message.
 .section__cta {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-3);
+  align-items: center;
+  gap: var(--heading-gap);
   padding-block-start: var(--space-5);
   border-block-start: 1px solid var(--border-subtle);
+}
+
+// One centre axis for the whole close: the line, the button, the portrait and
+// the footer's credit under them. Left-aligning the words while the portrait
+// and the footer are centred gave the page three different axes in its last
+// 300 pixels.
+.section__cta__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--heading-gap);
+  text-align: center;
+}
+
+// Transparent, so it stands on the page instead of sitting in a frame. Capped
+// at its own width — the source is 500px and upscaling a portrait is the one
+// place softness reads as carelessness.
+//
+// `display: block` and a zeroed bottom margin matter here: he has to meet the
+// footer's edge with no gap, and an inline image sits on a text baseline with
+// descender space under it, which shows as a few pixels of page between his
+// feet and the band.
+.section__cta__portrait {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 15.625rem;
+  block-size: auto;
+  align-self: center;
+}
+
+// He meets the footer's edge exactly. The page's own bottom padding is what
+// would otherwise leave a strip of white under his feet, so it goes on the
+// pages that carry a portrait and stays everywhere else.
+.section:has(.section__cta__portrait) {
+  padding-block-end: 0;
+}
+
+// Side by side once there is room, with him on the inline end: the reading
+// order is unchanged, the eye simply meets both at once. The words go back to
+// the start edge here — beside a portrait there is no shared centre to hold,
+// and centred prose in a column half the page wide reads as a poster.
+@media (min-width: 48rem) {
+  .section__cta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+  }
+
+  .section__cta__body {
+    align-items: flex-start;
+    text-align: start;
+  }
+
+  .section__cta__portrait {
+    max-inline-size: 18.75rem;
+    align-self: end;
+  }
 }
 
 // Tools, named and marked. A list, not a row of spans: it is a list.
@@ -43,4 +104,18 @@
   gap: var(--space-2);
   margin: 0;
   padding: 0;
+}
+
+// Spec 06 §5's three steps. The rhythm has to open with the type scale, or a
+// 1920px page keeps a 360px page's spacing between its sections.
+@media (min-width: 48rem) {
+  .section {
+    --section-gap: var(--space-7);
+  }
+}
+
+@media (min-width: 80rem) {
+  .section {
+    --section-gap: var(--space-8);
+  }
 }

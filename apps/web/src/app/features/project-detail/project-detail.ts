@@ -4,11 +4,12 @@ import { technologyOf } from '@portfolio/shared-types/registries';
 
 import { mediaUrl } from '../../core/media.config';
 import { PROJECTS } from '../../core/static-content';
+import { Reveal } from '../../shared/reveal';
 import { TechChip } from '../../shared/tech-chip';
 
 @Component({
   selector: 'app-project-detail',
-  imports: [RouterLink, TechChip],
+  imports: [Reveal, RouterLink, TechChip],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

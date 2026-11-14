@@ -1,6 +1,8 @@
+import { Reveal } from '../../shared/reveal';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 @Component({
+  imports: [Reveal],
   selector: 'app-contact',
   templateUrl: './contact.html',
   styleUrl: './contact.scss',
