@@ -80,11 +80,14 @@
   animation-delay: calc(var(--bubble-lead) + var(--reveal-index, 0) * var(--stagger-bubble));
 }
 
+// No travel on the mark, only the bounce — 2022's keyframes exactly. The mark
+// grows in place; the name beneath it is the part that rises. Giving the mark a
+// rise as well made the two read as one sliding block instead of an object
+// appearing with its caption following.
 @keyframes reveal-bubble {
   0% {
     opacity: 0;
     scale: 0;
-    translate: 0 var(--reveal-rise);
   }
 
   60% {
@@ -99,7 +102,6 @@
   100% {
     opacity: 1;
     scale: 1;
-    translate: 0 0;
   }
 }
 

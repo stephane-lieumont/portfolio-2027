@@ -12,9 +12,9 @@ import type { RegistryEntry } from '@portfolio/shared-types/registries';
  * 2. The **icon font** glyph. It covers TypeScript, Docker and Git, which have
  *    no PNG, so dropping the font would make the dev page emptier rather than
  *    truer to 2022.
- * 3. A **placeholder block** — a block, not an icon of a missing icon, so it
- *    reads as "not yet" instead of pretending to be a mark. Today that is
- *    Angular and .NET, which post-date both the font and the PNGs.
+ * 3. A **monogram** — the tool's initial in the site's own face. Typography standing in for a mark, not a drawn imitation of one,
+ *    so it reads as deliberate. Today that is Angular and .NET, which post-date
+ *    both the font and the PNGs.
  *
  * The label carries the meaning in all three cases, which is why the row stays
  * legible while two tiles are empty. Adding a PNG to `public/logos/` and a line
@@ -23,13 +23,15 @@ import type { RegistryEntry } from '@portfolio/shared-types/registries';
 @Component({
   selector: 'app-tech-logo',
   template: `
-    <span class="tech-logo__tile" [class.tech-logo__tile--empty]="!marked()">
+    <span class="tech-logo__tile">
       @if (entry().logo) {
         <!-- Decorative: the label beside it is the accessible name, so an alt
              here would make a screen reader say the tool twice. -->
         <img class="tech-logo__mark" [src]="entry().logo" alt="" width="100" height="100" />
       } @else if (entry().glyph) {
         <span class="icon tech-logo__glyph" aria-hidden="true">{{ char() }}</span>
+      } @else {
+        <span class="tech-logo__monogram" aria-hidden="true">{{ monogram() }}</span>
       }
     </span>
     <span class="t-label tech-logo__name">{{ entry().label }}</span>
@@ -45,7 +47,7 @@ import type { RegistryEntry } from '@portfolio/shared-types/registries';
 
     /* No plate. The 2022 marks sat directly on the page, and that is what
        makes a row of them read as a shelf of tools rather than a set of
-       buttons. Only the placeholder below draws a box. */
+       buttons. */
     .tech-logo__tile {
       display: grid;
       place-items: center;
@@ -54,12 +56,15 @@ import type { RegistryEntry } from '@portfolio/shared-types/registries';
       color: var(--text-secondary);
     }
 
-    /* Waiting on a mark. This one does need a box: without a plate, a tile
-       with nothing in it is invisible and the row silently loses an item. */
-    .tech-logo__tile--empty {
-      background: var(--surface-inset);
-      border: 1px dashed var(--border-subtle);
-      border-radius: var(--radius-md);
+    /* Neutral ink, like the glyphs and the names. In --text-accent-hover on
+       --accent-wash it was the tertiary button's hover state cell for cell
+       (spec 06 §10), so the two tools with no mark were the only filled shapes
+       in the row, and looked pressable. */
+    .tech-logo__monogram {
+      font-size: calc(var(--tech-logo-size) * 0.44);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1;
     }
 
     /* Nearly the full box, since there is no plate to sit inside any more. */
@@ -76,6 +81,8 @@ import type { RegistryEntry } from '@portfolio/shared-types/registries';
       object-fit: contain;
     }
 
+    /* Not --text-accent: unboxed accent text at this weight is a tertiary
+       button at rest (spec 06 §10), and these names do nothing. */
     .tech-logo__name {
       color: var(--text-secondary);
     }
@@ -85,9 +92,14 @@ import type { RegistryEntry } from '@portfolio/shared-types/registries';
 export class TechLogo {
   readonly entry = input.required<RegistryEntry>();
 
-  protected marked(): boolean {
-    const entry = this.entry();
-    return entry.logo !== null || entry.glyph !== null;
+  /**
+   * The stand-in letter. Taken from the label so it cannot drift from the name
+   * beside it, and kept to two characters so `.NET` reads as `.N` rather than
+   * as a bare full stop.
+   */
+  protected monogram(): string {
+    const label = this.entry().label;
+    return label.startsWith('.') ? label.slice(0, 2) : label.slice(0, 1);
   }
 
   // The registry stores a CSS escape (\e927); the template needs the character.

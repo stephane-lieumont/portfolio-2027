@@ -31,7 +31,7 @@ describe('TechLogo', () => {
     // mark, and it is what Stéphane asked for.
     expect(img?.getAttribute('src')).toBe('/logos/react.png');
     expect(host.querySelector('.tech-logo__glyph')).toBeNull();
-    expect(host.querySelector('.tech-logo__tile--empty')).toBeNull();
+    expect(host.querySelector('.tech-logo__monogram')).toBeNull();
   });
 
   it('is decorative, because the label beside it is the name', () => {
@@ -54,17 +54,24 @@ describe('TechLogo', () => {
 
     expect(host.querySelector('.tech-logo__glyph')).toBeTruthy();
     expect(host.querySelector('.tech-logo__mark')).toBeNull();
-    expect(host.querySelector('.tech-logo__tile--empty')).toBeNull();
+    expect(host.querySelector('.tech-logo__monogram')).toBeNull();
   });
 
-  it('shows a placeholder tile when it does not', () => {
-    // The 2022 font predates Angular and .NET in Stéphane's stack. A block
+  it('stands in with the tool initial when there is neither', () => {
+    // The 2022 font predates Angular and .NET in Stéphane's stack. A letter
     // reads as "not yet"; a hand-drawn stand-in for a logo everyone knows
     // reads as wrong. He is extending the font.
     const host = render('angular');
 
-    expect(host.querySelector('.tech-logo__tile--empty')).toBeTruthy();
     expect(host.querySelector('.tech-logo__glyph')).toBeNull();
+    expect(host.querySelector('.tech-logo__monogram')?.textContent?.trim()).toBe('A');
+  });
+
+  it('keeps the letter after a leading dot, so .NET is not a bare full stop', () => {
+    const monogram = render('dotnet').querySelector('.tech-logo__monogram');
+
+    expect(monogram?.textContent?.trim()).toBe('.N');
+    expect(monogram?.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('names the tool either way, because the label carries the meaning', () => {
@@ -87,7 +94,7 @@ describe('TechLogo', () => {
   it('gives every highlighted tool exactly one of the three states', () => {
     // A guard on the real list. Without a plate, a tile with nothing in it is
     // invisible and the row silently loses an item — so a tool with no mark
-    // must be explicitly empty, never merely blank.
+    // must stand in with its initial, never be merely blank.
     for (const slug of HIGHLIGHTED_TECHNOLOGIES) {
       const host = render(slug);
       const tile = host.querySelector('.tech-logo__tile');
@@ -96,10 +103,10 @@ describe('TechLogo', () => {
       const states = [
         tile!.querySelector('.tech-logo__mark') !== null,
         tile!.querySelector('.tech-logo__glyph') !== null,
-        tile!.classList.contains('tech-logo__tile--empty'),
+        tile!.querySelector('.tech-logo__monogram') !== null,
       ].filter(Boolean);
 
-      expect(states, `${slug}: expected one of png / glyph / empty`).toHaveLength(1);
+      expect(states, `${slug}: expected one of png / glyph / monogram`).toHaveLength(1);
     }
   });
 });
