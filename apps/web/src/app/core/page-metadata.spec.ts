@@ -1,16 +1,15 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { TitleStrategy, provideRouter, withComponentInputBinding } from '@angular/router';
+import { Router, TitleStrategy, provideRouter, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { routes } from '../app.routes';
 import { MEDIA_BASE_URL } from './media.config';
-import { PageMetadata, SITE_TITLE } from './page-metadata';
+import { PageMetadata } from './page-metadata';
 import { PROJECTS } from './static-content';
 
 const PAGES = [
-  '/',
   '/developpeur',
   '/graphisme-3d',
   '/contact',
@@ -53,9 +52,9 @@ describe('page metadata', () => {
     expect(descriptions.has('')).toBe(false);
   });
 
-  it('keeps the site title on the home page', async () => {
+  it('lands the root address on the developer world', async () => {
     await harness.navigateByUrl('/');
-    expect(document.title).toBe(SITE_TITLE);
+    expect(TestBed.inject(Router).url).toBe('/developpeur');
   });
 
   it('names a project page after the project and describes it with its summary', async () => {

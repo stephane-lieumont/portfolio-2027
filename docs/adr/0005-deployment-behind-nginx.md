@@ -58,3 +58,13 @@ Prerendering (ADR-0008) is built: the Angular output is one HTML file per route 
 | `/*` | Angular static files: `try_files $uri $uri/index.html =404;` and `error_page 404 /404/index.html;` |
 
 Everything else in this decision stands: `/api`, `/media` and `/demo` are matched before `/*`, and the rule that no fallback ever applies to them is unchanged. An unknown URL now gets a real 404 status with the site's 404 page, which is what spec 01 asks for. A direct visit to `/404/` answers 200; the page is `noindex`, so that is accepted.
+
+## Note — 2026-11-14: the root redirects
+
+`/` has no page any more: the site opens on the developer world (approved « Bascule » mockup). The static build writes `index.html` as a meta-refresh to `/developpeur`, which works with the rule above and with script disabled. A crawler and a shared link are better served by a real permanent redirect, so nginx should answer it first:
+
+```nginx
+location = / { return 301 /developpeur; }
+```
+
+The meta-refresh file stays as the fallback for any server that does not.

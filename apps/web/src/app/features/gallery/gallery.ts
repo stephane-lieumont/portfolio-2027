@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { softwareOf } from '@portfolio/shared-types/registries';
 
 import { mediaUrl } from '../../core/media.config';
@@ -9,7 +8,7 @@ import { TechChip } from '../../shared/tech-chip';
 
 @Component({
   selector: 'app-gallery',
-  imports: [Reveal, RouterLink, TechChip],
+  imports: [Reveal, TechChip],
   templateUrl: './gallery.html',
   styleUrl: './gallery.scss',
   host: { 'data-theme': 'dark' },

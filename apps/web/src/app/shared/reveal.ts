@@ -47,9 +47,8 @@ function staggerIndex(value: unknown): number {
  * page's own text (spec 07 §4.2).
  *
  * The page is prerendered, so its content is painted before this runs. What
- * is on screen and no longer under the loader has been seen: it settles where
- * it stands and never drops to hidden. Only what is still covered, or below
- * the fold, takes the hidden state.
+ * is on screen has been seen: it settles where it stands and never drops to
+ * hidden. Only what is below the fold takes the hidden state.
  */
 @Directive({
   selector: '[appReveal]',
@@ -93,7 +92,7 @@ export class Reveal {
     // Measured here, before anything is stamped: a hydrated element is the
     // painted one, while a freshly created one has no box yet and reads as off
     // screen, which is right — nobody has seen it.
-    if (!coveredByLoader(document) && this.withinViewport(view)) {
+    if (this.withinViewport(view)) {
       this.shown.set(true);
       this.settled.set(true);
       return;
@@ -135,10 +134,4 @@ export class Reveal {
     observer.observe(this.element);
     inject(DestroyRef).onDestroy(() => observer.disconnect());
   }
-}
-
-/** The inline loader in index.html, still opaque over the page. */
-function coveredByLoader(document: Document): boolean {
-  const boot = document.getElementById('boot');
-  return boot !== null && !boot.classList.contains('boot--done');
 }

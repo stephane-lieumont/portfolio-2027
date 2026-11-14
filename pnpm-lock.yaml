@@ -108,6 +108,9 @@ importers:
       '@portfolio/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
+      lenis:
+        specifier: 1.1.13
+        version: 1.1.13
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
@@ -526,6 +529,10 @@ packages:
   '@csstools/css-tokenizer@4.0.0':
     resolution: {integrity: sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA==}
     engines: {node: '>=20.19.0'}
+
+  '@darkroom.engineering/tempus@0.0.46':
+    resolution: {integrity: sha512-s5vav3KMHYezvUCl4ee5epg0oimF6M8C9gAaKxFnFaTvX2q3ywFDryIv6XLd0mRFUt3S1uHDJqKaiEcs2ZVSvw==}
+    deprecated: 'The ''@darkroom.engineering/tempus'' package has been renamed to ''tempus''. Please update your dependencies: npm install tempus and visit the documentation: https://www.npmjs.com/package/tempus'
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
@@ -2905,6 +2912,17 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
+  lenis@1.1.13:
+    resolution: {integrity: sha512-iny+vWwUHcZGbJz+p2I75H1muLBRZqSG7t04jnhA+CWOQDFL1vt9bsZDwPPtYEmYVVvqAdo5MbXVFzNOlbgUkQ==}
+    peerDependencies:
+      react: '>=17.0.0'
+      react-dom: '>=17.0.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
@@ -4228,6 +4246,8 @@ snapshots:
       css-tree: 3.2.1
 
   '@csstools/css-tokenizer@4.0.0': {}
+
+  '@darkroom.engineering/tempus@0.0.46': {}
 
   '@drizzle-team/brocli@0.10.2': {}
 
@@ -6212,6 +6232,10 @@ snapshots:
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
+
+  lenis@1.1.13:
+    dependencies:
+      '@darkroom.engineering/tempus': 0.0.46
 
   levn@0.4.1:
     dependencies:

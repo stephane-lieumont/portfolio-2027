@@ -1,334 +1,119 @@
-// The receding surface. Nothing inside it may be position:fixed — that is the
-// containing-block trap the structure exists to avoid. The sticky header is
-// fine: sticky resolves against the scroll container, not an ancestor transform.
-.shell {
-  min-block-size: 100dvh;
-  display: flex;
-  flex-direction: column;
-  background: var(--surface-page);
-  transform-origin: 50% var(--menu-origin-y, 50%);
-  transition: scale var(--motion-menu-dismiss) var(--ease-menu);
-}
+// The header of the approved « Bascule » mockup, value for value, written
+// mobile-first (ADR-0011). Two deliberate departures, both for accessibility:
+// every link is at least 44px tall (ADR-0010; the mockup's are 33–35px), and
+// the role line is in the world's ink rather than its muted tone, which fell to
+// 2.35:1 under the glass over a white image.
+//
+// Rules keyed on the document's world (the switch's thumb and the ink on it)
+// live in src/styles/_world.scss: from here encapsulation would scope them away.
 
-.site-header {
+.top {
   position: sticky;
-  inset-block-start: 0;
+  inset-block-start: env(safe-area-inset-top, 0px);
   z-index: 10;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px))
+    max(16px, env(safe-area-inset-right, 0px));
+  color: var(--world-ink);
+  border-block-end: 1px solid color-mix(in srgb, var(--world-ink) 9%, transparent);
+}
+
+.top__inner {
+  display: flex;
+  // The one narrow-width addition. Below about 410px the mockup's right-hand
+  // group leaves the role narrower than its longest word (0px at 320px), so
+  // the text spills out of its box. Here the group drops to a second row
+  // instead, still aligned right.
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-inline-size: 1320px;
+  margin-inline: auto;
+  padding-block: 14px;
+}
+
+.top__who {
+  flex: 1 1 3.5rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.top__end {
+  margin-inline-start: auto;
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  min-block-size: var(--header-height);
-  padding-inline: var(--page-inline);
-  padding-block: var(--space-2);
-  // Opaque by default: on a page with ordinary content beneath, a transparent
-  // bar is how the current site makes its own title unreadable.
-  background: var(--surface-page);
-  border-block-end: 1px solid transparent;
-  // Asymmetric on purpose. Gaining the background is instant: the sentinel
-  // fires at one pixel of scroll, but a 180ms fade means the page slides under
-  // a still-translucent bar for those 180ms, and on a phone with momentum that
-  // reads as the image passing behind the header. Losing it keeps the fade —
-  // arriving back at the top is a rest, not a correction.
-  transition:
-    background-color 0s,
-    border-color 0s;
+  gap: 8px;
 }
 
-.site-header:not(.site-header--settled) {
-  transition:
-    background-color var(--motion-state) var(--ease-state),
-    border-color var(--motion-state) var(--ease-state);
-}
-
-.site-header--settled {
-  border-block-end-color: var(--border-subtle);
-}
-
-// On the home page the split runs to the top edge and the header floats on it.
-// This only works because the navigation sits entirely to the right of the
-// divide: the brand is over the light half and the links over the dark one, so
-// each has one theme under it and neither crosses the boundary. Straddling it
-// with a single ink is what would fail — one side always loses.
-.site-header--overlay:not(.site-header--settled) {
-  background: transparent;
-  border-block-end-color: transparent;
-}
-
-.site-header--overlay:not(.site-header--settled) .nav-desktop {
-  color-scheme: dark;
-}
-
-// Over the split the links sit on an image, not on a flat surface. Secondary
-// ink clears AA there on the worst pixel (5.31) but reads faint at small size
-// against picture detail — discreet is a size and a weight, not a low contrast.
-// Primary ink keeps the restraint and takes the worst case to 7.52.
-.site-header--overlay:not(.site-header--settled) .nav-link {
-  color: var(--text-primary);
-}
-
-// The active item keeps carrying the accent, but the accent alone measures 4.25
-// over the texture. On the overlay it steps to the ink that survives one.
-.site-header--overlay:not(.site-header--settled) .nav-link[aria-current='page'] {
-  color: var(--text-accent-on-texture);
-}
-
-.scroll-sentinel {
-  block-size: 1px;
-  margin-block-end: -1px;
-}
-
-.brand {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.top__link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding: 10px 6px;
+  border-radius: 999px;
+  font: 500 12px/1 var(--font-sans);
+  color: inherit;
   text-decoration: none;
-  color: var(--text-primary);
-  // The brand stops short of where the divide crosses the header, so it stays
-  // wholly on the light half. Everything else is pushed to the far right.
-  margin-inline-end: auto;
-  max-inline-size: calc(var(--split-top) - var(--split-lean));
 }
 
-.brand__role {
-  color: var(--text-secondary);
+.top__link[aria-current] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
-.nav-desktop {
-  display: none;
+@media (hover: hover) and (pointer: fine) {
+  .top__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
 }
 
-.nav-desktop ul {
+.switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  border: 1px solid var(--world-rule);
+  border-radius: 999px;
+  isolation: isolate;
+}
+
+.switch__link {
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-}
-
-// The burger reserves its space in the header but is rendered outside .shell,
-// so it does not ride the recession. Inside, its top-right corner would travel
-// 57.6px horizontally during the very gesture that opened it.
-.burger-slot {
-  inline-size: 3rem;
-  block-size: 3rem;
-  flex: none;
-}
-
-.site-footer {
-  margin-block-start: auto;
-  padding-inline: var(--page-inline);
-  padding-block: var(--space-5);
-  border-block-start: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  // One line of credit, centred. Left-aligned it reads as the start of a
-  // column that never comes — the pages above it are a measure-wide column and
-  // the footer is not part of it.
-  text-align: center;
-  // A ground of its own, so the page ends rather than simply stopping. The
-  // inset surface is 1.22:1 from the page — the same separation Stéphane
-  // approved for the render letterbox as enough to read as a distinct frame,
-  // and the only one of the three light grounds that carries a band at all
-  // (raised is 1.04, sunken 1.09).
-  background: var(--surface-inset);
-}
-
-.burger {
-  position: fixed;
-  inset-block-start: var(--space-2);
-  inset-inline-end: var(--page-inline);
-  z-index: 30;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--burger-gap);
-  inline-size: var(--control-target);
-  block-size: var(--control-target);
-  padding: 0;
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: transparent;
-  cursor: pointer;
-  transition: background-color var(--motion-exit-state) var(--ease-exit);
-}
-
-// The painted control, deliberately smaller than the target that owns it.
-// "Le bouton close trop gros" was not the glyph — the cross is already smaller
-// than the burger — it was this: a 48px filled pastille, 18% of the panel's
-// width and by area the largest painted object in the drawer. It is now 32px,
-// which is 56% less area for the same affordance. The button's own box stays at
-// 48px, so 2.5.8 is met by the target and not by what the eye reads.
-//
-// The disc measures 1.14:1 against the panel and is decorative: the control's
-// boundary is the bars at 16.68:1, and its open state is the glyph morph plus
-// `aria-expanded`. That was already true at 48px.
-.burger::before {
-  content: '';
-  position: absolute;
-  inline-size: var(--burger-disc);
-  block-size: var(--burger-disc);
-  border-radius: var(--radius-pill);
-  background: transparent;
-  z-index: -1;
-  transition: background-color var(--motion-exit-state) var(--ease-exit);
-}
-
-.burger__bar {
-  inline-size: var(--burger-arm);
-  // Thinner because the same 2px reads chunkier rotated than flat: 9.1% of a
-  // 22px arm closed, 12.8% of a 15.6px box open. 1.5px brings the open ratio to
-  // 10.6% and the two states look like one control.
-  block-size: var(--burger-stroke);
-  border-radius: var(--burger-stroke);
-  // Never #f2a154: that is 2.10:1 on white, a failure for a control's own
-  // boundary. The bars keep their colour and the pastille carries the state.
-  background: var(--text-primary);
-  transform-origin: center;
-  transition:
-    transform var(--motion-exit-state) var(--ease-exit),
-    opacity var(--motion-press-dur) var(--ease-exit);
-}
-
-.menu-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 15;
-  border: 0;
-  padding: 0;
-  background: var(--scrim);
-  opacity: 0;
-  visibility: hidden;
-  cursor: pointer;
-  transition:
-    opacity var(--motion-menu-dismiss) var(--ease-menu),
-    visibility 0s linear var(--motion-menu-dismiss);
-}
-
-.offcanvas {
-  position: fixed;
-  inset-block: 0;
-  inset-inline-end: 0;
-  z-index: 20;
-  // 75vw, not 85: at 85 a 360px screen keeps only 54px of shell and the
-  // recession has nowhere to read. At 75 it keeps 90px and the edge moves
-  // 14.4px — an order of magnitude over the perceptible threshold.
-  inline-size: min(20rem, 75vw);
-  // Off screen before any script: the prerendered page carries the panel, and
-  // without this it would sit open and empty until Angular registered it.
-  translate: 100% 0;
-  padding-inline: var(--page-inline);
-  padding-block: calc(var(--header-height) + var(--space-4)) var(--space-5);
-  // No background here: the SVG edge below paints the panel, so its left side
-  // can deform. A background on the element itself would sit behind the curve
-  // as a straight rectangle and give the bulge a hard edge to cut against.
-  filter: drop-shadow(0 0 24px light-dark(hsl(28 25% 18% / 0.18), hsl(0 0% 0% / 0.5)));
-  overflow-x: clip;
-  overflow-y: auto;
-}
-
-.offcanvas__edge {
-  position: absolute;
-  inset: 0;
-  inline-size: 100%;
-  block-size: 100%;
-  // The bulge reaches ~25% of the panel's width to the left of it, so the SVG
-  // has to be allowed to paint outside its own box.
-  overflow: visible;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.offcanvas__edge path {
-  fill: var(--surface-raised);
-}
-
-.offcanvas > ul {
-  position: relative;
-}
-
-.offcanvas ul {
-  display: flex;
-  flex-direction: column;
-  // 24px between two 25px lines. At 16px the five items read as one slab.
-  gap: var(--space-4);
-  margin: 0;
-  padding: 0;
-}
-
-.offcanvas__item {
-  opacity: 0;
-  // Sweep and fade together. The 2022 items slid their own full width — 320px
-  // — while the panel carried them the same distance again; that doubled
-  // travel overflowed the panel early in the gesture. --motion-slide keeps the
-  // direction and the sweep without the escape, and the opacity is what makes
-  // the arrival read as one wave.
-  translate: var(--motion-slide) 0;
-  transition:
-    opacity var(--motion-menu-items) var(--ease-menu),
-    translate var(--motion-menu-items) var(--ease-menu);
-}
-
-// Secondary ink at rest — the same ink `.nav-link` uses, so the drawer and the
-// desktop navigation finally speak in one register. It was primary: #1b1a18 on
-// the panel's #fbfaf9 measures 16.68:1 where 3.0 applies at this size and
-// weight, five and a half times the threshold. Secondary is 6.36:1, still 1.4x
-// the strict 4.5 bar with no reliance on the large-text exemption.
-//
-// _components.scss already says this out loud for the desktop nav: "the
-// navigation is a tool, not a headline". The drawer was the same navigation
-// using the strongest ink and a heading class.
-.offcanvas__link {
-  position: relative;
-  display: block;
-  padding-block: var(--space-2);
-  color: var(--text-secondary);
+  min-block-size: 2.75rem;
+  padding: 10px;
+  border-radius: 999px;
+  font: 500 12px/1 var(--font-sans);
+  color: inherit;
   text-decoration: none;
-  transition: color var(--motion-state) var(--ease-state);
+  white-space: nowrap;
 }
 
-// Once rest is secondary, a state that raises contrast is no longer optional.
-// The drawer had neither hover nor focus ink. Hover is gated as everything else
-// here is; focus is not, because a keyboard user on a narrow window has none.
-@media (hover: hover) and (pointer: fine) {
-  .offcanvas__link:hover {
-    color: var(--text-primary);
+.switch__link:focus-visible {
+  outline-color: var(--world-ink);
+  outline-offset: -1px;
+}
+
+@media (min-width: 520px) {
+  .top__link {
+    padding: 11px 12px;
+    font-size: 13px;
+  }
+
+  .switch__link {
+    padding: 10px 14px;
+    font-size: 13px;
   }
 }
 
-.offcanvas__link:focus-visible {
-  color: var(--text-primary);
-}
-
-// The accent stays the ink for the current page — Stéphane's call, and lowering
-// the siblings is what makes it work. The inversion it used to create is gone
-// by arithmetic rather than by repainting this rule: the accent measures 4.85:1
-// on the panel against siblings that were 16.68:1 and are now 6.36:1. It reads
-// as the marked item instead of the disabled one, and weight and the rule below
-// carry the state for anyone who cannot separate the two hues.
-.offcanvas__link[aria-current='page'] {
-  color: var(--text-accent);
-  font-weight: 600;
-}
-
-.offcanvas__link[aria-current='page']::before {
-  content: '';
-  position: absolute;
-  inset-inline-start: calc(-1 * var(--space-3));
-  inset-block: var(--space-2);
-  inline-size: var(--rule-marker);
-  border-radius: var(--rule-marker);
-  background: var(--text-accent);
-}
-
-@media (min-width: 48rem) {
-  .nav-desktop {
-    display: block;
-  }
-
-  // No burger while the labels fit. A collapsed menu on a wide screen is a
-  // 2017 choice with nothing behind it.
-  .burger,
-  .burger-slot {
-    display: none;
+@media (min-width: 720px) {
+  .switch__link {
+    padding: 11px 20px;
+    font-size: 14px;
   }
 }

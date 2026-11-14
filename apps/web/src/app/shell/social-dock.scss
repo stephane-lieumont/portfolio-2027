@@ -1,0 +1,56 @@
+.dock {
+  position: fixed;
+  inset-inline-end: max(var(--space-3), env(safe-area-inset-right, 0px));
+  inset-block-end: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+  padding: var(--space-1);
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--world-ink) 14%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--world-ink) 10%, transparent),
+    0 12px 32px rgb(0 0 0 / 0.22);
+}
+
+.dock__list {
+  display: flex;
+  gap: 2px;
+}
+
+// 44px: ADR-0010's minimum target, with nothing to spare in a pill this tight.
+.dock__link {
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--radius-pill);
+  color: var(--world-ink);
+  transition:
+    background-color var(--motion-state) var(--ease-state),
+    color var(--motion-state) var(--ease-state);
+}
+
+.dock__link:focus-visible {
+  outline: 2px solid var(--world-ink);
+  outline-offset: 2px;
+}
+
+.dock__icon {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  fill: currentColor;
+}
+
+.dock__icon--stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dock__link:hover {
+    background: var(--world-ink);
+    color: var(--world-ground);
+  }
+}

@@ -1,0 +1,117 @@
+// Route transitions, keyed on `data-vt`, which RouteTransitions stamps on
+// <html> for the length of each transition. Pseudo-elements of the document
+// can only be styled from here (traps.md).
+//
+// Selectors are `:root[data-vt]::view-transition-*` with no space: the
+// pseudo-elements hang off the root itself, not off a descendant of it.
+
+// Spec 07 §9.2: the default, a crossfade. 125ms out, 255ms in, overlapping.
+::view-transition-old(root) {
+  animation: vt-out var(--motion-exit-state) var(--ease-exit) both;
+}
+
+::view-transition-new(root) {
+  animation: vt-in var(--motion-page) var(--ease-enter) both;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--motion-rise-tight);
+  }
+}
+
+// ADR-0014. A diagonal band at the home split's angle covers the old page,
+// then the new page is shown where the band stood. The band is not an element:
+// it is the transition's own ground, revealed as the old snapshot is clipped
+// away behind its leading edge. Its colour is read after the update, so it is
+// the target world's ground for a sweep and the world's ink for the wipe.
+//
+// The polygons are the mockup's, rewritten as the region of the old page still
+// uncovered. Percentages resolve against the snapshot, which is the viewport.
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-vt^='sweep']::view-transition {
+    background: var(--world-ground);
+  }
+
+  :root[data-vt='wipe']::view-transition {
+    background: var(--world-ink);
+  }
+
+  // Into the 3D world, and into or out of contact: the band enters from the
+  // right and travels left.
+  :root:is([data-vt='sweep-cgi'], [data-vt='wipe'])::view-transition-old(root) {
+    animation: vt-cover-leftward var(--motion-sweep) var(--ease-sweep) both;
+  }
+
+  // Back to the developer world: from the left, travelling right.
+  :root[data-vt='sweep-dev']::view-transition-old(root) {
+    animation: vt-cover-rightward var(--motion-sweep) var(--ease-sweep) both;
+  }
+
+  :root[data-vt='wipe']::view-transition-old(root) {
+    animation-duration: var(--motion-wipe);
+  }
+
+  // A sweep's band is the new world's own ground, so the page simply appears
+  // on it, its content fading in over a page's duration.
+  :root[data-vt^='sweep']::view-transition-new(root) {
+    animation: vt-appear var(--motion-page) var(--ease-enter) var(--motion-sweep) both;
+  }
+
+  // The wipe's band is ink, so it leaves the way it came and uncovers the page.
+  :root[data-vt='wipe']::view-transition-new(root) {
+    animation: vt-uncover-leftward var(--motion-wipe) var(--ease-sweep) var(--motion-wipe) both;
+  }
+}
+
+@keyframes vt-cover-leftward {
+  from {
+    clip-path: polygon(-100% 0, 140% 0, 120% 100%, -100% 100%);
+  }
+  to {
+    clip-path: polygon(-100% 0, -20% 0, -40% 100%, -100% 100%);
+  }
+}
+
+@keyframes vt-cover-rightward {
+  from {
+    clip-path: polygon(-40% 0, 200% 0, 200% 100%, -20% 100%);
+  }
+  to {
+    clip-path: polygon(140% 0, 200% 0, 200% 100%, 120% 100%);
+  }
+}
+
+@keyframes vt-uncover-leftward {
+  from {
+    clip-path: polygon(180% 0, 300% 0, 300% 100%, 180% 100%);
+  }
+  to {
+    clip-path: polygon(-40% 0, 300% 0, 300% 100%, -60% 100%);
+  }
+}
+
+@keyframes vt-appear {
+  from {
+    opacity: 0;
+  }
+}
+
+// Reduced motion: no band, a short crossfade. The new page waits for the old
+// one to be gone, so the jump to the top happens while nothing is shown.
+@media (prefers-reduced-motion: reduce) {
+  :root:is([data-vt^='sweep'], [data-vt='wipe'])::view-transition-old(root) {
+    animation: vt-out var(--motion-exit-state) var(--ease-exit) both;
+  }
+
+  :root:is([data-vt^='sweep'], [data-vt='wipe'])::view-transition-new(root) {
+    animation: vt-appear var(--motion-state) var(--ease-state) var(--motion-exit-state) both;
+  }
+}

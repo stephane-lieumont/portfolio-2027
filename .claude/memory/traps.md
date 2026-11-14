@@ -144,6 +144,23 @@ Zod import. Schemas live next to the entities that use them.
 
 ---
 
+## The old snapshot is captured after `onViewTransitionCreated`
+
+**Symptom.** Not shipped, caught by measurement: a jump to the top made in
+the router's `onViewTransitionCreated` would have shown the _old_ page already
+scrolled to the top under the sweep.
+
+**Cause.** `startViewTransition()` captures the old state at the next
+rendering opportunity, not synchronously; the router calls
+`onViewTransitionCreated` right after it, before the capture. Spec 07 §9.4
+states the opposite.
+
+**Fix.** Jump in `transition.updateCallbackDone.then(...)`: the old page is a
+snapshot by then and the new one is not shown yet. Measured: scrollY 700 at
+the update's start, 0 at `updateCallbackDone`, before `ready`.
+
+---
+
 ## Method
 
 - **Measure, do not read.** Every bug above survived a careful reading of the

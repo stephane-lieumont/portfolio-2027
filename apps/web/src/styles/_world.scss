@@ -1,0 +1,159 @@
+// The two worlds of the « Bascule » design (ADR-0014). The active world is
+// stamped on <html> as `data-world` by ActiveWorld; every rule keyed on it
+// lives here, because a component stylesheet would scope it away (traps.md).
+//
+// Components read the --world-* tokens and never the per-world ones.
+
+:root {
+  --world-dev-ground: var(--color-neutral-950);
+  --world-dev-ink: var(--color-sand-100);
+  --world-dev-muted: var(--color-neutral-450);
+  --world-cgi-ground: var(--color-orange-500);
+  --world-cgi-ink: var(--color-neutral-950);
+  --world-cgi-muted: var(--color-rust-900);
+
+  // Defaults, should no world be stamped: the page's own tokens.
+  --world-ground: var(--surface-page);
+  --world-ink: var(--text-primary);
+  --world-muted: var(--text-secondary);
+  --world-rule: color-mix(in srgb, var(--world-ink) 18%, transparent);
+
+  // The cap on the motes' opacity: canvas alpha never exceeds 1, so no overlap
+  // of motes can pass it.
+  --motes-max: 0;
+
+  // What the fixed social dock covers at the bottom of the viewport: its 44px
+  // targets, its padding and border, and the gap under it. Page ends pad by it.
+  --dock-clearance: calc(2.75rem + 2 * var(--space-1) + 2px + 2 * var(--space-3));
+}
+
+// The developer world is dark. The pages written before the worlds read the
+// semantic tokens, so they follow the scheme; their ground becomes the world's,
+// which only raises every dark-scheme ratio (the old ground was neutral 850).
+:root[data-world='dev'] {
+  color-scheme: dark;
+  --surface-page: light-dark(var(--color-neutral-0), var(--world-dev-ground));
+  --world-ground: var(--world-dev-ground);
+  --world-ink: var(--world-dev-ink);
+  --world-muted: var(--world-dev-muted);
+  --motes-max: 0.28;
+}
+
+:root[data-world='cgi'] {
+  --world-ground: var(--world-cgi-ground);
+  --world-ink: var(--world-cgi-ink);
+  --world-muted: var(--world-cgi-muted);
+  --motes-max: 0.5;
+}
+
+// Interim, until the world pages land: the gallery and contact pages were
+// designed on light or dark grounds, and secondary ink on the orange ground
+// measures 3.3:1. They keep a page surface under them in the 3D world.
+:root[data-world='cgi'] main {
+  background: var(--surface-page);
+}
+
+// Glass is kept to what floats over moving content. 72% of the ground keeps
+// the ink legible whatever passes beneath; blur alone guarantees nothing.
+.glass {
+  background: color-mix(in srgb, var(--world-ground) 72%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--world-ground);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: var(--world-ground);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+// The switch's thumb. No colour transition anywhere on the switch: the world
+// swaps under the cover in one frame, and anything easing its colour after
+// that lags behind as a band of the old world (measured on the mockup).
+.switch::before {
+  content: '';
+  position: absolute;
+  inset-block: 4px;
+  inset-inline-start: 4px;
+  inline-size: calc(50% - 4px);
+  border-radius: var(--radius-pill);
+  background: var(--world-ink);
+  z-index: -1;
+  transition: translate var(--motion-thumb) var(--ease-thumb);
+}
+
+:root[data-world='cgi'] .switch::before {
+  translate: 100% 0;
+}
+
+// During a sweep the new page is hidden until the band has covered the old
+// one, so the thumb waits for it instead of sliding where nobody can see.
+:root[data-vt^='sweep'] .switch::before {
+  transition-delay: var(--motion-sweep);
+}
+
+:root[data-world='dev'] .switch__link--dev,
+:root[data-world='cgi'] .switch__link--cgi {
+  color: var(--world-ground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .switch::before {
+    transition: none;
+  }
+}
+
+// The focus ring would be drawn in the ink the thumb is painted in.
+:root[data-world='dev'] .switch__link--dev:focus-visible,
+:root[data-world='cgi'] .switch__link--cgi:focus-visible {
+  outline-color: var(--world-ground);
+  outline-offset: -4px;
+}
+
+.motes {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: -1;
+  inline-size: 100%;
+  block-size: 100lvh;
+  pointer-events: none;
+  opacity: var(--motes-max);
+}
+
+@media print, (forced-colors: active) {
+  .motes {
+    display: none;
+  }
+}
+
+// The fixed dock must never hide what has focus (WCAG 2.2 SC 2.4.11).
+html {
+  scroll-padding-block-end: var(--dock-clearance);
+}
+
+// Required by Lenis (ADR-0013).
+html.lenis,
+html.lenis body {
+  block-size: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
