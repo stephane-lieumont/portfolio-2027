@@ -46,6 +46,10 @@ The specialties displayed in 2022 (Vue.js, React.js, Flutter, Webpack, Sass, Nod
 
 On Case Tes Potes he was **co-founder and lead developer**: defining the technical strategy, user stories, roadmap, XD/Figma mockups, and leading a team of two developers. It is the project carrying the most responsibility — put it forward.
 
+## Distinctions
+
+- **Escart Wild — TDT3D award, 2015** (Stéphane, 2026-11-15: « c'est un award en 2015 »). The site says « primé par TDT3D en 2015 » / « TDT3D award, 2015 ».
+
 ## Online presence
 
 - GitHub: `stephane-lieumont`

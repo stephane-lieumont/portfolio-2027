@@ -91,8 +91,8 @@ export const PROJECTS: readonly ProjectRecord[] = [
     logoPlate: 'dark',
     title: { fr: 'Web-Atrio', en: 'Web-Atrio' },
     summary: {
-      fr: 'La refonte complète du site vitrine de Web-Atrio, en 2024. J’ai conçu le nouveau design puis je l’ai développé en React et TypeScript.',
-      en: 'A complete redesign of the Web-Atrio company website, in 2024. I designed the new look, then developed it in React and TypeScript.',
+      fr: 'La refonte complète du site vitrine de Web-Atrio. J’ai conçu le nouveau design puis je l’ai développé en React et TypeScript.',
+      en: 'A complete redesign of the Web-Atrio company website. I designed the new look, then developed it in React and TypeScript.',
     },
     context: {
       fr: 'La refonte complète du site de Web-Atrio, design et développement, en React.',
@@ -182,7 +182,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
     title: { fr: 'Linxea', en: 'Linxea' },
     summary: {
       fr: 'La refonte du parcours d’adhésion en ligne, en React et TypeScript. Référent technique de la squad Web-Atrio, j’ai aussi automatisé le déploiement en CI/CD.',
-      en: 'I rebuilt the online sign-up journey in React and TypeScript. As the Web-Atrio squad’s technical go-to, I also automated deployment with CI/CD.',
+      en: 'I rebuilt the online sign-up journey in React and TypeScript. As the Web-Atrio squad’s technical lead, I also automated deployment with CI/CD.',
     },
     context: {
       fr: 'La refonte du parcours d’adhésion en ligne, avec un déploiement automatique en CI/CD.',
@@ -195,7 +195,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
       },
       {
         fr: 'Être le référent technique de la squad.',
-        en: 'Acting as the squad’s technical go-to.',
+        en: 'Acting as the squad’s technical lead.',
       },
       {
         fr: 'Automatiser le déploiement en CI/CD.',
@@ -220,7 +220,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
     releasedAt: '2024-06-01',
     role: {
       fr: 'Référent technique de la squad — React',
-      en: 'The squad’s technical go-to — React',
+      en: 'The squad’s technical lead — React',
     },
   },
   {
@@ -320,7 +320,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
         en: 'Cross-platform development in Flutter, shipped on Android and iOS.',
       },
       {
-        fr: 'Une web app ouverte par lien d’invitation, pour que les proches complètent le profil sans installer l’application.',
+        fr: 'Une application web ouverte par lien d’invitation, pour que les proches complètent le profil sans installer l’application.',
         en: 'A web app opened from an invitation link, so friends can fill in the profile without installing the app.',
       },
     ],
@@ -329,7 +329,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
     startedAt: '2020-01-01',
     releasedAt: '2022-08-30',
     role: {
-      fr: 'Associé, co-fondateur et Lead Developer Frontend',
+      fr: 'Associé, cofondateur et lead développeur front-end',
       en: 'Partner, co-founder and lead front-end developer',
     },
   },

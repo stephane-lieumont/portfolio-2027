@@ -124,7 +124,7 @@ export const STACK: readonly StackEntryRecord[] = [
     tool: toolId('dotnet'),
     points: [
       {
-        strongLine: { fr: 'Référent technique.', en: 'The technical go-to.' },
+        strongLine: { fr: 'Référent technique.', en: 'The technical lead.' },
         secondLine: {
           fr: 'J’accompagne des développeurs backend .NET et j’arbitre les choix qui touchent le front comme le back.',
           en: 'I support .NET back-end developers and make the calls that affect both front end and back end.',
