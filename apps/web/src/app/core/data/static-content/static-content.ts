@@ -699,7 +699,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     image: {
       key: 'cgi/caricature.jpg',
       averageColor: '#a1a6ad',
-      alt: { fr: 'Caricature 3D de Stéphane Lieumont', en: '3D caricature of Stéphane Lieumont' },
+      alt: { fr: 'Autoportrait en caricature 3D', en: 'Self-portrait as a 3D caricature' },
       width: 1280,
       height: 720,
     },

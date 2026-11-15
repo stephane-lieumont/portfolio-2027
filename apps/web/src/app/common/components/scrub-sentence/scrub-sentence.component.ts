@@ -56,7 +56,7 @@ export function scrubLevels(
 
 /**
  * The large sentence coloured word by word on scroll (spec 07 §15). A word not
- * yet reached is drawn at 55% of the ink mixed into the ground, so the whole
+ * yet reached is drawn at --scrub-unlit of the ink mixed into the ground, so the whole
  * sentence reads at rest and with no script; scrolling only takes it to full ink.
  * The level is written straight onto each word's style: a scroll-linked value
  * has no business going through change detection.
@@ -81,7 +81,7 @@ export function scrubLevels(
     span {
       color: color-mix(
         in srgb,
-        var(--world-ink) calc(var(--lit, 0) * 45% + 55%),
+        var(--world-ink) calc(var(--lit, 0) * (100% - var(--scrub-unlit)) + var(--scrub-unlit)),
         var(--world-ground)
       );
     }

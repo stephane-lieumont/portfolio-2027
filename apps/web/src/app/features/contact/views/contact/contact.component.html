@@ -3,7 +3,11 @@
        then the socials. From 48rem the portrait moves to the left column. -->
   <header class="contact__head rise" style="--i: 0">
     <p class="mono" i18n="@@contact.eyebrow">Contact</p>
-    <h1 class="contact__title" id="contact-title">{{ page.title | inLocale }}</h1>
+    <h1 class="contact__title" id="contact-title">
+      @for (part of title; track $index) {
+        <span [attr.lang]="part.lang">{{ part.text }}</span>
+      }
+    </h1>
     <p class="contact__lede">{{ page.lede | inLocale }}</p>
   </header>
 

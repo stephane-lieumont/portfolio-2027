@@ -3,7 +3,9 @@ import {
   Component,
   ElementRef,
   afterNextRender,
+  computed,
   inject,
+  signal,
   viewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -44,11 +46,28 @@ import { ButtonComponent } from '@shared/components/kit-ui/button/button.compone
           poster="/images/travolta-confused.webp"
           aria-label="John Travolta, perdu, regarde autour de lui."
           i18n-aria-label="@@notFound.clip"
+          (play)="playing.set(true)"
+          (pause)="playing.set(false)"
         >
           <!-- HEVC first: Safari reads its alpha, and only Safari claims QuickTime. -->
           <source src="/images/travolta-confused.mov" type='video/quicktime; codecs="hvc1"' />
           <source src="/images/travolta-confused.webm" type="video/webm" />
         </video>
+        <!-- WCAG 2.2.2: the loop outlasts five seconds. The name says what a
+             press does, so it carries no aria-pressed as well: a toggle whose
+             name changes with its state reads as a double negative. -->
+        <button
+          class="not-found__toggle"
+          type="button"
+          [attr.aria-label]="toggleLabel()"
+          (click)="toggle()"
+        >
+          @if (playing()) {
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" /></svg>
+          } @else {
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" /></svg>
+          }
+        </button>
       </figure>
     </article>
   `,
@@ -104,8 +123,41 @@ import { ButtonComponent } from '@shared/components/kit-ui/button/button.compone
     }
 
     .not-found__clip {
+      position: relative;
       justify-self: center;
       margin: 0;
+    }
+
+    // At the clip's top left: Travolta stands on the page's bottom edge, and
+    // the dock, fixed at the bottom right, never reaches this side of the clip.
+    .not-found__toggle {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      display: grid;
+      place-items: center;
+      inline-size: 44px;
+      block-size: 44px;
+      padding: 0;
+      border: 1px solid var(--world-rule);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--world-ground) 72%, transparent);
+      color: var(--world-ink);
+      cursor: pointer;
+    }
+
+    .not-found__toggle:focus-visible {
+      outline: 2px solid var(--world-ink);
+      outline-offset: 2px;
+    }
+
+    .not-found__toggle svg {
+      inline-size: 18px;
+      block-size: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+      stroke-linejoin: round;
     }
 
     .not-found__clip video {
@@ -131,7 +183,19 @@ import { ButtonComponent } from '@shared/components/kit-ui/button/button.compone
 })
 export class NotFoundComponent {
   protected readonly back = NAV.dev.path;
+  protected readonly playing = signal(false);
+  protected readonly toggleLabel = computed(() =>
+    this.playing()
+      ? $localize`:@@notFound.pause:Mettre en pause`
+      : $localize`:@@notFound.play:Lire l’animation`,
+  );
   private readonly clip = viewChild.required<ElementRef<HTMLVideoElement>>('clip');
+
+  protected toggle(): void {
+    const clip = this.clip().nativeElement;
+    if (clip.paused) void clip.play()?.catch(() => undefined);
+    else clip.pause();
+  }
 
   constructor() {
     const motion = inject(ReducedMotionService);

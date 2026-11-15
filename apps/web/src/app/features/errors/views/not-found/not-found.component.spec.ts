@@ -18,6 +18,11 @@ beforeEach(() => {
     this.dispatchEvent(new Event('play'));
     return Promise.resolve();
   });
+  vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(function (
+    this: HTMLMediaElement,
+  ) {
+    this.dispatchEvent(new Event('pause'));
+  });
 });
 
 afterEach(() => vi.restoreAllMocks());
@@ -59,6 +64,39 @@ describe('NotFound', () => {
     await render(true);
 
     expect(play).not.toHaveBeenCalled();
+  });
+
+  it('offers to pause the looping clip, and to play it again', async () => {
+    const host = await render();
+    await Promise.resolve();
+    TestBed.tick();
+    const toggle = host.querySelector<HTMLButtonElement>('button.not-found__toggle')!;
+    expect(toggle.getAttribute('aria-label')).toBe('Mettre en pause');
+
+    Object.defineProperty(host.querySelector('video')!, 'paused', {
+      value: false,
+      configurable: true,
+    });
+    toggle.click();
+    TestBed.tick();
+    expect(toggle.getAttribute('aria-label')).toBe('Lire l’animation');
+
+    Object.defineProperty(host.querySelector('video')!, 'paused', {
+      value: true,
+      configurable: true,
+    });
+    toggle.click();
+    TestBed.tick();
+    expect(play).toHaveBeenCalledTimes(2);
+    expect(toggle.getAttribute('aria-label')).toBe('Mettre en pause');
+  });
+
+  it('offers to play the clip it leaves still under reduced motion', async () => {
+    const host = await render(true);
+
+    expect(host.querySelector('button.not-found__toggle')?.getAttribute('aria-label')).toBe(
+      'Lire l’animation',
+    );
   });
 
   it('has no detectable accessibility violation', async () => {

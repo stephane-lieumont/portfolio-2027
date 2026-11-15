@@ -9,6 +9,7 @@ import {
   inject,
   input,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import type { WorldKey } from '@portfolio/shared-types';
@@ -119,10 +120,15 @@ export class PointCloudComponent {
   private readonly state = inject(CloudStore);
   private readonly frames = inject(FrameLoopService);
   private readonly motion = inject(ReducedMotionService);
+  private wake: () => void = () => undefined;
 
   constructor() {
     const destroyRef = inject(DestroyRef);
     effect(() => this.state.enter(this.world()));
+    effect(() => {
+      this.motion.reduced();
+      untracked(() => this.wake());
+    });
 
     afterNextRender(() => {
       const view = this.document.defaultView;
@@ -142,8 +148,10 @@ export class PointCloudComponent {
       let visible = true;
       let stop: (() => void) | null = null;
       // Under reduced motion the shape is drawn once, then again only when the
-      // canvas is resized or comes back into view.
+      // canvas is resized, comes back into view or is turned by hand. Between
+      // those the loop is let go: an idle subscription still costs a frame.
       let drawnStill = false;
+      let alive = true;
 
       const fit = () => {
         dpr = Math.min(2, view.devicePixelRatio || 1);
@@ -153,22 +161,29 @@ export class PointCloudComponent {
         canvas.width = Math.round(width * dpr);
         canvas.height = Math.round(height * dpr);
         drawnStill = false;
+        this.wake();
       };
       const place = () => {
         if (!mouse) return;
         const rect = canvas.getBoundingClientRect();
         field = { x: mouse.clientX - rect.left, y: mouse.clientY - rect.top };
       };
+      const sleep = () => {
+        stop?.();
+        stop = null;
+      };
       const draw = (delta: number) => {
         const still = this.motion.reduced();
-        if (!visible || (still && drawnStill)) return;
-        model.frame(
-          surface,
-          delta,
-          { width, height, dpr, pointer: this.state.pointer, field },
-          still,
-        );
-        drawnStill = still;
+        if (visible && !(still && drawnStill)) {
+          model.frame(
+            surface,
+            delta,
+            { width, height, dpr, pointer: this.state.pointer, field },
+            still,
+          );
+          drawnStill = still;
+        }
+        if (!visible || still) sleep();
       };
 
       const onMove = (event: PointerEvent) => {
@@ -222,6 +237,7 @@ export class PointCloudComponent {
         grip.x = event.clientX;
         grip.y = event.clientY;
         drawnStill = false;
+        this.wake();
       };
       const letGo = () => {
         touch = null;
@@ -232,6 +248,7 @@ export class PointCloudComponent {
         model.release();
         this.grabbing.set(false);
         drawnStill = false;
+        this.wake();
       };
       const onLeave = () => {
         mouse = null;
@@ -261,12 +278,12 @@ export class PointCloudComponent {
           ? new view.IntersectionObserver(([entry]) => {
               visible = entry.isIntersecting;
               drawnStill = false;
+              this.wake();
             })
           : null;
       seen?.observe(canvas);
       fit();
 
-      let alive = true;
       const start = () => {
         if (!alive) return;
         if (!model.ready) {
@@ -275,7 +292,10 @@ export class PointCloudComponent {
             model.skipAssembly();
           }
         }
-        stop = this.frames.add((_time, delta) => draw(delta));
+        this.wake = () => {
+          if (alive && visible && !stop) stop = this.frames.add((_time, delta) => draw(delta));
+        };
+        this.wake();
       };
       // The glyph is sampled from the real face, so it waits for it; a page
       // whose font never arrives still gets its cloud, sampled from the fallback.
@@ -286,7 +306,7 @@ export class PointCloudComponent {
       destroyRef.onDestroy(() => {
         alive = false;
         letGo();
-        stop?.();
+        sleep();
         resize?.disconnect();
         seen?.disconnect();
         view.removeEventListener('pointermove', onMove);

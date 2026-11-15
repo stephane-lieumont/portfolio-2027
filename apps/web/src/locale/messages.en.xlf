@@ -290,6 +290,20 @@
           <context context-type="linenumber">30,32</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="notFound.pause" datatype="html">
+        <source>Mettre en pause</source>
+        <target state="translated">Pause the animation</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/errors/views/not-found/not-found.component.ts</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="notFound.play" datatype="html">
+        <source>Lire l’animation</source>
+        <target state="translated">Play the animation</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/errors/views/not-found/not-found.component.ts</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="notFound.clip" datatype="html">
         <source>John Travolta, perdu, regarde autour de lui.</source>
         <target state="translated">John Travolta, lost, looking around.</target>

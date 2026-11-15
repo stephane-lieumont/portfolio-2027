@@ -141,6 +141,36 @@ describe('PointCloudComponent across a world switch', () => {
     expect(fillRect.mock.calls.length).toBe(2 * once);
   });
 
+  it('lets the frame loop go once the still frame is drawn, and takes it back when needed', async () => {
+    reduced.set(true);
+    TestBed.inject(CloudStore).arrive();
+    await page('cgi');
+    frame(16);
+    expect(ticks.size).toBe(0);
+
+    seen!([{ isIntersecting: true }]);
+    expect(ticks.size).toBe(1);
+    frame(16);
+    expect(ticks.size).toBe(0);
+
+    reduced.set(false);
+    TestBed.tick();
+    expect(ticks.size).toBe(1);
+    frame(16);
+    frame(16);
+    expect(ticks.size).toBe(1);
+  });
+
+  it('runs no frame loop while off screen, and resumes on the way back', async () => {
+    TestBed.inject(CloudStore).arrive();
+    await page('cgi');
+    seen!([{ isIntersecting: false }]);
+    frame(16);
+    expect(ticks.size).toBe(0);
+    seen!([{ isIntersecting: true }]);
+    expect(ticks.size).toBe(1);
+  });
+
   it('draws nothing while off screen', async () => {
     TestBed.inject(CloudStore).arrive();
     await page('dev');

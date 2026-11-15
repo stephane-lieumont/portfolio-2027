@@ -39,7 +39,7 @@ async function english() {
 afterEach(() => vi.resetModules());
 
 describe('the English tree', () => {
-  it('leads every project card to its English slug, under its English title and alt', async () => {
+  it('leads every project card to its English slug, under its English title', async () => {
     const { DevWorkComponent, PROJECTS } = await english();
     const fixture = TestBed.createComponent(DevWorkComponent);
     fixture.detectChanges();
@@ -51,8 +51,12 @@ describe('the English tree', () => {
     expect(cards.map((a) => a.querySelector('.row__title')?.textContent)).toEqual(
       PROJECTS.map((p) => p.title.en),
     );
-    // A client reference's logo is decoration beside its title; a cover is described.
+    // The picture is decoration beside the title that names the link; only a
+    // failed load shows its description, in English.
     expect(cards.map((a) => a.querySelector('img')?.getAttribute('alt'))).toEqual(
+      PROJECTS.map(() => ''),
+    );
+    expect(cards.map((a) => a.querySelector('.plate__fallback-alt')?.textContent ?? '')).toEqual(
       PROJECTS.map((p) => p.cover?.alt.en ?? ''),
     );
   });

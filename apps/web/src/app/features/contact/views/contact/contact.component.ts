@@ -25,7 +25,8 @@ import {
   STATIC_ASSETS,
   STATIC_FILES,
 } from '@core/data/world-content/world-content';
-import { InLocalePipe } from '@core/i18n/in-locale.pipe';
+import { InLocalePipe, inLocale } from '@core/i18n/in-locale.pipe';
+import { SITE_LOCALE, type SiteLocale } from '@core/i18n/site-locale/site-locale';
 import { ContactService, contactFailureOf } from '@core/services/contact/contact.service';
 import { ContactPortraitComponent } from '@features/contact/components/contact-portrait/contact-portrait.component';
 
@@ -53,6 +54,28 @@ const STATUS: Readonly<Record<SendState, string>> = {
 const filled = (control: AbstractControl<string>): ValidationErrors | null =>
   control.value.trim() ? null : { required: true };
 
+/** A run of a heading, with the language it is in when it differs from the page's. */
+export interface TitlePart {
+  readonly text: string;
+  readonly lang: 'en' | null;
+}
+
+/**
+ * The English phrase the French title quotes, marked so a screen reader reads
+ * it in an English voice (WCAG 3.1.2).
+ */
+const QUOTED_ENGLISH = 'Hello World';
+
+export function titleParts(title: string, locale: SiteLocale): readonly TitlePart[] {
+  const at = title.indexOf(QUOTED_ENGLISH);
+  if (locale === 'en' || at < 0) return [{ text: title, lang: null }];
+  return [
+    { text: title.slice(0, at), lang: null },
+    { text: QUOTED_ENGLISH, lang: 'en' },
+    { text: title.slice(at + QUOTED_ENGLISH.length), lang: null },
+  ];
+}
+
 const NO_ERRORS: Readonly<Record<Field, string>> = { name: '', email: '', message: '' };
 
 @Component({
@@ -67,6 +90,7 @@ export class ContactComponent {
   private readonly formRef = viewChild.required<ElementRef<HTMLFormElement>>('formEl');
 
   protected readonly page = CONTACT_PAGE;
+  protected readonly title = titleParts(inLocale(CONTACT_PAGE.title), SITE_LOCALE);
   protected readonly portrait = STATIC_ASSETS[CONTACT_PAGE.portraitAssetId];
   protected readonly cv = STATIC_FILES[SITE_SETTINGS.cvAssetId];
   protected readonly cvIcon = ICONS.cv;

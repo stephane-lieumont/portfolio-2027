@@ -87,6 +87,7 @@ export class ArtViewerComponent {
   protected readonly now = computed(() => pad(this.index() + 1));
   protected readonly total = computed(() => pad(this.pieces().length));
   protected readonly status = signal('');
+  protected readonly halfOfTicks = computed(() => Math.ceil(this.pieces().length / 2));
   /**
    * The slides whose image is in the page: the one shown and its neighbours,
    * fetched as the viewer moves (three requests on opening), kept once fetched.

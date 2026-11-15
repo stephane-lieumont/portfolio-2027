@@ -22,6 +22,8 @@
   // The copyright spine: muted where muted holds on the bare ground.
   --world-spine: var(--world-muted);
   --world-flag: var(--world-ink);
+  // How much ink a scrubbed word not yet reached carries.
+  --scrub-unlit: 55%;
 
   // The cap on the motes' opacity: canvas alpha never exceeds 1, so no overlap
   // of motes can pass it.
@@ -60,6 +62,19 @@
   --world-spine: var(--color-neutral-750);
   --world-flag: var(--color-neutral-300);
   --motes-max: 0.5;
+}
+
+// The scrubbed sentence's clamp bottoms out at 22px, under the 24px of large
+// text, while 2.6vw or 3.7svh is below 24px: under 923px wide or 649px tall.
+// There 55% of the ink on the orange is 3.33:1; 68% is 4.65:1 (WCAG 1.4.3).
+:root[data-world='cgi'] {
+  --scrub-unlit: 68%;
+}
+
+@media (min-width: 924px) and (min-height: 650px) {
+  :root[data-world='cgi'] {
+    --scrub-unlit: 55%;
+  }
 }
 
 // Glass is kept to what floats over moving content. 72% of the ground keeps

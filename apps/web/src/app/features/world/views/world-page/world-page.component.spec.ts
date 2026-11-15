@@ -65,6 +65,15 @@ describe('WorldPage', () => {
     );
   });
 
+  it('names each card once: by its title, never again through its picture', () => {
+    const links = Array.from(render('dev').querySelectorAll('.row__link'));
+    expect(links.length).toBe(PROJECTS.length);
+    for (const link of links) {
+      const alts = Array.from(link.querySelectorAll('img')).map((img) => img.getAttribute('alt'));
+      expect(alts.every((alt) => alt === '')).toBe(true);
+    }
+  });
+
   it('gives every 3D piece a tile linking to its own address', () => {
     const tiles = Array.from(render('cgi').querySelectorAll('.tile__btn'));
     expect(tiles.map((a) => a.getAttribute('href'))).toEqual(
