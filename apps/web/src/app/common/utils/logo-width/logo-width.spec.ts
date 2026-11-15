@@ -27,11 +27,11 @@ describe('logoWidth', () => {
     );
 
     expect(widths).toEqual({
-      'immobilier-ch': '0.62',
-      'web-atrio': '0.26',
-      'cir-scancir': '0.32',
-      linxea: '0.50',
-      ledger: '0.40',
+      'immobilier-ch': '0.66',
+      'web-atrio': '0.30',
+      'cir-scancir': '0.38',
+      linxea: '0.59',
+      ledger: '0.47',
     });
   });
 });

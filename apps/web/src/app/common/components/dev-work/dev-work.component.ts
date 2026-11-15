@@ -86,7 +86,7 @@ function roleLine(project: StaticProject): string {
 
     <ng-template #card let-project let-here="here">
       @if (project.logo; as logo) {
-        <span class="row__frame row__frame--logo plate">
+        <span class="row__frame row__frame--logo plate" [style.--logo-tint]="logo.tint">
           <app-client-logo class="row__logo" [logo]="logo" />
         </span>
       } @else if (project.cover; as cover) {

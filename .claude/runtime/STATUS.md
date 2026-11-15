@@ -64,6 +64,30 @@ prerender expectations and seed mapping went with them.
   title, page h1), so nothing depends on the yellow; a darker or outlined
   version from Stéphane would fix it. Logo sizes: immobilier.ch 178px wide on
   a 320px card, 293px on a 1440px card.
+- **Design spec 2 (approved by Stéphane)**: the logo plates carry a point
+  field in the brand's tint (`public/textures/motes.svg`, a seeded 480×360
+  tile of 190 points, masked away in an ellipse around the logo; tints
+  immobilier.ch #dc1622, Web-Atrio #0051ff, CIR #e3201b, the ink for Linxea
+  and Ledger) on a plate toned 5% toward it (semantic `--logo-plate`,
+  `--logo-tint`); logos are larger (area 0.075, cap 0.66: immobilier.ch 190px
+  on a 320px card, 313px on a 1440px card). Measured contrast on the tinted
+  plates (2nd percentile): Ledger 16.5, Linxea 14.9, immobilier.ch 4.0, CIR
+  3.0, Web-Atrio 1.3 (its yellow, as before).
+- **Hero stage (design spec 2)**: at 900px+ the point-cloud stage spans the
+  text column's height and its canvas box is sticky inside it; the band
+  follows the CTAs by 64px, « Réalisations » 73px below. Measured, stage
+  ending with the text in both worlds: 1440×790 dev 575×492 (324→816), cgi
+  575×545; 1512×771 575×491; 1920×970 575×549; 1485×827 575×531 (333→864,
+  band at 928); 390×844 unchanged (358×358). Ink of the `</>` and the torus
+  never touches the canvas edge over 3s at any of them (torus box 34→528 of
+  575 at 1485). Sticky holds the box at 96px on a 560px-tall window; the
+  dev→cgi sweep keeps the cloud drawn on every frame (min 1288 sampled
+  points); the torus grab still holds (`data-grab` held while dragged).
+- 3D scrub sentence (Stéphane): « De la forme à la lumière, je construis
+  l'image jusqu'au moindre reflet. Le détail, c'est là que tout se joue. »
+  (EN draft « From form to light, I build the image down to the last
+  reflection. Detail is where it all happens. »). The 3D meta description
+  still says « apprendre seul… regarder une image »: to align in the review.
 - **Videos are links out** (Stéphane: « pour la vidéo je préfère uniquement
   le bouton »): « Voir la vidéo » opens YouTube in a new tab, like « Voir le
   site » and « Voir sur Google Play » (that order). No « Vidéo » block, no

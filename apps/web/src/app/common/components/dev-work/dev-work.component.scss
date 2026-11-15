@@ -74,11 +74,11 @@
   border-radius: 4px;
 }
 
-// A client reference: its logo in its own colours on the light plate the
-// presentation visuals stand on, in either world; the whole plate is its box,
+// A client reference: its logo in its own colours on the light logo plate,
+// tinted by its brand, in either world; the whole plate is its box,
 // so the reveal and the hover cover it as they cover a picture.
 .row__frame--logo {
-  --plate-tone: var(--color-sand-100);
+  --plate-tone: color-mix(in srgb, var(--logo-tint) 5%, var(--logo-plate));
   container-type: size;
 }
 

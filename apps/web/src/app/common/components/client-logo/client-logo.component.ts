@@ -30,6 +30,38 @@ import type { StaticLogo } from '@core/data/static-content/static-content';
       display: block;
     }
 
+    /* A field of points in the brand's tint, the cloud's motes at rest: a
+       fixed-size tile, so a point is the same size on a card and on the page,
+       cleared in an ellipse around the logo. */
+    :host::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: color-mix(in srgb, var(--logo-tint) 40%, var(--logo-plate));
+      -webkit-mask:
+        url('/textures/motes.svg') 0 0 / 480px 360px repeat,
+        radial-gradient(
+          ellipse calc(var(--logo-w) * 70% + 12%) 42% at 50% 47%,
+          transparent 70%,
+          #000
+        );
+      -webkit-mask-composite: source-in;
+      mask:
+        url('/textures/motes.svg') 0 0 / 480px 360px repeat,
+        radial-gradient(
+          ellipse calc(var(--logo-w) * 70% + 12%) 42% at 50% 47%,
+          transparent 70%,
+          #000
+        );
+      mask-composite: intersect;
+    }
+
+    @media (forced-colors: active) {
+      :host::before {
+        display: none;
+      }
+    }
+
     .logo {
       position: absolute;
       left: 50%;

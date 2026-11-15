@@ -7,7 +7,11 @@
 
       @if (project.logo; as logo) {
         <div class="fig">
-          <div class="fig__ground fig__ground--logo plate" appPlateLean>
+          <div
+            class="fig__ground fig__ground--logo plate"
+            appPlateLean
+            [style.--logo-tint]="logo.tint"
+          >
             <app-client-logo class="fig__logo" [logo]="logo" [label]="logo.alt | inLocale" />
           </div>
         </div>

@@ -56,7 +56,7 @@ function sampleGlyph(document: Document): [number, number][] {
  */
 @Component({
   selector: 'app-point-cloud',
-  template: ` <canvas #canvas aria-hidden="true"></canvas> `,
+  template: `<div #box class="stage__box"><canvas #canvas aria-hidden="true"></canvas></div>`,
   styles: `
     :host {
       position: relative;
@@ -65,6 +65,10 @@ function sampleGlyph(document: Document): [number, number][] {
       max-width: 100%;
       max-height: 56svh;
       z-index: 20;
+    }
+    .stage__box {
+      position: absolute;
+      inset: 0;
     }
     canvas {
       position: absolute;
@@ -81,12 +85,20 @@ function sampleGlyph(document: Document): [number, number][] {
     :host([data-grab='held']) canvas {
       cursor: grabbing;
     }
+    /* The text column sets the row's height and the stage spans it, so the
+       two end together; the box holding the canvas stays in view meanwhile. */
     @media (min-width: 900px) {
       :host {
+        align-self: stretch;
+        aspect-ratio: auto;
+        max-height: none;
+        min-height: min(420px, calc(100svh - 120px));
+      }
+      .stage__box {
         position: sticky;
+        inset: auto;
         top: 96px;
-        aspect-ratio: 4 / 5;
-        max-height: calc(100svh - 120px);
+        height: min(100%, calc(100svh - 120px));
       }
     }
   `,
@@ -101,7 +113,7 @@ export class PointCloudComponent {
   protected readonly grabbing = signal(false);
 
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly box = viewChild.required<ElementRef<HTMLElement>>('box');
   private readonly document = inject(DOCUMENT);
   private readonly state = inject(CloudStore);
   private readonly frames = inject(FrameLoopService);
@@ -117,7 +129,9 @@ export class PointCloudComponent {
       const surface = canvas.getContext('2d');
       if (!view || !surface) return;
       const model = this.state.model;
-      this.state.stage = this.host;
+      // The box, not the host: the host spans the text column's height.
+      const stage = this.box().nativeElement;
+      this.state.stage = stage;
 
       let width = 0;
       let height = 0;
@@ -278,7 +292,7 @@ export class PointCloudComponent {
         view.removeEventListener('scroll', onScroll);
         view.removeEventListener('blur', onBlur);
         this.document.documentElement.removeEventListener('pointerleave', onLeave);
-        if (this.state.stage === this.host) this.state.stage = null;
+        if (this.state.stage === stage) this.state.stage = null;
       });
     });
   }

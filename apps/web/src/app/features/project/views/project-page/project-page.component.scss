@@ -42,7 +42,7 @@
 // A client reference: its logo in its own colours on the light plate and
 // lean of a presentation visual, light in either world.
 .fig__ground--logo {
-  --plate-tone: var(--color-sand-100);
+  --plate-tone: color-mix(in srgb, var(--logo-tint) 5%, var(--logo-plate));
   container-type: size;
 }
 

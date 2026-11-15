@@ -55,6 +55,11 @@ export interface StaticLogo {
   /** The file's intrinsic proportions (its viewBox or pixels): they set its optical size. */
   readonly width: number;
   readonly height: number;
+  /**
+   * The brand colour (`#rrggbb`) tinting the plate's point field and tone;
+   * absent for a black or ink logo, which keeps the ink.
+   */
+  readonly tint?: string;
   /** Names the logo on the project page; the card leaves it to the title beside it. */
   readonly alt: LocalizedText;
 }
@@ -109,6 +114,7 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: { fr: 'immobilier-ch', en: 'immobilier-ch' },
     logo: {
       src: '/logos/clients/immobilier-ch.svg',
+      tint: '#dc1622',
       width: 433.15,
       height: 61.2,
       alt: { fr: 'Logo d’immobilier.ch', en: 'immobilier.ch logo' },
@@ -178,6 +184,7 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: { fr: 'web-atrio', en: 'web-atrio' },
     logo: {
       src: '/logos/clients/web-atrio.svg',
+      tint: '#0051ff',
       width: 72.731,
       height: 59.227,
       alt: { fr: 'Logo de Web-Atrio', en: 'Web-Atrio logo' },
@@ -215,6 +222,7 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: { fr: 'cir-scancir', en: 'cir-scancir' },
     logo: {
       src: '/logos/clients/cir-scancir.png',
+      tint: '#e3201b',
       width: 783,
       height: 414,
       alt: { fr: 'Logo de CIR', en: 'CIR logo' },

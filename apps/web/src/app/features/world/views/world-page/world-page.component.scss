@@ -76,8 +76,11 @@
 }
 
 @media (min-width: 900px) {
+  // The stage spans the text's height (app-point-cloud), so the band follows
+  // the CTAs at this distance rather than after the stage's own height.
   .body {
     grid-template-columns: 5fr 6fr;
     align-items: start;
+    padding-bottom: var(--space-6);
   }
 }

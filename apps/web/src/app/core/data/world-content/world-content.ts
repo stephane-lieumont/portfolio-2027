@@ -108,8 +108,8 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
       },
     },
     scrub: {
-      fr: 'C’est en 3D que j’ai appris à apprendre seul, et à regarder une image jusqu’à voir ce qui ne va pas.',
-      en: '3D is where I learned to teach myself, and to look at an image until I see what is wrong with it.',
+      fr: 'De la forme à la lumière, je construis l’image jusqu’au moindre reflet. Le détail, c’est là que tout se joue.',
+      en: 'From form to light, I build the image down to the last reflection. Detail is where it all happens.',
     },
     facts: [
       {
