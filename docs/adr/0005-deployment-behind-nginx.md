@@ -4,6 +4,7 @@
 - **Date**: 2026-08-30
 - **Amended**: 2026-11-14 — the `index.html` fallback is replaced by prerendered files and a real 404 (see the amendment below)
 - **Amended**: 2026-11-15 — two language trees (ADR-0017): the `/` redirect negotiates the language, and each tree has its own 404
+- **Note**: 2026-11-15 — the site's own nginx now lives in this repository, in the site image (ADR-0023)
 
 ## Context
 
@@ -114,3 +115,12 @@ location / {
 - The `index.html` meta-refresh files stay as the fallback for a server without this logic: the root then always opens in French.
 
 Not verified against a real nginx: the configuration lives outside the repository. The local check of the build (a static server answering per tree) is in STATUS.
+
+## Note — 2026-11-15: the site's nginx is in the repository
+
+The rules above now run in the site image's own nginx (`apps/web/nginx/nginx.conf`, ADR-0023), tested against a real nginx by `pnpm test:site-image`. The reverse proxy in front of it keeps TLS, HSTS and the `/api`, `/medias`, `/demo` routes, and forwards everything else to the container on port 8080. Where the config departs from the sketch above:
+
+- `Accept-Language: *` is read as no preference and opens French.
+- `/en` and `/en/` answer a 302 to `/en/developer` instead of serving the English meta-refresh.
+- A directory without a page (`/fonts/`) gets the tree's 404 instead of nginx's 403.
+- The map tests the first tag with `~*^\s*fr`, tolerating leading whitespace.

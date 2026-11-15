@@ -52,9 +52,8 @@ const CGI: Record<string, string> = {
   'portfolio/22-1-Extraterrestre-2016.jpg': 'cgi/extraterrestre.jpg',
 };
 
-// Only the projects the site shows. The objects of those it dropped (the
-// Case Tes Potes web app, Kasa, the 2018 portfolio, Pixmodels) stay in the
-// bucket, unreferenced, until someone deletes them (STATUS).
+// Only the projects the site shows. Objects left in a bucket by projects it
+// dropped are listed and deleted by media:prune.
 const PROJECTS: Record<string, string> = {
   'projects/case-tes-potes-mobile-2022.jpg': 'projects/case-tes-potes-mobile.jpg',
   'projects/case-tes-potes-landingpage-2022.jpg': 'projects/case-tes-potes-landing-page.jpg',

@@ -1,0 +1,38 @@
+name: site image
+
+# The site's nginx image (ADR-0023), built from the prerendered output and
+# asked what the reverse proxy will ask: every page of both trees, the /
+# redirect, the 404s, the headers, and the contact page in headless Chrome
+# under the CSP. Apart from `verify` because it needs Docker, which GitHub's
+# Ubuntu runners have and `pnpm verify` must not require locally.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-image-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  site-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build:site
+
+      - run: pnpm test:site-image
