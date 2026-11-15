@@ -98,4 +98,8 @@ The current site redirects everything to the home page. A **real 404** is requir
 
 ## Robots and indexing
 
-`/admin` is excluded from indexing and from prerendering. A `sitemap.xml` is generated at build time from published projects, and `robots.txt` references it.
+`/admin` is excluded from indexing and from prerendering. It keeps itself out of the index with `noindex`, **never with a `Disallow` line in `robots.txt`**: robots.txt is public, and a line naming the back office publishes its address (ADR-0019).
+
+A `sitemap.xml` is generated at build time from the prerendered pages of both trees (every page that names a canonical and is not `noindex`: the 404 and the root redirects are out), each entry with its `hreflang` alternates. `robots.txt` allows everything and references it. Both live at the site's root only, never under `/en`.
+
+Every indexable page carries, in its prerendered HTML: a self-referencing canonical in its own tree (the same address as its `hreflang` entry for that tree), Open Graph (`og:locale` `fr_FR` / `en_GB`, the share card of its world and language, 1200 × 630) with a `summary_large_image` Twitter card, and JSON-LD (`Person` and `WebSite` on the world pages, a `WebPage` elsewhere) built only from what the site already shows. The 404 carries none of them.

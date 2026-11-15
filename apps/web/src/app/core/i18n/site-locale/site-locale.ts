@@ -1,7 +1,7 @@
 import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
 import { SECTIONS } from '@core/i18n/site-paths';
 
-export { SECTIONS, SITE_ORIGIN } from '@core/i18n/site-paths';
+export { OG_IMAGE, SECTIONS, SITE_ORIGIN } from '@core/i18n/site-paths';
 
 export type SiteLocale = 'fr' | 'en';
 

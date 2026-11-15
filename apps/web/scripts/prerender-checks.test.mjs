@@ -4,7 +4,16 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { checkPage } from './prerender-checks.mjs';
+import {
+  EXPECTED,
+  INDEXABLE,
+  alternatesOf,
+  checkPage,
+  checkRobots,
+  checkShareCard,
+  checkSitemap,
+} from './prerender-checks.mjs';
+import { robotsTxt, sitemapXml } from './seo-files.mjs';
 
 const FORM =
   '<form><label>Nom</label><label>Email</label><label>Message</label><button>Envoyer</button></form>';
@@ -16,9 +25,47 @@ const ALTERNATES =
   '<link rel="alternate" hreflang="en" href="https://stephane-lieumont.fr/en/contact">' +
   '<link rel="alternate" hreflang="x-default" href="https://stephane-lieumont.fr/contact">';
 
+/** The canonical, Open Graph, Twitter and JSON-LD of the contact page, as the build writes them. */
+const shareHead = (lang, description, overrides = {}) => {
+  const url = `https://stephane-lieumont.fr/${lang === 'en' ? 'en/' : ''}contact`;
+  const tags = {
+    'og:type': 'website',
+    'og:site_name': 'Stéphane Lieumont',
+    'og:title': 'Contact — Stéphane Lieumont',
+    'og:description': description,
+    'og:url': url,
+    'og:locale': lang === 'en' ? 'en_GB' : 'fr_FR',
+    'og:locale:alternate': lang === 'en' ? 'fr_FR' : 'en_GB',
+    'og:image': `https://stephane-lieumont.fr/og/dev-${lang}.png`,
+    'og:image:width': '1200',
+    'og:image:height': '630',
+    'og:image:alt': 'Stéphane Lieumont, Lead Tech',
+    ...overrides.og,
+  };
+  const data = overrides.data ?? {
+    '@context': 'https://schema.org',
+    '@graph': [{ '@type': 'ContactPage', url, inLanguage: lang }],
+  };
+  return [
+    overrides.canonical ?? `<link rel="canonical" href="${url}">`,
+    ...Object.entries(tags)
+      .filter(([, content]) => content !== undefined)
+      .map(([property, content]) => `<meta property="${property}" content="${content}">`),
+    overrides.twitter ?? '<meta name="twitter:card" content="summary_large_image">',
+    overrides.script ?? `<script type="application/ld+json">${JSON.stringify(data)}</script>`,
+  ].join('');
+};
+
+const descriptionIn = (head) =>
+  /name="description" content="([^"]*)"|content="([^"]*)" name="description"/
+    .exec(head)
+    ?.slice(1)
+    .find(Boolean);
+
 const page = ({
   lang = 'fr',
   head = '<meta name="description" content="Un projet, une question.">',
+  seo = shareHead(lang, descriptionIn(head)),
   alternates = ALTERNATES,
   html = '',
   main = '',
@@ -27,7 +74,7 @@ const page = ({
   form = FORM,
   switcher = '<a href="/en/contact" hreflang="en" lang="en" aria-label="English version">EN</a>',
   state = '<script id="ng-state" type="application/json">{}</script>',
-} = {}) => `<!doctype html><html lang="${lang}"${html}><head><title>Contact — Stéphane Lieumont</title>${head}${alternates}</head>
+} = {}) => `<!doctype html><html lang="${lang}"${html}><head><title>Contact — Stéphane Lieumont</title>${head}${alternates}${seo}</head>
 <body><app-root ngh="0"><header class="top">${switcher}</header><div class="shell"><main id="contenu"${main}>
 <header class="reveal"><h1>${h1}</h1><p>${lead}</p></header>${form}</main></div></app-root>${state}</body></html>`;
 
@@ -168,6 +215,7 @@ describe('a page in either tree', () => {
         lead: eyebrow,
         form: '',
         alternates: '',
+        seo: '',
         switcher,
         head: '<meta name="robots" content="noindex">',
       });
@@ -243,7 +291,7 @@ describe('a page in either tree', () => {
     'when the English page is described in French',
     'en/contact',
     english({
-      head: '<meta name="description" content="La refonte du parcours d’adhésion en ligne, avec un déploiement automatique en CI/CD.">',
+      head: '<meta name="description" content="La refonte du parcours d’adhésion en ligne, en React et TypeScript. Référent technique de la squad Web-Atrio, j’ai aussi automatisé le déploiement en CI/CD.">',
     }),
   );
   caught(
@@ -320,5 +368,234 @@ describe('the French denylists', () => {
     assert.ok(!FRENCH_CONTENT.includes('Escart Wild'));
     assert.ok(!FRENCH_CONTENT.includes('3ds Max, ZBrush'));
     assert.ok(!FRENCH_WORDS.includes('Stéphane'));
+  });
+});
+
+describe('what a page tells search engines and shares', () => {
+  const caught = (name, route, html) =>
+    it(`fails ${name}`, () => assert.notDeepEqual(checkPage(route, html), []));
+  const french = (overrides) =>
+    page({ seo: shareHead('fr', 'Un projet, une question.', overrides) });
+
+  it('passes in both trees, each naming its own card and locale', () => {
+    assert.deepEqual(checkPage('contact', french()), []);
+    assert.deepEqual(checkPage('en/contact', english()), []);
+  });
+
+  caught('without a canonical', 'contact', french({ canonical: '' }));
+  caught(
+    'when the canonical names the other tree',
+    'contact',
+    french({ canonical: '<link rel="canonical" href="https://stephane-lieumont.fr/en/contact">' }),
+  );
+  caught(
+    'when the canonical is on www',
+    'contact',
+    french({ canonical: '<link rel="canonical" href="https://www.stephane-lieumont.fr/contact">' }),
+  );
+  caught(
+    'with two canonicals',
+    'contact',
+    french({
+      canonical: '<link rel="canonical" href="https://stephane-lieumont.fr/contact">'.repeat(2),
+    }),
+  );
+  caught(
+    'when og:url is not the canonical',
+    'contact',
+    french({ og: { 'og:url': 'https://stephane-lieumont.fr/developpeur' } }),
+  );
+  caught(
+    'when og:image is the broken one of the current site',
+    'contact',
+    french({ og: { 'og:image': '//preview.jpg' } }),
+  );
+  caught(
+    'when the English page shares the French card',
+    'en/contact',
+    english({
+      head: '<meta name="description" content="x">',
+      seo: shareHead('en', 'x', {
+        og: { 'og:image': 'https://stephane-lieumont.fr/og/dev-fr.png' },
+      }),
+    }),
+  );
+  caught('when og:locale is not the tree’s', 'contact', french({ og: { 'og:locale': 'en_GB' } }));
+  caught('without og:title', 'contact', french({ og: { 'og:title': undefined } }));
+  caught(
+    'when og:description says something else than the description',
+    'contact',
+    french({ og: { 'og:description': 'Autre chose.' } }),
+  );
+  caught('without the image size', 'contact', french({ og: { 'og:image:width': undefined } }));
+  caught('without an image alt', 'contact', french({ og: { 'og:image:alt': undefined } }));
+  caught('without a Twitter card', 'contact', french({ twitter: '' }));
+  caught('without JSON-LD', 'contact', french({ script: '' }));
+  caught(
+    'when the JSON-LD does not parse',
+    'contact',
+    french({
+      script: '<script type="application/ld+json">{"@context": "https://schema.org",}</script>',
+    }),
+  );
+  caught(
+    'when the JSON-LD describes another page',
+    'contact',
+    french({
+      data: {
+        '@context': 'https://schema.org',
+        '@graph': [{ url: 'https://stephane-lieumont.fr/developpeur', inLanguage: 'fr' }],
+      },
+    }),
+  );
+  caught(
+    'when the JSON-LD gives the French page in English',
+    'contact',
+    french({
+      data: {
+        '@context': 'https://schema.org',
+        '@graph': [{ url: 'https://stephane-lieumont.fr/contact', inLanguage: 'en' }],
+      },
+    }),
+  );
+
+  const notFound = (seo) =>
+    page({
+      h1: 'Mais où est l’interphone ?',
+      lead: 'Erreur 404',
+      form: '',
+      alternates: '',
+      seo,
+      switcher: '<a href="/en/developer" hreflang="en" lang="en">EN</a>',
+      head: '<meta name="robots" content="noindex">',
+    });
+  caught(
+    'when the 404 names a canonical',
+    '404',
+    notFound('<link rel="canonical" href="https://stephane-lieumont.fr/404">'),
+  );
+  caught(
+    'when the 404 carries og:url',
+    '404',
+    notFound('<meta property="og:url" content="https://stephane-lieumont.fr/404">'),
+  );
+  caught(
+    'when the 404 carries JSON-LD',
+    '404',
+    notFound('<script type="application/ld+json">{}</script>'),
+  );
+
+  // A world page describes the person, from what the site already shows.
+  const world = (person) => {
+    const expected = EXPECTED.get('developpeur');
+    const url = 'https://stephane-lieumont.fr/developpeur';
+    const alternates = Object.entries(alternatesOf(expected.ref))
+      .map(([lang, href]) => `<link rel="alternate" hreflang="${lang}" href="${href}">`)
+      .join('');
+    const seo = shareHead('fr', 'x', {
+      og: {
+        'og:type': 'profile',
+        'og:url': url,
+        'og:title': 'Lead Tech — Stéphane Lieumont',
+        'og:image': 'https://stephane-lieumont.fr/og/dev-fr.png',
+      },
+      canonical: `<link rel="canonical" href="${url}">`,
+      data: {
+        '@context': 'https://schema.org',
+        '@graph': [{ '@type': 'ProfilePage', url, inLanguage: 'fr' }, ...(person ? [person] : [])],
+      },
+    });
+    return `<!doctype html><html lang="fr"><head><title>Lead Tech — Stéphane Lieumont</title>
+<meta name="description" content="x">${alternates}${seo}</head><body><app-root ngh="0">
+<header><a href="/en/developer" hreflang="en" lang="en">EN</a></header><main>
+<h1>Stéphane Lieumont</h1>${expected.text.map((line) => `<p>${line}</p>`).join('')}</main>
+</app-root><script id="ng-state" type="application/json">{}</script></body></html>`;
+  };
+  const person = {
+    '@type': 'Person',
+    name: 'Stéphane Lieumont',
+    sameAs: ['https://github.com/stephane-lieumont'],
+  };
+
+  it('passes a world page that describes the person', () => {
+    assert.deepEqual(checkPage('developpeur', world(person)), []);
+  });
+  caught('when a world page describes no person', 'developpeur', world(null));
+  caught('when the person links to no profile', 'developpeur', world({ ...person, sameAs: [] }));
+});
+
+describe('the sitemap', () => {
+  const entries = INDEXABLE.map(({ url, ref }) => ({
+    loc: url,
+    alternates: Object.entries(alternatesOf(ref)).map(([hreflang, href]) => ({ hreflang, href })),
+  }));
+  const valid = sitemapXml(entries, '2026-11-15');
+
+  it('passes when it lists every indexable page of both trees with its alternates', () => {
+    assert.deepEqual(checkSitemap(valid), []);
+    assert.ok(INDEXABLE.some(({ url }) => url === 'https://stephane-lieumont.fr/en/3d-art/alien'));
+    assert.ok(!INDEXABLE.some(({ url }) => /\/404$|\/en$|\.fr\/$/.test(url)));
+  });
+
+  const caught = (name, xml) =>
+    it(`fails ${name}`, () => assert.notDeepEqual(checkSitemap(xml), []));
+
+  caught('when a page is missing', sitemapXml(entries.slice(1), '2026-11-15'));
+  caught(
+    'when it lists the 404',
+    sitemapXml(
+      [...entries, { loc: 'https://stephane-lieumont.fr/404', alternates: [] }],
+      '2026-11-15',
+    ),
+  );
+  caught(
+    'when an entry loses its English alternate',
+    sitemapXml(
+      entries.map((entry, i) =>
+        i === 0
+          ? { ...entry, alternates: entry.alternates.filter((a) => a.hreflang !== 'en') }
+          : entry,
+      ),
+      '2026-11-15',
+    ),
+  );
+  caught('without a date', sitemapXml(entries, ''));
+  caught('when it is not XML', valid.replace('</urlset>', ''));
+});
+
+describe('robots.txt', () => {
+  it('passes as the build writes it', () => {
+    assert.deepEqual(checkRobots(robotsTxt()), []);
+  });
+
+  const caught = (name, text) =>
+    it(`fails ${name}`, () => assert.notDeepEqual(checkRobots(text), []));
+
+  caught('without the sitemap', 'User-agent: *\nAllow: /\n');
+  caught('when the sitemap is on www', robotsTxt().replace('https://', 'https://www.'));
+  caught('when it reveals the back office', `${robotsTxt()}Disallow: /admin\n`);
+  caught('when it hides any path', `${robotsTxt()}Disallow: /private\n`);
+});
+
+describe('a share card', () => {
+  const png = (width, height, size = 1024) => {
+    const bytes = Buffer.alloc(size);
+    Buffer.from('89504e470d0a1a0a', 'hex').copy(bytes);
+    bytes.writeUInt32BE(width, 16);
+    bytes.writeUInt32BE(height, 20);
+    return bytes;
+  };
+
+  it('passes as a 1200 × 630 PNG under 300 KB', () => {
+    assert.deepEqual(checkShareCard('og/dev-fr.png', png(1200, 630)), []);
+  });
+  it('fails at another size', () => {
+    assert.notDeepEqual(checkShareCard('og/dev-fr.png', png(1200, 628)), []);
+  });
+  it('fails when too heavy to be fetched', () => {
+    assert.notDeepEqual(checkShareCard('og/dev-fr.png', png(1200, 630, 300 * 1024)), []);
+  });
+  it('fails when it is not a PNG', () => {
+    assert.notDeepEqual(checkShareCard('og/dev-fr.png', Buffer.from('ffd8ffe0', 'hex')), []);
   });
 });

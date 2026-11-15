@@ -2,6 +2,7 @@ import { ActivatedRouteSnapshot, convertToParamMap } from '@angular/router';
 import { describe, expect, it } from 'vitest';
 
 import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
+import { pieceDescription } from '@core/services/page-metadata/page-metadata.service';
 import { artworkSlugExists, projectSlugExists, routes } from './app.routes';
 
 function segmentsOf(path: string): { readonly path: string }[] {
@@ -89,13 +90,13 @@ describe('a 3D piece’s address', () => {
     expect(artworkSlugExists([])).toBe(false);
   });
 
-  it('titles the page after the piece and describes it by its alt text', () => {
+  it('titles the page after the piece and describes it from its own fields', () => {
     const snapshot = {
       paramMap: convertToParamMap({ slug: ARTWORKS[2].slug.fr }),
     } as ActivatedRouteSnapshot;
     const title = piece.title as (route: ActivatedRouteSnapshot) => string;
     const description = piece.resolve!['description'] as (route: ActivatedRouteSnapshot) => string;
     expect(title(snapshot)).toBe(ARTWORKS[2].title.fr);
-    expect(description(snapshot)).toBe(ARTWORKS[2].image.alt.fr);
+    expect(description(snapshot)).toBe(pieceDescription(ARTWORKS[2]));
   });
 });
