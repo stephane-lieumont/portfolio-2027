@@ -66,3 +66,10 @@ pnpm --filter @portfolio/api admin:hash    # argon2 hash of the admin password
 Nx, NestJS, .NET, PostgreSQL, JWT, GSAP. Each has its reason written in the corresponding ADR — read it again before proposing them anew.
 
 See [[design-system]] for the visual layer and [[content-guidelines]] for editorial.
+
+**The site is bilingual (ADR-0017).** Two prerendered trees from Angular's
+built-in i18n: French at the root (`sourceLocale` `fr`, empty `subPath`),
+English under `/en` with English slugs. Strings are marked `i18n` / `$localize`
+with `@@` ids; a missing English translation fails the build. Dynamic copy is
+`{ fr, en }` in shared-types, never translated at runtime. Only `/` redirects
+(nginx, `lang` cookie then `Accept-Language`).

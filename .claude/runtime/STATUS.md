@@ -458,6 +458,15 @@ on the production build (1440 and 390), and is to be fixed later.
 | Inactive stack marks: icon at 50% opacity, 3D world                            | ≈2.9:1 (label stays 5.67:1)                                                      | 3:1 for graphics, if the icon is held to carry meaning |
 | 404 clip loops with no pause control (Stéphane removed the button, 2026-11-15) | plays past 5s, decorative                                                        | WCAG 2.2.2 Pause, Stop, Hide                           |
 
+## Decided, not built
+
+- **Bilingual FR/EN (ADR-0017, Stéphane 2026-11-15).** French at the root,
+  English under `/en` with English slugs, Angular built-in i18n, `{ fr, en }`
+  dynamic fields, `/` redirected by nginx from the `lang` cookie then
+  `Accept-Language`. Nothing implemented yet; the French-only statements in
+  CLAUDE.md, specs 00/02/03/06 and content-guidelines are amended with the
+  first implementation.
+
 ## Missing
 
 Ordered by what hurts most on the day the site goes live.
