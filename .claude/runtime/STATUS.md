@@ -771,6 +771,8 @@ MinIO and the ADR-0012 pipeline; `STATIC_ASSETS` maps its placeholder id to it.
 The stack's marks need SVG logos (ADR-0012); the mockup used Simple Icons
 (CC0).
 
+**Tool marks completed (2026-11-15).** Azure and Azure DevOps (Simple Icons 9.21.0, CC0, since removed upstream at Microsoft's request), Segment (gilbarbara/logos, CC0), TestFlight (Apple's App Store mark), CI/CD and unit tests (Lucide, ISC) live in `public/logos/other/` with their sources in its README. Ledger shows no .NET: its backend is Python (Stéphane, correcting the CV's « outils .NET Core »).
+
 ## Known accessibility debt (deferred by Stéphane, 2026-11-14)
 
 « sois iso maquette, on verra plus tard pour les contrastes ». The mockup's

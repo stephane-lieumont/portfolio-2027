@@ -9,12 +9,14 @@ import {
 export type ToolSlug = TechnologySlug | SoftwareSlug;
 
 const simpleIcon = (name: string): string => `/logos/simple-icons/${name}.svg`;
+const otherMark = (name: string): string => `/logos/other/${name}.svg`;
 
 /**
  * Each tool's mark, drawn as a CSS mask in the world's ink: Simple Icons for
  * the code stack and Photoshop, the 2022 PNGs for the 3D tools (as on the
  * mockup). File names are Simple Icons' slugs, not the registry's — see
- * public/logos/simple-icons/README.md. A tool missing here shows its name only.
+ * public/logos/simple-icons/README.md; marks absent from Simple Icons come from
+ * public/logos/other/README.md. A tool missing here shows its name only.
  */
 const MARKS: Partial<Record<ToolSlug, string>> = {
   angular: simpleIcon('angular'),
@@ -29,6 +31,12 @@ const MARKS: Partial<Record<ToolSlug, string>> = {
   helm: simpleIcon('helm'),
   gitlab: simpleIcon('gitlab'),
   sonarqube: simpleIcon('sonarqube'),
+  azure: otherMark('microsoftazure'),
+  'azure-devops': otherMark('azuredevops'),
+  'ci-cd': otherMark('infinity'),
+  'unit-tests': otherMark('flask-conical'),
+  segment: otherMark('segment'),
+  testflight: otherMark('appstore'),
   python: simpleIcon('python'),
   datadog: simpleIcon('datadog'),
   terraform: simpleIcon('terraform'),

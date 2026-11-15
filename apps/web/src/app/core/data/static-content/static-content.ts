@@ -368,8 +368,8 @@ export const PROJECTS: readonly StaticProject[] = [
         en: 'Evolving the product’s architecture.',
       },
       {
-        fr: 'Automatiser les tests de bout en bout (outillage .NET).',
-        en: 'Automating end-to-end tests (.NET tooling).',
+        fr: 'Automatiser les tests de bout en bout.',
+        en: 'Automating end-to-end tests.',
       },
     ],
     technologies: [
@@ -382,7 +382,6 @@ export const PROJECTS: readonly StaticProject[] = [
       'docker',
       'nginx',
       'helm',
-      'dotnet',
       'ci-cd',
       'unit-tests',
     ],
