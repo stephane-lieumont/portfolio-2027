@@ -603,8 +603,8 @@ export const CONTACT_PAGE: ContactPage = {
     en: 'A project, a question or just a Hello World?',
   },
   lede: {
-    fr: 'Je réponds à tout, y compris pour dire non. Par formulaire ou sur LinkedIn, au choix.',
-    en: 'I reply to every message, even when the answer is no. Through the form or on LinkedIn, whichever you prefer.',
+    fr: 'Une idée à confronter, un retour d’expérience ou simplement l’envie d’échanger\u00a0: écrivez-moi ici ou sur LinkedIn.',
+    en: 'An idea to challenge, experience to compare or just a chat: write to me here or on LinkedIn.',
   },
   portraitAssetId: PORTRAIT_ID,
   portraitCaption: { fr: 'Fontenilles, France', en: 'Fontenilles, France' },

@@ -111,8 +111,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="page.contact.description" datatype="html">
-        <source>Un projet, une question ou juste un Hello World&#160;? Je réponds à tout, y compris pour dire non. Écrivez-moi par formulaire ou sur LinkedIn.</source>
-        <target state="translated">A project, a question or just a Hello World? I reply to every message, even when the answer is no. Write to me through the form or on LinkedIn.</target>
+        <source>Un projet, une question ou juste un Hello World&#160;? Une idée à confronter ou l’envie d’échanger&#160;: écrivez-moi par formulaire ou sur LinkedIn.</source>
+        <target state="translated">A project, a question or just a Hello World? An idea to challenge or a chat to start: write to me through the form or on LinkedIn.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
           <context context-type="linenumber">104</context>
