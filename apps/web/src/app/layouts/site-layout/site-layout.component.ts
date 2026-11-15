@@ -29,6 +29,7 @@ import {
   pageAt,
   pageHref,
 } from '@core/i18n/site-locale/site-locale';
+import { ReadingAnchorService } from '@core/services/motion/reading-anchor/reading-anchor.service';
 import { SmoothScrollService } from '@core/services/motion/smooth-scroll/smooth-scroll.service';
 import { RouteTransitionsService } from '@core/services/route-transitions/route-transitions.service';
 import { WorldStore, currentness } from '@core/stores/world/world.store';
@@ -106,8 +107,10 @@ export class SiteLayoutComponent {
     });
 
     const smooth = inject(SmoothScrollService);
+    const reading = inject(ReadingAnchorService);
     afterNextRender(() => {
       smooth.enable();
+      reading.enable();
       try {
         const kept = sessionStorage.getItem('lang-switch');
         if (kept !== null) {
