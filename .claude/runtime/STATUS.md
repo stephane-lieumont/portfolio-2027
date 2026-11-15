@@ -589,8 +589,10 @@ live tokens.
 
 **Language switch, after review (2026-11-15).** The switcher shows the flag of
 the language it leads to (UK on French pages, France on English ones; Stéphane),
-drawn in one ink with opacity steps: the dev ink on the dark ground, neutral
-750 (the spine's grey) on the orange (`--world-flag`),
+drawn as a black-and-white print (Stéphane's references): near-black for the
+colours, the light ink for the white (the dev ink on the dark ground, neutral
+300 on the orange, `--world-flag`), a mid grey for France's red, a hairline
+of the ink around it,
 named « English version » / « Version française »; 26–45px wide, 34–36px tall,
 no header overflow 320–1440. Switching no longer flashes white or replays the
 page: the world's ground is inlined in the document head, the browser

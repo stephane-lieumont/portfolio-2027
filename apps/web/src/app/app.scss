@@ -75,6 +75,22 @@
   block-size: 14px;
   border-radius: 3px;
   color: var(--world-flag);
+  // The dark field would vanish into the dark ground: a hairline of the ink.
+  box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 45%, transparent);
+}
+
+// Two tones, as a black-and-white print of the flag: the ink for the white,
+// near-black for the colours, a mid grey for France's red.
+.top__flag-dark {
+  fill: var(--color-neutral-950);
+}
+
+.top__flag-dark-line {
+  stroke: var(--color-neutral-950);
+}
+
+.top__flag-mid {
+  fill: color-mix(in srgb, currentColor 45%, var(--color-neutral-950));
 }
 
 .top__link[aria-current] {

@@ -32,18 +32,20 @@
           <svg class="top__flag" viewBox="0 0 60 40" aria-hidden="true">
             <clipPath id="flag-uk"><rect width="60" height="40" rx="4" /></clipPath>
             <g clip-path="url(#flag-uk)">
-              <rect width="60" height="40" fill="currentColor" opacity="0.35" />
+              <rect class="top__flag-dark" width="60" height="40" />
               <path d="M0 0l60 40M60 0L0 40" stroke="currentColor" stroke-width="8" />
+              <path class="top__flag-dark-line" d="M0 0l60 40M60 0L0 40" stroke-width="2.5" />
               <path d="M30 0v40M0 20h60" stroke="currentColor" stroke-width="12" />
+              <path class="top__flag-dark-line" d="M30 0v40M0 20h60" stroke-width="7" />
             </g>
           </svg>
         } @else {
           <svg class="top__flag" viewBox="0 0 60 40" aria-hidden="true">
             <clipPath id="flag-fr"><rect width="60" height="40" rx="4" /></clipPath>
             <g clip-path="url(#flag-fr)">
-              <rect width="20" height="40" fill="currentColor" opacity="0.35" />
+              <rect class="top__flag-dark" width="20" height="40" />
               <rect x="20" width="20" height="40" fill="currentColor" />
-              <rect x="40" width="20" height="40" fill="currentColor" opacity="0.65" />
+              <rect class="top__flag-mid" x="40" width="20" height="40" />
             </g>
           </svg>
         }

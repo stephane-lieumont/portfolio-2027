@@ -55,7 +55,7 @@
   --world-band: color-mix(in srgb, var(--world-cgi-ink) 6%, var(--world-cgi-ground));
   // A neutral, not the brown muted, as Stéphane asked: 5.7:1 on the orange.
   --world-spine: var(--color-neutral-750);
-  --world-flag: var(--color-neutral-750);
+  --world-flag: var(--color-neutral-300);
   --motes-max: 0.5;
 }
 
