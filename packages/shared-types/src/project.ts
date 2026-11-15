@@ -3,6 +3,7 @@ import { SOFTWARE, TECHNOLOGIES } from './registries.js';
 import type { SoftwareSlug, TechnologySlug } from './registries.js';
 
 import { mediaAssetSchema } from './media.js';
+import { youtubeVideoId } from './video.js';
 
 export const projectKindSchema = z.enum(['dev', 'cgi']);
 export type ProjectKind = z.infer<typeof projectKindSchema>;
@@ -16,22 +17,54 @@ export const slugSchema = z
   .max(120)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'expected a kebab-case slug');
 
+/**
+ * Where « Voir le site » leads: a path on this host, which nginx proxies to a
+ * separately hosted demo (ADR-0005, verify the route exists before
+ * publishing), or a live site elsewhere over https.
+ */
+export const websiteUrlSchema = z
+  .string()
+  .trim()
+  .refine(
+    (value) => /^\/(?!\/)\S*$/.test(value) || /^https:\/\/[^\s/]+(\/\S*)?$/.test(value),
+    'expected a root-relative path or an https URL',
+  );
+
+/** A YouTube video, embedded on the page after a click (ADR-0016). */
+export const videoUrlSchema = z
+  .string()
+  .trim()
+  .refine((value) => youtubeVideoId(value) !== null, 'expected an https YouTube video address');
+
+const copy = (max: number) => z.string().trim().min(1).max(max);
+
 export const projectSchema = z.object({
   id: z.uuid(),
   kind: projectKindSchema,
   status: projectStatusSchema,
   slug: slugSchema,
   title: z.string().min(1).max(160),
+  /** For cards and the meta description. The project page does not show it. */
   summary: z.string().max(320),
-  description: z.string(),
-  mission: z.string().nullable(),
-  missionSteps: z.array(z.string()),
+  /** What the product was: the page's introduction, coloured word by word. */
+  context: copy(400),
+  /** In what capacity Stéphane worked, set large beside the mission. */
+  role: copy(80),
+  /** What he did. */
+  mission: copy(600),
+  /** The concrete deliverables, in order. */
+  missionSteps: z.array(copy(240)).min(1).max(10),
   technos: z.array(z.string()),
   tags: z.array(z.string()),
-  /** Demo link, served by the nginx reverse proxy (see ADR-0005). */
-  demoUrl: z.url().nullable(),
+  /** Groups related projects: their pages end on the series rather than on other work. */
+  series: copy(60).nullable(),
+  websiteUrl: websiteUrlSchema.nullable(),
+  videoUrl: videoUrlSchema.nullable(),
   sourceUrl: z.url().nullable(),
   coverAsset: mediaAssetSchema.nullable(),
+  /** The wide visual the project page opens on, the product staged on white. */
+  presentationAsset: mediaAssetSchema,
+  presentationCaption: copy(160),
   gallery: z.array(mediaAssetSchema),
   releasedAt: z.iso.date(),
   sortOrder: z.int(),
@@ -53,9 +86,17 @@ export const projectSummarySchema = projectSchema.pick({
 export type ProjectSummary = z.infer<typeof projectSummarySchema>;
 
 export const createProjectInputSchema = projectSchema
-  .omit({ id: true, coverAsset: true, gallery: true, createdAt: true, updatedAt: true })
+  .omit({
+    id: true,
+    coverAsset: true,
+    presentationAsset: true,
+    gallery: true,
+    createdAt: true,
+    updatedAt: true,
+  })
   .extend({
     coverAssetId: z.uuid().nullable().default(null),
+    presentationAssetId: z.uuid(),
     galleryAssetIds: z.array(z.uuid()).default([]),
   });
 export type CreateProjectInput = z.infer<typeof createProjectInputSchema>;
