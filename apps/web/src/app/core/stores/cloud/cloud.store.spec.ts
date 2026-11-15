@@ -44,13 +44,18 @@ describe('CloudModel', () => {
     expect(cgi.t).toBe(1);
   });
 
-  it('draws every point of the cloud each frame', () => {
-    const model = new CloudModel(seeded());
-    model.init(glyph, 240, 150, 'dev');
-    const s = surface();
-    model.frame(s, 16, view, false);
+  it('draws two points in three as the glyph, and every point as the torus', () => {
+    const glyphModel = new CloudModel(seeded());
+    glyphModel.init(glyph, 240, 150, 'dev');
+    const asGlyph = surface();
+    glyphModel.frame(asGlyph, 16, view, false);
+    expect(asGlyph.rects).toBe((CLOUD_POINTS * 2) / 3);
 
-    expect(s.rects).toBeGreaterThanOrEqual(CLOUD_POINTS);
+    const torusModel = new CloudModel(seeded());
+    torusModel.init(glyph, 240, 150, 'cgi');
+    const asTorus = surface();
+    torusModel.frame(asTorus, 16, view, false);
+    expect(asTorus.rects).toBeGreaterThanOrEqual(CLOUD_POINTS);
   });
 
   it('morphs toward the torus over 1.5s, from wherever it stands', () => {

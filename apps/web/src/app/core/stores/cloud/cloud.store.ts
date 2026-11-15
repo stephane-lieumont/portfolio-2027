@@ -4,6 +4,11 @@ import type { WorldKey } from '@portfolio/shared-types';
 
 /** Points in the cloud. The torus grid is 60 × 20, so this must stay a multiple of 60. */
 export const CLOUD_POINTS = 1200;
+/**
+ * Every third point stays out of the `</>` glyph and only joins the torus: the
+ * glyph read too dense (Stéphane, 2026-11-15), the torus keeps all of them.
+ */
+const GLYPH_SKIP_EVERY = 3;
 
 const ASSEMBLE_OMEGA = 6;
 const ASSEMBLE_SPAN = 2.4;
@@ -368,13 +373,14 @@ export class CloudModel {
       const sy = cy + Y * p;
       const depth = Math.min(1, Math.max(0, (1.4 - Z) / 2.8));
       const size = (0.9 + depth * 1.5) * p;
-      surface.globalAlpha = (0.35 + depth * 0.65) * mix(arrived, 1, k);
-      surface.fillRect(sx - size / 2, sy - size / 2, size, size);
+      const inGlyph = i % GLYPH_SKIP_EVERY !== 0 ? 1 : k;
+      surface.globalAlpha = (0.35 + depth * 0.65) * mix(arrived, 1, k) * inGlyph;
+      if (inGlyph > 0) surface.fillRect(sx - size / 2, sy - size / 2, size, size);
 
       this.sx[i] = sx - size / 2;
       this.sy[i] = sy - size / 2;
       this.sz[i] = size;
-      this.glow[i] = heat[i] * (1 - k) * 0.9;
+      this.glow[i] = heat[i] * (1 - k) * 0.9 * inGlyph;
     }
 
     if (!still) {
