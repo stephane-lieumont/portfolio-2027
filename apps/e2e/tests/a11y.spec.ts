@@ -7,10 +7,12 @@ const PAGES = [
   '/graphisme-3d',
   '/developpeur/ledger',
   '/contact',
+  '/mentions-legales',
   '/page-inconnue',
   '/en/developer',
   '/en/3d-art',
   '/en/contact',
+  '/en/legal-notice',
 ];
 
 // The entrances fade text in: a contrast read mid-fade measures the fade. With
