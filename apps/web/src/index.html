@@ -139,13 +139,27 @@
         pointer-events: none;
       }
 
-      :root:is([data-boot='on'], [data-boot='out'], [data-boot='clear'], [data-boot='skip']) .boot {
+      :root:is(
+          [data-boot='wait'],
+          [data-boot='on'],
+          [data-boot='out'],
+          [data-boot='clear'],
+          [data-boot='skip']
+        )
+        .boot {
         display: grid;
+      }
+
+      /* While it decides, the loader is only its ground, the page's own colour:
+         nothing of the page shows before the app, cached or not (Stéphane,
+         2026-11-15), and a warm load sees no loader, just its ground. */
+      :root[data-boot='wait'] .boot > :not(.boot__ground) {
+        visibility: hidden;
       }
 
       /* Failsafe, independent of the script's timers: a real duration, never
          0s (traps.md, « A zero-duration animation… »). */
-      :root[data-boot='on'] .boot {
+      :root:is([data-boot='wait'], [data-boot='on']) .boot {
         animation: boot-retire 400ms linear 9s forwards;
       }
 
@@ -259,6 +273,18 @@
         white-space: nowrap;
       }
 
+      /* Its arrival once the grace is over: it slides in along its lane and
+         grows to size, biting from the first frame (Stéphane, 2026-11-15). */
+      :root[data-boot='on'] .boot__mark {
+        animation: boot-arrive 440ms var(--ease-enter) both;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        :root[data-boot='on'] .boot__mark {
+          animation: boot-arrive-fade 200ms linear both;
+        }
+      }
+
       @media (prefers-reduced-motion: no-preference) {
         :root[data-boot='on'] .boot__jaw {
           animation: boot-bite var(--boot-period) linear infinite;
@@ -309,6 +335,19 @@
         }
         100% {
           rotate: var(--open);
+        }
+      }
+
+      @keyframes boot-arrive {
+        from {
+          opacity: 0;
+          transform: translateX(-32px) scale(0.85);
+        }
+      }
+
+      @keyframes boot-arrive-fade {
+        from {
+          opacity: 0;
         }
       }
 
@@ -448,33 +487,14 @@
         function arm() {
           showing = setTimeout(show, GRACE);
         }
-        // A first visit has nothing in its cache: the loader covers it from the
-        // first paint, or the page shows for the grace before it (Stéphane,
-        // 2026-11-15). A returning visitor keeps the grace; after a deploy
-        // their cache is stale and the glimpse comes back, once.
-        var known = false;
-        try {
-          known = localStorage.getItem('boot-known') !== null;
-        } catch (e) {}
         stamp('wait');
-        if (!known) {
-          show();
-        } else if (document.readyState === 'loading') {
+        if (document.readyState === 'loading') {
           document.addEventListener('readystatechange', arm, { once: true });
         } else {
           arm();
         }
         var givingUp = setTimeout(leave, GIVE_UP);
-        document.addEventListener(
-          'app-ready',
-          function () {
-            try {
-              localStorage.setItem('boot-known', '');
-            } catch (e) {}
-            leave();
-          },
-          { once: true },
-        );
+        document.addEventListener('app-ready', leave, { once: true });
       })();
     </script>
   </head>
