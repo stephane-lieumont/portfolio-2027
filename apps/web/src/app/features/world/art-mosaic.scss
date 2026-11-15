@@ -12,7 +12,15 @@
 .work {
   display: grid;
   gap: clamp(32px, 4vw, 56px) 24px;
-  padding-block: clamp(32px, 5vw, 72px) clamp(48px, 8vw, 120px);
+  // The full-bleed wall ends the section on the same 2px seam its tiles share;
+  // the stack's own top padding is the rest (Stéphane, 2026-11-15).
+  padding-block: clamp(32px, 5vw, 72px) 2px;
+}
+
+// The viewer is a top-layer dialog: its host must not open a grid row (and a
+// row gap) under the wall.
+app-art-viewer {
+  display: contents;
 }
 
 .work__head {
