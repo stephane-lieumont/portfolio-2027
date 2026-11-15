@@ -442,7 +442,8 @@ both languages, at the source.
   schema has them). **The English is a draft** written from the French, no
   new claim, to be rewritten by the communication expert in PR 3: every
   `en` value in `world-content.ts` (role word « 3D ARTIST », ledes, scrubs,
-  facts, the 52 stack points, contact title and lede, portrait alt) and in
+  facts, contact title and lede, portrait alt; the 52 stack points were
+  rewritten in both languages on 2026-11-15, see « Content review ») and in
   `static-content.ts` (six projects' titles, summaries, contexts, roles,
   missions, steps, captions and alt texts; sixteen pieces' titles and alt
   texts).
@@ -600,18 +601,25 @@ copy is reviewed once, after the six PRs). Collected so far:
   six presentation alt texts; « Autres réalisations »; the « Vidéo » block's
   « Lire la vidéo : … », « Vid. » and « Regarder sur YouTube ».
 
-- Mastery points flagged « à valider » on the mockup: RxJS « L’interop
-  maîtrisée »; .NET points 2–4; React points 2–4; V-Ray « Les matières ».
-- **Claims the repository contradicts today** — must change or become true
-  before they render. « 80 % de couverture imposés en CI » and « Une CI qui fait
-  foi » became true with the verify workflow; « Les mêmes conteneurs du
-  poste de développement au serveur » (nothing is deployed); « Une commande pour
-  lancer l’infrastructure locale » (`pnpm infra:up` is broken, see Missing).
+- **Stack « Maîtrise » points rewritten generically on 2026-11-15**
+  (`content/mastery-points`, Stéphane's brief: « pour les technos, trouve des
+  formulations génériques et en accord avec la techno sélectionnée »), French
+  then English, both worlds. Each point now states what he does with the tool:
+  no claim about this repository (ADR, Zod monorepo, Node 22 build, this
+  project's Docker infra, WCAG checked on every build, 80 % coverage), no
+  named piece or client, no count. Resolved by it: the « à valider » points
+  (RxJS interop, .NET 2–4, React 2–4, V-Ray « Les matières »), « Zoneless »
+  moved from RxJS into Angular's first point, « Les seize rendus » gone, the
+  stack claims the repository contradicted (« Les mêmes conteneurs… »,
+  « Une commande pour lancer l’infrastructure locale »), and non-breaking
+  spaces before « : » in every stack point. Kept as Stéphane's own words: the
+  four AWS points and .NET « Référent technique ». Still for him to approve
+  in the content review: the generic Docker, Git and 3D points are inferred
+  from the tool and the gallery, not from something he said.
 - Unsourced: « Fontenilles, France » under the portrait (not in user-profile);
   « Sans école et sans commande » contradicts the Pixmodels commission (2015).
-- « Zoneless » sits under RxJS; it belongs with Angular.
-- « Les seize rendus » hard-codes a count spec 03 says is derived.
-- French typography: no non-breaking spaces before « : », « ? », « ! ».
+- French typography outside the stack: no non-breaking spaces before « : »,
+  « ? », « ! » (contact title « … Hello World ? », and others).
 
 **Project contract changed (`feat/project-page`), API not yet:** the `Project`
 schema in shared-types gained `context` (replacing the unused `description`),

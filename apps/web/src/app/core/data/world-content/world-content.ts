@@ -128,9 +128,8 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
 };
 
 /**
- * Points not yet confirmed by Stéphane are written as plain points: a review
- * marker is not content (spec 03). The mockup flagged them « à valider »; the
- * list lives in .claude/runtime/STATUS.md until he settles them.
+ * Each point states what Stéphane does with the tool, kept generic (his brief,
+ * 2026-11-15): no claim about this repository, a client, a figure or a date.
  */
 export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
   dev: {
@@ -142,29 +141,29 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'Standalone, zoneless, signals.', en: 'Standalone, zoneless, signals.' },
             text: {
-              fr: 'Des applications sans NgModule ni zone.js, où l’état vit dans des signals et le dérivé dans des computed.',
-              en: 'Applications with no NgModule and no zone.js, where state lives in signals and derived state in computed.',
+              fr: 'Des applications Angular modernes, sans NgModule ni zone.js, où l’état vit dans des signals et le dérivé dans des computed.',
+              en: 'Modern Angular applications with no NgModule and no zone.js, state held in signals and derived state in computed.',
             },
           },
           {
-            lead: { fr: 'OnPush partout.', en: 'OnPush everywhere.' },
+            lead: { fr: 'Un rendu sous contrôle.', en: 'Rendering under control.' },
             text: {
-              fr: 'input(), output(), @if et @for avec track : un rendu qui ne se recalcule que lorsqu’une donnée change vraiment.',
-              en: 'input(), output(), @if and @for with track: rendering that only recomputes when data actually changes.',
+              fr: 'OnPush, @for avec track, @defer : un rendu qui ne travaille que lorsqu’il le faut, et ne charge que ce qui s’affiche.',
+              en: 'OnPush, @for with track, @defer: rendering that only works when it has to, and loads only what is on screen.',
             },
           },
           {
             lead: { fr: 'Une architecture qui se lit.', en: 'An architecture you can read.' },
             text: {
-              fr: 'Des composants simples à la première lecture, des types de domaine partagés, aucune abstraction prématurée.',
-              en: 'Components that are simple on first reading, shared domain types, no premature abstraction.',
+              fr: 'Des couches et des composants clairs dès la première lecture, qui restent maintenables quand le périmètre grandit.',
+              en: 'Layers and components that are clear on first reading, and stay maintainable as the scope grows.',
             },
           },
           {
-            lead: { fr: 'La qualité mesurée.', en: 'Quality, measured.' },
+            lead: { fr: 'La qualité outillée.', en: 'Quality, built in.' },
             text: {
-              fr: 'Tests Vitest, 80 % de couverture imposés en CI, accessibilité WCAG 2.2 AA vérifiée à chaque build.',
-              en: 'Vitest tests, 80% coverage enforced in CI, WCAG 2.2 AA accessibility checked on every build.',
+              fr: 'Tests unitaires, lint et couverture en intégration continue, accessibilité pensée dès le composant.',
+              en: 'Unit tests, linting and coverage in continuous integration, accessibility designed in from the component up.',
             },
           },
         ],
@@ -175,29 +174,29 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'Strict, sans any.', en: 'Strict, no any.' },
             text: {
-              fr: 'La règle est en erreur, et un as qui fait taire le compilateur est traité comme un bug différé.',
-              en: 'The rule is set to error, and an as that silences the compiler is treated as a deferred bug.',
+              fr: 'Un typage strict qui arrête les erreurs à la compilation, et un as qui fait taire le compilateur traité comme un bug différé.',
+              en: 'Strict typing that stops errors at compile time, and an as that silences the compiler treated as a deferred bug.',
             },
           },
           {
-            lead: { fr: 'Une source de vérité.', en: 'One source of truth.' },
+            lead: { fr: 'Le domaine typé.', en: 'A typed domain.' },
             text: {
-              fr: 'Des schémas Zod partagés entre le front et l’API : un type, une validation, un seul endroit.',
-              en: 'Zod schemas shared between the front end and the API: one type, one validation, one place.',
+              fr: 'Des types métier explicites, partagés entre le front et l’API plutôt que redéclarés de chaque côté.',
+              en: 'Explicit domain types, shared between the front end and the API rather than redeclared on each side.',
             },
           },
           {
-            lead: { fr: 'TypeScript natif côté serveur.', en: 'Native TypeScript on the server.' },
+            lead: { fr: 'Validé à la frontière.', en: 'Validated at the boundary.' },
             text: {
-              fr: 'Node 22 exécute le code sans étape de build, avec une syntaxe strictement effaçable.',
-              en: 'Node 22 runs the code with no build step, in strictly erasable syntax.',
+              fr: 'Formulaires, réponses d’API : ce qui vient de l’extérieur passe par un schéma avant d’être typé.',
+              en: 'Forms, API responses: whatever comes from outside is checked against a schema before it is typed.',
             },
           },
           {
-            lead: { fr: 'Un monorepo typé.', en: 'A typed monorepo.' },
+            lead: { fr: 'Du navigateur au serveur.', en: 'From browser to server.' },
             text: {
-              fr: 'Les types du domaine vivent dans un paquet partagé, jamais redéclarés d’une application à l’autre.',
-              en: 'Domain types live in a shared package, never redeclared from one application to the next.',
+              fr: 'Le même langage côté client et côté Node, pour un code cohérent de bout en bout.',
+              en: 'The same language in the browser and on Node, for code that holds together end to end.',
             },
           },
         ],
@@ -215,22 +214,22 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'RxJS pour les flux.', en: 'RxJS for streams.' },
             text: {
-              fr: 'Requêtes, annulation, debounce : ce qui est réellement asynchrone reste un observable.',
+              fr: 'Requêtes, annulation, debounce : ce qui est réellement asynchrone reste un observable.',
               en: 'Requests, cancellation, debounce: what is truly asynchronous stays an observable.',
             },
           },
           {
-            lead: { fr: 'L’interop maîtrisée.', en: 'Interop under control.' },
+            lead: { fr: 'Les deux modèles réunis.', en: 'Both models, together.' },
             text: {
-              fr: 'Passer d’un modèle à l’autre sans fuite ni double source de vérité.',
-              en: 'Moving from one model to the other with no leak and no second source of truth.',
+              fr: 'toSignal, toObservable : passer de l’un à l’autre sans fuite ni double source de vérité.',
+              en: 'toSignal, toObservable: moving between the two with no leak and no second source of truth.',
             },
           },
           {
-            lead: { fr: 'Zoneless.', en: 'Zoneless.' },
+            lead: { fr: 'Les opérateurs qui comptent.', en: 'The operators that matter.' },
             text: {
-              fr: 'Une détection de changement pilotée par les signals, sans zone.js.',
-              en: 'Change detection driven by signals, without zone.js.',
+              fr: 'switchMap, combineLatest, takeUntilDestroyed : composer des flux et les fermer proprement.',
+              en: 'switchMap, combineLatest, takeUntilDestroyed: composing streams and closing them cleanly.',
             },
           },
         ],
@@ -241,29 +240,29 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'Référent technique.', en: 'Technical point of reference.' },
             text: {
-              fr: 'J’accompagne des développeurs backend .NET et j’arbitre les choix qui touchent les deux côtés.',
-              en: 'I support .NET backend developers and make the calls that affect both sides.',
+              fr: 'J’accompagne des développeurs backend .NET et j’arbitre les choix qui touchent le front comme le back.',
+              en: 'I support .NET backend developers and make the calls that affect both front and back end.',
             },
           },
           {
             lead: { fr: 'Des contrats d’API clairs.', en: 'Clear API contracts.' },
             text: {
-              fr: 'La frontière front / back se conçoit ensemble, avant d’écrire le code.',
-              en: 'The front / back boundary is designed together, before the code is written.',
+              fr: 'Endpoints, DTO, codes d’erreur : la frontière front / back se conçoit à deux, avant le code.',
+              en: 'Endpoints, DTOs, error codes: the front / back boundary is designed together, before the code.',
             },
           },
           {
-            lead: { fr: 'La revue comme outil.', en: 'Review as a tool.' },
+            lead: { fr: 'La revue de code.', en: 'Code review.' },
             text: {
-              fr: 'Challenger une solution, expliquer un choix, faire monter une équipe.',
-              en: 'Challenging a solution, explaining a choice, helping a team grow.',
+              fr: 'Lire et challenger du C#, expliquer un choix, faire monter une équipe.',
+              en: 'Reading and challenging C#, explaining a choice, helping a team grow.',
             },
           },
           {
             lead: { fr: 'Une vision de bout en bout.', en: 'An end-to-end view.' },
             text: {
-              fr: 'Du schéma de données au composant, le même niveau d’exigence.',
-              en: 'From the data schema to the component, the same standard.',
+              fr: 'De la base de données au composant, savoir ce que chaque couche coûte à l’autre.',
+              en: 'From the database to the component, knowing what each layer costs the next.',
             },
           },
         ],
@@ -272,17 +271,24 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
         tool: 'react',
         points: [
           {
-            lead: { fr: 'En production.', en: 'In production.' },
+            lead: { fr: 'Composants et hooks.', en: 'Components and hooks.' },
             text: {
-              fr: 'Une landing page React et TypeScript adossée à une API Koa, de la maquette à la mise en ligne.',
-              en: 'A React and TypeScript landing page backed by a Koa API, from mockup to launch.',
+              fr: 'Des interfaces React en TypeScript, l’état et les effets portés par des hooks.',
+              en: 'React interfaces in TypeScript, state and effects carried by hooks.',
             },
           },
           {
-            lead: { fr: 'Le parcours complet.', en: 'The whole journey.' },
+            lead: { fr: 'De la maquette à la mise en ligne.', en: 'From mockup to launch.' },
             text: {
-              fr: 'Cadrage, maquette, développement et déploiement sur le même projet.',
-              en: 'Scoping, mockup, development and deployment on the same project.',
+              fr: 'Une interface React branchée sur une API Node, conçue, développée et livrée.',
+              en: 'A React front end wired to a Node API, designed, built and shipped.',
+            },
+          },
+          {
+            lead: { fr: 'Les mêmes principes.', en: 'The same principles.' },
+            text: {
+              fr: 'Composants simples, état explicite, typage strict, quel que soit le framework.',
+              en: 'Simple components, explicit state, strict typing, whatever the framework.',
             },
           },
           {
@@ -290,13 +296,6 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             text: {
               fr: 'Angular au quotidien, React quand le projet le demande.',
               en: 'Angular day to day, React when the project calls for it.',
-            },
-          },
-          {
-            lead: { fr: 'Les mêmes principes.', en: 'The same principles.' },
-            text: {
-              fr: 'Composants simples, état explicite, typage strict.',
-              en: 'Simple components, explicit state, strict typing.',
             },
           },
         ],
@@ -307,29 +306,29 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'Un environnement reproductible.', en: 'A reproducible environment.' },
             text: {
-              fr: 'Une commande pour lancer l’infrastructure locale : stockage objet, API, base.',
-              en: 'One command to start the local infrastructure: object storage, API, database.',
+              fr: 'Une application et ses services conteneurisés, qui démarrent de la même façon sur chaque poste.',
+              en: 'An application and its services in containers, starting the same way on every machine.',
             },
           },
           {
-            lead: { fr: 'La production en miroir.', en: 'Production, mirrored.' },
+            lead: { fr: 'Docker Compose.', en: 'Docker Compose.' },
             text: {
-              fr: 'Les mêmes conteneurs du poste de développement au serveur.',
-              en: 'The same containers from the development machine to the server.',
+              fr: 'API, base de données, stockage : une stack locale décrite dans un fichier et lancée en une commande.',
+              en: 'API, database, storage: a local stack described in one file and started with one command.',
             },
           },
           {
-            lead: { fr: 'Le stockage objet.', en: 'Object storage.' },
+            lead: { fr: 'Du poste au serveur.', en: 'From laptop to server.' },
             text: {
-              fr: 'Un bucket compatible S3, lisible par tous, jamais inscriptible publiquement.',
-              en: 'An S3-compatible bucket, readable by anyone, never publicly writable.',
+              fr: 'La même image du développement à la production, la configuration passée par l’environnement.',
+              en: 'The same image from development to production, configuration passed in through the environment.',
             },
           },
           {
             lead: { fr: 'Le réseau maîtrisé.', en: 'The network under control.' },
             text: {
-              fr: 'nginx en frontal, les services derrière.',
-              en: 'nginx in front, the services behind it.',
+              fr: 'Un reverse proxy nginx en frontal, les services isolés derrière.',
+              en: 'An nginx reverse proxy in front, the services isolated behind it.',
             },
           },
         ],
@@ -340,8 +339,8 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'Conventional Commits.', en: 'Conventional Commits.' },
             text: {
-              fr: 'Un historique qui se lit comme un journal, en anglais, une intention par commit.',
-              en: 'A history that reads like a log, in English, one intent per commit.',
+              fr: 'Un historique qui se lit comme un journal : une intention par commit.',
+              en: 'A history that reads like a log: one intent per commit.',
             },
           },
           {
@@ -350,22 +349,22 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
               en: 'Everything goes through a pull request.',
             },
             text: {
-              fr: 'Branche, commits, vérification complète, puis revue avant la fusion.',
-              en: 'Branch, commits, full verification, then review before the merge.',
+              fr: 'Branche courte, revue, puis fusion : rien n’arrive sur la branche principale sans relecture.',
+              en: 'Short-lived branch, review, then merge: nothing reaches the main branch unreviewed.',
             },
           },
           {
             lead: { fr: 'Une CI qui fait foi.', en: 'CI as the authority.' },
             text: {
-              fr: 'Typecheck, lint, format, tests et couverture avant chaque fusion.',
-              en: 'Typecheck, lint, format, tests and coverage before every merge.',
+              fr: 'Typecheck, lint, tests et couverture : la fusion attend que tout soit vert.',
+              en: 'Typecheck, lint, tests and coverage: the merge waits until everything is green.',
             },
           },
           {
-            lead: { fr: 'Les décisions tracées.', en: 'Decisions on record.' },
+            lead: { fr: 'Un historique qu’on remonte.', en: 'A history you can trace.' },
             text: {
-              fr: 'Les choix structurants consignés dans des ADR, avec leurs inconvénients assumés.',
-              en: 'Structural choices recorded in ADRs, with the downsides they accept.',
+              fr: 'Rebase, cherry-pick, conflits résolus : retrouver quand et pourquoi une ligne a changé.',
+              en: 'Rebase, cherry-pick, conflicts resolved: finding when and why a line changed.',
             },
           },
         ],
@@ -376,7 +375,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'EC2.', en: 'EC2.' },
             text: {
-              fr: 'J’administre les instances : mise en service, configuration et maintenance des serveurs.',
+              fr: 'J’administre les instances : mise en service, configuration et maintenance des serveurs.',
               en: 'I administer the instances: provisioning, configuring and maintaining the servers.',
             },
           },
@@ -390,7 +389,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'S3.', en: 'S3.' },
             text: {
-              fr: 'Des buckets pour les médias et les livrables, avec des droits stricts : lisibles quand il le faut, jamais inscriptibles publiquement.',
+              fr: 'Des buckets pour les médias et les livrables, avec des droits stricts : lisibles quand il le faut, jamais inscriptibles publiquement.',
               en: 'Buckets for media and deliverables, with strict permissions: readable when they need to be, never publicly writable.',
             },
           },
@@ -409,28 +408,28 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'Orchestrer, pas déléguer.', en: 'Orchestrating, not delegating.' },
             text: {
-              fr: 'Des agents spécialisés (Angular, design, rédaction, motion) que je mets en contradiction plutôt qu’en accord.',
-              en: 'Specialised agents (Angular, design, copy, motion) that I set against each other rather than in agreement.',
+              fr: 'Des agents spécialisés que je mets en contradiction plutôt qu’en accord.',
+              en: 'Specialised agents I set against each other rather than in agreement.',
             },
           },
           {
-            lead: { fr: 'Des règles versionnées.', en: 'Versioned rules.' },
+            lead: { fr: 'Un contexte versionné.', en: 'Versioned context.' },
             text: {
-              fr: 'Consignes de projet, skills et mémoire dans le dépôt : le contexte ne se perd pas d’une session à l’autre.',
-              en: 'Project instructions, skills and memory in the repository: context is not lost from one session to the next.',
+              fr: 'Consignes, skills et mémoire dans le dépôt : le contexte ne se perd pas d’une session à l’autre.',
+              en: 'Instructions, skills and memory in the repository: context carries over from one session to the next.',
             },
           },
           {
-            lead: { fr: 'Mesurer, pas lire.', en: 'Measuring, not reading.' },
+            lead: { fr: 'Vérifier, pas croire.', en: 'Verifying, not trusting.' },
             text: {
-              fr: 'Chaque changement visuel vérifié sur le DOM réel, pas sur une relecture du CSS.',
-              en: 'Every visual change checked on the live DOM, not by rereading the CSS.',
+              fr: 'Ce que l’agent produit est testé ou mesuré avant d’être accepté.',
+              en: 'What the agent produces is tested or measured before it is accepted.',
             },
           },
           {
             lead: { fr: 'Le dernier mot reste humain.', en: 'The last word stays human.' },
             text: {
-              fr: 'Chaque affirmation se rattache à une source, et j’arbitre.',
+              fr: 'Chaque affirmation se rattache à une source, et c’est moi qui tranche.',
               en: 'Every claim traces back to a source, and I make the call.',
             },
           },
@@ -446,31 +445,31 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
         tool: '3dsmax',
         points: [
           {
-            lead: { fr: 'La base de chaque pièce.', en: 'The base of every piece.' },
+            lead: { fr: 'La modélisation polygonale.', en: 'Polygon modelling.' },
             text: {
-              fr: 'Les seize rendus de la galerie partent de 3ds Max : architecture, intérieurs, objets, personnages.',
-              en: 'All sixteen renders in the gallery start in 3ds Max: architecture, interiors, objects, characters.',
+              fr: 'Une scène construite de zéro : volumes, détails, puis mise en place pour le rendu.',
+              en: 'A scene built from nothing: volumes, detail, then set up for rendering.',
             },
           },
           {
             lead: { fr: 'L’architecture.', en: 'Architecture.' },
             text: {
-              fr: 'Un immeuble d’habitation, une maison moderne vue de l’extérieur.',
-              en: 'An apartment building, a modern house seen from outside.',
+              fr: 'Bâtiments et extérieurs modélisés aux bonnes proportions, prêts à être éclairés.',
+              en: 'Buildings and exteriors modelled to the right proportions, ready to be lit.',
             },
           },
           {
             lead: { fr: 'L’intérieur.', en: 'Interiors.' },
             text: {
-              fr: 'Salon, chambre, entrée aux murs blancs : des pièces décorées et mises en scène.',
-              en: 'Living room, bedroom, a white-walled entrance hall: rooms furnished and staged.',
+              fr: 'Des pièces meublées et mises en scène, du mobilier jusqu’aux accessoires.',
+              en: 'Rooms furnished and staged, from the furniture down to the props.',
             },
           },
           {
             lead: { fr: 'L’objet et le produit.', en: 'Objects and products.' },
             text: {
-              fr: 'Une ampoule, des tomates, une canette en visuel publicitaire pour Pixmodels.',
-              en: 'A light bulb, tomatoes, a can as an advertising visual for Pixmodels.',
+              fr: 'Des objets du quotidien modélisés avec précision, jusqu’au visuel publicitaire.',
+              en: 'Everyday objects modelled precisely, all the way to an advertising visual.',
             },
           },
         ],
@@ -481,29 +480,29 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'Le photoréalisme.', en: 'Photorealism.' },
             text: {
-              fr: 'Immeuble, maison, herbe, tomates : des images qui doivent passer pour des photographies.',
-              en: 'Building, house, grass, tomatoes: images that have to pass for photographs.',
+              fr: 'Des images de synthèse qui doivent passer pour des photographies.',
+              en: 'Computer-generated images that have to pass for photographs.',
             },
           },
           {
             lead: { fr: 'La lumière d’abord.', en: 'Light first.' },
             text: {
-              fr: 'Le même salon rendu de jour et de nuit : l’éclairage raconte la scène.',
-              en: 'The same living room rendered by day and by night: the lighting tells the scene.',
+              fr: 'Lumière naturelle ou artificielle, de jour comme de nuit : l’éclairage raconte la scène.',
+              en: 'Daylight or artificial light, by day or by night: the lighting tells the scene.',
+            },
+          },
+          {
+            lead: { fr: 'Les matériaux.', en: 'Materials.' },
+            text: {
+              fr: 'Réflexion, réfraction, rugosité : chaque surface réglée pour réagir juste à la lumière.',
+              en: 'Reflection, refraction, roughness: every surface tuned to respond to light correctly.',
             },
           },
           {
             lead: { fr: 'Les personnages aussi.', en: 'Characters too.' },
             text: {
-              fr: 'L’extraterrestre et Escart Wild, rendus en photoréaliste.',
-              en: 'The alien and Escart Wild, rendered photorealistically.',
-            },
-          },
-          {
-            lead: { fr: 'Les matières.', en: 'Materials.' },
-            text: {
-              fr: 'Chaque surface réglée pour réagir juste à la lumière.',
-              en: 'Every surface tuned to respond to light correctly.',
+              fr: 'Le même réalisme appliqué aux créatures et aux personnages, pas seulement aux décors.',
+              en: 'The same realism applied to creatures and characters, not just to sets.',
             },
           },
         ],
@@ -514,26 +513,29 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'La sculpture organique.', en: 'Organic sculpting.' },
             text: {
-              fr: 'Gorgotte, une créature monstrueuse sculptée en 3D.',
-              en: 'Gorgotte, a monstrous creature sculpted in 3D.',
+              fr: 'Créatures et personnages sculptés du volume général jusqu’au détail de la peau.',
+              en: 'Creatures and characters sculpted from the overall form down to the detail of the skin.',
             },
           },
           {
             lead: { fr: 'Du cartoon au réaliste.', en: 'From cartoon to realistic.' },
             text: {
-              fr: 'Escart Wild, un escargot cartoon traité en photoréaliste.',
-              en: 'Escart Wild, a cartoon snail treated photorealistically.',
+              fr: 'Pousser un design cartoon jusqu’à un rendu crédible, sans lui faire perdre son caractère.',
+              en: 'Taking a cartoon design to a believable finish without losing its character.',
             },
           },
           {
             lead: { fr: 'Le portrait.', en: 'Portraits.' },
-            text: { fr: 'Une caricature 3D de moi-même.', en: 'A 3D caricature of myself.' },
+            text: {
+              fr: 'Saisir une ressemblance, et savoir l’exagérer jusqu’à la caricature.',
+              en: 'Capturing a likeness, and knowing how to push it into caricature.',
+            },
           },
           {
             lead: { fr: 'Le mécanique aussi.', en: 'Mechanical too.' },
             text: {
-              fr: 'Beebop, un robot sculpté puis texturé.',
-              en: 'Beebop, a robot sculpted, then textured.',
+              fr: 'Des formes dures et nettes, sculptées puis préparées pour la texture.',
+              en: 'Hard, clean forms, sculpted then prepared for texturing.',
             },
           },
         ],
@@ -544,15 +546,15 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'Texturer ce qu’on a sculpté.', en: 'Texturing what was sculpted.' },
             text: {
-              fr: 'Beebop, sculpté dans ZBrush puis texturé dans Substance Painter.',
-              en: 'Beebop, sculpted in ZBrush, then textured in Substance Painter.',
+              fr: 'Des textures peintes directement sur le modèle, couche par couche.',
+              en: 'Textures painted straight onto the model, layer by layer.',
             },
           },
           {
-            lead: { fr: 'Une créature crédible.', en: 'A believable creature.' },
+            lead: { fr: 'Des surfaces crédibles.', en: 'Believable surfaces.' },
             text: {
-              fr: 'Les textures de l’extraterrestre, rendu en photoréaliste.',
-              en: 'The alien’s textures, rendered photorealistically.',
+              fr: 'Usure, salissure, variations : ce qui fait passer une matière de neuve à vraie.',
+              en: 'Wear, grime, variation: what turns a surface from brand new to real.',
             },
           },
         ],
@@ -563,15 +565,15 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
           {
             lead: { fr: 'La dernière étape.', en: 'The last step.' },
             text: {
-              fr: 'Une partie des rendus passe par Photoshop avant d’être montrée.',
-              en: 'Some of the renders go through Photoshop before they are shown.',
+              fr: 'Retouche et étalonnage du rendu avant qu’il soit montré.',
+              en: 'Retouching and colour grading the render before it is shown.',
             },
           },
           {
-            lead: { fr: 'Le visuel publicitaire.', en: 'The advertising visual.' },
+            lead: { fr: 'Du rendu au visuel.', en: 'From render to visual.' },
             text: {
-              fr: 'La canette Pixmodels, de la 3D au support marketing.',
-              en: 'The Pixmodels can, from 3D to marketing material.',
+              fr: 'Composer une image finie, prête pour un support marketing.',
+              en: 'Composing a finished image, ready for marketing material.',
             },
           },
         ],
