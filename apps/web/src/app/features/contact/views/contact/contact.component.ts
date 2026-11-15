@@ -2,7 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   DOCUMENT,
+  DestroyRef,
   ElementRef,
+  afterNextRender,
   computed,
   inject,
   signal,
@@ -28,12 +30,13 @@ import {
 import { InLocalePipe, inLocale } from '@core/i18n/in-locale.pipe';
 import { SITE_LOCALE, type SiteLocale } from '@core/i18n/site-locale/site-locale';
 import { ContactService, contactFailureOf } from '@core/services/contact/contact.service';
+import { type CaptchaWidget, TurnstileService } from '@core/services/turnstile/turnstile.service';
 import { ContactPortraitComponent } from '@features/contact/components/contact-portrait/contact-portrait.component';
 
 const FIELDS = ['name', 'email', 'message'] as const;
 type Field = (typeof FIELDS)[number];
 
-type SendState = 'idle' | 'sending' | 'sent' | 'unavailable' | 'rejected';
+type SendState = 'idle' | 'sending' | 'sent' | 'unavailable' | 'captcha' | 'rejected';
 
 const MISSING: Readonly<Record<Field, string>> = {
   name: $localize`:@@contact.missing.name:Indiquez votre nom.`,
@@ -47,6 +50,7 @@ const STATUS: Readonly<Record<SendState, string>> = {
   sending: $localize`:@@contact.status.sending:Envoi en cours…`,
   sent: $localize`:@@contact.status.sent:Merci, votre message est parti. Je vous réponds au plus vite.`,
   unavailable: $localize`:@@contact.status.unavailable:L’envoi par formulaire n’est pas encore en service. En attendant, écrivez-moi sur LinkedIn.`,
+  captcha: $localize`:@@contact.status.captcha:La vérification anti-spam n’a pas abouti. Réessayez, ou écrivez-moi sur LinkedIn.`,
   rejected: $localize`:@@contact.status.rejected:Le message n’est pas parti. Réessayez dans un instant, ou écrivez-moi sur LinkedIn.`,
 };
 
@@ -88,6 +92,20 @@ const NO_ERRORS: Readonly<Record<Field, string>> = { name: '', email: '', messag
 export class ContactComponent {
   private readonly api = inject(ContactService);
   private readonly formRef = viewChild.required<ElementRef<HTMLFormElement>>('formEl');
+  private readonly captchaRef = viewChild.required<ElementRef<HTMLElement>>('captchaEl');
+  private readonly turnstile = inject(TurnstileService);
+  private captcha: Promise<CaptchaWidget> | null = null;
+  private mounted = false;
+  protected readonly challenge = signal(false);
+
+  constructor() {
+    // Loaded with the page rather than on submit: the check then runs while
+    // the visitor writes. Never during prerendering.
+    afterNextRender(() => void this.captchaWidget().catch(() => undefined));
+    inject(DestroyRef).onDestroy(() => {
+      void this.captcha?.then((widget) => widget.remove()).catch(() => undefined);
+    });
+  }
 
   protected readonly page = CONTACT_PAGE;
   protected readonly title = titleParts(inLocale(CONTACT_PAGE.title), SITE_LOCALE);
@@ -119,6 +137,7 @@ export class ContactComponent {
   protected readonly errors = signal<Readonly<Record<Field, string>>>(NO_ERRORS);
   protected readonly state = signal<SendState>('idle');
   protected readonly status = computed(() => STATUS[this.state()]);
+  protected readonly failed = computed(() => !['idle', 'sending', 'sent'].includes(this.state()));
 
   protected submit(): void {
     if (this.state() === 'sending') return;
@@ -136,13 +155,49 @@ export class ContactComponent {
     }
 
     this.state.set('sending');
-    this.api.send(this.form.getRawValue()).subscribe({
+    void this.send();
+  }
+
+  private async send(): Promise<void> {
+    let captchaToken: string;
+    try {
+      captchaToken = await (await this.captchaWidget()).token();
+    } catch {
+      this.state.set('captcha');
+      return;
+    }
+    this.api.send({ ...this.form.getRawValue(), captchaToken }).subscribe({
       next: () => {
         this.state.set('sent');
         this.form.reset();
       },
       error: (error: unknown) => this.state.set(contactFailureOf(error)),
     });
+  }
+
+  /**
+   * Mounted once; a widget that failed to load is tried again on the next send.
+   * A widget whose frame has left its box is mounted again: measured on the
+   * page's first load, where the box ends up empty and Cloudflare reports
+   * « Cannot find Widget », failing every send.
+   */
+  private captchaWidget(): Promise<CaptchaWidget> {
+    const box = this.captchaRef().nativeElement;
+    if (this.mounted && !box.hasChildNodes()) {
+      this.mounted = false;
+      this.captcha = null;
+    }
+    this.captcha ??= this.turnstile
+      .mount(box, (shown) => this.challenge.set(shown))
+      .then((widget) => {
+        this.mounted = true;
+        return widget;
+      })
+      .catch((error: unknown) => {
+        this.captcha = null;
+        throw error;
+      });
+    return this.captcha;
   }
 
   /** As on the mockup: once a field is flagged, leaving it re-checks it. */

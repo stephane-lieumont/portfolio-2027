@@ -12,6 +12,7 @@ import {
   FrameLoopService,
 } from '@core/services/motion/frame-loop/frame-loop.service';
 import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
+import { TurnstileService } from '@core/services/turnstile/turnstile.service';
 import { ContactComponent, titleParts } from './contact.component';
 
 interface Setup {
@@ -29,9 +30,35 @@ const fakeFrames = {
 
 const reducedMotion = signal(false);
 
+interface FakeTurnstile {
+  mounts: number;
+  removed: number;
+  failToken: boolean;
+  failMount: boolean;
+}
+const turnstile: FakeTurnstile = { mounts: 0, removed: 0, failToken: false, failMount: false };
+let showChallenge: (shown: boolean) => void = () => undefined;
+const fakeTurnstile = {
+  async mount(_container: HTMLElement, onChallenge: (shown: boolean) => void) {
+    showChallenge = onChallenge;
+    turnstile.mounts += 1;
+    if (turnstile.failMount) throw new Error('blocked');
+    return {
+      token: async () => {
+        if (turnstile.failToken) throw new Error('refused');
+        return 'turnstile-token';
+      },
+      remove: () => {
+        turnstile.removed += 1;
+      },
+    };
+  },
+};
+
 async function render({ reduced = false, transition }: Setup = {}) {
   reducedMotion.set(reduced);
   frames.clear();
+  Object.assign(turnstile, { mounts: 0, removed: 0 });
   if (transition) document.documentElement.dataset['vt'] = transition;
   TestBed.configureTestingModule({
     imports: [ContactComponent],
@@ -42,6 +69,7 @@ async function render({ reduced = false, transition }: Setup = {}) {
       { provide: API_BASE_URL, useValue: '/api' },
       { provide: FrameLoopService, useValue: fakeFrames },
       { provide: ReducedMotionService, useValue: { reduced: reducedMotion } },
+      { provide: TurnstileService, useValue: fakeTurnstile },
     ],
   });
   const fixture = TestBed.createComponent(ContactComponent);
@@ -57,6 +85,7 @@ async function render({ reduced = false, transition }: Setup = {}) {
 
 afterEach(() => {
   document.body.replaceChildren();
+  Object.assign(turnstile, { failToken: false, failMount: false });
 });
 
 function field(host: HTMLElement, name: string): HTMLInputElement | HTMLTextAreaElement {
@@ -159,8 +188,11 @@ describe('Contact — sending', () => {
       name: 'Ada Lovelace',
       email: 'ada@example.org',
       message: 'Bonjour',
+      captchaToken: 'turnstile-token',
     });
     expect(button(host)?.getAttribute('aria-busy')).toBe('true');
+    expect(button(host)?.getAttribute('aria-disabled')).toBe('true');
+    expect(button(host)?.classList).toContain('form__submit--sending');
     expect(statusOf(host)).toBe('Envoi en cours…');
     // Never disabled: it stays focusable and keeps its boundary.
     expect(button(host)?.hasAttribute('disabled')).toBe(false);
@@ -169,7 +201,12 @@ describe('Contact — sending', () => {
     await fixture.whenStable();
 
     expect(button(host)?.hasAttribute('aria-busy')).toBe(false);
+    expect(button(host)?.hasAttribute('aria-disabled')).toBe(false);
+    expect(button(host)?.classList).not.toContain('form__submit--sending');
     expect(statusOf(host)).toMatch(/^Merci/);
+    expect(host.querySelector('.form__status')?.classList).toContain('form__status--sent');
+    expect(host.querySelector('.form__status')?.classList).not.toContain('form__status--error');
+    expect(host.querySelector('.form__status svg')?.getAttribute('aria-hidden')).toBe('true');
     expect(field(host, 'message').value).toBe('');
   });
 
@@ -215,7 +252,74 @@ describe('Contact — sending', () => {
     http.expectOne('/api/contact').flush(null, { status: 500, statusText: 'Server Error' });
     await fixture.whenStable();
 
+    expect(host.querySelector('.form__status')?.classList).toContain('form__status--error');
+
     expect(statusOf(host)).toMatch(/^Le message n’est pas parti\. Réessayez/);
+  });
+});
+
+describe('Contact — anti-spam check', () => {
+  it('prepares the check with the page, once', async () => {
+    await render();
+
+    expect(turnstile.mounts).toBe(1);
+  });
+
+  it('sends nothing and says so when the check fails in the browser', async () => {
+    const { fixture, host, http } = await render();
+    turnstile.failToken = true;
+    await fillValid(fixture, host);
+    await fixture.whenStable();
+
+    http.expectNone('/api/contact');
+    expect(statusOf(host)).toBe(
+      'La vérification anti-spam n’a pas abouti. Réessayez, ou écrivez-moi sur LinkedIn.',
+    );
+    expect(button(host)?.hasAttribute('aria-busy')).toBe(false);
+    expect(field(host, 'message').value).toBe('Bonjour');
+  });
+
+  it('tries to load the check again when it could not the first time', async () => {
+    turnstile.failMount = true;
+    const { fixture, host, http } = await render();
+    turnstile.failMount = false;
+    await fillValid(fixture, host);
+    await fixture.whenStable();
+
+    expect(turnstile.mounts).toBe(2);
+    expect(http.expectOne('/api/contact').request.body.captchaToken).toBe('turnstile-token');
+  });
+
+  it('says so when the API refuses the check', async () => {
+    const { fixture, host, http } = await render();
+    await fillValid(fixture, host);
+
+    http.expectOne('/api/contact').flush(null, { status: 403, statusText: 'Forbidden' });
+    await fixture.whenStable();
+
+    expect(statusOf(host)).toMatch(/^La vérification anti-spam n’a pas abouti/);
+  });
+
+  it('makes room for the challenge only while Cloudflare shows it', async () => {
+    const { fixture, host } = await render();
+    const box = host.querySelector('.form__captcha');
+
+    showChallenge(true);
+    await fixture.whenStable();
+    expect(box?.classList.contains('form__captcha--challenge')).toBe(true);
+
+    showChallenge(false);
+    await fixture.whenStable();
+    expect(box?.classList.contains('form__captcha--challenge')).toBe(false);
+  });
+
+  it('removes the widget with the page', async () => {
+    const { fixture } = await render();
+    fixture.destroy();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(turnstile.removed).toBe(1);
   });
 });
 

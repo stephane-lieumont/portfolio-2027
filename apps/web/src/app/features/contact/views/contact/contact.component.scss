@@ -68,6 +68,10 @@
   margin-block-end: 1em;
 }
 
+.form__captcha:not(.form__captcha--challenge) {
+  position: absolute;
+}
+
 .form__field {
   display: grid;
   gap: 8px;
@@ -115,15 +119,21 @@ textarea.form__control {
   }
 }
 
+// Red and dashed: the dash keeps the state readable without colour.
 .form__control[aria-invalid='true'] {
-  border-block-end-style: dashed;
-  border-block-end-color: var(--world-ink);
+  border-block-end: 2px dashed var(--form-danger);
+  padding-block-end: 9px;
+}
+
+.form__control[aria-invalid='true']:focus {
+  border-block-end-style: solid;
 }
 
 .form__error {
   margin: 0;
   font-size: 14px;
   font-weight: 600;
+  color: var(--form-danger);
 
   &::before {
     content: '↳ ';
@@ -151,12 +161,71 @@ textarea.form__control {
   cursor: pointer;
   transition: scale 200ms var(--ease-out);
 
+  // The dot becomes the spinner while sending, in the same 12px box, so the
+  // button keeps its width.
   &::after {
     content: '';
-    inline-size: 6px;
-    block-size: 6px;
+    box-sizing: border-box;
+    inline-size: 12px;
+    block-size: 12px;
     border-radius: 50%;
-    background: currentColor;
+    background: radial-gradient(circle, currentColor 3px, transparent 3.5px);
+  }
+}
+
+.form__submit--sending {
+  cursor: progress;
+  opacity: 0.72;
+
+  &::after {
+    border: 2px solid currentColor;
+    border-block-start-color: transparent;
+    background: none;
+    animation: form-spin 700ms linear infinite;
+  }
+}
+
+@keyframes form-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+.form__status.form__status--sent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--form-success);
+  font-weight: 500;
+  animation: form-thanks 520ms var(--ease-out) both;
+}
+
+.form__status.form__status--error {
+  color: var(--form-danger);
+  font-weight: 500;
+}
+
+.form__status-icon {
+  flex: none;
+  inline-size: 20px;
+  block-size: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@keyframes form-thanks-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes form-thanks {
+  from {
+    opacity: 0;
+    translate: 0 8px;
   }
 }
 
@@ -207,7 +276,7 @@ textarea.form__control {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .form__submit:hover {
+  .form__submit:not(.form__submit--sending):hover {
     scale: 1.04;
   }
 
@@ -253,6 +322,14 @@ textarea.form__control {
   .form__submit,
   .socials__link {
     transition: none;
+  }
+
+  .form__submit--sending::after {
+    animation-duration: 2.4s;
+  }
+
+  .form__status.form__status--sent {
+    animation-name: form-thanks-fade;
   }
 
   .form__submit:hover,

@@ -72,16 +72,36 @@
       }
     </div>
     <div class="form__row">
+      <!-- aria-disabled, not disabled: a disabled button drops the focus the
+           visitor just put on it. submit() ignores a second send. -->
       <button
         class="form__submit"
         type="submit"
+        [class.form__submit--sending]="state() === 'sending'"
         [attr.aria-busy]="state() === 'sending' ? 'true' : null"
+        [attr.aria-disabled]="state() === 'sending' ? 'true' : null"
         i18n="@@contact.send"
       >
         Envoyer
       </button>
-      <p class="form__status" role="status">{{ status() }}</p>
+      <p
+        class="form__status"
+        [class.form__status--sent]="state() === 'sent'"
+        [class.form__status--error]="failed()"
+        role="status"
+      >
+        @if (state() === 'sent') {
+          <svg class="form__status-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <path d="m8.5 12.5 2.5 2.5 4.5-5" />
+          </svg>
+        }
+        {{ status() }}
+      </p>
     </div>
+    <!-- Cloudflare draws its challenge here only when it wants the visitor to act;
+         until then the box stays out of the grid and adds no gap. -->
+    <div #captchaEl class="form__captcha" [class.form__captcha--challenge]="challenge()"></div>
   </form>
 
   @if (portrait; as image) {

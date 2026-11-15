@@ -538,6 +538,26 @@ Deviations from the mockup, each on purpose:
 - The mockup has no viewport meta, so at 390px it lays out at 980px; the build
   follows its CSS rules below 900px.
 
+**Contact mail (`feat/contact-smtp`, ADR-0020)** — `POST /api/contact` validates
+`contactRequestSchema` (shared-types, the message plus a Turnstile token),
+verifies the token at Cloudflare's siteverify, then mails through nodemailer
+(`mailer` plugin; `captcha` plugin for Turnstile): from and to `CONTACT_TO`,
+`Reply-To` the visitor, plain text. 5 posts per IP per 10 minutes; 400 on a bad
+body, 403 on a refused token (nothing sent), 502 on an SMTP or Cloudflare
+failure, never with its cause. Development mails to Mailpit
+(`pnpm infra:up`, inbox http://localhost:8025) with Cloudflare's test keys; the
+Angular dev server now proxies `/api` to :3000. The web loads Turnstile's
+script only when the contact page renders (`TurnstileService`), invisible
+(`interaction-only`, executed on submit, reset before each reuse); a refused
+check, in the browser or by the API, shows « La vérification anti-spam n’a pas
+abouti… » / « The spam check did not go through… ». Measured 2026-11-15 in
+Chrome on both trees: the real form landed in Mailpit (Reply-To the visitor),
+the always-fail secret answered 403 twice with nothing sent, a second send on
+the same page got a fresh token, the form's height is unchanged (444px; the
+widget's box is out of the grid until Cloudflare shows a challenge), and no
+Cloudflare script on the other pages. Not measured: a real interactive
+challenge.
+
 **Contact (« Bascule » PR 6)** — the mockup's contact view, measured iso
 against it in headless Chrome at 1440 (every box of portrait, plate, figure,
 caption, eyebrow, title, lede, fields, button and socials within 0.1px, both
@@ -1050,13 +1070,13 @@ on the production build (1440 and 390), and is to be fixed later.
 
 Ordered by what hurts most on the day the site goes live.
 
-| Gap                                    | Consequence                                                                                                                                                                                                                                                                                 |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **nginx not updated for prerendering** | Outside the repository. ADR-0005 (amended 2026-11-14) now prescribes `try_files $uri $uri/index.html =404;` and `error_page 404 /404/index.html;` for `/*`. The live config still has the `index.html` fallback, which would serve the prerendered home with a 200 under every unknown URL. |
-| **Contact route missing in the API**   | The form posts to `/api/contact` and tells the visitor sending is not available yet. Needs the Fastify route: Zod `contactMessageSchema`, rate limit, relay to a mail service (ADR-0007).                                                                                                   |
-| **API is a skeleton**                  | Only `/health`. No projects, no media, no contact route.                                                                                                                                                                                                                                    |
-| **No back office**                     | Content lives in `apps/web/src/app/core/data/static-content/static-content.ts`. Every edit is a commit.                                                                                                                                                                                     |
-| **Spec 05 missing; spec 04 drafted**   | `docs/specs/04-back-office.md` is a draft (2026-11-15) awaiting Stéphane's answers, with ADR-0019 (admin access hardening) proposed. The content spec 05 was never written (the SEO it was to cover is built, `feat/seo`).                                                                  |
+| Gap                                    | Consequence                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **nginx not updated for prerendering** | Outside the repository. ADR-0005 (amended 2026-11-14) now prescribes `try_files $uri $uri/index.html =404;` and `error_page 404 /404/index.html;` for `/*`. The live config still has the `index.html` fallback, which would serve the prerendered home with a 200 under every unknown URL.                                                                                                                                                                      |
+| **Contact keys not in production**     | The route works (`feat/contact-smtp`, ADR-0020) but production needs, in the server `.env`: `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER` and `CONTACT_TO` (his Gmail address), `SMTP_PASSWORD` (a Google app password), `TURNSTILE_SECRET`; and the Turnstile site key in `apps/web/src/app/core/config/turnstile.config.ts` (`PRODUCTION_SITE_KEY`, still the test key: the form fails closed). The API refuses to boot in production without them. |
+| **API is a skeleton**                  | Only `/health` and `POST /api/contact`. No projects, no media.                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **No back office**                     | Content lives in `apps/web/src/app/core/data/static-content/static-content.ts`. Every edit is a commit.                                                                                                                                                                                                                                                                                                                                                          |
+| **Spec 05 missing; spec 04 drafted**   | `docs/specs/04-back-office.md` is a draft (2026-11-15) awaiting Stéphane's answers, with ADR-0019 (admin access hardening) proposed. The content spec 05 was never written (the SEO it was to cover is built, `feat/seo`).                                                                                                                                                                                                                                       |
 
 ## Known accessibility debt — contact page
 

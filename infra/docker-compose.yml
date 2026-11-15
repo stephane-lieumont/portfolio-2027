@@ -40,11 +40,25 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
       SESSION_SECRET: ${SESSION_SECRET}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      CONTACT_TO: ${CONTACT_TO}
+      TURNSTILE_SECRET: ${TURNSTILE_SECRET}
     volumes:
       - api-data:/data
     depends_on:
       minio:
         condition: service_healthy
+
+  # Catches the contact form's mail in development: SMTP on 1025, inbox at
+  # http://localhost:8025. Nothing leaves the machine (ADR-0020).
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - '1025:1025'
+      - '8025:8025'
 
 volumes:
   minio-data:

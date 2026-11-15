@@ -10,3 +10,10 @@ export const contactMessageSchema = z.object({
   message: z.string().trim().min(1).max(5000),
 });
 export type ContactMessage = z.infer<typeof contactMessageSchema>;
+
+/** The message with the Turnstile token the API verifies before sending (ADR-0020). */
+export const contactRequestSchema = contactMessageSchema.extend({
+  // Cloudflare caps a token at 2048 characters.
+  captchaToken: z.string().min(1).max(2048),
+});
+export type ContactRequest = z.infer<typeof contactRequestSchema>;
