@@ -252,8 +252,8 @@ export const PROJECTS: readonly StaticProject[] = [
         en: 'Gathering the needs.',
       },
       {
-        fr: 'Concevoir les maquettes jusqu’à leur validation.',
-        en: 'Designing the mockups through to sign-off.',
+        fr: 'Concevoir les maquettes sur Figma, jusqu’à leur validation.',
+        en: 'Designing the mockups in Figma through to sign-off.',
       },
       {
         fr: 'Développer en React Native et ajuster.',
@@ -267,6 +267,7 @@ export const PROJECTS: readonly StaticProject[] = [
     technologies: [
       'react-native',
       'typescript',
+      'figma',
       'redux',
       'android',
       'ios',
