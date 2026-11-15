@@ -3,7 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { describe, expect, it } from 'vitest';
 
-import { PROJECTS, type StaticProject } from '@core/data/static-content/static-content';
+import { PROJECTS } from '@core/data/content/content.generated';
+import type { Project } from '@portfolio/shared-types';
 import { ProjectHeroComponent } from './project-hero.component';
 
 @Component({
@@ -11,10 +12,10 @@ import { ProjectHeroComponent } from './project-hero.component';
   template: `<app-project-hero [project]="project()" rank="04" total="07" />`,
 })
 class Host {
-  readonly project = signal<StaticProject>(PROJECTS[3]);
+  readonly project = signal<Project>(PROJECTS[3]);
 }
 
-async function render(project: StaticProject) {
+async function render(project: Project) {
   await TestBed.configureTestingModule({
     providers: [provideZonelessChangeDetection(), provideRouter([])],
   }).compileComponents();
@@ -25,7 +26,7 @@ async function render(project: StaticProject) {
 }
 
 const linxea = PROJECTS.find((p) => p.slug.fr === 'linxea')!;
-const withVideo: StaticProject = {
+const withVideo: Project = {
   ...linxea,
   videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
 };

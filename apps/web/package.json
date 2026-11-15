@@ -5,16 +5,18 @@
   "type": "module",
   "scripts": {
     "ng": "ng",
-    "dev": "ng serve",
-    "start": "ng serve",
-    "dev:en": "ng serve --configuration development-en",
-    "i18n:extract": "ng extract-i18n",
-    "build": "ng build && node scripts/write-seo-files.mjs && node scripts/check-prerender.mjs",
+    "content": "node scripts/content.mjs",
+    "content:seed": "node scripts/content.mjs --seed",
+    "dev": "node scripts/content.mjs --seed && ng serve",
+    "start": "node scripts/content.mjs --seed && ng serve",
+    "dev:en": "node scripts/content.mjs --seed && ng serve --configuration development-en",
+    "i18n:extract": "node scripts/content.mjs --seed && ng extract-i18n",
+    "build": "node scripts/content.mjs && ng build && node scripts/write-seo-files.mjs && node scripts/check-prerender.mjs",
     "og:images": "node scripts/og-images.mjs",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test && node --test \"scripts/*.test.mjs\"",
-    "typecheck": "tsc -b --noEmit",
-    "lint": "ng lint"
+    "watch": "node scripts/content.mjs --seed && ng build --watch --configuration development",
+    "test": "node scripts/content.mjs --seed && ng test && node --test \"scripts/*.test.mjs\"",
+    "typecheck": "node scripts/content.mjs --seed && tsc -b --noEmit",
+    "lint": "node scripts/content.mjs --seed && ng lint"
   },
   "dependencies": {
     "@angular/common": "^22.1.0",

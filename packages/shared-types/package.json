@@ -7,8 +7,13 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./registries": "./src/registries.ts",
+    "./localized": "./src/localized.ts",
     "./video": "./src/video.ts",
+    "./project": "./src/project.ts",
+    "./tool": "./src/tool.ts",
+    "./stack": "./src/stack.ts",
+    "./media": "./src/media.ts",
+    "./world": "./src/world.ts",
     "./contact": "./src/contact.ts"
   },
   "scripts": {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { PROJECTS } from '@core/data/static-content/static-content';
+import { PROJECTS } from '@core/data/content/content.generated';
 import { LOGO_MAX_WIDTH, logoWidth } from './logo-width';
 
 describe('logoWidth', () => {

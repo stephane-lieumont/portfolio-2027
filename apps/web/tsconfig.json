@@ -16,7 +16,7 @@
     "module": "preserve",
     "paths": {
       "@portfolio/shared-types": ["../../packages/shared-types/src/index.ts"],
-      "@portfolio/shared-types/registries": ["../../packages/shared-types/src/registries.ts"],
+      "@portfolio/shared-types/*": ["../../packages/shared-types/src/*.ts"],
       "@core/*": ["./src/app/core/*"],
       "@shared/*": ["./src/app/shared/*"],
       "@common/*": ["./src/app/common/*"],

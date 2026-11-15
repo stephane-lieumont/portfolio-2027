@@ -1,6 +1,6 @@
 import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
 
-import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/content/content.generated';
 import { SECTIONS, SITE_LOCALE } from '@core/i18n/site-locale/site-locale';
 
 /**
@@ -9,8 +9,7 @@ import { SECTIONS, SITE_LOCALE } from '@core/i18n/site-locale/site-locale';
  */
 export const serverRoutes: ServerRoute[] = [
   {
-    // From the static content for now. ADR-0008 enumerates them from the API
-    // once it serves projects, which makes the API a build dependency.
+    // Enumerated from the API, read before the build (ADR-0008, ADR-0022).
     path: `${SECTIONS.dev[SITE_LOCALE]}/:slug`,
     renderMode: RenderMode.Prerender,
     getPrerenderParams: async () =>

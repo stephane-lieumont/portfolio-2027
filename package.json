@@ -11,7 +11,8 @@
     "dev": "pnpm --parallel --filter \"./apps/*\" dev",
     "dev:web": "pnpm --filter @portfolio/web dev",
     "dev:api": "pnpm --filter @portfolio/api dev",
-    "build": "pnpm -r build",
+    "build": "pnpm -r --filter=!@portfolio/web build && pnpm build:site",
+    "build:site": "node scripts/build-site.mjs",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
@@ -19,7 +20,7 @@
     "format:check": "prettier --check .",
     "infra:up": "docker compose -f infra/docker-compose.yml up -d",
     "infra:down": "docker compose -f infra/docker-compose.yml down",
-    "verify": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm --filter @portfolio/web build"
+    "verify": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm build:site"
   },
   "devDependencies": {
     "prettier": "^3.9.6",

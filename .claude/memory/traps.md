@@ -145,8 +145,11 @@ anything about performance**, and prefer synchronous reads of
 
 **Symptom.** Zod in the web bundle, to render a chip.
 
-**Fix.** `@portfolio/shared-types/registries` is a separate entry point with no
-Zod import. Schemas live next to the entities that use them.
+**Fix.** Values the browser needs come from a narrow entry point with no Zod
+import (`@portfolio/shared-types/video`, `/localized`), and domain types are
+imported with `import type`. Schemas live next to the entities that use them.
+(The `/registries` entry point that first fixed this went away when the tools
+moved to the API, ADR-0022.)
 
 ---
 

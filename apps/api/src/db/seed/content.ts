@@ -1,133 +1,26 @@
-import type { LocalizedSlug, LocalizedText, Project } from '@portfolio/shared-types';
-import type { SoftwareSlug, TechnologySlug } from '@portfolio/shared-types/registries';
+import type { ArtworkRecord, ProjectRecord } from '@portfolio/shared-types/project';
+
+import { mediaId } from './media.ts';
+import { toolId } from './tools.ts';
 
 /**
- * Content held in the app until the API and back office exist.
+ * The site's projects and 3D pieces, loaded into the database by
+ * `pnpm --filter @portfolio/api db:seed` (ADR-0022). This file is their only
+ * source until the back office writes to the database (V1.1); the site never
+ * reads it, it reads the API. Every visitor-facing field is `{ fr, en }`
+ * (ADR-0017).
  *
- * Deliberately shaped like spec 03's entities so the swap is a change of source
- * and not a rewrite of the pages. Every visitor-facing field is `{ fr, en }`
- * (ADR-0017); the English is a draft written from the French, no new claim,
- * until the content review.
+ * Order is `releasedAt` descending, as the API serves it; pieces released the
+ * same day keep the order they have here, which is the order they are seeded in.
  */
-export interface StaticProject extends Pick<
-  Project,
-  'id' | 'slug' | 'title' | 'summary' | 'context' | 'role' | 'releasedAt'
-> {
-  /** What he did, when the context does not already say it all. */
-  readonly mission?: LocalizedText;
-  /**
-   * Plain sentences, never markup. The 2022 data wrapped tool names in
-   * `<strong>`, which would have to be either rendered as HTML or escaped and
-   * shown raw. Never invented: empty when none are sourced.
-   */
-  readonly missionSteps: readonly LocalizedText[];
-  readonly technologies: readonly TechnologySlug[];
-  /** A proper name, the same in both languages. */
-  readonly series?: string;
-  /** Where a period starts, when the work spans more than its release year. */
-  readonly startedAt?: string;
-  /**
-   * « Voir le site ». A demo proxied by nginx on this host is a root-relative
-   * path, never an absolute URL — the demos move with the site (ADR-0005).
-   */
-  readonly websiteUrl?: string;
-  /** « Voir la vidéo »: a YouTube address, opened on YouTube in a new tab. */
-  readonly videoUrl?: string;
-  /** « Voir sur Google Play ». */
-  readonly googlePlayUrl?: string;
-  /** The 4:3 card image. A client reference has none: it shows its logo. */
-  readonly cover?: StaticImage;
-  /** The wide visual the project page opens on: the product staged on white. */
-  readonly presentation?: StaticImage;
-  readonly presentationCaption?: LocalizedText;
-  /** A client's logo, in place of the cover and the presentation visual. */
-  readonly logo?: StaticLogo;
-  /**
-   * The brand colour (`#rrggbb`) tinting the logo plate's point field and
-   * tone; absent for a black or ink logo, which keeps the ink.
-   */
-  readonly logoTint?: string;
-  /**
-   * A dark plate, for a logo whose light colours vanish on the sand. A trial
-   * (Stéphane, 2026-11-15), front end only until he keeps it.
-   */
-  readonly logoPlate?: 'dark';
-}
 
-/**
- * A client's logo: an SVG or a transparent PNG in `public/logos/clients/`,
- * named after the project's French slug, shown in its own colours on a light
- * plate (Stéphane, 2026-11-15). Replacing the file swaps the logo with no code
- * change.
- */
-export interface StaticLogo {
-  readonly src: string;
-  /** The file's intrinsic proportions (its viewBox or pixels): they set its optical size. */
-  readonly width: number;
-  readonly height: number;
-  /**
-   * A raster logo's WebP variants (`<name>-<width>.webp`, apps/api
-   * `media:public`); an SVG has none.
-   */
-  readonly variants?: readonly number[];
-  /** Names the logo on the project page; the card leaves it to the title beside it. */
-  readonly alt: LocalizedText;
-}
-
-/** A rendered image with its intrinsic size, so nothing reflows once it loads. */
-export interface StaticImage {
-  /**
-   * Object key inside the MinIO bucket, never a URL. The origin serving it
-   * differs between development and production, so the base is injected
-   * (MEDIA_BASE_URL) and joined at render time — see media-url.ts. One file
-   * for both languages, named after the French slug.
-   */
-  readonly key: string;
-  /**
-   * Describes the picture for someone who cannot see it — never a repeat of the
-   * title, which is already read out beside it. The 2022 alt text was the title
-   * again, typos included.
-   */
-  readonly alt: LocalizedText;
-  readonly width: number;
-  readonly height: number;
-  /**
-   * The picture's mean colour (`#rrggbb`), painted on its frame while it
-   * loads, so a wall of images arrives as a wall of their own tones rather
-   * than of grey boxes. Measured on the originals (sharp channel means).
-   */
-  readonly averageColor?: string;
-}
-
-export interface StaticArtwork {
-  /** Names the piece across both trees: the language switch goes through it. */
-  readonly id: string;
-  readonly slug: LocalizedSlug;
-  readonly title: LocalizedText;
-  readonly image: StaticImage;
-  readonly software: readonly SoftwareSlug[];
-  readonly releasedAt: string;
-  readonly featured: boolean;
-  /**
-   * Where the mosaic crops around, each axis in [0, 1]; the centre when absent
-   * (spec 03, ADR-0015). The viewer always shows the whole render.
-   */
-  readonly focal?: { readonly x: number; readonly y: number };
-}
-// Ordered by releasedAt descending, as spec 03 settles, work still going on
-// first. No manual sort field: two sources of truth for order always drift.
 // Only the years are sourced and shown (Stéphane, 2026-11-15); the months of
 // the 2024 missions only keep them in the order he gave.
-export const PROJECTS: readonly StaticProject[] = [
+export const PROJECTS: readonly ProjectRecord[] = [
   {
     id: '0e047938-97a1-42f5-823f-5d57a605e56f',
     slug: { fr: 'immobilier-ch', en: 'immobilier-ch' },
-    logo: {
-      src: '/logos/clients/immobilier-ch.svg',
-      width: 433.15,
-      height: 61.2,
-      alt: { fr: 'Logo d’immobilier.ch', en: 'immobilier.ch logo' },
-    },
+    logo: mediaId('/logos/clients/immobilier-ch.svg'),
     logoTint: '#dc1622',
     title: { fr: 'immobilier.ch', en: 'immobilier.ch' },
     summary: {
@@ -169,16 +62,16 @@ export const PROJECTS: readonly StaticProject[] = [
       },
     ],
     technologies: [
-      'angular',
-      'typescript',
-      'dotnet',
-      'claude-code',
-      'python',
-      'aws',
-      'azure',
-      'terraform',
-      'ci-cd',
-      'sonarqube',
+      toolId('angular'),
+      toolId('typescript'),
+      toolId('dotnet'),
+      toolId('claude-code'),
+      toolId('python'),
+      toolId('aws'),
+      toolId('azure'),
+      toolId('terraform'),
+      toolId('ci-cd'),
+      toolId('sonarqube'),
     ],
     series: 'Web-Atrio',
     websiteUrl: 'https://www.immobilier.ch/',
@@ -193,12 +86,7 @@ export const PROJECTS: readonly StaticProject[] = [
   {
     id: 'e9afb2f8-9b7b-48a4-b31c-972cfcc56bb2',
     slug: { fr: 'web-atrio', en: 'web-atrio' },
-    logo: {
-      src: '/logos/clients/web-atrio.svg',
-      width: 72.731,
-      height: 59.227,
-      alt: { fr: 'Logo de Web-Atrio', en: 'Web-Atrio logo' },
-    },
+    logo: mediaId('/logos/clients/web-atrio.svg'),
     logoTint: '#0051ff',
     logoPlate: 'dark',
     title: { fr: 'Web-Atrio', en: 'Web-Atrio' },
@@ -220,7 +108,13 @@ export const PROJECTS: readonly StaticProject[] = [
         en: 'Building it in React.',
       },
     ],
-    technologies: ['react', 'typescript', 'gitlab', 'jira', 'ci-cd'],
+    technologies: [
+      toolId('react'),
+      toolId('typescript'),
+      toolId('gitlab'),
+      toolId('jira'),
+      toolId('ci-cd'),
+    ],
     series: 'Web-Atrio',
     websiteUrl: 'https://web-atrio.com/',
     releasedAt: '2024-12-01',
@@ -232,13 +126,7 @@ export const PROJECTS: readonly StaticProject[] = [
   {
     id: 'eff2a265-368b-49aa-a4dc-a5215723f46e',
     slug: { fr: 'cir-scancir', en: 'cir-scancir' },
-    logo: {
-      src: '/logos/clients/cir-scancir.png',
-      width: 783,
-      height: 414,
-      variants: [240, 480],
-      alt: { fr: 'Logo de CIR', en: 'CIR logo' },
-    },
+    logo: mediaId('/logos/clients/cir-scancir.png'),
     logoTint: '#e3201b',
     title: { fr: 'CIR — Scancir', en: 'CIR — Scancir' },
     summary: {
@@ -272,15 +160,15 @@ export const PROJECTS: readonly StaticProject[] = [
       },
     ],
     technologies: [
-      'react-native',
-      'typescript',
-      'figma',
-      'redux',
-      'android',
-      'ios',
-      'google-play-console',
-      'testflight',
-      'google-analytics',
+      toolId('react-native'),
+      toolId('typescript'),
+      toolId('figma'),
+      toolId('redux'),
+      toolId('android'),
+      toolId('ios'),
+      toolId('google-play-console'),
+      toolId('testflight'),
+      toolId('google-analytics'),
     ],
     series: 'Web-Atrio',
     googlePlayUrl: 'https://play.google.com/store/apps/details?id=com.cir.scancir&hl=fr',
@@ -290,12 +178,7 @@ export const PROJECTS: readonly StaticProject[] = [
   {
     id: 'e9ddf086-9f58-4bcf-b34a-cbf2d58b7ecf',
     slug: { fr: 'linxea', en: 'linxea' },
-    logo: {
-      src: '/logos/clients/linxea.svg',
-      width: 1678.45,
-      height: 366.17,
-      alt: { fr: 'Logo de Linxea', en: 'Linxea logo' },
-    },
+    logo: mediaId('/logos/clients/linxea.svg'),
     title: { fr: 'Linxea', en: 'Linxea' },
     summary: {
       fr: 'La refonte du parcours d’adhésion en ligne, en React et TypeScript. Référent technique de la squad Web-Atrio, j’ai aussi automatisé le déploiement en CI/CD.',
@@ -320,15 +203,15 @@ export const PROJECTS: readonly StaticProject[] = [
       },
     ],
     technologies: [
-      'react',
-      'tailwind',
-      'typescript',
-      'dotnet',
-      'azure-devops',
-      'jira',
-      'ci-cd',
-      'sonarqube',
-      'unit-tests',
+      toolId('react'),
+      toolId('tailwind'),
+      toolId('typescript'),
+      toolId('dotnet'),
+      toolId('azure-devops'),
+      toolId('jira'),
+      toolId('ci-cd'),
+      toolId('sonarqube'),
+      toolId('unit-tests'),
     ],
     series: 'Web-Atrio',
     websiteUrl: 'https://www.linxea.com/',
@@ -343,12 +226,7 @@ export const PROJECTS: readonly StaticProject[] = [
   {
     id: '67de9227-795d-466d-842e-557cc24a3d58',
     slug: { fr: 'ledger', en: 'ledger' },
-    logo: {
-      src: '/logos/clients/ledger.svg',
-      width: 383,
-      height: 128,
-      alt: { fr: 'Logo de Ledger', en: 'Ledger logo' },
-    },
+    logo: mediaId('/logos/clients/ledger.svg'),
     title: { fr: 'Ledger', en: 'Ledger' },
     summary: {
       fr: 'J’ai travaillé sur une application web grand public en Next.js et sur son intégration dans l’application mobile Ledger en React Native. Tests e2e automatisés.',
@@ -378,7 +256,13 @@ export const PROJECTS: readonly StaticProject[] = [
     ],
     // Only the open-source stack: the rest of the environment is not shown
     // (Stéphane, 2026-11-15).
-    technologies: ['nextjs', 'react-native', 'typescript', 'jira', 'github'],
+    technologies: [
+      toolId('nextjs'),
+      toolId('react-native'),
+      toolId('typescript'),
+      toolId('jira'),
+      toolId('github'),
+    ],
     series: 'Web-Atrio',
     websiteUrl: 'https://www.ledger.com/',
     videoUrl: 'https://www.youtube.com/watch?v=e6Ioxi1UBgI',
@@ -392,25 +276,8 @@ export const PROJECTS: readonly StaticProject[] = [
   {
     id: 'ecf5e664-665a-4f13-a302-6f508fe887ca',
     slug: { fr: 'case-tes-potes-mobile', en: 'case-tes-potes-mobile' },
-    cover: {
-      key: 'projects/case-tes-potes-mobile.jpg',
-      averageColor: '#bcc0ca',
-      alt: {
-        fr: 'Écrans de l’application mobile Case Tes Potes',
-        en: 'Screens of the Case Tes Potes mobile app',
-      },
-      width: 400,
-      height: 300,
-    },
-    presentation: {
-      key: 'projects/case-tes-potes-mobile-presentation.jpg',
-      alt: {
-        fr: 'Six écrans de l’application mobile alignés, du fil des profils au rendez-vous',
-        en: 'Six screens of the mobile app side by side, from the profile feed to the date',
-      },
-      width: 1080,
-      height: 384,
-    },
+    cover: mediaId('projects/case-tes-potes-mobile.jpg'),
+    presentation: mediaId('projects/case-tes-potes-mobile-presentation.jpg'),
     presentationCaption: {
       fr: 'Six écrans de l’application, du fil des profils à la création d’un rendez-vous.',
       en: 'Six screens of the app, from the profile feed to setting up a date.',
@@ -457,7 +324,7 @@ export const PROJECTS: readonly StaticProject[] = [
         en: 'A web app opened from an invitation link, so friends can fill in the profile without installing the app.',
       },
     ],
-    technologies: ['flutter', 'dart', 'xd', 'git', 'jira'],
+    technologies: [toolId('flutter'), toolId('dart'), toolId('xd'), toolId('git'), toolId('jira')],
     series: 'Case Tes Potes',
     startedAt: '2020-01-01',
     releasedAt: '2022-08-30',
@@ -469,25 +336,8 @@ export const PROJECTS: readonly StaticProject[] = [
   {
     id: 'a695d06f-5a4c-4101-864d-acc071656954',
     slug: { fr: 'case-tes-potes-landing-page', en: 'case-tes-potes-landing-page' },
-    cover: {
-      key: 'projects/case-tes-potes-landing-page.jpg',
-      averageColor: '#3f3862',
-      alt: {
-        fr: 'Landing page de préinscription de Case Tes Potes',
-        en: 'Case Tes Potes pre-registration landing page',
-      },
-      width: 400,
-      height: 329,
-    },
-    presentation: {
-      key: 'projects/case-tes-potes-landing-page-presentation.jpg',
-      alt: {
-        fr: 'La landing page affichée sur un ordinateur, une tablette et un téléphone',
-        en: 'The landing page shown on a computer, a tablet and a phone',
-      },
-      width: 1100,
-      height: 434,
-    },
+    cover: mediaId('projects/case-tes-potes-landing-page.jpg'),
+    presentation: mediaId('projects/case-tes-potes-landing-page-presentation.jpg'),
     presentationCaption: {
       fr: 'La landing page sur ordinateur, tablette et mobile.',
       en: 'The landing page on desktop, tablet and mobile.',
@@ -523,7 +373,14 @@ export const PROJECTS: readonly StaticProject[] = [
       { fr: 'Déploiement en image Docker.', en: 'Deployment as a Docker image.' },
     ],
     websiteUrl: '/demo/casetespotes-landingpage',
-    technologies: ['react', 'typescript', 'sass', 'node', 'mongodb', 'docker'],
+    technologies: [
+      toolId('react'),
+      toolId('typescript'),
+      toolId('sass'),
+      toolId('node'),
+      toolId('mongodb'),
+      toolId('docker'),
+    ],
     series: 'Case Tes Potes',
     releasedAt: '2022-03-15',
     role: { fr: 'Conception et développement', en: 'Design and development' },
@@ -541,19 +398,13 @@ export const PROJECTS: readonly StaticProject[] = [
  * slider dated the same image to 2015. The file name is what he typed when he
  * saved the render.
  */
-export const ARTWORKS: readonly StaticArtwork[] = [
+export const ARTWORKS: readonly ArtworkRecord[] = [
   {
     id: '75643113-fe5b-4f36-9880-626c333087be',
     slug: { fr: 'legos-minions', en: 'lego-minions' },
     title: { fr: 'Lego : les Minions', en: 'Lego Minions' },
-    image: {
-      key: 'cgi/legos-minions.jpg',
-      averageColor: '#33605d',
-      alt: { fr: 'Les Minions reconstitués en Lego', en: 'The Minions rebuilt in Lego' },
-      width: 1200,
-      height: 675,
-    },
-    software: ['3dsmax', 'vray', 'photoshop', 'illustrator'],
+    image: mediaId('cgi/legos-minions.jpg'),
+    software: [toolId('3dsmax'), toolId('vray'), toolId('photoshop'), toolId('illustrator')],
     releasedAt: '2016-01-01',
     featured: true,
   },
@@ -561,17 +412,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: '5b82d9e1-4b47-424f-8fd4-8aad287ca035',
     slug: { fr: 'extraterrestre', en: 'alien' },
     title: { fr: 'Extraterrestre', en: 'Alien' },
-    image: {
-      key: 'cgi/extraterrestre.jpg',
-      averageColor: '#1f363c',
-      alt: {
-        fr: 'Extraterrestre de science-fiction photoréaliste',
-        en: 'Photorealistic science-fiction alien',
-      },
-      width: 1200,
-      height: 675,
-    },
-    software: ['3dsmax', 'vray', 'photoshop', 'substance-painter'],
+    image: mediaId('cgi/extraterrestre.jpg'),
+    software: [toolId('3dsmax'), toolId('vray'), toolId('photoshop'), toolId('substance-painter')],
     releasedAt: '2016-01-01',
     featured: true,
   },
@@ -579,14 +421,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: '08b6fcaa-8a35-4693-a5f4-ea199e3a5a26',
     slug: { fr: 'escart-wild', en: 'escart-wild' },
     title: { fr: 'Escart Wild', en: 'Escart Wild' },
-    image: {
-      key: 'cgi/escart-wild.jpg',
-      averageColor: '#807a3b',
-      alt: { fr: 'Escargot cartoon photoréaliste', en: 'Photorealistic cartoon snail' },
-      width: 1280,
-      height: 720,
-    },
-    software: ['3dsmax', 'vray', 'zbrush', 'photoshop'],
+    image: mediaId('cgi/escart-wild.jpg'),
+    software: [toolId('3dsmax'), toolId('vray'), toolId('zbrush'), toolId('photoshop')],
     releasedAt: '2015-01-01',
     featured: true,
   },
@@ -594,17 +430,13 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: 'a8610633-77bf-44c8-b9ca-19c7d8b66cb1',
     slug: { fr: 'beebop', en: 'beebop' },
     title: { fr: 'Beebop', en: 'Beebop' },
-    image: {
-      key: 'cgi/beebop.jpg',
-      averageColor: '#858281',
-      alt: {
-        fr: 'Le robot Beebop, sculpté et texturé',
-        en: 'The Beebop robot, sculpted and textured',
-      },
-      width: 1280,
-      height: 720,
-    },
-    software: ['3dsmax', 'substance-painter', 'zbrush', 'photoshop'],
+    image: mediaId('cgi/beebop.jpg'),
+    software: [
+      toolId('3dsmax'),
+      toolId('substance-painter'),
+      toolId('zbrush'),
+      toolId('photoshop'),
+    ],
     releasedAt: '2015-01-01',
     featured: false,
   },
@@ -612,14 +444,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: 'ab93edce-6a0f-4041-aac3-ea60a6360d97',
     slug: { fr: 'gorgotte', en: 'gorgotte' },
     title: { fr: 'Gorgotte', en: 'Gorgotte' },
-    image: {
-      key: 'cgi/gorgotte.jpg',
-      averageColor: '#c5ccc6',
-      alt: { fr: 'Créature monstrueuse sculptée en 3D', en: 'Monstrous creature sculpted in 3D' },
-      width: 1280,
-      height: 696,
-    },
-    software: ['3dsmax', 'zbrush', 'photoshop'],
+    image: mediaId('cgi/gorgotte.jpg'),
+    software: [toolId('3dsmax'), toolId('zbrush'), toolId('photoshop')],
     releasedAt: '2015-01-01',
     featured: false,
   },
@@ -627,17 +453,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: '8837e715-56d3-435d-80c6-51bf5f4290ef',
     slug: { fr: 'immeuble', en: 'building' },
     title: { fr: 'Immeuble', en: 'Building' },
-    image: {
-      key: 'cgi/immeuble.jpg',
-      averageColor: '#afbdbf',
-      alt: {
-        fr: 'Immeuble d’habitation photoréaliste',
-        en: 'Photorealistic apartment building',
-      },
-      width: 1280,
-      height: 1078,
-    },
-    software: ['3dsmax', 'vray'],
+    image: mediaId('cgi/immeuble.jpg'),
+    software: [toolId('3dsmax'), toolId('vray')],
     releasedAt: '2015-01-01',
     featured: false,
   },
@@ -648,14 +465,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
       fr: 'Architecture d’intérieur — salon, nuit',
       en: 'Interior design — living room, night',
     },
-    image: {
-      key: 'cgi/salon-nuit.jpg',
-      averageColor: '#605246',
-      alt: { fr: 'Salon décoré, éclairage de nuit', en: 'Furnished living room, night lighting' },
-      width: 1280,
-      height: 720,
-    },
-    software: ['3dsmax', 'vray'],
+    image: mediaId('cgi/salon-nuit.jpg'),
+    software: [toolId('3dsmax'), toolId('vray')],
     releasedAt: '2015-01-01',
     featured: false,
   },
@@ -663,14 +474,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: 'c0e82274-3d0d-4476-bf24-db9da81238e6',
     slug: { fr: 'chambre', en: 'bedroom' },
     title: { fr: 'Architecture d’intérieur — chambre', en: 'Interior design — bedroom' },
-    image: {
-      key: 'cgi/chambre.jpg',
-      averageColor: '#676468',
-      alt: { fr: 'Chambre décorée, lumière du jour', en: 'Furnished bedroom, daylight' },
-      width: 1280,
-      height: 720,
-    },
-    software: ['3dsmax', 'vray'],
+    image: mediaId('cgi/chambre.jpg'),
+    software: [toolId('3dsmax'), toolId('vray')],
     releasedAt: '2015-01-01',
     featured: false,
   },
@@ -681,14 +486,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
       fr: 'Architecture d’intérieur — salon, jour',
       en: 'Interior design — living room, day',
     },
-    image: {
-      key: 'cgi/salon-jour.jpg',
-      averageColor: '#746c6a',
-      alt: { fr: 'Salon décoré, lumière du jour', en: 'Furnished living room, daylight' },
-      width: 1280,
-      height: 720,
-    },
-    software: ['3dsmax', 'vray'],
+    image: mediaId('cgi/salon-jour.jpg'),
+    software: [toolId('3dsmax'), toolId('vray')],
     releasedAt: '2015-01-01',
     featured: false,
   },
@@ -696,14 +495,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: '786bad49-4437-4c58-807c-26109c56427a',
     slug: { fr: 'caricature', en: 'caricature' },
     title: { fr: 'Caricature', en: 'Caricature' },
-    image: {
-      key: 'cgi/caricature.jpg',
-      averageColor: '#a1a6ad',
-      alt: { fr: 'Autoportrait en caricature 3D', en: 'Self-portrait as a 3D caricature' },
-      width: 1280,
-      height: 720,
-    },
-    software: ['3dsmax', 'vray', 'zbrush', 'photoshop'],
+    image: mediaId('cgi/caricature.jpg'),
+    software: [toolId('3dsmax'), toolId('vray'), toolId('zbrush'), toolId('photoshop')],
     releasedAt: '2014-01-01',
     featured: false,
   },
@@ -711,17 +504,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: '18455d4c-bcc3-42b8-af01-c392d96ebdb9',
     slug: { fr: 'maison-moderne', en: 'modern-house' },
     title: { fr: 'Maison moderne', en: 'Modern house' },
-    image: {
-      key: 'cgi/maison-moderne.jpg',
-      averageColor: '#4e4d3c',
-      alt: {
-        fr: 'Maison moderne photoréaliste, vue extérieure',
-        en: 'Photorealistic modern house, exterior view',
-      },
-      width: 1280,
-      height: 720,
-    },
-    software: ['3dsmax', 'vray'],
+    image: mediaId('cgi/maison-moderne.jpg'),
+    software: [toolId('3dsmax'), toolId('vray')],
     releasedAt: '2014-01-01',
     featured: true,
   },
@@ -729,14 +513,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: '97f2580a-358c-497d-8a51-dcc5126cb72c',
     slug: { fr: 'entree', en: 'entrance-hall' },
     title: { fr: 'Architecture d’intérieur — entrée', en: 'Interior design — entrance hall' },
-    image: {
-      key: 'cgi/entree.jpg',
-      averageColor: '#ada39a',
-      alt: { fr: 'Entrée d’habitation aux murs blancs', en: 'White-walled entrance hall' },
-      width: 1280,
-      height: 864,
-    },
-    software: ['3dsmax', 'vray'],
+    image: mediaId('cgi/entree.jpg'),
+    software: [toolId('3dsmax'), toolId('vray')],
     releasedAt: '2014-01-01',
     featured: false,
   },
@@ -744,14 +522,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: '255bafe2-8f05-4993-9195-6c160a110153',
     slug: { fr: 'exterieur', en: 'exterior' },
     title: { fr: 'Extérieur', en: 'Exterior' },
-    image: {
-      key: 'cgi/exterieur.jpg',
-      averageColor: '#5b6e3e',
-      alt: { fr: 'Extérieur avec herbe photoréaliste', en: 'Exterior with photorealistic grass' },
-      width: 1200,
-      height: 848,
-    },
-    software: ['3dsmax', 'vray', 'photoshop'],
+    image: mediaId('cgi/exterieur.jpg'),
+    software: [toolId('3dsmax'), toolId('vray'), toolId('photoshop')],
     releasedAt: '2014-01-01',
     featured: false,
   },
@@ -759,17 +531,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: 'cf2c7ce5-6335-4db8-9b72-103f7094a070',
     slug: { fr: 'ampoule', en: 'light-bulb' },
     title: { fr: 'Ampoule', en: 'Light bulb' },
-    image: {
-      key: 'cgi/ampoule.jpg',
-      averageColor: '#d2d2d2',
-      alt: {
-        fr: 'Ampoule photoréaliste sur fond neutre',
-        en: 'Photorealistic light bulb on a neutral background',
-      },
-      width: 1280,
-      height: 720,
-    },
-    software: ['3dsmax', 'vray'],
+    image: mediaId('cgi/ampoule.jpg'),
+    software: [toolId('3dsmax'), toolId('vray')],
     releasedAt: '2014-01-01',
     featured: false,
   },
@@ -777,17 +540,8 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: '1f978759-45d4-47ea-9d09-70d4e2630f15',
     slug: { fr: 'support-marketing', en: 'marketing-visual' },
     title: { fr: 'Support marketing', en: 'Marketing visual' },
-    image: {
-      key: 'cgi/support-marketing.jpg',
-      averageColor: '#191817',
-      alt: {
-        fr: 'Canette Pixmodels, visuel publicitaire',
-        en: 'Pixmodels drinks can, advertising visual',
-      },
-      width: 1280,
-      height: 720,
-    },
-    software: ['3dsmax', 'vray', 'photoshop'],
+    image: mediaId('cgi/support-marketing.jpg'),
+    software: [toolId('3dsmax'), toolId('vray'), toolId('photoshop')],
     releasedAt: '2014-01-01',
     featured: false,
   },
@@ -795,31 +549,9 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     id: 'd1cbb7b8-b138-48b3-81f1-97922b99fa4d',
     slug: { fr: 'tomates', en: 'tomatoes' },
     title: { fr: 'Tomates', en: 'Tomatoes' },
-    image: {
-      key: 'cgi/tomates.jpg',
-      averageColor: '#cfbfc0',
-      alt: { fr: 'Tomates photoréalistes', en: 'Photorealistic tomatoes' },
-      width: 1280,
-      height: 720,
-    },
-    software: ['3dsmax', 'vray', 'photoshop'],
+    image: mediaId('cgi/tomates.jpg'),
+    software: [toolId('3dsmax'), toolId('vray'), toolId('photoshop')],
     releasedAt: '2014-01-01',
     featured: false,
   },
-];
-
-/**
- * Highlighted on the Developer page, settled 2026-08-31.
- *
- * Flutter is deliberately absent: Stéphane no longer wants to be approached for
- * it. The Case Tes Potes mobile project keeps it below, because that is a fact
- * of his record and the one carrying the most responsibility.
- */
-export const HIGHLIGHTED_TECHNOLOGIES: readonly TechnologySlug[] = [
-  'angular',
-  'typescript',
-  'dotnet',
-  'react',
-  'docker',
-  'git',
 ];

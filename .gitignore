@@ -30,3 +30,6 @@ pnpm-debug.log*
 
 # ng extract-i18n output: the source messages, to diff against the translations
 apps/web/src/locale/messages.xlf
+
+# Written by apps/web/scripts/content.mjs from the API, or its seed (ADR-0022)
+apps/web/src/app/core/data/content/content.generated.ts

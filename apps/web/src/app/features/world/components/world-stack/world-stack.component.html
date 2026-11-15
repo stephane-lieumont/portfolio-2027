@@ -53,7 +53,7 @@
       </p>
     </div>
     <div class="mastery__lists">
-      @for (entry of stack().entries; track entry.tool; let i = $index) {
+      @for (entry of entries(); track entry.id; let i = $index) {
         <ol
           class="mastery__list"
           role="list"
@@ -64,7 +64,7 @@
           @for (point of entry.points; track $index) {
             <li [attr.data-reveal-part]="i === selected() ? '' : null">
               <p>
-                <b>{{ point.lead | inLocale }}</b> {{ point.text | inLocale }}
+                <b>{{ point.strongLine | inLocale }}</b> {{ point.secondLine | inLocale }}
               </p>
             </li>
           }

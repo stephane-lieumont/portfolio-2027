@@ -12,13 +12,13 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import type { WorldStack as WorldStackContent } from '@portfolio/shared-types';
+import type { WorldKey } from '@portfolio/shared-types';
 
 import {
   EASE_OUT,
   WorldRevealDirective,
 } from '@common/directives/world-reveal/world-reveal.directive';
-import { toolView } from '@core/data/tool-marks/tool-marks';
+import { stackOf, toolView } from '@core/data/tool-marks/tool-marks';
 import { InLocalePipe } from '@core/i18n/in-locale.pipe';
 import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
 
@@ -40,12 +40,13 @@ const SUBTITLES = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorldStackComponent {
-  readonly stack = input.required<WorldStackContent>();
+  readonly world = input.required<WorldKey>();
 
   protected readonly selected = signal(0);
-  protected readonly subtitle = computed(() => SUBTITLES[this.stack().world]);
+  protected readonly subtitle = computed(() => SUBTITLES[this.world()]);
+  protected readonly entries = computed(() => stackOf(this.world()));
   protected readonly marks = computed(() =>
-    this.stack().entries.map((entry) => toolView(entry.tool, 'stack')),
+    this.entries().map((entry) => toolView(entry.tool, 'stack')),
   );
 
   private readonly panel = viewChild.required<ElementRef<HTMLElement>>('panel');

@@ -6,13 +6,50 @@ PR, ADR-0017) with `feat/i18n-content` (its second PR, the content in both
 languages), `refactor/app-architecture` (the app's layering, ADR-0018) and
 `feat/client-references` (client references in « Réalisations ») on top,
 and `fix/responsive-audit` (the responsive audit's fixes and the image loading
-indicator), and `feat/seo` (canonical, Open Graph, JSON-LD, sitemap, robots).
+indicator), and `feat/seo` (canonical, Open Graph, JSON-LD, sitemap, robots),
+and `feat/api-read` (the read-only content API the site is built from,
+ADR-0022, issue #40).
 
 ## Works today
 
 **Foundations** — pnpm monorepo, Angular 22 standalone/zoneless/signals, shared
-Zod types, Fastify API skeleton with `/health`, MinIO in docker-compose
-(declared, not yet used). 18 ADRs, 6 specs.
+Zod types, Fastify API with `/health`, the contact relay and the public
+content routes, MinIO in docker-compose. 22 ADRs, 6 specs.
+
+**Content API, read-only (`feat/api-read`, ADR-0022)** — projects and 3D
+pieces are rows of a SQLite `works` table, each record a JSON document
+validated by `projectSchema` / `artworkSchema` (shared-types, now the shape the
+site renders; the provisional schema, its create/update inputs and the unused
+`ProjectsService` are gone), with `kind`, `status`, `slug_fr`/`slug_en`,
+`released_at` and timestamps as columns. Routes: `GET /api/projects`,
+`/api/artworks`, `/api/{projects,artworks}/:locale/:slug`, `/api/tools` (every
+tool, icon resolved) and `/api/stack?domain=dev|cgi` (the world pages' Stack
+entries in order, tool resolved). **Media, tools and Stack in the database**
+(Stéphane's model, 2026-11-15, spec 04 §2, ADR-0022 amended): `media_assets`
+holds every image's metadata (16 renders, 2 covers and 2 presentation visuals
+in the bucket, 5 client logos and 46 tool marks in `public/`; files unmoved), `tools` (slug,
+label `{ fr, en }`, icon → asset), `stack` (tool → `tools` ON DELETE RESTRICT,
+unique per domain, position, points `[{ strongLine, secondLine }]` as JSON).
+Works store image and tool **ids**; the API resolves them
+(`src/lib/resolve-content/`) into the shapes the site rendered before, so the
+58 prerendered pages match `main`'s once bundle hashes, preload order and
+hydration template ids are set aside (measured). `deleteTool` / `toolUsage`
+(`src/db/tool-usage/`) refuse to delete a tool still credited or shown. The
+registries (`shared-types/registries.ts`), the front's mark map and
+`WORLD_STACKS` are gone; the front keeps only the Stack's grouped names
+(« RxJS / Signals », « .NET / C# ») and the world pages' top content. Published only, validated on
+the way out, `Cache-Control: no-cache`, no auth. The content's single source is
+`apps/api/src/db/seed/content.ts`, loaded by `pnpm --filter @portfolio/api
+db:seed` (validated, idempotent upsert). The site no longer holds it: the build
+runs `apps/web/scripts/content.mjs`, which fetches the API at `CONTENT_API_URL`
+(default `http://localhost:3000`, failing the build if unreachable) into the
+gitignored `core/data/content/content.generated.ts`; tests, typecheck, lint and
+`ng serve` write it from the seed (`--seed`). `pnpm build:site` seeds a
+temporary SQLite, starts the read routes alone (`src/content-server.ts`, no
+MinIO/SMTP), builds and stops it; `pnpm verify` ends with it, CI included.
+Measured: the 56 prerendered pages match `main`'s apart from bundle hashes and
+hydration template ids, which differ as much between two builds of the same
+code. `HIGHLIGHTED_TECHNOLOGIES`, unused, was dropped.
 
 **Client references (`feat/client-references`, Stéphane's decisions of
 2026-11-15)** — « Réalisations » now lists, newest first: immobilier.ch
@@ -850,7 +887,7 @@ both languages, at the source.
 complete HTML file per route under `dist/web/browser` — `/` (a redirect to
 `/developpeur`), `/developpeur`,
 `/graphisme-3d`, `/contact`, one per project (`developpeur/<slug>`, enumerated
-from the static `PROJECTS`; ADR-0008 says from the API once it serves them),
+from the API's `PROJECTS`, ADR-0022),
 and `/404/index.html` for nginx's `error_page`; the English tree the same
 under `en/` (see « Bilingual »). No route renders on demand and
 no Node process runs in production. Client hydration with event replay keeps
@@ -872,12 +909,6 @@ tree's text, title or accessible names. The heading
 is read as spoken (its `aria-label`, else its text without `aria-hidden`
 parts). The rules are tested against mutated pages
 (`scripts/prerender-checks.test.mjs`).
-
-Known limits, deliberately not fixed here:
-
-- The project list is read from the static `PROJECTS` in three places —
-  `app.routes.server.ts` (prerender params), the route resolvers and
-  `scripts/prerender-checks.mjs`. All three move to the API (ADR-0008).
 
 **Page metadata** — each route sets its `<title>` and meta description, in the
 prerendered HTML and on client navigation (`PageMetadataService`, a `TitleStrategy`).
@@ -1103,8 +1134,8 @@ Ordered by what hurts most on the day the site goes live.
 | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **nginx not updated for prerendering** | Outside the repository. ADR-0005 (amended 2026-11-14) now prescribes `try_files $uri $uri/index.html =404;` and `error_page 404 /404/index.html;` for `/*`. The live config still has the `index.html` fallback, which would serve the prerendered home with a 200 under every unknown URL.                                                                                                                                                                      |
 | **Contact keys not in production**     | The route works (`feat/contact-smtp`, ADR-0020) but production needs, in the server `.env`: `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER` and `CONTACT_TO` (his Gmail address), `SMTP_PASSWORD` (a Google app password), `TURNSTILE_SECRET`; and the Turnstile site key in `apps/web/src/app/core/config/turnstile.config.ts` (`PRODUCTION_SITE_KEY`, still the test key: the form fails closed). The API refuses to boot in production without them. |
-| **API is a skeleton**                  | Only `/health` and `POST /api/contact`. No projects, no media.                                                                                                                                                                                                                                                                                                                                                                                                   |
-| **No back office**                     | Content lives in `apps/web/src/app/core/data/static-content/static-content.ts`. Every edit is a commit.                                                                                                                                                                                                                                                                                                                                                          |
+| **API has no write routes**            | V1 serves content read-only (ADR-0022). Media, tools as records and admin writes are V1.1. A record removed from the seed is not deleted from a database that holds it.                                                                                                                                                                                                                                                                                          |
+| **No back office**                     | Content lives in `apps/api/src/db/seed/`, loaded with `db:seed`. Every edit is a commit and a reseed. The world pages' top content (eyebrow tools, current position, facts, lede) is to become editable fields with the back office (spec 04 §1, #54); it stays in `world-content.ts` for V1.                                                                                                                                                                    |
 | **Spec 05 missing; spec 04 drafted**   | `docs/specs/04-back-office.md` is a draft (2026-11-15) awaiting Stéphane's answers, with ADR-0019 (admin access hardening) proposed. The content spec 05 was never written (the SEO it was to cover is built, `feat/seo`).                                                                                                                                                                                                                                       |
 
 ## Known accessibility debt — contact page

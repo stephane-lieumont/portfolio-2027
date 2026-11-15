@@ -32,7 +32,7 @@ In `@portfolio/shared-types` they are two schemas, not a discriminated union —
 | `role`                | localized               | In what capacity, ≤ 80. Set large beside the mission, and in the page's eyebrow.                                                                                                                                                                                                           |
 | `mission`             | localized plain text?   | What Stéphane did. Absent when the context already says it all (a one-sentence client reference): the page then has no Mission block.                                                                                                                                                      |
 | `missionSteps`        | localized[]             | Ordered, 0–10. The concrete deliverables, each in both languages so the steps stay aligned. Never invented: empty when none are sourced.                                                                                                                                                   |
-| `technologies`        | tech slug[]             | From the registry below.                                                                                                                                                                                                                                                                   |
+| `technologies`        | tool id[]               | `Tool` records (spec 04 §2), by id; the API serves them resolved.                                                                                                                                                                                                                          |
 | `series`              | string?                 | e.g. `"Case Tes Potes"`. A proper name, the same in both languages, and the grouping key. Their pages end on the whole series; any other ends on « Autres réalisations ».                                                                                                                  |
 | `websiteUrl`          | url?                    | « Voir le site ». A root-relative path to a demo proxied by nginx — **verify the route exists before publishing** (ADR-0005) — or an `https` site. Replaces `demoUrl`.                                                                                                                     |
 | `videoUrl`            | url?                    | « Voir la vidéo ». An `https` YouTube video address, opened on YouTube in a new tab (ADR-0016's note of 2026-11-15).                                                                                                                                                                       |
@@ -90,19 +90,11 @@ The lightbox therefore navigates on two levels: across artworks, and within one 
 
 ---
 
-## Technology and software registries
+## Tools — revised 2026-11-15
 
-Both are **typed constants in `@portfolio/shared-types`**, not database tables. Each entry maps a slug to a label and an icon:
+The typed registries this section first described (`shared-types/registries.ts`) are gone: tools are records, `Tool` in spec 04 §2, stored in the `tools` table with their icon as a media asset (ADR-0022). A `Project` lists its `technologies` and an `Artwork` its `software` **by tool id**, never by slug, so renaming a slug breaks no reference; the API resolves each id into `{ id, slug, label, icon }` when it serves the record, and the seed refuses an id that names no tool.
 
-```ts
-{ slug: 'angular', label: 'Angular', icon: 'angular.svg' }
-```
-
-Entities store slugs. Zod validates against the registry, so a typo fails at the API boundary instead of rendering a missing icon.
-
-A lookup table would solve nothing: the icon is an SVG in the repository either way, so adding a technology is a commit regardless. Making that explicit is more honest than pretending it is data.
-
-**Two separate registries.** `technologies` (Angular, TypeScript, .NET, Docker, React…) and `software` (Zbrush, 3ds Max, V-Ray, Substance…). They never appear in the same filter or the same list.
+The two worlds no longer have separate vocabularies in the data: a tool has no world. Which tools a world shows is the editorial choice of its records and of its Stack section (spec 04 §2).
 
 ---
 
@@ -122,14 +114,14 @@ All text is plain text, never markup. A bold lead is its own field.
 | -------------- | --------------------------------------- | -------------------------------------------------------------------------------------- |
 | `world`        | `dev` \| `cgi`                          | Discriminator.                                                                         |
 | `roleWord`     | localized, 2–16 capitals, digits, space | Flips under the name at display size: « LEAD TECH », « GRAPHISTE 3D » / « 3D ARTIST ». |
-| `eyebrowTools` | slug[], 1–4                             | From `technologies` for `dev`, from `software` for `cgi` — never crossed.              |
+| `eyebrowTools` | tool slug[], 1–4                        | Each a tool the API serves (checked by the site's tests). Ordered: the priority stack. |
 | `lede`         | `{ lead, text }`, localized             | `lead` ≤ 80, set in bold; `text` ≤ 200.                                                |
 | `scrub`        | localized, 20–220, ≤ 35 words           | The sentence coloured word by word on scroll.                                          |
 | `facts`        | `{ label, value }[]`, 3–6, localized    | Labels unique in each language, ≤ 24; values ≤ 80.                                     |
 
-### `WorldStack` — one per world
+### Stack — moved to the API
 
-`entries`: 3–10 `{ tool, points }`, one entry per tool, `tool` from the world's own registry. `points`: 2–6 `{ lead ≤ 60, text ≤ 220 }`, both localized, rendered as the numbered « Maîtrise » panel.
+The marks row and its « Maîtrise » panel are `stack` rows since 2026-11-15 (spec 04 §2, ADR-0022), served by `GET /api/stack`. `WorldPage.eyebrowTools` still names tools by slug until the world pages move to the back office.
 
 ### `ContactPage` — singleton
 
@@ -177,9 +169,7 @@ The back office derives three states from them:
 
 ## Media ownership
 
-**An asset belongs to exactly one owner.** No sharing between projects or artworks. Deleting an owner deletes its assets, in the database and in the bucket.
-
-On a portfolio the same render never legitimately appears in two projects, and this single constraint removes the whole question of what deleting a media item means. `MediaAsset` therefore carries an owner reference rather than living in a many-to-many join.
+**An asset may be shared; deleting one that is still used is refused.** Records (works, tools, stack entries) reference assets by id, and one file may serve several of them: React and React Native share one mark (Stéphane, 2026-11-15, relaxing the earlier « exactly one owner » rule). Deleting an asset still referenced is refused with the list of what uses it, as for tools (`toolUsage`); an unreferenced asset can be deleted, in the database and in the bucket. Deleting a record never deletes its assets: the media library's « unused » filter finds them.
 
 `MediaAsset` keeps the fields ADR-0012 requires: object key, `alt` (localized; required, non-empty, real text and never a repeat of the title, in each language), intrinsic width and height, byte size, content type, dominant colour, and a processing state. One file serves both trees.
 
@@ -189,7 +179,7 @@ On a portfolio the same render never legitimately appears in two projects, and t
 
 - The `slug` is the public URL in each tree and is **final** once published (spec 01), in both languages.
 - Media store an **object key, never an absolute URL** (ADR-0003).
-- Any schema change goes through `@portfolio/shared-types` first, then the Drizzle schema, then a generated migration (`add-project` skill).
+- Any schema change goes through `@portfolio/shared-types` first. A project or a piece is stored as a JSON document (ADR-0022): a new field changes the Drizzle schema, and needs a generated migration, only when the API filters or sorts on it.
 
 ## Open
 

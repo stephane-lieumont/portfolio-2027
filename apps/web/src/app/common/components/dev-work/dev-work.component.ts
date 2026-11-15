@@ -7,7 +7,8 @@ import { WorldRevealDirective } from '@common/directives/world-reveal/world-reve
 import { ClientLogoComponent } from '@common/components/client-logo/client-logo.component';
 import { workCount, workPeriod } from '@common/utils/work-count/work-count';
 import { mediaSrcset, mediaUrl } from '@core/config/media-config/media.config';
-import { PROJECTS, type StaticProject } from '@core/data/static-content/static-content';
+import { PROJECTS } from '@core/data/content/content.generated';
+import type { Project } from '@portfolio/shared-types';
 import { toolView } from '@core/data/tool-marks/tool-marks';
 import { InLocalePipe, inLocale } from '@core/i18n/in-locale.pipe';
 import { PATHS } from '@core/i18n/site-locale/site-locale';
@@ -20,7 +21,7 @@ export const CARD_TOOLS = 6;
  * the title does not already name it (« Chez Web-Atrio · » on a client
  * mission, not on Web-Atrio's own site nor on Case Tes Potes' products).
  */
-function roleLine(project: StaticProject): string {
+function roleLine(project: Project): string {
   const role = inLocale(project.role);
   const { series } = project;
   if (!series || inLocale(project.title).startsWith(series)) return role;
@@ -148,7 +149,7 @@ export class DevWorkComponent {
   readonly lineStart = input(0);
 
   readonly heading = input($localize`:@@work.heading:Réalisations`);
-  readonly projects = input<readonly StaticProject[]>(PROJECTS);
+  readonly projects = input<readonly Project[]>(PROJECTS);
   /** The id of the project whose page this band closes, if it is one of the cards. */
   readonly current = input<string | null>(null);
   readonly columns = input<2 | 3>(2);
@@ -170,7 +171,7 @@ export class DevWorkComponent {
       ...project,
       period: workPeriod(project),
       roleLine: roleLine(project),
-      tools: project.technologies.slice(0, CARD_TOOLS).map((slug) => toolView(slug)),
+      tools: project.technologies.slice(0, CARD_TOOLS).map((tool) => toolView(tool)),
       moreTools: Math.max(0, project.technologies.length - CARD_TOOLS),
     })),
   );

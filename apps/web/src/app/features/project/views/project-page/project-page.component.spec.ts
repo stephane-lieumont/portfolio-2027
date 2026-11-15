@@ -5,7 +5,7 @@ import axe from 'axe-core';
 import { describe, expect, it } from 'vitest';
 
 import { MEDIA_BASE_URL } from '@core/config/media-config/media.config';
-import { PROJECTS } from '@core/data/static-content/static-content';
+import { PROJECTS } from '@core/data/content/content.generated';
 import { ProjectPageComponent } from './project-page.component';
 
 async function render(slug: string) {

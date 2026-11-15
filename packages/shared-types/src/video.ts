@@ -1,6 +1,6 @@
 /**
  * YouTube addresses, parsed by the `Project` schema so « Voir la vidéo » always
- * leads to one video (ADR-0016 and its 2026-11-15 note). Free of Zod, like the registries, so the
+ * leads to one video (ADR-0016 and its 2026-11-15 note). Free of Zod, so the
  * browser can import it without pulling the validator into its bundle.
  */
 

@@ -2,13 +2,13 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { WORLD_STACKS } from '@core/data/world-content/world-content';
+import { stackOf } from '@core/data/tool-marks/tool-marks';
 import { WorldStackComponent } from './world-stack.component';
 
 function render(world: 'dev' | 'cgi') {
   TestBed.configureTestingModule({ providers: [provideZonelessChangeDetection()] });
   const fixture = TestBed.createComponent(WorldStackComponent);
-  fixture.componentRef.setInput('stack', WORLD_STACKS[world]);
+  fixture.componentRef.setInput('world', world);
   fixture.detectChanges();
   const host = fixture.nativeElement as HTMLElement;
   document.body.appendChild(host);
@@ -52,7 +52,7 @@ describe('WorldStack', () => {
     const panel = host.querySelector('[role="tabpanel"]')!;
     expect(panel.getAttribute('aria-labelledby')).toBe(tabs()[0].id);
     expect(tabs().every((t) => t.getAttribute('aria-controls') === panel.id)).toBe(true);
-    expect(points()).toEqual(WORLD_STACKS.dev.entries[0].points.map((p) => p.lead.fr));
+    expect(points()).toEqual(stackOf('dev')[0].points.map((p) => p.strongLine.fr));
   });
 
   it('switches the panel to the tool clicked, and the new points arrive in order', async () => {
@@ -60,15 +60,15 @@ describe('WorldStack', () => {
     tabs()[2].click();
     await fixture.whenStable();
 
-    expect(selected()).toEqual(WORLD_STACKS.dev.entries.map((_, i) => String(i === 2)));
+    expect(selected()).toEqual(stackOf('dev').map((_, i) => String(i === 2)));
     expect(host.querySelector('.mastery__name.is-current')?.textContent).toBe('RxJS / Signals');
-    expect(points()).toEqual(WORLD_STACKS.dev.entries[2].points.map((p) => p.lead.fr));
-    expect(animate).toHaveBeenCalledTimes(1 + WORLD_STACKS.dev.entries[2].points.length);
+    expect(points()).toEqual(stackOf('dev')[2].points.map((p) => p.strongLine.fr));
+    expect(animate).toHaveBeenCalledTimes(1 + stackOf('dev')[2].points.length);
   });
 
   it('moves with the arrows, wrapping, and Home and End, focus following the choice', async () => {
     const { tabs, selected, key } = render('cgi');
-    const count = WORLD_STACKS.cgi.entries.length;
+    const count = stackOf('cgi').length;
 
     await key('ArrowLeft');
     expect(selected()[count - 1]).toBe('true');
@@ -86,7 +86,7 @@ describe('WorldStack', () => {
   it('keeps every tool’s points in the panel, so it never changes height, exposing only the chosen', async () => {
     const { fixture, tabs, host } = render('dev');
     const lists = () => Array.from(host.querySelectorAll<HTMLElement>('.mastery__list'));
-    expect(lists()).toHaveLength(WORLD_STACKS.dev.entries.length);
+    expect(lists()).toHaveLength(stackOf('dev').length);
 
     tabs()[4].click();
     await fixture.whenStable();
@@ -126,7 +126,7 @@ describe('WorldStack', () => {
     expect(animate).not.toHaveBeenCalled();
     report!([{ isIntersecting: true }]);
     // The icon's wrapper and the name, for each mark.
-    expect(animate).toHaveBeenCalledTimes(2 * WORLD_STACKS.cgi.entries.length);
+    expect(animate).toHaveBeenCalledTimes(2 * stackOf('cgi').length);
     vi.unstubAllGlobals();
   });
 });

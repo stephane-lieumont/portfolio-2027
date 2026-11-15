@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node src/server.ts",
+    "start:content": "node src/content-server.ts",
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -14,6 +15,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
+    "db:seed": "node src/scripts/seed-content.ts",
     "admin:hash": "tsx src/lib/hash-password.ts",
     "media:seed": "node src/scripts/seed-media.ts",
     "media:derive": "node src/scripts/derive-media.ts",

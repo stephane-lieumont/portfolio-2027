@@ -9,7 +9,8 @@ import {
 import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
 import { WorldRevealDirective } from '@common/directives/world-reveal/world-reveal.directive';
 import { mediaSrcset, mediaUrl } from '@core/config/media-config/media.config';
-import { PROJECTS, type StaticProject } from '@core/data/static-content/static-content';
+import { PROJECTS } from '@core/data/content/content.generated';
+import type { Project } from '@portfolio/shared-types';
 import { toolView } from '@core/data/tool-marks/tool-marks';
 import { InLocalePipe } from '@core/i18n/in-locale.pipe';
 import { SITE_LOCALE } from '@core/i18n/site-locale/site-locale';
@@ -17,7 +18,7 @@ import { ProjectHeroComponent } from '@features/project/components/project-hero/
 import { PlateLeanDirective } from '@features/project/directives/plate-lean/plate-lean.directive';
 import { closingBand } from '@features/project/utils/project-view/project-view';
 
-function projectBySlug(slug: string): StaticProject {
+function projectBySlug(slug: string): Project {
   const project = PROJECTS.find((p) => p.slug[SITE_LOCALE] === slug);
   // The route only matches known slugs (app.routes.ts, canMatch).
   if (!project) throw new Error(`No project "${slug}"`);
@@ -58,7 +59,7 @@ export class ProjectPageComponent {
     String(PROJECTS.indexOf(this.project()) + 1).padStart(2, '0'),
   );
   protected readonly tools = computed(() =>
-    this.project().technologies.map((slug) => toolView(slug)),
+    this.project().technologies.map((tool) => toolView(tool)),
   );
   protected readonly band = computed(() => closingBand(this.project(), PROJECTS));
 

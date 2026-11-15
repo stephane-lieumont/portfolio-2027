@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { API_BASE_URL } from '@core/config/api.config';
 import { MEDIA_BASE_URL } from '@core/config/media-config/media.config';
-import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/content/content.generated';
 import { SITE_SETTINGS } from '@core/data/world-content/world-content';
 import { pageRef } from '@core/i18n/site-locale/site-locale';
 import {

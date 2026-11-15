@@ -46,9 +46,29 @@ exactly: `@angular/platform-server` to the installed `@angular/core`,
 them in the same change as core and build, or the peers break.
 
 **The web package is `"type": "module"`** so the post-build check
-(`scripts/check-prerender.mjs`) can import the static content `.ts` directly.
+(`scripts/check-prerender.mjs`) can import the content `.ts` directly.
 `pnpm verify` runs that build, so it takes a few seconds longer than the tests
 alone.
+
+**The site is built from the API (ADR-0022).** Projects and 3D pieces live in
+the API's SQLite (`works`, one JSON document per record, validated by the
+shared Zod schemas), beside `media_assets` (every image's metadata, the files
+staying in the bucket or `public/`), `tools` and `stack` (the world pages'
+Stack and « Maîtrise » points). Works name media and tools by id; the API
+resolves them (`src/lib/resolve-content/`). All four are seeded from
+`apps/api/src/db/seed/` (`media.ts`, `tools.ts`, `stack.ts`, `content.ts`),
+their only source until the back office. Before `ng build`, `apps/web/scripts/content.mjs`
+fetches works, tools and Stack from `CONTENT_API_URL` (default
+`http://localhost:3000`) into the gitignored
+`core/data/content/content.generated.ts`; an unreachable API fails the build.
+Tests, typecheck, lint and `ng serve` write that file from the seed instead
+(`--seed`), no server needed. `pnpm --filter @portfolio/web build` alone
+therefore needs a running, seeded API: `pnpm build:site` provides one on a
+temporary SQLite (`src/content-server.ts`: the read routes alone, no MinIO).
+**Shared-types modules import each other by subpath**
+(`@portfolio/shared-types/localized`), never `./x.js`: Node runs the API's
+TypeScript as is and cannot map `.js` to `.ts`, so the API imports subpaths
+(`/project`, `/tool`, `/contact`…), never the root barrel, for values.
 
 **The verification script is called `verify`, not `ci`.** `pnpm ci` is a pnpm built-in command (clean reinstall) that silently shadows a script of the same name — it wipes `node_modules` instead of running the checks.
 
@@ -57,8 +77,10 @@ alone.
 ```bash
 pnpm dev                              # web + api in parallel
 pnpm infra:up                         # MinIO (console on :9001)
-pnpm verify                           # typecheck + lint + format + tests + web build
-pnpm --filter @portfolio/web build    # prerender to dist/web/browser, then check every route
+pnpm verify                           # typecheck + lint + format + tests + build:site
+pnpm build:site                       # seeded throwaway API, then the web build against it
+pnpm --filter @portfolio/web build    # prerender from CONTENT_API_URL, then check every route
+pnpm --filter @portfolio/api db:seed  # load the content into DATABASE_FILE (idempotent)
 pnpm --filter @portfolio/api db:generate   # migration after a Drizzle schema change
 pnpm --filter @portfolio/api admin:hash    # argon2 hash of the admin password
 ```
@@ -85,3 +107,5 @@ and `layouts/site-layout/` (the root). Aliases `@core`, `@shared`, `@common`,
 (`world-page.component.ts`, `WorldStore`).
 
 **Folders (ADR-0018):** anything made of more than one file (code + spec, template, styles) lives in its own folder named after it — services, stores and helpers too, e.g. `core/services/contact/contact.service.ts`.
+
+**Build and deployment (ADR-0021, 2026-11-15)**: a `v*` tag runs GitHub Actions — `pnpm verify`, API image to GHCR, deploy over SSH (dedicated `deploy` user, forced command `deploy.sh <service> <tag>`), then the site is prerendered against the production API's public GET routes, packaged as an nginx image and deployed the same way. From V1.1 the back office's « Publier le site » re-runs the site steps through `workflow_dispatch`.
