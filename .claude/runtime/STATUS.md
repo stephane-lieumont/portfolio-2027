@@ -281,9 +281,9 @@ Deviations, each on purpose:
 - The prototype's « Voir la vidéo » opened YouTube in a new tab; the video now
   plays on the page (Stéphane, 2026-11-15), in a « Vidéo » block after Outils
   that the prototype did not draw.
-- The title keeps the prototype's 104px cap. The world pages' hero was scaled
-  down after the prototype was drawn (#23, « too big on a 14-inch laptop »);
-  whether the project page follows is Stéphane's call.
+- The title follows the world pages' scale, not the prototype's 104px cap
+  (Stéphane, 2026-11-15): name / qualifier 52/36px at 1512×771, 66/45 at
+  1920×970, 32/24 at 390 and 320; no horizontal overflow.
 - The presentation visual drifts against the scroll inside its plate
   (Stéphane, 2026-11-15), a CSS scroll-driven animation on a view timeline
   named on the plate (`view()` on the image would bind to the plate, a scroll
