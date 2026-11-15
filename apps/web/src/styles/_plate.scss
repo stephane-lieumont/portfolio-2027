@@ -124,3 +124,22 @@
     line-clamp: 5;
   }
 }
+
+// Client plates: the dot field is a CSS mask whose tile loads separately;
+// before it arrives the mask paints the full tint as a flat block. With
+// script, the field stays hidden until the head script stamps the tile as
+// loaded, then fades in. Without script nothing is hidden.
+:root.js-motion:not([data-motes-tile]) app-client-logo .field__dots,
+:root.lang-switched:not([data-motes-tile]) app-client-logo .field__dots {
+  opacity: 0;
+}
+
+app-client-logo .field__dots {
+  transition: opacity var(--duration-360) var(--ease-state);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  app-client-logo .field__dots {
+    transition: none;
+  }
+}

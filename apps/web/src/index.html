@@ -19,6 +19,7 @@
       type="font/woff2"
       crossorigin
     />
+    <link rel="preload" href="/textures/motes.svg" as="image" type="image/svg+xml" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
     <!-- The world's ground before the stylesheet arrives: a full navigation
@@ -45,6 +46,14 @@
         switched = sessionStorage.getItem('lang-switch') !== null;
       } catch (e) {}
       document.documentElement.classList.add(switched ? 'lang-switched' : 'js-motion');
+      // The client plates' dot field is a mask tile: until it has loaded, the
+      // mask paints the whole tint (a flat block on a slow line). The field
+      // waits for it (src/styles/_plate.scss).
+      var tile = new Image();
+      tile.onload = function () {
+        document.documentElement.setAttribute('data-motes-tile', '');
+      };
+      tile.src = '/textures/motes.svg';
     </script>
   </head>
   <body>
