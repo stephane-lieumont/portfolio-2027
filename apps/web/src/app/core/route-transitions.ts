@@ -3,6 +3,7 @@ import { NavigationStart, Router, ViewTransitionInfo } from '@angular/router';
 import type { WorldKey } from '@portfolio/shared-types';
 import { filter } from 'rxjs';
 
+import { SITE_LOCALE, type SiteLocale, pageAt } from './i18n/site-locale';
 import { SmoothScroll } from './motion/smooth-scroll';
 import { ActiveWorld, pathOf } from './world/world';
 
@@ -24,26 +25,28 @@ export interface RouteEnd {
  */
 export type RouteTransitionKind = 'sweep-dev' | 'sweep-cgi' | 'wipe' | 'viewer' | 'fade' | 'none';
 
-const CONTACT = '/contact';
-const GALLERY = '/graphisme-3d';
-
-const isPiece = (path: string): boolean => path.startsWith(`${GALLERY}/`);
-
 /** Whether a page shows the point cloud: the two world pages, the viewer over the wall. */
-export function showsCloud(path: string): boolean {
-  return path === '/developpeur' || path === GALLERY || isPiece(path);
+export function showsCloud(path: string, locale: SiteLocale = SITE_LOCALE): boolean {
+  const { page } = pageAt(path, locale);
+  return page === 'dev' || page === 'cgi' || page === 'piece';
 }
 
-export function classifyTransition(from: RouteEnd, to: RouteEnd): RouteTransitionKind {
+export function classifyTransition(
+  from: RouteEnd,
+  to: RouteEnd,
+  locale: SiteLocale = SITE_LOCALE,
+): RouteTransitionKind {
+  const fromPage = pageAt(from.path, locale).page;
+  const toPage = pageAt(to.path, locale).page;
   if (from.path === to.path) return 'none';
-  if (isPiece(from.path) && isPiece(to.path)) return 'none';
-  if ((from.path === GALLERY && isPiece(to.path)) || (isPiece(from.path) && to.path === GALLERY)) {
+  if (fromPage === 'piece' && toPage === 'piece') return 'none';
+  if ((fromPage === 'cgi' && toPage === 'piece') || (fromPage === 'piece' && toPage === 'cgi')) {
     return 'viewer';
   }
   if (from.world !== to.world) {
     return to.world === 'cgi' ? 'sweep-cgi' : 'sweep-dev';
   }
-  if (from.path === CONTACT || to.path === CONTACT) return 'wipe';
+  if (fromPage === 'contact' || toPage === 'contact') return 'wipe';
   return 'fade';
 }
 

@@ -19,8 +19,8 @@ import { ReducedMotion } from '../../core/motion/reduced-motion';
 import { EASE_OUT, WorldReveal } from './world-reveal';
 
 const SUBTITLES = {
-  dev: 'Ce avec quoi je travaille',
-  cgi: 'Mes logiciels',
+  dev: $localize`:@@stack.subtitle.dev:Ce avec quoi je travaille`,
+  cgi: $localize`:@@stack.subtitle.cgi:Mes logiciels`,
 } as const;
 
 /**

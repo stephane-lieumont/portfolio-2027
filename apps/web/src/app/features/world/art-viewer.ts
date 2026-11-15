@@ -222,12 +222,18 @@ export class ArtViewer {
     return Array.from(this.stage().nativeElement.querySelectorAll<HTMLElement>('.show__slide'));
   }
 
+  protected tickLabel(index: number, title: string): string {
+    return $localize`:@@viewer.tick:Rendu ${index + 1}:position: : ${title}:title:`;
+  }
+
   private select(to: number): void {
     const piece = this.pieces()[to];
     const count = this.pieces().length;
     this.warmed.update((set) => new Set([...set, to, (to + 1) % count, (to - 1 + count) % count]));
     this.index.set(to);
-    this.status.set(`${to + 1} sur ${this.pieces().length}. ${piece.title}, ${piece.year}`);
+    this.status.set(
+      $localize`:@@viewer.status:${to + 1}:position: sur ${count}:count:. ${piece.title}:title:, ${piece.year}:year:`,
+    );
     if (this.motion.reduced()) return;
     afterNextRender(
       () => {

@@ -2,6 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-11-15
+- **Amended**: 2026-11-15 — route paths come from one `{ fr, en }` table, not `$localize` (see the note at the end)
 
 ## Context
 
@@ -54,3 +55,7 @@ The constraints the decision had to respect were already in place. Every route i
 - **Identical slugs in both trees (`/en/developpeur`).** Simpler mapping between languages. Rejected by Stéphane: English addresses should read as English.
 - **Redirecting on every page from `Accept-Language`.** Rejected: a French link shared with an English-speaking colleague would open in English, against the sharer's intent, and a visitor could never stay on a page in the other language without the cookie.
 - **Translating dynamic content in the front end** (a dictionary keyed by project id). Rejected: it splits a project's copy between the database and the bundle, and the back office could not edit the English.
+
+## Note — 2026-11-15: route paths from a table
+
+Built in the first implementation: section paths are not `$localize` strings but one table, `SECTIONS` in `apps/web/src/app/core/i18n/site-paths.ts`, with both languages side by side. Each build carries only its own translations, so a `$localize` path would leave the switcher and the `hreflang` links unable to name the other tree's address. The table is read for the build's locale (`$localize.locale`, inlined per tree) by the route table, and for both locales by the switcher, the `hreflang` links and the prerender check. It is the `{ fr, en }` shape the slugs take in the data model. Interface text is still `$localize`, as decided.

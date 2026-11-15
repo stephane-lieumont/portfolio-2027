@@ -1,11 +1,11 @@
 <section class="stack" aria-labelledby="stack-title">
   <div class="stack__head" appWorldReveal="ruled">
-    <h2 id="stack-title">Stack</h2>
+    <h2 id="stack-title" i18n="@@stack.heading">Stack</h2>
     <span>{{ subtitle() }}</span>
   </div>
   <!-- A tab list: one tool chosen at a time, its points in the panel below.
        Arrows, Home and End move between the marks (roving tabindex). -->
-  <ul #markList class="marks" role="tablist" aria-label="Outils">
+  <ul #markList class="marks" role="tablist" aria-label="Outils" i18n-aria-label="@@stack.tools">
     @for (mark of marks(); track mark.slug) {
       <li class="mark" role="presentation">
         <button
@@ -40,7 +40,7 @@
     appWorldReveal="ruled"
   >
     <div class="mastery__label" data-reveal-part>
-      <h3>Maîtrise</h3>
+      <h3 i18n="@@stack.mastery">Maîtrise</h3>
       <p class="mastery__names">
         @for (mark of marks(); track mark.slug) {
           <span

@@ -1,7 +1,10 @@
+import { Location } from '@angular/common';
 import { DOCUMENT, Injectable, inject, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import type { WorldKey } from '@portfolio/shared-types';
 import { filter } from 'rxjs';
+
+import { SITE_LOCALE, type SiteLocale, pageAt } from '../i18n/site-locale';
 
 /** The path alone: no query, no fragment, no trailing slash except the root's. */
 export function pathOf(url: string): string {
@@ -17,15 +20,20 @@ function within(path: string, section: string): boolean {
  * The world a page belongs to (ADR-0014). Every page outside the two sections
  * — contact, the 404 — stays in the world the visitor came from.
  */
-export function worldOfPath(path: string, previous: WorldKey): WorldKey {
-  if (within(path, '/developpeur')) return 'dev';
-  if (within(path, '/graphisme-3d')) return 'cgi';
+export function worldOfPath(
+  path: string,
+  previous: WorldKey,
+  locale: SiteLocale = SITE_LOCALE,
+): WorldKey {
+  const { page } = pageAt(path, locale);
+  if (page === 'dev' || page === 'project') return 'dev';
+  if (page === 'cgi' || page === 'piece') return 'cgi';
   return previous;
 }
 
 /**
  * Whether a navigation link marks the current page: `page` on the page itself,
- * `true` inside its section (a project under /developpeur), nothing elsewhere.
+ * `true` inside its section (a project under the developer world), nothing elsewhere.
  */
 export function currentness(path: string, link: string): 'page' | 'true' | null {
   if (path === link) return 'page';
@@ -55,8 +63,9 @@ export class ActiveWorld {
     // render matches the prerendered DOM. Waiting for the first NavigationEnd
     // left a window of ~150ms where the header went transparent, the footer
     // vanished and the brand claimed to be the current page.
-    const loaded = inject(DOCUMENT).location?.pathname;
-    if (loaded?.startsWith('/')) this.enter(loaded);
+    // The router's path, the tree's base (`/en/`) left out.
+    const loaded = inject(Location).path();
+    this.enter(loaded.startsWith('/') ? loaded : `/${loaded}`);
 
     inject(Router)
       .events.pipe(filter((event) => event instanceof NavigationEnd))

@@ -1,8 +1,10 @@
 <section class="work band" aria-labelledby="work-title">
   <div class="work__head" appWorldReveal="lines">
-    <h2 id="work-title">Réalisations</h2>
+    <h2 id="work-title" i18n="@@work.heading">Réalisations</h2>
     <p class="work__count">
-      <b>{{ count.count }}</b> projets · {{ count.span }}
+      <ng-container i18n="@@work.count"
+        ><b>{{ count.count }}</b> projets · {{ count.span }}</ng-container
+      >
     </p>
   </div>
   <ul #wall class="mosaic" role="list" [style.--rows]="rows">
@@ -19,7 +21,7 @@
         <a
           class="tile__btn"
           [href]="piece.href"
-          [attr.aria-label]="piece.title + ' (' + piece.year + '), agrandir'"
+          [attr.aria-label]="piece.label"
           (click)="open($index, $event)"
         >
           <img
@@ -36,7 +38,7 @@
             decoding="async"
           />
           <span class="plate__fallback" aria-hidden="true">
-            <span class="plate__fallback-label">Image indisponible</span>
+            <span class="plate__fallback-label" i18n="@@plate.unavailable">Image indisponible</span>
             <span class="plate__fallback-alt">{{ piece.alt }}</span>
           </span>
           <span class="tile__cap" aria-hidden="true">

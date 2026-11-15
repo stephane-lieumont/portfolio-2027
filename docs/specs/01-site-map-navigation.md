@@ -14,7 +14,7 @@
 /404                                        Not found
 ```
 
-URLs stay in French: they are visitor-facing and carry SEO weight.
+URLs stay in French in the French tree: they are visitor-facing and carry SEO weight. The English tree (ADR-0017) lives under `/en` with English section names: `/en/developer`, `/en/3d-art`, `/en/contact`.
 
 ### About the URLs
 

@@ -21,11 +21,30 @@
     />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
+    <!-- The world's ground before the stylesheet arrives: a full navigation
+         (the language switcher) must not flash the browser's white. Same
+         values as --world-dev-ground / --world-cgi-ground. -->
+    <style>
+      html {
+        background: #12100f;
+      }
+      html[data-world='cgi'] {
+        background: #f2a154;
+      }
+    </style>
+
     <!-- Says the script is coming, before first paint. The reveal hides
          nothing without it (spec 07 §4.2); main.ts withdraws it if bootstrap
          fails. -->
     <script>
-      document.documentElement.classList.add('js-motion');
+      // Arriving from the language switcher (ADR-0017) is the same page in the
+      // other language: nothing enters again, as if script had not announced
+      // itself, and the cloud stands assembled.
+      var switched = false;
+      try {
+        switched = sessionStorage.getItem('lang-switch') !== null;
+      } catch (e) {}
+      document.documentElement.classList.add(switched ? 'lang-switched' : 'js-motion');
     </script>
   </head>
   <body>

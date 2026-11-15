@@ -1,6 +1,11 @@
 import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 
+import { SECTIONS, SITE_LOCALE } from './core/i18n/site-locale';
 import { ARTWORKS, PROJECTS } from './core/static-content';
+
+const DEV = SECTIONS.dev[SITE_LOCALE];
+const CGI = SECTIONS.cgi[SITE_LOCALE];
+const CONTACT = SECTIONS.contact[SITE_LOCALE];
 
 /**
  * Whether the second URL segment names a project we actually have.
@@ -14,7 +19,7 @@ export function projectSlugExists(segments: readonly { readonly path: string }[]
   return slug !== undefined && PROJECTS.some((p) => p.slug === slug);
 }
 
-/** Whether the first URL segment, under /graphisme-3d, names a piece we have. */
+/** Whether the first URL segment, under the 3D world, names a piece we have. */
 export function artworkSlugExists(segments: readonly { readonly path: string }[]): boolean {
   const slug = segments[0]?.path;
   return slug !== undefined && ARTWORKS.some((a) => a.slug === slug);
@@ -31,16 +36,17 @@ function projectOf(route: ActivatedRouteSnapshot) {
 }
 
 // Descriptions reuse each page's own lead rather than separate marketing copy.
+// `data.page` names the page across both trees, for the switcher and hreflang.
 export const routes: Routes = [
   // The mockup opens on the developer world; there is no home page of its own.
-  { path: '', pathMatch: 'full', redirectTo: 'developpeur' },
+  { path: '', pathMatch: 'full', redirectTo: DEV },
   {
-    path: 'developpeur',
-    title: 'Lead Tech, Angular et .NET',
+    path: DEV,
+    title: $localize`:@@page.dev.title:Lead Tech, Angular et .NET`,
     data: {
+      page: 'dev',
       world: 'dev',
-      description:
-        'J’arbitre les choix techniques, j’encadre, et j’écris du code tous les jours. Quatorze ans dans l’aéronautique avant de basculer vers le développement : c’est de là que vient ma façon de travailler.',
+      description: $localize`:@@page.dev.description:J’arbitre les choix techniques, j’encadre, et j’écris du code tous les jours. Quatorze ans dans l’aéronautique avant de basculer vers le développement : c’est de là que vient ma façon de travailler.`,
     },
     loadComponent: () => import('./features/world/world-page').then((m) => m.WorldPage),
   },
@@ -50,7 +56,8 @@ export const routes: Routes = [
   // present. The summary is the description: the page itself opens on the
   // context instead.
   {
-    path: 'developpeur/:slug',
+    path: `${DEV}/:slug`,
+    data: { page: 'project' },
     canMatch: [
       (_route: unknown, segments: readonly { path: string }[]) => projectSlugExists(segments),
     ],
@@ -59,14 +66,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/project/project-page').then((m) => m.ProjectPage),
   },
   {
-    path: 'graphisme-3d',
-    title: 'Graphisme 3D',
+    path: CGI,
+    title: $localize`:@@page.cgi.title:Graphisme 3D`,
     data: {
+      page: 'cgi',
       world: 'cgi',
       // Without the lead's « sans école et sans commande »: the Pixmodels
       // commission contradicts it, and it is on the content review list.
-      description:
-        'J’ai commencé la 3D bien avant le développement. C’est là que j’ai appris à apprendre seul — et à regarder une image jusqu’à voir ce qui ne va pas.',
+      description: $localize`:@@page.cgi.description:J’ai commencé la 3D bien avant le développement. C’est là que j’ai appris à apprendre seul — et à regarder une image jusqu’à voir ce qui ne va pas.`,
     },
     loadComponent: () => import('./features/world/world-page').then((m) => m.WorldPage),
     // Each piece has its own address (spec 01), which opens the viewer over the
@@ -76,6 +83,7 @@ export const routes: Routes = [
       { path: '', children: [] },
       {
         path: ':slug',
+        data: { page: 'piece' },
         canMatch: [
           (_route: unknown, segments: readonly { path: string }[]) => artworkSlugExists(segments),
         ],
@@ -88,12 +96,12 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'contact',
-    title: 'Contact',
+    path: CONTACT,
+    title: $localize`:@@page.contact.title:Contact`,
     data: {
+      page: 'contact',
       // Without the lead's « par email »: the contact redesign publishes none.
-      description:
-        'Un projet, une question ou juste un Hello World ? Je réponds à tout, y compris pour dire non.',
+      description: $localize`:@@page.contact.description:Un projet, une question ou juste un Hello World ? Je réponds à tout, y compris pour dire non.`,
     },
     loadComponent: () => import('./features/contact/contact').then((m) => m.Contact),
   },
@@ -104,8 +112,8 @@ export const routes: Routes = [
   // status (see production-constraints).
   {
     path: '**',
-    title: 'Erreur 404',
-    data: { noindex: true },
+    title: $localize`:@@page.notFound.title:Erreur 404`,
+    data: { page: 'not-found', noindex: true },
     loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFound),
   },
 ];

@@ -5,7 +5,11 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import {
+  provideClientHydration,
+  withEventReplay,
+  withI18nSupport,
+} from '@angular/platform-browser';
 import {
   TitleStrategy,
   provideRouter,
@@ -39,7 +43,7 @@ export const appConfig: ApplicationConfig = {
     // the images and the entrance already under way are not torn down and
     // replayed when Angular arrives late. Event replay keeps a click made
     // before then.
-    provideClientHydration(withEventReplay()),
+    provideClientHydration(withEventReplay(), withI18nSupport()),
     { provide: TitleStrategy, useClass: PageMetadata },
     provideHttpClient(withFetch()),
     { provide: API_BASE_URL, useValue: '/api' },

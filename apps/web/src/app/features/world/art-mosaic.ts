@@ -20,6 +20,7 @@ import { filter, map } from 'rxjs';
 import { mediaSrcset, mediaUrl } from '../../core/media.config';
 import { ReducedMotion } from '../../core/motion/reduced-motion';
 import { toolView } from '../../core/content/tool-marks';
+import { PATHS } from '../../core/i18n/site-locale';
 import { RouteTransitions } from '../../core/route-transitions';
 import { ARTWORKS } from '../../core/static-content';
 import { ArtViewer, PLATE, type ViewerPiece } from './art-viewer';
@@ -28,7 +29,7 @@ import { PlateImage } from './plate-image';
 import { workCount } from './work-count';
 import { WorldReveal } from './world-reveal';
 
-export const GALLERY_PATH = '/graphisme-3d';
+export const GALLERY_PATH = PATHS.cgi;
 
 /** A tile's width: its share of twelve columns from 900px, half or all of the wall below. */
 export function tileSizes(tile: { readonly area: string; readonly wide: boolean }): string {
@@ -69,6 +70,7 @@ export class ArtMosaic {
   protected readonly rows = this.layout.rows;
   protected readonly pieces: readonly (ViewerPiece & {
     readonly href: string;
+    readonly label: string;
     readonly focus: string;
     readonly area: string;
     readonly wide: boolean;
@@ -102,7 +104,9 @@ export class ArtMosaic {
       width: artwork.image.width,
       height: artwork.image.height,
       tools: artwork.software.map((slug) => toolView(slug)),
-      href: `${GALLERY_PATH}/${artwork.slug}`,
+      // A plain href, so it carries the tree's base (`/en/`) itself.
+      href: this.location.prepareExternalUrl(`${GALLERY_PATH}/${artwork.slug}`),
+      label: $localize`:@@mosaic.tileLabel:${artwork.title}:title: (${artwork.releasedAt.slice(0, 4)}:year:), agrandir`,
       focus: `${(artwork.focal?.x ?? 0.5) * 100}% ${(artwork.focal?.y ?? 0.5) * 100}%`,
       ...this.layout.tiles[i],
       sizes: tileSizes(this.layout.tiles[i]),

@@ -1,4 +1,4 @@
-<a class="skip-link" href="#contenu">Aller au contenu</a>
+<a class="skip-link" href="#contenu" i18n="@@shell.skipLink">Aller au contenu</a>
 
 <app-motes />
 
@@ -7,14 +7,49 @@
      hero; the CV in the dock. -->
 <header class="top glass">
   <div class="top__inner">
-    <p class="top__who">Lead Tech &amp; graphiste 3D</p>
-    <nav class="top__end" aria-label="Navigation principale">
+    <p class="top__who" i18n="@@site.role">Lead Tech &amp; graphiste 3D</p>
+    <nav class="top__end" aria-label="Navigation principale" i18n-aria-label="@@shell.nav">
       <a
         class="top__link"
         [routerLink]="nav.contact.path"
         [attr.aria-current]="current(nav.contact.path)"
         >{{ nav.contact.label }}</a
       >
+      <!-- The same page in the other tree (ADR-0017): a full navigation, not
+           a route, so a plain href. -->
+      <a
+        #languageLink
+        class="top__link top__lang"
+        [href]="language().href"
+        [attr.hreflang]="language().locale"
+        [attr.lang]="language().locale"
+        [attr.aria-label]="language().name"
+      >
+        <!-- The flag of the language the link leads to, in one ink: light on
+             the dev ground, grey on the orange (Stéphane, 2026-11-15). The
+             accessible name says it in words. -->
+        @if (language().locale === 'en') {
+          <svg class="top__flag" viewBox="0 0 60 40" aria-hidden="true">
+            <clipPath id="flag-uk"><rect width="60" height="40" rx="4" /></clipPath>
+            <g clip-path="url(#flag-uk)">
+              <rect class="top__flag-dark" width="60" height="40" />
+              <path d="M0 0l60 40M60 0L0 40" stroke="currentColor" stroke-width="8" />
+              <path class="top__flag-dark-line" d="M0 0l60 40M60 0L0 40" stroke-width="2.5" />
+              <path d="M30 0v40M0 20h60" stroke="currentColor" stroke-width="12" />
+              <path class="top__flag-dark-line" d="M30 0v40M0 20h60" stroke-width="7" />
+            </g>
+          </svg>
+        } @else {
+          <svg class="top__flag" viewBox="0 0 60 40" aria-hidden="true">
+            <clipPath id="flag-fr"><rect width="60" height="40" rx="4" /></clipPath>
+            <g clip-path="url(#flag-fr)">
+              <rect class="top__flag-dark" width="20" height="40" />
+              <rect x="20" width="20" height="40" fill="currentColor" />
+              <rect class="top__flag-mid" x="40" width="20" height="40" />
+            </g>
+          </svg>
+        }
+      </a>
       <!-- The world switch is navigation (ADR-0014): two links. The thumb
            behind them is painted from the document's world. -->
       <ul class="switch" role="list">

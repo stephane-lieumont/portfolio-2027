@@ -2,7 +2,7 @@
 
 Every page meets the cross-cutting requirements of ADR-0010 (semantics and accessibility) and ADR-0011 (responsive): a single `<h1>`, no skipped heading level, no information carried by hover alone, no horizontal overflow from 360 to 1920px.
 
-Visitor-facing copy is written in French; this document is in English.
+Visitor-facing copy is written in French, then in English for the `/en` tree (ADR-0017); this document is in English.
 
 ---
 

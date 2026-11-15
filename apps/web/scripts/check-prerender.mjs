@@ -1,4 +1,5 @@
-// Fails the build unless every route was prerendered into a complete page.
+// Fails the build unless every route of both trees was prerendered into a
+// complete page. Titles must differ within a tree.
 // The rules live in prerender-checks.mjs, where they are tested.
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -23,7 +24,7 @@ for (const route of EXPECTED.keys()) {
 
   failures.push(...checkPage(route, html));
 
-  const title = titleOf(html);
+  const title = `${EXPECTED.get(route).locale} ${titleOf(html)}`;
   if (titles.has(title)) failures.push(`${file}: same <title> as ${titles.get(title)}`);
   titles.set(title, file);
   console.log(`${file.padEnd(52)} ${title}`);

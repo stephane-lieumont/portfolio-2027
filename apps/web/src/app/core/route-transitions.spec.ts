@@ -4,7 +4,7 @@ import { Router, UrlTree, ViewTransitionInfo, provideRouter } from '@angular/rou
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SmoothScroll } from './motion/smooth-scroll';
-import { RouteTransitions, classifyTransition } from './route-transitions';
+import { RouteTransitions, classifyTransition, showsCloud } from './route-transitions';
 import { ActiveWorld } from './world/world';
 
 describe('classifyTransition', () => {
@@ -44,6 +44,23 @@ describe('classifyTransition', () => {
   it('leaves a step between two pieces to the viewer’s own animation', () => {
     const from = { path: '/graphisme-3d/beebop', world: 'cgi' } as const;
     expect(classifyTransition(from, { path: '/graphisme-3d/gorgotte', world: 'cgi' })).toBe('none');
+  });
+
+  // The English tree has its own section names: every kind must still be
+  // recognised there, or the sweep turns into a crossfade under /en.
+  it('classifies the English tree’s paths the same way', () => {
+    const dev = { path: '/developer', world: 'dev' } as const;
+    const cgi = { path: '/3d-art', world: 'cgi' } as const;
+    const piece = { path: '/3d-art/beebop', world: 'cgi' } as const;
+    const contact = { path: '/contact', world: 'cgi' } as const;
+
+    expect(classifyTransition(dev, cgi, 'en')).toBe('sweep-cgi');
+    expect(classifyTransition(cgi, piece, 'en')).toBe('viewer');
+    expect(classifyTransition(piece, { ...piece, path: '/3d-art/gorgotte' }, 'en')).toBe('none');
+    expect(classifyTransition(cgi, contact, 'en')).toBe('wipe');
+    expect(classifyTransition(dev, { path: '/developer/kasa', world: 'dev' }, 'en')).toBe('fade');
+    expect(showsCloud('/3d-art/beebop', 'en')).toBe(true);
+    expect(showsCloud('/developer/kasa', 'en')).toBe(false);
   });
 });
 

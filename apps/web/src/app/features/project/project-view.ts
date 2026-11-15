@@ -39,8 +39,17 @@ export interface ProjectLink {
 export function projectLinks(project: StaticProject): ProjectLink[] {
   const links: ProjectLink[] = [];
   if (project.websiteUrl)
-    links.push({ kind: 'site', label: 'Voir le site', href: project.websiteUrl });
-  if (project.videoUrl) links.push({ kind: 'video', label: 'Voir la vidéo', href: '#video' });
+    links.push({
+      kind: 'site',
+      label: $localize`:@@project.website:Voir le site`,
+      href: project.websiteUrl,
+    });
+  if (project.videoUrl)
+    links.push({
+      kind: 'video',
+      label: $localize`:@@project.watchVideo:Voir la vidéo`,
+      href: '#video',
+    });
   return links;
 }
 
@@ -65,7 +74,7 @@ export function closingBand(
 ): ClosingBand {
   if (project.series) {
     return {
-      heading: `Série · ${project.series}`,
+      heading: $localize`:@@project.series:Série · ${project.series}:series:`,
       projects: projects.filter((p) => p.series === project.series),
       current: project.slug,
     };
@@ -75,5 +84,9 @@ export function closingBand(
     { length: Math.min(OTHERS_COUNT, projects.length - 1) },
     (_, i) => projects[(at + 1 + i) % projects.length],
   );
-  return { heading: 'Autres réalisations', projects: others, current: null };
+  return {
+    heading: $localize`:@@project.others:Autres réalisations`,
+    projects: others,
+    current: null,
+  };
 }

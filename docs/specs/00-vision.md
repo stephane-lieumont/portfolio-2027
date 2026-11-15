@@ -1,6 +1,6 @@
 # Spec 00 — Vision, audiences and principles
 
-> The site's visitor-facing copy is written in **French**. This document, like all project documentation, is in English.
+> The site's visitor-facing copy is written in **French**, and in **English** under `/en` (ADR-0017). This document, like all project documentation, is in English.
 
 ## What the site must produce
 

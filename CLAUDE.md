@@ -6,7 +6,7 @@ Stéphane Lieumont's portfolio: Lead Tech and 3D artist. This is his professiona
 
 **Code, comments, commit messages and documentation are written in English.**
 
-**The site's visitor-facing content is written in French** — every string a visitor reads, plus the project copy stored in the database. The site is French-only; see ADR and specs.
+**The site is bilingual, French and English** (ADR-0017): French at the root, English under `/en`. French is the source language — every visitor-facing string is written in French first, then translated (static strings via Angular i18n, `@@` ids in `messages.en.xlf`; dynamic copy as `{ fr, en }` fields in shared-types). English copy is written by the communication expert, never machine-translated.
 
 Quotes from the current site kept as audit evidence stay in French.
 

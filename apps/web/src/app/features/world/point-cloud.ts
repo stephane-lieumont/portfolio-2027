@@ -256,6 +256,9 @@ export class PointCloud {
         if (!alive) return;
         if (!model.ready) {
           model.init(sampleGlyph(this.document), GLYPH_W, GLYPH_H, this.world());
+          if (this.document.documentElement.classList.contains('lang-switched')) {
+            model.skipAssembly();
+          }
         }
         stop = this.frames.add((_time, delta) => draw(delta));
       };
