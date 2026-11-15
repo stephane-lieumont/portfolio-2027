@@ -794,6 +794,12 @@ on the production build (1440 and 390), and is to be fixed later.
   rewritten by the communication expert and reviewed. The nginx redirect and
   per-tree 404 (ADR-0005, amended) are to apply on the server.
 
+## Planned next (Stéphane, 2026-11-15)
+
+1. Merge the client-references PR.
+2. A responsive audit of the whole application.
+3. The back office (spec 04 draft, ADR-0019 proposed): projects (dev and 3D) with detailed descriptions, dev and 3D tools served by the API, front ↔ API ↔ MinIO, a hidden admin only Stéphane can enter, credentials he changes himself, `Secure` `HttpOnly` session cookie. The interactive CV is a V2.
+
 ## Missing
 
 Ordered by what hurts most on the day the site goes live.
@@ -806,7 +812,7 @@ Ordered by what hurts most on the day the site goes live.
 | **Contact route missing in the API**   | The form posts to `/api/contact` and tells the visitor sending is not available yet. Needs the Fastify route: Zod `contactMessageSchema`, rate limit, relay to a mail service (ADR-0007).                                                                                                   |
 | **API is a skeleton**                  | Only `/health`. No projects, no media, no contact route.                                                                                                                                                                                                                                    |
 | **No back office**                     | Content lives in `apps/web/src/app/core/data/static-content/static-content.ts`. Every edit is a commit.                                                                                                                                                                                     |
-| **Specs 04 and 05 missing**            | `00-vision.md` references a back-office spec and a content/SEO spec that were never written.                                                                                                                                                                                                |
+| **Spec 05 missing; spec 04 drafted**   | `docs/specs/04-back-office.md` is a draft (2026-11-15) awaiting Stéphane's answers, with ADR-0019 (admin access hardening) proposed. The content/SEO spec 05 was never written.                                                                                                             |
 
 ## Known accessibility debt — contact page
 
