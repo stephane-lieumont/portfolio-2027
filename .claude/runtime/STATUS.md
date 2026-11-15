@@ -3,13 +3,35 @@
 Last updated 2026-11-15. Describes `main` (shell, world pages, contact, the
 pointer's « fil », the project page, the 404 and the bilingual site's first
 PR, ADR-0017) with `feat/i18n-content` (its second PR, the content in both
-languages) on top.
+languages) and `refactor/app-architecture` (the app's layering, ADR-0018) on
+top.
 
 ## Works today
 
 **Foundations** — pnpm monorepo, Angular 22 standalone/zoneless/signals, shared
 Zod types, Fastify API skeleton with `/health`, MinIO in docker-compose
-(declared, not yet used). 16 ADRs, 6 specs.
+(declared, not yet used). 18 ADRs, 6 specs.
+
+**App layering (ADR-0018, `refactor/app-architecture`)** — `apps/web/src/app`
+is split into `core/` (services, stores, i18n, config, static data), `shared/`
+(generic UI: today only the pill button, `a[appButton]`), `common/` (domain
+pieces used by several features: the dev-work band, the scrub sentence, the
+plate-image and world-reveal directives, the hero's letter helpers),
+`features/<name>/{views,components}` (world, project, contact, errors) and
+`layouts/site-layout/` (the root component, `app-root`, with the header, dock,
+thread and motes). Aliases `@core`, `@shared`, `@common`, `@features`,
+`@layouts`; ESLint (`no-restricted-imports`, in `pnpm verify`) refuses an
+import against the direction and any relative path that climbs out of its
+folder. A pure move: the 56 prerendered pages of both trees are identical to
+`main` once Angular's hashes are normalised, except the button's own host
+attributes (`appbutton`, `_nghost-…`, `ngh`) and its stylesheet; every
+computed property of the 36 button instances sampled in Chrome is unchanged.
+Not neutral: the initial bundle went from 437.59 kB raw / 123.72 kB transfer
+to 441.13 / 125.72 per tree. About 2.4 kB raw come from the move alone, with
+no code changed: esbuild split the shared chunk differently (`main` 52 →
+148 kB, the shared chunk 351 → 259 kB) and the lists of names imported and
+exported between chunks grew by about 1.5 kB; the button costs about 1.1 kB.
+Under the 500 kB warning; not investigated further.
 
 **Design system** — primitive and semantic tokens, `light-dark()`, typography
 scale, base reset. Contrast measured against the worst pixel a blended texture
@@ -45,9 +67,9 @@ hydration never flips it. Route transitions per ADR-0014: sweep between
 worlds (cover 0→640ms, new page from 640ms), ink wipe to and from contact,
 §9.2 crossfade otherwise, a short crossfade under reduced motion; scrollY is
 0 before `ready` on new navigations, back and forward restore it. One frame
-loop (`FrameLoop`) feeds Lenis 1.1.13 (lazy chunk, 3.29 kB gz; off under
+loop (`FrameLoopService`) feeds Lenis 1.1.13 (lazy chunk, 3.29 kB gz; off under
 reduced motion) and the motes canvas (DPR cap 1.5, refit on a pixel-ratio
-change, still frame under reduced motion). The pointer's « fil » (`shell/thread.ts`,
+change, still frame under reduced motion). The pointer's « fil » (`layouts/site-layout/components/thread/`,
 iso with the mockup): one tapering line trailing the mouse on the same frame
 loop, 2ms substeps (same length at 60 and 144 Hz), 220px max, z-index 60 over
 the header and the dock, under the viewer's dialog; orange in the dev world,
@@ -91,7 +113,7 @@ page (for the old contact page) is gone: contact and the 404 stand on the
 orange ground.
 
 **World pages (« Bascule », this branch)** — `/developpeur` and
-`/graphisme-3d` are one component (`features/world/`), iso with the mockup in
+`/graphisme-3d` are one component (`features/world/views/world-page/`), iso with the mockup in
 markup, CSS values and motion. Measured at 1440 against the mockup, element by
 element: same boxes to the pixel (name 899px, role 265 vs 264px, stage
 575×718, scrub 689×213, work head 324×94…), the only offset being the
@@ -117,7 +139,7 @@ mockup's unreset 8px body margin. In order:
   jump). After a sweep the role flips once the band has covered (640ms).
 - Point cloud (`</>` → torus, assembly, pointer field on the glyph only,
   accent sweep every 7s, still frame under reduced motion) on the shared frame
-  loop, its state in a root `CloudState`. The torus has no hover effect: it is
+  loop, its state in a root `CloudStore`. The torus has no hover effect: it is
   grabbed and turned (mouse, pen, a sideways touch; a full stage width is half a
   turn, pitch held between face-on and edge-on) and on release springs back
   onto the live auto-rotation, whose clock runs on during the hold (critically
@@ -256,7 +278,7 @@ and nothing else differs. Same fonts loaded, page heights equal (3016 /
 2495px). No horizontal overflow at 320, 390, 1024, 1440 on all six projects
 (the prototype overflows by 65px at 320, its header). In order:
 
-- Hero (`ProjectHero`): « Réalisations » back to `/developpeur`, the rank
+- Hero (`ProjectHeroComponent`): « Réalisations » back to `/developpeur`, the rank
   « 02 / 06 », series · year and role, the title split on « — » into the name
   rising letter by letter and the condensed qualifier flipping in (the world
   pages' keyframes, reused), then « Voir le site » (`websiteUrl`, new tab) and
@@ -265,10 +287,10 @@ and nothing else differs. Same fonts loaded, page heights equal (3016 /
   `aria-hidden`).
 - The presentation visual on a light plate (the world's ink, the shot
   multiplied onto it), its left edge cut at the sweep's lean, computed from
-  the viewport's aspect (`PlateLean`), bleeding off both sides on a phone,
+  the viewport's aspect (`PlateLeanDirective`), bleeding off both sides on a phone,
   from the column's edge to the right from 900px; « Fig. » caption. WebP
   derivatives with real widths and `sizes`, `fetchpriority="high"`.
-- Contexte: the context as the scrub sentence (`ScrubSentence`, with the
+- Contexte: the context as the scrub sentence (`ScrubSentenceComponent`, with the
   prototype's ramp from 85% of the viewport, `BODY_RAMP`). **The summary is not
   shown**; it stays the meta description (Stéphane, 2026-11-15).
 - Mission (role set large, mission, numbered steps), Outils (marks as masks,
@@ -280,7 +302,7 @@ and nothing else differs. Same fonts loaded, page heights equal (3016 /
   one added locally for the measurement: resource hosts before the press
   `localhost` only, after it `www.youtube-nocookie.com`; no iframe before. The
   schema accepts https YouTube video addresses only.
-- The band (`DevWork`, now parameterised): a project in a series ends on the
+- The band (`DevWorkComponent` in `common/`, now parameterised): a project in a series ends on the
   whole series, its own card marked « Cette fiche », grey, not a link
   (`aria-current="page"`); any other ends on « Autres réalisations », the
   three projects that follow it in the list, wrapping. Three columns from
@@ -414,7 +436,7 @@ both languages, at the source.
     becomes a pair (two columns or JSON), with a generated migration;
   - slug uniqueness per language: two unique indexes (`slug_fr`, `slug_en`)
     in place of `projects_slug_unique`, and the same for artworks;
-  - `ProjectsApi.bySlug` (and the API route) takes a locale, since the same
+  - `ProjectsService.bySlug` (and the API route) takes a locale, since the same
     slug string can name different records in the two trees.
 - Static content migrated, ids added to projects and pieces (uuid, as the
   schema has them). **The English is a draft** written from the French, no
@@ -433,7 +455,7 @@ both languages, at the source.
   `marketing-visual`, `tomatoes`). Bucket keys stay on the French slug: one
   file per picture for both trees.
 - Pages read `text[SITE_LOCALE]` through `inLocale()` and the `inLocale`
-  pipe (`core/i18n/in-locale.ts`), named apart from shared-types' Zod
+  pipe (`core/i18n/in-locale.pipe.ts`), named apart from shared-types' Zod
   `localized()` so an auto-import cannot pull Zod into the browser. Route guards, resolvers (title,
   description), prerender params, links, the mosaic's hrefs and the project
   hero's `#video` link use the tree's slug. A `PageRef` names a project or a
@@ -513,7 +535,7 @@ Known limits, deliberately not fixed here:
   `scripts/prerender-checks.mjs`. All three move to the API (ADR-0008).
 
 **Page metadata** — each route sets its `<title>` and meta description, in the
-prerendered HTML and on client navigation (`PageMetadata`, a `TitleStrategy`).
+prerendered HTML and on client navigation (`PageMetadataService`, a `TitleStrategy`).
 Descriptions reuse each page's lead; a project's is its summary. The 404 is
 `noindex`.
 
@@ -523,7 +545,7 @@ read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository. Locally the renders need
 `pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 532 passing on the web side, 97.6% lines, 87.9% branches, 93.5%
+**Tests** — 534 passing on the web side, 97.6% lines, 87.9% branches, 93.5%
 functions (plus 53 for the prerender check); axe on every page, every project page included. Every route, the
 404, the project guard, the API client, the gallery, contact, the project page,
 its video facade and the YouTube address parser have their own specs; the
@@ -550,7 +572,7 @@ motes and smooth scrolling. It ships as six PRs:
 1. **ADRs and content model** — merged (#17). ADR-0013 (Lenis), ADR-0014 (worlds
    are routes, the sweep is the route transition), ADR-0015 (mosaic crops
    around a focal point). `world.ts` schemas in shared-types; static content in
-   `apps/web/src/app/core/content/world-content.ts`, parsed against them in a
+   `apps/web/src/app/core/data/world-content.ts`, parsed against them in a
    spec. Nothing renders it yet.
 2. **Shell** — this PR (`feat/shell-bascule`), see « Works today ». Open:
    - A loader comes later (Stéphane, 2026-11-14).
@@ -644,7 +666,7 @@ Ordered by what hurts most on the day the site goes live.
 | **`pnpm infra:up` is broken**          | `minio/minio` no longer exists on Docker Hub (nor on quay.io), so the compose file cannot pull. `cgr.dev/chainguard/minio` runs the same binary and works with the seed script; switching to it is undecided.                                                                               |
 | **Contact route missing in the API**   | The form posts to `/api/contact` and tells the visitor sending is not available yet. Needs the Fastify route: Zod `contactMessageSchema`, rate limit, relay to a mail service (ADR-0007).                                                                                                   |
 | **API is a skeleton**                  | Only `/health`. No projects, no media, no contact route.                                                                                                                                                                                                                                    |
-| **No back office**                     | Content lives in `apps/web/src/app/core/static-content.ts`. Every edit is a commit.                                                                                                                                                                                                         |
+| **No back office**                     | Content lives in `apps/web/src/app/core/data/static-content.ts`. Every edit is a commit.                                                                                                                                                                                                    |
 | **Specs 04 and 05 missing**            | `00-vision.md` references a back-office spec and a content/SEO spec that were never written.                                                                                                                                                                                                |
 
 ## Known accessibility debt — contact page
