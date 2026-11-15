@@ -169,9 +169,7 @@ The back office derives three states from them:
 
 ## Media ownership
 
-**An asset belongs to exactly one owner.** No sharing between projects or artworks. Deleting an owner deletes its assets, in the database and in the bucket.
-
-On a portfolio the same render never legitimately appears in two projects, and this single constraint removes the whole question of what deleting a media item means. `MediaAsset` therefore carries an owner reference rather than living in a many-to-many join.
+**An asset may be shared; deleting one that is still used is refused.** Records (works, tools, stack entries) reference assets by id, and one file may serve several of them: React and React Native share one mark (Stéphane, 2026-11-15, relaxing the earlier « exactly one owner » rule). Deleting an asset still referenced is refused with the list of what uses it, as for tools (`toolUsage`); an unreferenced asset can be deleted, in the database and in the bucket. Deleting a record never deletes its assets: the media library's « unused » filter finds them.
 
 `MediaAsset` keeps the fields ADR-0012 requires: object key, `alt` (localized; required, non-empty, real text and never a repeat of the title, in each language), intrinsic width and height, byte size, content type, dominant colour, and a processing state. One file serves both trees.
 
