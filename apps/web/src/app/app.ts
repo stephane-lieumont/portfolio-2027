@@ -12,6 +12,15 @@ import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, skip } from 'rxjs';
 
+import {
+  PATHS,
+  SITE_LOCALE,
+  type SiteLocale,
+  languageCookie,
+  otherLocale,
+  pageAt,
+  pageHref,
+} from './core/i18n/site-locale';
 import { SmoothScroll } from './core/motion/smooth-scroll';
 import { RouteTransitions } from './core/route-transitions';
 import { ActiveWorld, currentness } from './core/world/world';
@@ -31,12 +40,16 @@ export class App {
   private readonly router = inject(Router);
   private readonly active = inject(ActiveWorld);
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
+  private readonly languageLink = viewChild.required<ElementRef<HTMLAnchorElement>>('languageLink');
 
   protected readonly nav = NAV;
 
   // The contact page carries the same networks in its own content; the dock
   // would only repeat them (Stéphane, 2026-11-15).
-  protected readonly showDock = computed(() => this.active.path() !== '/contact');
+  protected readonly showDock = computed(() => this.active.path() !== PATHS.contact);
+
+  /** The same page in the other tree: a plain link, which works without script. */
+  protected readonly language = computed(() => languageSwitch(this.active.path(), SITE_LOCALE));
 
   // The prerendered HTML carries the build's year; the browser renders the
   // current one. Hydration reuses the text node without comparing its value,
@@ -68,10 +81,42 @@ export class App {
       });
 
     const smooth = inject(SmoothScroll);
-    afterNextRender(() => smooth.enable());
+    afterNextRender(() => {
+      smooth.enable();
+      // Not a template binding: event replay cancels a link's default action
+      // when it has a bound click. Before hydration the link still goes, only
+      // without the cookie.
+      const link = this.languageLink().nativeElement;
+      link.addEventListener('click', () => {
+        link.ownerDocument.cookie = languageCookie(this.language().locale);
+      });
+    });
   }
 
   protected current(link: string): 'page' | 'true' | null {
     return currentness(this.active.path(), link);
   }
+}
+
+const LANGUAGE_LINKS: Readonly<Record<SiteLocale, { label: string; name: string }>> = {
+  fr: { label: 'FR', name: 'Version française' },
+  en: { label: 'EN', name: 'English version' },
+};
+
+export interface LanguageSwitch {
+  readonly locale: SiteLocale;
+  readonly href: string;
+  readonly label: string;
+  /** In the target language, as the link's `lang` says. */
+  readonly name: string;
+}
+
+/** Where the switcher leads from a router path in a tree, and how it reads. */
+export function languageSwitch(path: string, locale: SiteLocale): LanguageSwitch {
+  const target = otherLocale(locale);
+  return {
+    locale: target,
+    href: pageHref(pageAt(path, locale), target),
+    ...LANGUAGE_LINKS[target],
+  };
 }

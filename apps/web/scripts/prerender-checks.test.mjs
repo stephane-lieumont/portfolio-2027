@@ -8,18 +8,36 @@ import { checkPage } from './prerender-checks.mjs';
 
 const FORM =
   '<form><label>Nom</label><label>Email</label><label>Message</label><button>Envoyer</button></form>';
+const FORM_EN =
+  '<form><label>Name</label><label>Email</label><label>Message</label><button>Send</button></form>';
+
+const ALTERNATES =
+  '<link rel="alternate" hreflang="fr" href="https://stephane-lieumont.fr/contact">' +
+  '<link rel="alternate" hreflang="en" href="https://stephane-lieumont.fr/en/contact">' +
+  '<link rel="alternate" hreflang="x-default" href="https://stephane-lieumont.fr/contact">';
 
 const page = ({
+  lang = 'fr',
   head = '<meta name="description" content="Un projet, une question.">',
+  alternates = ALTERNATES,
   html = '',
   main = '',
   h1 = 'Un projet, une question ou juste un Hello World ?',
-  lead = 'Je réponds à tout, y compris pour dire non.',
+  lead = 'Je réponds à tout, y compris pour dire non. Par formulaire ou sur LinkedIn, au choix.',
   form = FORM,
+  switcher = '<a href="/en/contact" hreflang="en" lang="en" aria-label="English version">EN</a>',
   state = '<script id="ng-state" type="application/json">{}</script>',
-} = {}) => `<!doctype html><html lang="fr"${html}><head><title>Contact — Stéphane Lieumont</title>${head}</head>
-<body><app-root ngh="0"><div class="shell"><main id="contenu"${main}>
+} = {}) => `<!doctype html><html lang="${lang}"${html}><head><title>Contact — Stéphane Lieumont</title>${head}${alternates}</head>
+<body><app-root ngh="0"><header class="top">${switcher}</header><div class="shell"><main id="contenu"${main}>
 <header class="reveal"><h1>${h1}</h1><p>${lead}</p></header>${form}</main></div></app-root>${state}</body></html>`;
+
+const english = (overrides = {}) =>
+  page({
+    lang: 'en',
+    form: FORM_EN,
+    switcher: '<a href="/contact" hreflang="fr" lang="fr" aria-label="Version française">FR</a>',
+    ...overrides,
+  });
 
 describe('a prerendered page', () => {
   it('passes when complete', () => {
@@ -121,5 +139,88 @@ describe('a prerendered page', () => {
       '<html><head><meta http-equiv="refresh" content="0; url=/developpeur"></head></html>';
     assert.deepEqual(checkPage('', html), []);
   });
+
+  it('passes the English root when it redirects to the English developer world', () => {
+    const html =
+      '<html><head><meta http-equiv="refresh" content="0; url=/en/developer"></head></html>';
+    assert.deepEqual(checkPage('en', html), []);
+  });
+  caught(
+    'when the English root redirects to the French tree',
+    'en',
+    '<html><head><meta http-equiv="refresh" content="0; url=/developpeur"></head></html>',
+  );
   caught('for a route the site does not have', 'nulle-part', page());
+});
+
+describe('a page in either tree', () => {
+  it('passes in English when complete, its copy still French until PR 2', () => {
+    assert.deepEqual(checkPage('en/contact', english()), []);
+  });
+
+  it('passes a 404 that names no alternate', () => {
+    const notFound = (lang, h1, eyebrow, switcher) =>
+      page({
+        lang,
+        h1,
+        lead: eyebrow,
+        form: '',
+        alternates: '',
+        switcher,
+        head: '<meta name="robots" content="noindex">',
+      });
+    assert.deepEqual(
+      checkPage(
+        '404',
+        notFound(
+          'fr',
+          'Mais où est l’interphone ?',
+          'Erreur 404',
+          '<a href="/en/developer" hreflang="en" lang="en">EN</a>',
+        ),
+      ),
+      [],
+    );
+    assert.deepEqual(
+      checkPage(
+        'en/404',
+        notFound(
+          'en',
+          'Where is the intercom?',
+          'Error 404',
+          '<a href="/developpeur" hreflang="fr" lang="fr">FR</a>',
+        ),
+      ),
+      [],
+    );
+  });
+
+  const caught = (name, route, html) =>
+    it(`fails ${name}`, () => assert.notDeepEqual(checkPage(route, html), []));
+
+  caught('when the English tree says it is French', 'en/contact', english({ lang: 'fr' }));
+  caught('when the French tree says it is English', 'contact', page({ lang: 'en' }));
+  caught('without hreflang links', 'contact', page({ alternates: '' }));
+  caught(
+    'when x-default points at the English page',
+    'contact',
+    page({ alternates: ALTERNATES.replace(/(x-default" href="[^"]+)\/contact/, '$1/en/contact') }),
+  );
+  caught('without a language switch', 'contact', page({ switcher: '' }));
+  caught(
+    'when the switch leads to another page',
+    'en/contact',
+    english({ switcher: '<a href="/developpeur" hreflang="fr" lang="fr">FR</a>' }),
+  );
+  caught(
+    'when the switch stays in its own tree',
+    'contact',
+    page({ switcher: '<a href="/contact" hreflang="en" lang="en">EN</a>' }),
+  );
+  caught('when the English form keeps a French label', 'en/contact', english({ form: FORM }));
+  caught(
+    'when a French accessible name reaches the English tree',
+    'en/contact',
+    english({ form: `${FORM_EN}<a href="/x" aria-label="Télécharger mon CV (PDF)">x</a>` }),
+  );
 });

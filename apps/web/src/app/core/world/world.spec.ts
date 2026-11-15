@@ -34,6 +34,13 @@ describe('worldOfPath', () => {
   it('does not mistake a prefix for a section', () => {
     expect(worldOfPath('/developpeurs', 'cgi')).toBe('cgi');
   });
+
+  it('reads the English tree’s sections in English', () => {
+    expect(worldOfPath('/developer/kasa', 'cgi', 'en')).toBe('dev');
+    expect(worldOfPath('/3d-art', 'dev', 'en')).toBe('cgi');
+    expect(worldOfPath('/contact', 'cgi', 'en')).toBe('cgi');
+    expect(worldOfPath('/developpeur', 'cgi', 'en')).toBe('cgi');
+  });
 });
 
 describe('currentness', () => {

@@ -3,51 +3,132 @@
 // quoting and nested markup are the HTML's business, not the check's.
 import { JSDOM } from 'jsdom';
 
-import { WORLD_PAGES } from '../src/app/core/content/world-content.ts';
+import { CONTACT_PAGE, WORLD_PAGES } from '../src/app/core/content/world-content.ts';
+import { SECTIONS, SITE_ORIGIN } from '../src/app/core/i18n/site-paths.ts';
 import { ARTWORKS, PROJECTS } from '../src/app/core/static-content.ts';
 
 // Both worlds open on the name, set by the page itself.
 const NAME = 'Stéphane Lieumont';
 
+// The chrome each tree must say in its own words. The project copy and the
+// world pages' content are French in both trees until it is localized at the
+// source (ADR-0017), so only the strings marked for translation are checked.
+const CHROME = {
+  fr: {
+    contactForm: ['Nom', 'Email', 'Message', 'Envoyer'],
+    worldCta: 'Me contacter',
+    projectBlock: 'Contexte',
+    notFound: { h1: 'Mais où est l’interphone ?', text: ['Erreur 404'] },
+  },
+  en: {
+    contactForm: ['Name', 'Email', 'Message', 'Send'],
+    worldCta: 'Contact me',
+    projectBlock: 'Context',
+    notFound: { h1: 'Where is the intercom?', text: ['Error 404'] },
+  },
+};
+
+/** French interface strings that must not reach the English tree. */
+export const FRENCH_CHROME = [
+  'Aller au contenu',
+  'Navigation principale',
+  'Me contacter',
+  'Réseaux et contact',
+  'Télécharger mon CV',
+  'Image indisponible',
+  'nouvel onglet',
+  'Cette fiche',
+  'Autres réalisations',
+  'Réalisations',
+  'Maîtrise',
+  'Ce avec quoi je travaille',
+  'Mes logiciels',
+  'Visionneuse',
+  'Fil d’Ariane',
+  'Envoyer',
+  'Erreur 404',
+  'Lead Tech & graphiste 3D',
+];
+
+const treePrefix = (locale) => (locale === 'fr' ? '' : `${locale}/`);
+
+/** A page's directory in a tree, from the build's root. */
+export function routeOf({ page, slug }, locale) {
+  const section = { project: 'dev', piece: 'cgi', 'not-found': 'dev' }[page] ?? page;
+  const path = page === 'project' || page === 'piece' ? `/${slug}` : '';
+  return `${treePrefix(locale)}${SECTIONS[section][locale]}${path}`;
+}
+
+function tree(locale) {
+  const other = locale === 'fr' ? 'en' : 'fr';
+  const chrome = CHROME[locale];
+  const entry = (ref, expected) => [
+    ref.page === 'not-found' ? `${treePrefix(locale)}404` : routeOf(ref, locale),
+    { locale, ref, switchTo: `/${routeOf(ref, other)}`, ...expected },
+  ];
+  return [
+    // The root has no page: each tree opens on the developer world. Angular's
+    // static output writes a meta-refresh file there; nginx may answer with a
+    // redirect before it is ever read (ADR-0005).
+    [
+      treePrefix(locale).replace(/\/$/, ''),
+      { locale, redirect: `/${routeOf({ page: 'dev' }, locale)}` },
+    ],
+    entry(
+      { page: 'dev' },
+      {
+        h1: NAME,
+        text: [
+          WORLD_PAGES.dev.lede.lead,
+          WORLD_PAGES.dev.scrub,
+          chrome.worldCta,
+          ...PROJECTS.map((p) => p.title),
+        ],
+      },
+    ),
+    entry(
+      { page: 'cgi' },
+      {
+        h1: NAME,
+        text: [
+          WORLD_PAGES.cgi.lede.lead,
+          WORLD_PAGES.cgi.scrub,
+          chrome.worldCta,
+          ...ARTWORKS.map((a) => a.title),
+        ],
+      },
+    ),
+    ...ARTWORKS.map((a) => entry({ page: 'piece', slug: a.slug }, { h1: NAME, text: [a.title] })),
+    entry(
+      { page: 'contact' },
+      { h1: CONTACT_PAGE.title, text: [CONTACT_PAGE.lede, ...chrome.contactForm] },
+    ),
+    ...PROJECTS.map((p) =>
+      entry(
+        { page: 'project', slug: p.slug },
+        {
+          h1: p.title,
+          text: [
+            p.context,
+            p.mission,
+            p.presentationCaption,
+            chrome.projectBlock,
+            ...p.missionSteps,
+          ],
+        },
+      ),
+    ),
+    entry({ page: 'not-found' }, { ...chrome.notFound, noindex: true }),
+  ];
+}
+
 /**
- * Every route the site must ship, with text that proves its content was
- * rendered: the heading, and a line of the copy under it. Written from the
- * content, not read from the build, so a route that stops prerendering is
- * missing rather than silently absent from both sides.
+ * Every route the site must ship, in both trees, with text that proves its
+ * content was rendered: the heading, and a line of the copy under it. Written
+ * from the content, not read from the build, so a route that stops
+ * prerendering is missing rather than silently absent from both sides.
  */
-export const EXPECTED = new Map([
-  // The root has no page: the site opens on the developer world. Angular's
-  // static output writes a meta-refresh file there; nginx may answer with a
-  // 301 before it is ever read (ADR-0005).
-  ['', { redirect: '/developpeur' }],
-  [
-    'developpeur',
-    {
-      h1: NAME,
-      text: [WORLD_PAGES.dev.lede.lead, WORLD_PAGES.dev.scrub, ...PROJECTS.map((p) => p.title)],
-    },
-  ],
-  [
-    'graphisme-3d',
-    {
-      h1: NAME,
-      text: [WORLD_PAGES.cgi.lede.lead, WORLD_PAGES.cgi.scrub, ...ARTWORKS.map((a) => a.title)],
-    },
-  ],
-  ...ARTWORKS.map((a) => [`graphisme-3d/${a.slug}`, { h1: NAME, text: [a.title] }]),
-  [
-    'contact',
-    {
-      h1: 'Un projet, une question ou juste un Hello World ?',
-      text: ['Je réponds à tout, y compris pour dire non.', 'Nom', 'Email', 'Message', 'Envoyer'],
-    },
-  ],
-  ...PROJECTS.map((p) => [
-    `developpeur/${p.slug}`,
-    { h1: p.title, text: [p.context, p.mission, p.presentationCaption, ...p.missionSteps] },
-  ]),
-  ['404', { h1: 'Mais où est l’interphone ?', text: ['Erreur 404'], noindex: true }],
-]);
+export const EXPECTED = new Map([...tree('fr'), ...tree('en')]);
 
 const HIDING_STYLE =
   /(?:^|;)\s*(?:opacity\s*:\s*0(?:\.0*)?\s*(?:;|$|!)|display\s*:\s*none|visibility\s*:\s*hidden)/i;
@@ -71,7 +152,10 @@ function thirdParty(document) {
   const urls = [
     ...Array.from(document.querySelectorAll('[src]'), (el) => el.getAttribute('src')),
     ...Array.from(document.querySelectorAll('[srcset]'), (el) => el.getAttribute('srcset')),
-    ...Array.from(document.querySelectorAll('link[href]'), (el) => el.getAttribute('href')),
+    ...Array.from(document.querySelectorAll('link[href]'), (el) => el.getAttribute('href')).filter(
+      // The hreflang alternates name this site's own addresses; nothing loads them.
+      (href) => !href?.startsWith(`${SITE_ORIGIN}/`),
+    ),
   ];
   return urls.filter((url) => /(?:^|[\s,])(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(url ?? ''));
 }
@@ -92,7 +176,46 @@ export function checkPage(route, html) {
     const target = /url=(\S+)/i.exec(refresh?.getAttribute('content') ?? '')?.[1];
     if (target !== expected.redirect)
       fail(`redirects to ${target ?? 'nowhere'}, expected ${expected.redirect}`);
-    return failures.map((reason) => `/: ${reason}`);
+    return failures.map((reason) => `/${route}: ${reason}`);
+  }
+
+  const lang = document.documentElement.getAttribute('lang');
+  if (lang !== expected.locale) fail(`<html lang> is "${lang}", expected "${expected.locale}"`);
+
+  const alternates = Object.fromEntries(
+    Array.from(document.head.querySelectorAll('link[rel="alternate"][hreflang]'), (link) => [
+      link.getAttribute('hreflang'),
+      link.getAttribute('href'),
+    ]),
+  );
+  const wanted = expected.noindex
+    ? {}
+    : {
+        fr: `${SITE_ORIGIN}/${routeOf(expected.ref, 'fr')}`,
+        en: `${SITE_ORIGIN}/${routeOf(expected.ref, 'en')}`,
+        'x-default': `${SITE_ORIGIN}/${routeOf(expected.ref, 'fr')}`,
+      };
+  if (JSON.stringify(alternates) !== JSON.stringify(wanted))
+    fail(`hreflang links are ${JSON.stringify(alternates)}, expected ${JSON.stringify(wanted)}`);
+
+  // The switcher leads to the same page in the other tree, as a plain link.
+  const other = expected.locale === 'fr' ? 'en' : 'fr';
+  const switcher = document.querySelector(`header a[hreflang="${other}"][lang="${other}"]`);
+  const switchHref = switcher?.getAttribute('href');
+  if (switchHref !== expected.switchTo)
+    fail(`language switch goes to ${switchHref ?? 'nowhere'}, expected ${expected.switchTo}`);
+
+  if (expected.locale === 'en') {
+    const said = [
+      document.title,
+      document.body.textContent ?? '',
+      ...Array.from(document.querySelectorAll('[aria-label], [title]'), (el) =>
+        [el.getAttribute('aria-label'), el.getAttribute('title')].join(' '),
+      ),
+    ].join(' ');
+    for (const french of FRENCH_CHROME) {
+      if (said.includes(french)) fail(`French interface text in the English tree: "${french}"`);
+    }
   }
 
   const title = squash(document.title);
@@ -153,7 +276,7 @@ export function checkPage(route, html) {
     if (noindex) fail('marked noindex');
   }
 
-  return failures.map((reason) => `${route || '/'}: ${reason}`);
+  return failures.map((reason) => `/${route}: ${reason}`);
 }
 
 export function titleOf(html) {

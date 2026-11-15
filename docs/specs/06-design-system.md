@@ -6,7 +6,7 @@ This document implements ADR-0009. The ADR settled the method — two token tier
 
 **What it leaves open.** Layout composition per page (spec 02), motion (spec 07), and any component beyond the base set below. Component-level tokens (`--card-padding` and friends) are deliberately absent: they get defined when a component is built, always as aliases of the scales below.
 
-> Interface labels quoted in this document stay in French — the site's visitor-facing content is French. Everything else, token names included, is English.
+> Interface labels quoted in this document stay in French — French is the site's source language; the `/en` tree translates them (ADR-0017). Everything else, token names included, is English. Measures taken on French copy (`--measure`, label widths) are to be re-checked in English.
 
 **Every ratio in this document was computed with the WCAG 2.x relative-luminance formula and states the surface it was measured against.** A ratio without a named background is not a ratio.
 

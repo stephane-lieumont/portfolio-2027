@@ -2,7 +2,7 @@
 
 Settled with Stéphane on 2026-08-31. The provisional schema written to prove the architecture (`packages/shared-types/src/project.ts`, `apps/api/src/db/schema.ts`) is superseded by this document.
 
-Visitor-facing copy stored in these entities is written in **French**.
+Visitor-facing copy stored in these entities is written in **French and English** (ADR-0017): each text field becomes `{ fr, en }`, both required to publish. Until that migration lands, the fields below are French.
 
 ---
 

@@ -1,4 +1,4 @@
-<a class="skip-link" href="#contenu">Aller au contenu</a>
+<a class="skip-link" href="#contenu" i18n="@@shell.skipLink">Aller au contenu</a>
 
 <app-motes />
 
@@ -7,13 +7,24 @@
      hero; the CV in the dock. -->
 <header class="top glass">
   <div class="top__inner">
-    <p class="top__who">Lead Tech &amp; graphiste 3D</p>
-    <nav class="top__end" aria-label="Navigation principale">
+    <p class="top__who" i18n="@@site.role">Lead Tech &amp; graphiste 3D</p>
+    <nav class="top__end" aria-label="Navigation principale" i18n-aria-label="@@shell.nav">
       <a
         class="top__link"
         [routerLink]="nav.contact.path"
         [attr.aria-current]="current(nav.contact.path)"
         >{{ nav.contact.label }}</a
+      >
+      <!-- The same page in the other tree (ADR-0017): a full navigation, not
+           a route, so a plain href. -->
+      <a
+        #languageLink
+        class="top__link top__lang"
+        [href]="language().href"
+        [attr.hreflang]="language().locale"
+        [attr.lang]="language().locale"
+        [attr.aria-label]="language().name"
+        >{{ language().label }}</a
       >
       <!-- The world switch is navigation (ADR-0014): two links. The thumb
            behind them is painted from the document's world. -->

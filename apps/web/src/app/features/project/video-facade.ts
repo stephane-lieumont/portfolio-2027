@@ -31,14 +31,14 @@ import type { StaticImage } from '../../core/static-content';
           #player
           class="player"
           [src]="embed()"
-          [title]="'Vidéo : ' + title()"
+          [title]="playerTitle()"
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowfullscreen
           referrerpolicy="strict-origin-when-cross-origin"
         ></iframe>
       } @else {
         <button #play type="button" class="poster" (click)="start()">
-          <span class="visually-hidden">Lire la vidéo : {{ title() }}</span>
+          <span class="visually-hidden" i18n="@@video.play">Lire la vidéo : {{ title() }}</span>
           <img
             class="poster__img"
             [src]="mediaUrl(poster().key)"
@@ -68,6 +68,9 @@ export class VideoFacade {
   protected readonly mediaUrl = mediaUrl();
   protected readonly srcset = mediaSrcset();
   protected readonly playing = signal(false);
+  protected readonly playerTitle = computed(
+    () => $localize`:@@video.player:Vidéo : ${this.title()}:title:`,
+  );
 
   private readonly sanitizer = inject(DomSanitizer);
   private readonly injector = inject(Injector);

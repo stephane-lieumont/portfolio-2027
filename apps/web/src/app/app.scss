@@ -46,17 +46,23 @@
   color: var(--world-muted);
 }
 
+// The language link (ADR-0017) made the second row 34px too wide at 320px in
+// French: below 375px the row's spacing tightens, its heights unchanged. The
+// switch keeps its two columns equal (they part as soon as it is squeezed,
+// and the thumb, half its width, no longer sits on the current link).
 .top__end {
   margin-inline-start: auto;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 3px;
 }
 
 .top__link {
   display: inline-flex;
   align-items: center;
-  padding: 10px 6px;
+  justify-content: center;
+  min-inline-size: 24px;
+  padding: 10px 3px;
   border-radius: 999px;
   font: 500 12px/1 var(--font-sans);
   color: inherit;
@@ -89,7 +95,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  padding: 10px 4px;
   border-radius: 999px;
   font: 500 12px/1 var(--font-sans);
   color: inherit;
@@ -100,6 +106,20 @@
 .switch__link:focus-visible {
   outline-color: var(--world-ink);
   outline-offset: -1px;
+}
+
+@media (min-width: 375px) {
+  .top__end {
+    gap: 8px;
+  }
+
+  .top__link {
+    padding-inline: 6px;
+  }
+
+  .switch__link {
+    padding-inline: 10px;
+  }
 }
 
 @media (min-width: 520px) {

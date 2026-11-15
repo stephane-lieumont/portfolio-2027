@@ -17,12 +17,20 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": { "code": "fr", "subPath": "" },
+        "locales": {
+          "en": { "translation": "src/locale/messages.en.xlf", "subPath": "en" }
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
+            "polyfills": ["@angular/localize/init"],
             "server": "src/main.server.ts",
+            "i18nMissingTranslation": "error",
             "outputMode": "static",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -49,12 +57,19 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "localize": true
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "development-en": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "localize": ["en"]
             }
           },
           "defaultConfiguration": "production"
@@ -67,12 +82,23 @@
             },
             "development": {
               "buildTarget": "web:build:development"
+            },
+            "development-en": {
+              "buildTarget": "web:build:development-en"
             }
           },
           "defaultConfiguration": "development",
           "options": {
             "port": 4300,
             "proxyConfig": "proxy.conf.json"
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n",
+          "options": {
+            "buildTarget": "web:build:development",
+            "outputPath": "src/locale",
+            "format": "xlf"
           }
         },
         "test": {

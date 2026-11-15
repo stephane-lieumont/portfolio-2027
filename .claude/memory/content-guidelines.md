@@ -1,13 +1,13 @@
 ---
 name: content-guidelines
-description: Editorial line for the portfolio — tone, structure of project copy, SEO, and the fixes to apply to the current wording. All visitor-facing copy is written in French.
+description: Editorial line for the portfolio — tone, structure of project copy, SEO, and the fixes to apply to the current wording. Visitor-facing copy is written in French, then in English (ADR-0017).
 metadata:
   type: project
 ---
 
 # Editorial line
 
-**Language:** this file is written in English, like the rest of the repository's documentation. **The copy it governs is written in French** — the site is French-speaking and that is settled. Quotations from the current site below are kept in French: they are audit evidence, not text to translate.
+**Language:** this file is written in English, like the rest of the repository's documentation. **The copy it governs is written in French first, then in English** for the `/en` tree (ADR-0017, which superseded the French-only rule on 2026-11-15). The English is written from the French, not machine-translated, held to the same rules below (first person, concrete, nothing invented) and checked against [[user-profile]]. Quotations from the current site below are kept in French: they are audit evidence, not text to translate.
 
 ## Purpose of the site
 
@@ -23,7 +23,7 @@ Two commercial goals, in this order: **salaried opportunities**, then **freelanc
 
 ## Tone
 
-First person, French, professional without stiffness. **Concrete over grandiose**: « j'ai développé l'application mobile en Flutter » (I built the mobile app in Flutter) beats « passionné par l'innovation » (passionate about innovation).
+First person, professional without stiffness, in both languages. **Concrete over grandiose**: « j'ai développé l'application mobile en Flutter » (I built the mobile app in Flutter) beats « passionné par l'innovation » (passionate about innovation).
 
 Forbidden: unverifiable superlatives, marketing jargon, emoji. Never invent a skill, a client, a date or a figure — a portfolio that exaggerates turns against its author in the interview.
 

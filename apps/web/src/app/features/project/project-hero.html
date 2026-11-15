@@ -1,11 +1,12 @@
 <header>
-  <nav class="crumbs" aria-label="Fil d’Ariane">
-    <a class="back" routerLink="/developpeur"
+  <nav class="crumbs" aria-label="Fil d’Ariane" i18n-aria-label="@@project.crumbs">
+    <a class="back" [routerLink]="devPath"
       ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg
-      >Réalisations</a
+      ><ng-container i18n="@@work.heading">Réalisations</ng-container></a
     >
     <span class="crumbs__pos"
-      ><span class="visually-hidden">Projet </span><b>{{ rank() }}</b> / {{ total() }}</span
+      ><span class="visually-hidden" i18n="@@project.rankPrefix">Projet </span><b>{{ rank() }}</b> /
+      {{ total() }}</span
     >
   </nav>
   <p class="eyebrow">
@@ -47,7 +48,8 @@
             [href]="link.href"
             target="_blank"
             rel="noopener"
-            >{{ link.label }}<span class="visually-hidden"> (nouvel onglet)</span></a
+            >{{ link.label
+            }}<span class="visually-hidden" i18n="@@newTab"> (nouvel onglet)</span></a
           >
         } @else {
           <a

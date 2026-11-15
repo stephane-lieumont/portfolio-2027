@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { Location } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { PATHS } from '../../core/i18n/site-locale';
 import type { StaticProject } from '../../core/static-content';
 import { introBase } from '../world/world-hero';
 import { heroTitle, projectLinks } from './project-view';
@@ -37,7 +39,12 @@ export class ProjectHero {
   protected readonly heading = computed(() => heroTitle(this.project().title));
   protected readonly entranceBase = computed(() => introBase(this.heading().nameText));
   protected readonly links = computed(() => projectLinks(this.project()));
-  protected readonly videoHref = computed(() => `/developpeur/${this.project().slug}#video`);
+  protected readonly devPath = PATHS.dev;
+  // A plain href, so it carries the tree's base (`/en/`) itself.
+  protected readonly videoHref = computed(() =>
+    this.location.prepareExternalUrl(`${PATHS.dev}/${this.project().slug}#video`),
+  );
+  private readonly location = inject(Location);
 
   protected requestVideo(event: MouseEvent): void {
     this.videoRequested.emit(event);

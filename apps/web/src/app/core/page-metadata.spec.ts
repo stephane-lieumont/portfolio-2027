@@ -19,6 +19,11 @@ const PAGES = [
 
 const description = () =>
   document.head.querySelector<HTMLMetaElement>('meta[name="description"]')?.content;
+const alternateLinks = () =>
+  Array.from(
+    document.head.querySelectorAll('link[rel="alternate"]'),
+    (link) => `${link.getAttribute('hreflang')} ${link.getAttribute('href')}`,
+  );
 const robots = () => document.head.querySelector<HTMLMetaElement>('meta[name="robots"]')?.content;
 
 describe('page metadata', () => {
@@ -67,8 +72,26 @@ describe('page metadata', () => {
     expect(description()).toBe(project.summary);
   });
 
+  it('names the same page in both trees, French as the default', async () => {
+    await harness.navigateByUrl('/developpeur/pixmodels');
+
+    expect(alternateLinks()).toEqual([
+      'fr https://stephane-lieumont.fr/developpeur/pixmodels',
+      'en https://stephane-lieumont.fr/en/developer/pixmodels',
+      'x-default https://stephane-lieumont.fr/developpeur/pixmodels',
+    ]);
+
+    await harness.navigateByUrl('/contact');
+    expect(alternateLinks()).toEqual([
+      'fr https://stephane-lieumont.fr/contact',
+      'en https://stephane-lieumont.fr/en/contact',
+      'x-default https://stephane-lieumont.fr/contact',
+    ]);
+  });
+
   it('keeps the 404 out of the index and says nothing about it', async () => {
     await harness.navigateByUrl('/developpeur/projet-qui-nexiste-pas');
+    expect(alternateLinks()).toEqual([]);
 
     expect(document.title).toBe('Erreur 404 — Stéphane Lieumont');
     expect(robots()).toBe('noindex');

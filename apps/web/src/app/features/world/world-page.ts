@@ -16,6 +16,7 @@ import {
   WORLD_PAGES,
   WORLD_STACKS,
 } from '../../core/content/world-content';
+import { PATHS } from '../../core/i18n/site-locale';
 import { CloudState } from '../../core/world/cloud-state';
 import { ArtMosaic } from './art-mosaic';
 import { DevWork } from './dev-work';
@@ -37,7 +38,7 @@ export type Entrance = 'intro' | 'build' | 'none';
 const LEAD_LINES = 3;
 
 /**
- * One skeleton, two worlds (ADR-0014): `/developpeur` and `/graphisme-3d`
+ * One skeleton, two worlds (ADR-0014): the developer and 3D sections
  * render this page with their own content, palette and work.
  */
 @Component({
@@ -59,6 +60,7 @@ export class WorldPage {
   protected readonly stack = computed(() => WORLD_STACKS[this.world()]);
   protected readonly workStart = computed(() => LEAD_LINES + this.page().facts.length);
   protected readonly cv = STATIC_FILES[SITE_SETTINGS.cvAssetId];
+  protected readonly contactPath = PATHS.contact;
 
   protected readonly entrance: Entrance;
   protected readonly entranceBase: number;

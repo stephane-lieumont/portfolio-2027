@@ -1,5 +1,6 @@
 import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
 
+import { SECTIONS, SITE_LOCALE } from './core/i18n/site-locale';
 import { ARTWORKS, PROJECTS } from './core/static-content';
 
 /**
@@ -10,14 +11,14 @@ export const serverRoutes: ServerRoute[] = [
   {
     // From the static content for now. ADR-0008 enumerates them from the API
     // once it serves projects, which makes the API a build dependency.
-    path: 'developpeur/:slug',
+    path: `${SECTIONS.dev[SITE_LOCALE]}/:slug`,
     renderMode: RenderMode.Prerender,
     getPrerenderParams: async () => PROJECTS.map((project) => ({ slug: project.slug })),
     // An unknown slug is nginx's 404, not a page rendered on the fly.
     fallback: PrerenderFallback.None,
   },
   {
-    path: 'graphisme-3d/:slug',
+    path: `${SECTIONS.cgi[SITE_LOCALE]}/:slug`,
     renderMode: RenderMode.Prerender,
     getPrerenderParams: async () => ARTWORKS.map((artwork) => ({ slug: artwork.slug })),
     fallback: PrerenderFallback.None,

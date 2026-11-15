@@ -3,6 +3,7 @@
   class="lb"
   data-lenis-prevent
   aria-label="Visionneuse des rendus 3D"
+  i18n-aria-label="@@viewer.label"
   (cancel)="onCancel($event)"
   (close)="onClose()"
 >
@@ -10,16 +11,25 @@
     class="show__btn lb__close"
     type="button"
     aria-label="Fermer la visionneuse"
+    i18n-aria-label="@@viewer.close"
     (click)="closing.emit()"
   >
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
   </button>
-  <div class="show" role="group" aria-roledescription="carrousel" aria-label="Rendus 3D">
+  <div
+    class="show"
+    role="group"
+    aria-roledescription="carrousel"
+    i18n-aria-roledescription="@@viewer.roledescription"
+    aria-label="Rendus 3D"
+    i18n-aria-label="@@viewer.group"
+  >
     <div
       #stage
       class="show__stage"
       tabindex="0"
       aria-label="Rendu affiché. Flèches gauche et droite pour changer de rendu."
+      i18n-aria-label="@@viewer.stage"
       (keydown)="onKey($event)"
       (pointerdown)="onPointerDown($event)"
       (pointerup)="onPointerUp($event)"
@@ -40,7 +50,9 @@
               decoding="async"
             />
             <span class="plate__fallback" aria-hidden="true">
-              <span class="plate__fallback-label">Image indisponible</span>
+              <span class="plate__fallback-label" i18n="@@plate.unavailable"
+                >Image indisponible</span
+              >
               <span class="plate__fallback-alt">{{ piece.alt }}</span>
             </span>
           }
@@ -70,7 +82,7 @@
           <button
             type="button"
             class="show__tick"
-            [attr.aria-label]="'Rendu ' + ($index + 1) + ' : ' + piece.title"
+            [attr.aria-label]="tickLabel($index, piece.title)"
             [attr.aria-current]="$index === index() ? 'true' : null"
             (click)="goTo($index)"
           >
@@ -78,10 +90,22 @@
           </button>
         }
       </div>
-      <button class="show__btn" type="button" aria-label="Rendu précédent" (click)="step(-1)">
+      <button
+        class="show__btn"
+        type="button"
+        aria-label="Rendu précédent"
+        i18n-aria-label="@@viewer.previous"
+        (click)="step(-1)"
+      >
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
       </button>
-      <button class="show__btn" type="button" aria-label="Rendu suivant" (click)="step(1)">
+      <button
+        class="show__btn"
+        type="button"
+        aria-label="Rendu suivant"
+        i18n-aria-label="@@viewer.next"
+        (click)="step(1)"
+      >
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
       </button>
     </div>

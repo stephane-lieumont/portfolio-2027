@@ -3,6 +3,7 @@
 - **Status**: Accepted
 - **Date**: 2026-08-30
 - **Amended**: 2026-11-14 — the `index.html` fallback is replaced by prerendered files and a real 404 (see the amendment below)
+- **Amended**: 2026-11-15 — two language trees (ADR-0017): the `/` redirect negotiates the language, and each tree has its own 404
 
 ## Context
 
@@ -68,3 +69,48 @@ location = / { return 301 /developpeur; }
 ```
 
 The meta-refresh file stays as the fallback for any server that does not.
+
+## Amendment — 2026-11-15: two language trees
+
+The site is bilingual (ADR-0017). The build now writes the French tree at the root of `dist/web/browser`, exactly as before, and the English tree under `en/`, with its own pages, its own `index.html` (a meta-refresh to `/en/developer`) and its own `en/404/index.html`. This replaces the 301 of the note above.
+
+**Only `/` negotiates the language.** Every other address opens the language it names; a shared link is never redirected. The visitor's explicit choice, the `lang` cookie the header's switcher sets, wins over the browser's languages:
+
+```nginx
+# http {} level
+map $cookie_lang $site_tree_from_cookie {
+    en      /en/developer;
+    fr      /developpeur;
+    default "";
+}
+map $http_accept_language $site_tree_from_browser {
+    ~*^fr   /developpeur;   # French ranked first
+    ""      /developpeur;   # no header: the source language
+    default /en/developer;
+}
+map $site_tree_from_cookie $site_home {
+    ""      $site_tree_from_browser;
+    default $site_tree_from_cookie;
+}
+
+# server {} level
+location = / {
+    add_header Vary "Accept-Language, Cookie" always;
+    return 302 $site_home;
+}
+location /en/ {
+    try_files $uri $uri/index.html =404;
+    error_page 404 /en/404/index.html;
+}
+location / {
+    try_files $uri $uri/index.html =404;
+    error_page 404 /404/index.html;
+}
+```
+
+- **302, not 301**: the answer depends on the visitor, so no cache may keep it; `Vary` says on what. A permanent redirect would pin the first visitor's language for everyone behind a shared cache.
+- **"French ranked first"** reads the first tag of `Accept-Language` only (`fr`, `fr-FR`, `fr-CA`…). A browser listing `en-US,fr;q=0.9` goes to English, as ADR-0017 asks; a `q` weight placed first is not parsed, which no mainstream browser sends.
+- `/en` without its slash falls through to `location /` and its `try_files` finds `en/index.html`, the English meta-refresh. An unknown address under `/en/` gets the English 404 with a 404 status; anywhere else, the French one.
+- The `index.html` meta-refresh files stay as the fallback for a server without this logic: the root then always opens in French.
+
+Not verified against a real nginx: the configuration lives outside the repository. The local check of the build (a static server answering per tree) is in STATUS.

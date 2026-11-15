@@ -34,19 +34,18 @@ type Field = (typeof FIELDS)[number];
 type SendState = 'idle' | 'sending' | 'sent' | 'unavailable' | 'rejected';
 
 const MISSING: Readonly<Record<Field, string>> = {
-  name: 'Indiquez votre nom.',
-  email: 'Indiquez votre email pour que je puisse répondre.',
-  message: 'Écrivez quelques mots avant d’envoyer.',
+  name: $localize`:@@contact.missing.name:Indiquez votre nom.`,
+  email: $localize`:@@contact.missing.email:Indiquez votre email pour que je puisse répondre.`,
+  message: $localize`:@@contact.missing.message:Écrivez quelques mots avant d’envoyer.`,
 };
-const MALFORMED_EMAIL = 'Cette adresse email ne semble pas complète, par exemple nom@domaine.fr.';
+const MALFORMED_EMAIL = $localize`:@@contact.malformedEmail:Cette adresse email ne semble pas complète, par exemple nom@domaine.fr.`;
 
 const STATUS: Readonly<Record<SendState, string>> = {
   idle: '',
-  sending: 'Envoi en cours…',
-  sent: 'Merci, votre message est parti. Je vous réponds au plus vite.',
-  unavailable:
-    'L’envoi par formulaire n’est pas encore en service. En attendant, écrivez-moi sur LinkedIn.',
-  rejected: 'Le message n’est pas parti. Réessayez dans un instant, ou écrivez-moi sur LinkedIn.',
+  sending: $localize`:@@contact.status.sending:Envoi en cours…`,
+  sent: $localize`:@@contact.status.sent:Merci, votre message est parti. Je vous réponds au plus vite.`,
+  unavailable: $localize`:@@contact.status.unavailable:L’envoi par formulaire n’est pas encore en service. En attendant, écrivez-moi sur LinkedIn.`,
+  rejected: $localize`:@@contact.status.rejected:Le message n’est pas parti. Réessayez dans un instant, ou écrivez-moi sur LinkedIn.`,
 };
 
 // Whitespace alone is not a name or a message; the API trims and would refuse it.
@@ -74,6 +73,7 @@ export class Contact {
     kind: social.kind,
     url: social.url,
     name: NETWORK_NAMES[social.kind],
+    label: $localize`:@@contact.network:${NETWORK_NAMES[social.kind]}:network: (nouvel onglet)`,
     icon: ICONS[social.kind],
   }));
 

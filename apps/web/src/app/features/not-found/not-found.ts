@@ -22,12 +22,12 @@ import { NAV } from '../../shell/nav-items';
   template: `
     <article class="not-found">
       <div class="not-found__text">
-        <p class="not-found__eyebrow">Erreur 404 · page introuvable</p>
-        <h1 class="not-found__title">Mais où est l’interphone&nbsp;?</h1>
-        <p class="not-found__lede">
+        <p class="not-found__eyebrow" i18n="@@notFound.eyebrow">Erreur 404 · page introuvable</p>
+        <h1 class="not-found__title" i18n="@@notFound.title">Mais où est l’interphone&nbsp;?</h1>
+        <p class="not-found__lede" i18n="@@notFound.lede">
           Cette page n’existe pas, ou plus. Le reste du site, lui, est bien là.
         </p>
-        <a class="btn" [routerLink]="back">Retour aux réalisations</a>
+        <a class="btn" [routerLink]="back" i18n="@@notFound.back">Retour aux réalisations</a>
       </div>
       <figure class="not-found__clip">
         <video
@@ -40,6 +40,7 @@ import { NAV } from '../../shell/nav-items';
           height="476"
           poster="/images/travolta-confused.webp"
           aria-label="John Travolta, perdu, regarde autour de lui."
+          i18n-aria-label="@@notFound.clip"
         >
           <!-- HEVC first: Safari reads its alpha, and only Safari claims QuickTime. -->
           <source src="/images/travolta-confused.mov" type='video/quicktime; codecs="hvc1"' />

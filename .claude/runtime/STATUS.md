@@ -1,8 +1,8 @@
 # Status
 
-Last updated 2026-11-15. Describes `main` (shell, world pages, contact and
-the pointer's « fil », PRs #20–#24, merged) with `feat/project-page` (the
-« fiche projet ») on top.
+Last updated 2026-11-15. Describes `main` (shell, world pages, contact, the
+pointer's « fil », the project page and the 404) with `feat/i18n-setup` (the
+bilingual site's first PR, ADR-0017) on top.
 
 ## Works today
 
@@ -28,11 +28,16 @@ is replaced by PRs 3–6.
 switch (two links with `aria-current`, a thumb that slides after the sweep) on
 the right; glass over the world's ground. Iso with the mockup, contrast included:
 the role line in the world's muted tone, links 32–36px tall (see « Known
-accessibility debt »). Below about 410px the right-hand group takes a second row: the
-mockup's narrow layout leaves the role 0px wide at 320px. No horizontal
-overflow at 320, 360, 375, 390, 520, 768, 1280. `/` redirects to
-`/developpeur` (a meta-refresh file in the static build; ADR-0005 notes the
-nginx 301). The world is derived from the route and stamped on `<html>` as
+accessibility debt »). The language link (« EN » / « FR », see « Bilingual »)
+sits between « Contact » and the switch. Below about 448px in French and 420px
+in English (measured: header 100px → 71px) the right-hand group takes a second
+row: the mockup's narrow layout leaves the role 0px wide at 320px. Below 375px
+that row's horizontal spacing tightens (gap 3px, link padding 3px, switch link
+padding 4px; heights unchanged, every target at least 24px wide) so it fits at
+320px in French, the switch's two halves equal (thumb on the current link to
+0px). No horizontal overflow at 320, 340, 359, 360, 375, 390, 410, 430, 768,
+1440, both trees. `/` redirects to `/developpeur` (a meta-refresh file in the
+static build; ADR-0005 notes the nginx redirect). The world is derived from the route and stamped on `<html>` as
 `data-world` (contact and the 404 keep the world they were opened from,
 default dev), in the prerendered files too, and seeded from the loaded URL so
 hydration never flips it. Route transitions per ADR-0014: sweep between
@@ -318,12 +323,86 @@ Deviations, each on purpose:
 The interim detail page, its `Reveal` directive, `TechChip` and their
 stylesheets (`_page.scss`, `_reveal.scss`) are removed: nothing else used them.
 
+**Bilingual, PR 1 of 3 (ADR-0017, `feat/i18n-setup`)** — `@angular/localize`
+22.1.4 (pinned with `@angular/compiler`, its peer). The production build is
+localized (`localize: true`, `i18nMissingTranslation: error`): French, the
+source locale, at the root of `dist/web/browser` exactly as before; English
+under `en/` with `<base href="/en/">`. 54 prerendered pages, 27 per tree.
+`ng serve` still serves French; `pnpm --filter @portfolio/web dev:en` serves
+the English tree, **at the root** (`/developer`, not `/en/developer`: the dev
+server serves one locale without its sub-path), its language link pointing at
+a French page that server does not have. `pnpm --filter @portfolio/web
+i18n:extract` writes `src/locale/messages.xlf` (not committed) to diff against
+`messages.en.xlf`.
+
+- 75 interface strings marked, each with a `@@` id: shell (skip link, role,
+  navigation names, dock labels), page titles and descriptions in the route
+  table, world pages (CTAs, work count, stack), the viewer's labels and live
+  status, contact (eyebrow, labels, errors, the four send states), project
+  page chrome, 404, image fallbacks. **The English is a draft** written here
+  from the French, no new claim: to be rewritten by the communication expert
+  in PR 3 and approved in the final content review.
+- **Still French in the English tree, on purpose until PR 2**: everything in
+  `world-content.ts` and `static-content.ts` (hero ledes, facts, stack points,
+  contact title and lede, portrait alt and caption, project and piece titles,
+  copy and alt texts), and the slugs of projects and pieces
+  (`/en/developer/kasa-openclassrooms`). PR 2 makes them `{ fr, en }`.
+- Section paths come from one table, `SECTIONS` in
+  `core/i18n/site-paths.ts`, read for the build's locale (`$localize.locale`,
+  inlined per tree) and for both by the switcher, the `hreflang` links and the
+  prerender check (ADR-0017 amended: a `$localize` path cannot name the other
+  tree). Routes carry `data.page`. Every path comparison (world detection,
+  the transition classifier, the dock hidden on contact, the header links,
+  project and piece links, `#video`, the mosaic's plain hrefs through
+  `Location.prepareExternalUrl`) reads the tree's own paths.
+- The language link: a plain `<a>` in the header between « Contact » and the
+  switch, `href` to the same page in the other tree, `hreflang` and `lang` on
+  it, « EN » / « FR » visible, « English version » / « Version française » as
+  its name. A click sets `lang=<locale>; Max-Age=31536000; Path=/;
+SameSite=Lax` (a native listener: event replay cancels a link's default
+  action when its click is bound in the template). From a 404 it opens the
+  other tree's developer page. The site's first cookie; no consent needed
+  (ADR-0017).
+- Per page, in the prerendered HTML: `<html lang>` (set by the localize
+  build), the localized title and description, and three `<link
+rel="alternate" hreflang="fr|en|x-default">` with absolute addresses on
+  `https://stephane-lieumont.fr` (ADR-0008's host; x-default = French); none
+  on the 404. No Open Graph locale: the site has no Open Graph yet (Missing).
+- `withI18nSupport()` added to hydration: without it Angular skips hydrating
+  any component holding an `i18n` block, the root included (the prerender
+  check caught it: no `ngh` on any page).
+- Measured on the production build served per tree (a local stand-in for the
+  ADR-0005 nginx rules): all 14 sampled routes in both trees 200 (unknown
+  addresses 404 with their tree's page), right `lang`, title, h1 and switcher
+  target; the switcher round-trips `/en/developer/pixmodels` ↔
+  `/developpeur/pixmodels`, cookie `lang=fr` then `lang=en`; the world switch
+  under `/en` stamps `sweep-cgi` / `sweep-dev` and plays the sweep, eyebrow
+  « 3D art » / « Development »; no prerendered node removed on hydration, no
+  console error. Dev servers, both trees: « Angular hydrated … 0 component(s)
+  were skipped » on six pages each, same component and node counts in both.
+- Initial bundle 418.97 kB raw / 118.2 kB transfer per tree (`withI18nSupport`
+  costs about 2.6 kB raw); under the 500 kB warning.
+- Not done here: nginx itself (ADR-0005 amended with the `/` redirect on the
+  `lang` cookie then `Accept-Language`, 302 and `Vary`, and per-tree
+  `try_files` / `error_page`; outside the repository). Not verified: Safari,
+  Firefox, a screen reader announcing the link's language.
+- Known: the English tree's build copies `public/` again under `en/` (1.7 MB
+  of fonts, images, logos and the CV); its pages load those from the root
+  (`/fonts`, `/images`), so the copies are never requested. The French 404 at
+  412–444px wide now scrolls by 25px: its height assumes one header row from
+  410px, and the language link moved the French wrap point to about 448px.
+- **CLAUDE.md's Language section still says « French-only »**: not edited by
+  an agent; to amend by Stéphane (ADR-0017 asks for it with this PR). Specs
+  00/01/02/03/06 and `content-guidelines.md` are amended. The
+  `communication-expert` agent's brief still says French only.
+
 **Prerendering (ADR-0008)** — `outputMode: 'static'`: the build writes one
 complete HTML file per route under `dist/web/browser` — `/` (a redirect to
 `/developpeur`), `/developpeur`,
 `/graphisme-3d`, `/contact`, one per project (`developpeur/<slug>`, enumerated
 from the static `PROJECTS`; ADR-0008 says from the API once it serves them),
-and `/404/index.html` for nginx's `error_page`. No route renders on demand and
+and `/404/index.html` for nginx's `error_page`; the English tree the same
+under `en/` (see « Bilingual »). No route renders on demand and
 no Node process runs in production. Client hydration with event replay keeps
 the prerendered DOM (measured:
 0 hydration mismatches on every route in the dev build, and no console
@@ -334,7 +413,12 @@ visible link at 390px (measured with script disabled).
 route was emitted with its own `<title>`, its heading and copy as text, a
 description (`noindex` on the 404 only), hydration data, and nothing hidden
 before script, and nothing loaded from another origin (`src`, `srcset`,
-`<link href>`: the YouTube player only after a click, ADR-0016). The heading
+`<link href>`: the YouTube player only after a click, ADR-0016; the
+`hreflang` alternates on the site's own host excepted). Both trees are
+checked, each with its own expectations: `<html lang>`, the three `hreflang`
+links (none on the 404), the language link's target, the interface strings
+in that language, and no French interface string anywhere in the English
+tree's text, title or accessible names. The heading
 is read as spoken (its `aria-label`, else its text without `aria-hidden`
 parts). The rules are tested against mutated pages
 (`scripts/prerender-checks.test.mjs`).
@@ -356,8 +440,8 @@ read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository. Locally the renders need
 `pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 436 passing on the web side, 97.1% lines, 86.4% branches, 93.2%
-functions; axe on every page, every project page included. Every route, the
+**Tests** — 471 passing on the web side, 97.8% lines, 87.8% branches, 93.5%
+functions (plus 41 for the prerender check); axe on every page, every project page included. Every route, the
 404, the project guard, the API client, the gallery, contact, the project page,
 its video facade and the YouTube address parser have their own specs; the
 static projects are parsed against the `Project` schema.
@@ -460,12 +544,12 @@ on the production build (1440 and 390), and is to be fixed later.
 
 ## Decided, not built
 
-- **Bilingual FR/EN (ADR-0017, Stéphane 2026-11-15).** French at the root,
-  English under `/en` with English slugs, Angular built-in i18n, `{ fr, en }`
-  dynamic fields, `/` redirected by nginx from the `lang` cookie then
-  `Accept-Language`. Nothing implemented yet; the French-only statements in
-  CLAUDE.md, specs 00/02/03/06 and content-guidelines are amended with the
-  first implementation.
+- **Bilingual FR/EN (ADR-0017), PRs 2 and 3.** PR 1 (infrastructure and
+  interface strings) is in « Works today ». PR 2: `LocalizedText` `{ fr, en }`
+  in shared-types for every text field and slug, the static content migrated,
+  the pages reading their build's locale. PR 3: the English copy rewritten by
+  the communication expert and reviewed. The nginx redirect and per-tree 404
+  (ADR-0005, amended) are to apply on the server.
 
 ## Missing
 

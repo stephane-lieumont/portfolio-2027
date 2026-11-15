@@ -27,3 +27,6 @@ pnpm-debug.log*
 
 # Local agent worktrees, never versioned
 .claude/worktrees/
+
+# ng extract-i18n output: the source messages, to diff against the translations
+apps/web/src/locale/messages.xlf

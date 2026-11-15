@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 
 import { mediaSrcset, mediaUrl } from '../../core/media.config';
 import { toolView } from '../../core/content/tool-marks';
+import { PATHS } from '../../core/i18n/site-locale';
 import { PROJECTS, type StaticProject } from '../../core/static-content';
 import { PlateImage } from './plate-image';
 import { workCount } from './work-count';
@@ -13,7 +14,7 @@ import { WorldReveal } from './world-reveal';
  * The developer world's work: a sticky label column, then the projects as
  * numbered plates. Every card says its title, year and tools at rest; hover
  * and focus only bring one forward (spec 01: nothing editorial on hover alone).
- * Cards lead to /developpeur/<slug>. A project page ends on the same band,
+ * Cards lead to each project's page. A project page ends on the same band,
  * with its series or a few other projects, the page's own card marked and not
  * a link.
  */
@@ -25,7 +26,9 @@ import { WorldReveal } from './world-reveal';
       <div class="work__head" appWorldReveal="lines">
         <h2 id="work-title">{{ heading() }}</h2>
         <p class="work__count">
-          <b>{{ count().count }}</b> projets · {{ count().span }}
+          <ng-container i18n="@@work.count"
+            ><b>{{ count().count }}</b> projets · {{ count().span }}</ng-container
+          >
         </p>
       </div>
       <ul class="rows" [class.rows--3]="columns() === 3" role="list">
@@ -44,7 +47,7 @@ import { WorldReveal } from './world-reveal';
                 />
               </div>
             } @else {
-              <a class="row__link" [routerLink]="['/developpeur', project.slug]">
+              <a class="row__link" [routerLink]="[devPath, project.slug]">
                 <ng-container
                   [ngTemplateOutlet]="card"
                   [ngTemplateOutletContext]="{ $implicit: project, here: false }"
@@ -71,7 +74,7 @@ import { WorldReveal } from './world-reveal';
           decoding="async"
         />
         <span class="plate__fallback" aria-hidden="true">
-          <span class="plate__fallback-label">Image indisponible</span>
+          <span class="plate__fallback-label" i18n="@@plate.unavailable">Image indisponible</span>
           <span class="plate__fallback-alt">{{ project.cover.alt }}</span>
         </span>
       </span>
@@ -89,7 +92,7 @@ import { WorldReveal } from './world-reveal';
           }
         </span>
         @if (here) {
-          <span class="row__here">Cette fiche</span>
+          <span class="row__here" i18n="@@work.here">Cette fiche</span>
         }
       </span>
     </ng-template>
@@ -101,12 +104,13 @@ export class DevWork {
   /** Where the cards fall in the page's entrance, after the hero's lines. */
   readonly lineStart = input(0);
 
-  readonly heading = input('Réalisations');
+  readonly heading = input($localize`:@@work.heading:Réalisations`);
   readonly projects = input<readonly StaticProject[]>(PROJECTS);
   /** The slug of the page this band closes, if it is one of the cards. */
   readonly current = input<string | null>(null);
   readonly columns = input<2 | 3>(2);
 
+  protected readonly devPath = PATHS.dev;
   protected readonly mediaUrl = mediaUrl();
   protected readonly srcset = mediaSrcset();
   // The plates' width in each layout: a full column below 600px, half the

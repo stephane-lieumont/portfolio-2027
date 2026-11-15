@@ -25,23 +25,25 @@
             decoding="async"
           />
           <span class="plate__fallback" aria-hidden="true">
-            <span class="plate__fallback-label">Image indisponible</span>
+            <span class="plate__fallback-label" i18n="@@plate.unavailable">Image indisponible</span>
             <span class="plate__fallback-alt">{{ project.presentation.alt }}</span>
           </span>
         </div>
         <figcaption class="fig__cap">
-          <span>Fig.</span><span>{{ project.presentationCaption }}</span>
+          <span i18n="@@project.fig">Fig.</span><span>{{ project.presentationCaption }}</span>
         </figcaption>
       </figure>
 
       <section class="block" aria-labelledby="ctx-title" appWorldReveal="ruled">
-        <h2 class="block__label" id="ctx-title" data-reveal-part>Contexte</h2>
+        <h2 class="block__label" id="ctx-title" data-reveal-part i18n="@@project.context">
+          Contexte
+        </h2>
         <app-scrub-sentence data-reveal-part [text]="project.context" [ramp]="ramp" />
       </section>
 
       <section class="block" aria-labelledby="mission-title" appWorldReveal="ruled">
         <div class="block__label" data-reveal-part>
-          <h2 id="mission-title">Mission</h2>
+          <h2 id="mission-title" i18n="@@project.mission">Mission</h2>
           <p class="block__big">{{ project.role }}</p>
         </div>
         <div>
@@ -57,7 +59,9 @@
       </section>
 
       <section class="block" aria-labelledby="tools-title" appWorldReveal="ruled">
-        <h2 class="block__label" id="tools-title" data-reveal-part>Outils</h2>
+        <h2 class="block__label" id="tools-title" data-reveal-part i18n="@@project.tools">
+          Outils
+        </h2>
         <ul class="tools" role="list">
           @for (tool of tools(); track tool.slug) {
             <li data-reveal-part>
@@ -79,7 +83,9 @@
           aria-labelledby="video-title"
           appWorldReveal="ruled"
         >
-          <h2 class="block__label" id="video-title" data-reveal-part>Vidéo</h2>
+          <h2 class="block__label" id="video-title" data-reveal-part i18n="@@project.video">
+            Vidéo
+          </h2>
           <div data-reveal-part>
             <app-video-facade
               [url]="videoUrl"
@@ -87,9 +93,10 @@
               [poster]="project.presentation"
             />
             <p class="fig__cap">
-              <span>Vid.</span
+              <span i18n="@@project.vid">Vid.</span
               ><a [href]="videoUrl" target="_blank" rel="noopener"
-                >Regarder sur YouTube<span class="visually-hidden"> (nouvel onglet)</span></a
+                ><ng-container i18n="@@project.watchOnYoutube">Regarder sur YouTube</ng-container
+                ><span class="visually-hidden" i18n="@@newTab"> (nouvel onglet)</span></a
               >
             </p>
           </div>

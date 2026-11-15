@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import type { SocialKind } from '@portfolio/shared-types';
 
 import { SITE_SETTINGS, STATIC_FILES } from '../core/content/world-content';
+import { PATHS } from '../core/i18n/site-locale';
 import { ICONS, type Icon } from './icons';
 
 export interface DockLink {
@@ -30,10 +31,15 @@ export const NETWORK_NAMES: Readonly<Record<SocialKind, string>> = {
   selector: 'app-social-dock',
   imports: [RouterLink],
   template: `
-    <nav class="dock glass" aria-label="Réseaux et contact">
+    <nav class="dock glass" aria-label="Réseaux et contact" i18n-aria-label="@@dock.label">
       <ul class="dock__list" role="list">
         <li>
-          <a class="dock__link" routerLink="/contact" aria-label="Me contacter">
+          <a
+            class="dock__link"
+            [routerLink]="contactPath"
+            aria-label="Me contacter"
+            i18n-aria-label="@@dock.contact"
+          >
             <svg class="dock__icon dock__icon--stroke" viewBox="0 0 24 24" aria-hidden="true">
               <path [attr.d]="contactIcon.d" />
             </svg>
@@ -56,7 +62,13 @@ export const NETWORK_NAMES: Readonly<Record<SocialKind, string>> = {
         }
         @if (cv; as cv) {
           <li>
-            <a class="dock__link" [href]="cv" download aria-label="Télécharger mon CV (PDF)">
+            <a
+              class="dock__link"
+              [href]="cv"
+              download
+              aria-label="Télécharger mon CV (PDF)"
+              i18n-aria-label="@@cv.download"
+            >
               <svg class="dock__icon dock__icon--stroke" viewBox="0 0 24 24" aria-hidden="true">
                 <path [attr.d]="cvIcon.d" />
               </svg>
@@ -70,6 +82,7 @@ export const NETWORK_NAMES: Readonly<Record<SocialKind, string>> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SocialDock {
+  protected readonly contactPath = PATHS.contact;
   protected readonly contactIcon = ICONS.contact;
   protected readonly cvIcon = ICONS.cv;
   protected readonly cv: string | undefined = STATIC_FILES[SITE_SETTINGS.cvAssetId];
@@ -77,7 +90,7 @@ export class SocialDock {
   protected readonly networks: readonly DockLink[] = SITE_SETTINGS.socials.map((social) => ({
     key: social.kind,
     href: social.url,
-    label: `Profil ${NETWORK_NAMES[social.kind]} de Stéphane Lieumont (nouvel onglet)`,
+    label: $localize`:@@dock.network:Profil ${NETWORK_NAMES[social.kind]}:network: de Stéphane Lieumont (nouvel onglet)`,
     icon: ICONS[social.kind],
   }));
 }
