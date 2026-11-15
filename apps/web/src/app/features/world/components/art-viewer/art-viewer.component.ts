@@ -228,7 +228,7 @@ export class ArtViewerComponent {
   }
 
   protected tickLabel(index: number, title: string): string {
-    return $localize`:@@viewer.tick:Rendu ${index + 1}:position: : ${title}:title:`;
+    return $localize`:@@viewer.tick:Rendu ${index + 1}:position:\u00a0: ${title}:title:`;
   }
 
   private select(to: number): void {

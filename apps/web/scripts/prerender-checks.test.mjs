@@ -82,7 +82,7 @@ const english = (overrides = {}) =>
   page({
     lang: 'en',
     h1: 'A project, a question or just a Hello World?',
-    lead: 'An idea to challenge, experience to compare or just a chat: write to me here or on LinkedIn.',
+    lead: 'An idea to challenge, lessons learned to share or just a chat: write to me here or on LinkedIn.',
     form: FORM_EN,
     switcher: '<a href="/contact" hreflang="fr" lang="fr" aria-label="Version française">FR</a>',
     ...overrides,
@@ -374,7 +374,7 @@ describe('the French denylists', () => {
   it('hold the content no English page may say, and never an English string', async () => {
     const { FRENCH_CONTENT, FRENCH_WORDS } = await import('./prerender-checks.mjs');
     assert.ok(FRENCH_CONTENT.includes('Sans école, avant le développement.'));
-    assert.ok(FRENCH_CONTENT.includes('Lego : les Minions'));
+    assert.ok(FRENCH_CONTENT.includes('Lego\u00a0: les Minions'));
     assert.ok(FRENCH_WORDS.includes('éclairage'));
     // Shared values are English too: a proper name or a tool list is not French.
     assert.ok(!FRENCH_CONTENT.includes('Escart Wild'));

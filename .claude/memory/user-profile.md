@@ -19,7 +19,9 @@ metadata:
 
 - Interested in new technologies since **2006**.
 - **14 years in the aerospace industry**, then a career change into development.
-- Today at **Web Atrio**, the only Angular developer on his team, acting as technical referent to .NET backend developers.
+- Today: **Tech Lead front & back** at Web-Atrio on the immobilier.ch mission, a team of 5 to 8 (CV 2026; this line used to say « the only Angular developer », outdated).
+- As an aerospace designer (concepteur) he was considered an engineer: « rigueur d'ingénieur » is his to claim (Stéphane, 2026-11-15).
+- 3D: he has not practised for a long time and wants to get back to it; « Depuis 2010 » stays (2026-11-15).
 
 That trajectory is an argument, not an anecdote: it explains an engineer's rigor and a visual sensibility that rarely come together.
 
@@ -49,6 +51,13 @@ On Case Tes Potes he was **co-founder and lead developer**: defining the technic
 ## Distinctions
 
 - **Escart Wild — TDT3D award, 2015** (Stéphane, 2026-11-15: « c'est un award en 2015 »). The site says « primé par TDT3D en 2015 » / « TDT3D award, 2015 ».
+
+## Facts confirmed for the content review (#52, 2026-11-15)
+
+- Case Tes Potes: the pre-registration API behind the landing page was **Symfony**; the mobile app's back end was **Koa (Node.js) and MongoDB**.
+- immobilier.ch: **Python and Terraform** are accurate.
+- Linxea: the back end was .NET, but **he worked on the front end only**, so .NET is not his on that mission.
+- No seniority figure (« développeur depuis… ») on the site.
 
 ## Online presence
 

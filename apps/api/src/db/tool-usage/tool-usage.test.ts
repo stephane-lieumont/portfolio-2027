@@ -78,9 +78,9 @@ describe('deleteTool', () => {
   });
 
   it('deletes a tool nothing uses', () => {
-    assert.deepEqual(deleteTool(database.db, toolId('symfony')), { outcome: 'deleted' });
-    assert.ok(!slugs().includes('symfony'));
-    assert.deepEqual(deleteTool(database.db, toolId('symfony')), { outcome: 'not-found' });
+    assert.deepEqual(deleteTool(database.db, toolId('mysql')), { outcome: 'deleted' });
+    assert.ok(!slugs().includes('mysql'));
+    assert.deepEqual(deleteTool(database.db, toolId('mysql')), { outcome: 'not-found' });
   });
 
   it('is backed by the database for the Stack: its foreign key restricts the delete', () => {
