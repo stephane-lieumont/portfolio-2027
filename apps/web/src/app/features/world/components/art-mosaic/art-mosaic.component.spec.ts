@@ -6,7 +6,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MEDIA_BASE_URL } from '@core/config/media-config/media.config';
-import { ARTWORKS } from '@core/data/static-content/static-content';
+import { ARTWORKS } from '@core/data/content/content.generated';
 import { SmoothScrollService } from '@core/services/motion/smooth-scroll/smooth-scroll.service';
 import { keyStep } from '@features/world/components/art-viewer/art-viewer.component';
 import { ArtMosaicComponent } from './art-mosaic.component';

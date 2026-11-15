@@ -17,7 +17,7 @@ async function english() {
   $localize.locale = 'en';
   try {
     const [content, media, devWork, mosaic, hero] = await Promise.all([
-      import('@core/data/static-content/static-content'),
+      import('@core/data/content/content.generated'),
       import('@core/config/media-config/media.config'),
       import('@common/components/dev-work/dev-work.component'),
       import('@features/world/components/art-mosaic/art-mosaic.component'),

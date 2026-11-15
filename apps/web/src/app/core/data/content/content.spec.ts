@@ -2,21 +2,26 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import {
+  type ContentImage,
   altTextSchema,
+  artworkSchema,
   confirmUploadInputSchema,
   localizedSlugSchema,
   localizedTextSchema,
-  createProjectInputSchema,
   projectFieldsSchema,
+  projectSchema,
   visualIssues,
 } from '@portfolio/shared-types';
 import { youtubeVideoId } from '@portfolio/shared-types/video';
 import { describe, expect, it } from 'vitest';
 
 import { SITE_LOCALES } from '@core/i18n/site-locale/site-locale';
-import { ARTWORKS, PROJECTS, type StaticImage } from './static-content';
+import { ARTWORKS, PROJECTS } from './content.generated';
 
-const IMAGES: readonly (readonly [string, StaticImage])[] = [
+// The content the site is built from, as `content:seed` writes it from the
+// API's seed before the tests: the rules the schemas cannot state, checked on
+// the real records.
+const IMAGES: readonly (readonly [string, ContentImage])[] = [
   ...PROJECTS.flatMap((p) => (p.cover ? [[`project ${p.slug.fr}`, p.cover] as const] : [])),
   ...PROJECTS.flatMap((p) =>
     p.presentation ? [[`presentation ${p.slug.fr}`, p.presentation] as const] : [],
@@ -141,44 +146,9 @@ describe('periods', () => {
   });
 });
 
-// The fields the API will validate (spec 03): the static content is held to
-// the same contract, so the swap to the API changes the source and not the
-// copy. A video must be an https YouTube address the page can embed.
-const projectContent = projectFieldsSchema.pick({
-  id: true,
-  slug: true,
-  title: true,
-  summary: true,
-  context: true,
-  role: true,
-  mission: true,
-  missionSteps: true,
-  series: true,
-  websiteUrl: true,
-  videoUrl: true,
-  googlePlayUrl: true,
-  presentationCaption: true,
-  logoTint: true,
-  startedAt: true,
-  releasedAt: true,
-});
-
 describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (_slug, project) => {
   it('meets the Project contract, in both languages', () => {
-    const result = projectContent.safeParse({
-      ...project,
-      missionSteps: [...project.missionSteps],
-      mission: project.mission ?? null,
-      series: project.series ?? null,
-      websiteUrl: project.websiteUrl ?? null,
-      videoUrl: project.videoUrl ?? null,
-      googlePlayUrl: project.googlePlayUrl ?? null,
-      presentationCaption: project.presentationCaption ?? null,
-      logoTint: project.logoTint ?? null,
-      startedAt: project.startedAt ?? null,
-    });
-
-    expect(result.error?.issues ?? []).toEqual([]);
+    expect(projectSchema.safeParse(project).error?.issues ?? []).toEqual([]);
   });
 
   it('describes its pictures in both languages', () => {
@@ -195,10 +165,8 @@ describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (_slug
 });
 
 describe.each(ARTWORKS.map((a) => [a.slug.fr, a] as const))('artwork %s', (_slug, artwork) => {
-  it('has a slug, a title and an alt text in both languages', () => {
-    expect(localizedSlugSchema.safeParse(artwork.slug).success).toBe(true);
-    expect(localizedTextSchema.safeParse(artwork.title).success).toBe(true);
-    expect(localizedTextSchema.safeParse(artwork.image.alt).success).toBe(true);
+  it('meets the Artwork contract, in both languages', () => {
+    expect(artworkSchema.safeParse(artwork).error?.issues ?? []).toEqual([]);
   });
 });
 
@@ -210,55 +178,29 @@ describe('a project’s opening visual', () => {
     },
   );
 
-  it('refuses neither, both, or a caption without its visual', () => {
+  it('refuses neither, both, a cover alone, or a caption without its visual', () => {
     const caption = { fr: 'Fig.', en: 'Fig.' };
-    expect(visualIssues({ logo: null, presentation: null, presentationCaption: null })).toHaveLength(1);
-    expect(visualIssues({ logo: {}, presentation: {}, presentationCaption: caption })).toHaveLength(1);
-    expect(visualIssues({ logo: {}, presentation: null, presentationCaption: caption })).toEqual([
+    expect(visualIssues({})).toEqual(['expected either a logo or a presentation visual']);
+    expect(visualIssues({ logo: {}, cover: {}, presentation: {} })).toEqual([
+      'expected either a logo or a presentation visual',
+    ]);
+    expect(visualIssues({ cover: {}, presentation: {}, presentationCaption: caption })).toEqual([]);
+    expect(visualIssues({ logo: {}, cover: {} })).toEqual(['a cover goes with a presentation visual']);
+    expect(visualIssues({ logo: {}, presentationCaption: caption })).toEqual([
       'a caption needs a presentation visual',
     ]);
   });
 
-  // The API's create route takes asset ids: the same rule applies to them.
-  it('holds a project created through the API to the same rule', () => {
-    const text = { fr: 'Un texte.', en: 'A text.' };
-    const base = {
-      kind: 'dev',
-      status: 'draft',
-      slug: { fr: 'un-projet', en: 'a-project' },
-      title: text,
-      summary: text,
-      context: text,
-      role: text,
-      mission: null,
-      missionSteps: [],
-      technos: [],
-      tags: [],
-      series: null,
-      websiteUrl: null,
-      videoUrl: null,
-      googlePlayUrl: null,
-      sourceUrl: null,
-      presentationCaption: null,
-      logoTint: null,
-      startedAt: null,
-      releasedAt: null,
-      sortOrder: 0,
-    };
-    const issues = (shape: Record<string, unknown>) =>
-      (createProjectInputSchema.safeParse({ ...base, ...shape }).error?.issues ?? [])
-        .filter((issue) => issue.code === 'custom')
-        .map((issue) => issue.message);
-    const id = '6b7c2a0e-1f3d-4c5a-9e8b-2d4f6a8c0e11';
-    expect(issues({ logoAssetId: id })).toEqual([]);
-    expect(issues({})).toEqual(['expected either a logo or a presentation visual']);
-    expect(issues({ logoAssetId: id, presentationAssetId: id })).toEqual([
+  it('holds a whole project to the same rule', () => {
+    const [reference] = PROJECTS.filter((p) => p.logo);
+    const issues = projectSchema.safeParse({ ...reference, logo: undefined }).error?.issues ?? [];
+    expect(issues.map((issue) => issue.message)).toEqual([
       'expected either a logo or a presentation visual',
     ]);
   });
 
   it('takes a logo tint as #rrggbb only, since it is written into a style', () => {
-    const tint = (value: string) => projectContent.shape.logoTint.safeParse(value).success;
+    const tint = (value: string) => projectFieldsSchema.shape.logoTint.safeParse(value).success;
     expect(tint('#dc1622')).toBe(true);
     expect(tint('red')).toBe(false);
     expect(tint('#dc1622; background: url(x)')).toBe(false);
@@ -267,22 +209,22 @@ describe('a project’s opening visual', () => {
 
 describe('the Project contract', () => {
   const field = (shape: Record<string, unknown>) =>
-    projectContent.pick({ websiteUrl: true, videoUrl: true }).safeParse(shape).success;
+    projectFieldsSchema.pick({ websiteUrl: true, videoUrl: true }).safeParse(shape).success;
 
   it('takes a demo path or an https site', () => {
-    expect(field({ websiteUrl: '/demo/x', videoUrl: null })).toBe(true);
-    expect(field({ websiteUrl: 'https://example.fr/', videoUrl: null })).toBe(true);
+    expect(field({ websiteUrl: '/demo/x' })).toBe(true);
+    expect(field({ websiteUrl: 'https://example.fr/' })).toBe(true);
   });
 
   it('refuses a site over http, protocol-relative, or a script', () => {
     for (const websiteUrl of ['http://example.fr', '//example.fr', 'javascript:alert(1)']) {
-      expect(field({ websiteUrl, videoUrl: null })).toBe(false);
+      expect(field({ websiteUrl })).toBe(false);
     }
   });
 
   it('takes an app’s own Google Play page only', () => {
     const store = (googlePlayUrl: string) =>
-      projectContent.shape.googlePlayUrl.safeParse(googlePlayUrl).success;
+      projectFieldsSchema.shape.googlePlayUrl.safeParse(googlePlayUrl).success;
     expect(store('https://play.google.com/store/apps/details?id=com.cir.scancir&hl=fr')).toBe(true);
     expect(store('http://play.google.com/store/apps/details?id=com.cir.scancir')).toBe(false);
     expect(store('https://play.google.com.evil.fr/store/apps/details?id=x')).toBe(false);
@@ -290,16 +232,16 @@ describe('the Project contract', () => {
   });
 
   it('takes a YouTube video only', () => {
-    expect(field({ websiteUrl: null, videoUrl: 'https://youtu.be/dQw4w9WgXcQ' })).toBe(true);
-    expect(field({ websiteUrl: null, videoUrl: 'https://vimeo.com/1' })).toBe(false);
+    expect(field({ videoUrl: 'https://youtu.be/dQw4w9WgXcQ' })).toBe(true);
+    expect(field({ videoUrl: 'https://vimeo.com/1' })).toBe(false);
   });
 
   // A record ships in both trees or in neither (ADR-0017): an English page
   // must never fall back to the French copy.
   it('refuses a project whose English is missing', () => {
     const [project] = PROJECTS;
-    expect(projectContent.shape.title.safeParse(project.title).success).toBe(true);
-    expect(projectContent.shape.title.safeParse({ fr: project.title.fr }).success).toBe(false);
+    expect(projectFieldsSchema.shape.title.safeParse(project.title).success).toBe(true);
+    expect(projectFieldsSchema.shape.title.safeParse({ fr: project.title.fr }).success).toBe(false);
   });
 
   // Each field, each language, empty and whitespace only: a blank side would
@@ -308,7 +250,7 @@ describe('the Project contract', () => {
     '%s',
     (field) => {
       const accepts = (fr: string, en: string) =>
-        projectContent.shape[field].safeParse({ fr, en }).success;
+        projectFieldsSchema.shape[field].safeParse({ fr, en }).success;
 
       it.each(['', '   '])('is refused blank (%j) in either language', (blank) => {
         expect(accepts('Un texte.', 'A text.')).toBe(true);
@@ -319,7 +261,7 @@ describe('the Project contract', () => {
   );
 
   it('refuses a blank mission step in either language', () => {
-    const step = projectContent.shape.missionSteps;
+    const step = projectFieldsSchema.shape.missionSteps;
     expect(step.safeParse([{ fr: 'Un pas.', en: 'A step.' }]).success).toBe(true);
     expect(step.safeParse([{ fr: 'Un pas.', en: '  ' }]).success).toBe(false);
     expect(step.safeParse([{ fr: '', en: 'A step.' }]).success).toBe(false);
@@ -352,7 +294,7 @@ describe('an alt text', () => {
     expect(upload({ alt: { fr: '   ', en: 'Tomatoes' } }).success).toBe(false);
   });
 
-  it('is what every static image carries', () => {
+  it('is what every image carries', () => {
     for (const [, image] of IMAGES) expect(altTextSchema.safeParse(image.alt).success).toBe(true);
   });
 

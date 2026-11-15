@@ -1,7 +1,7 @@
 import { ActivatedRouteSnapshot, convertToParamMap } from '@angular/router';
 import { describe, expect, it } from 'vitest';
 
-import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/content/content.generated';
 import { pieceDescription } from '@core/services/page-metadata/page-metadata.service';
 import { artworkSlugExists, projectSlugExists, routes } from './app.routes';
 

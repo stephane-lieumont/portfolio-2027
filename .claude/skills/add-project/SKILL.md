@@ -7,15 +7,17 @@ description: Add a project to the portfolio end to end — write the copy, uploa
 
 A project is made of **copy** (written), **media** (uploaded to MinIO) and a **database entry** (created through the API). All three must be consistent before publishing.
 
-## The API does not exist yet
+## The API is read-only for now
 
-Read `.claude/runtime/STATUS.md` before following anything below. As of
-2026-09-03 the API is a skeleton with only `/health`, and there is no back
-office: **content lives in `apps/web/src/app/core/data/static-content/static-content.ts`** and every
-addition is a commit. The steps below describe the intended flow; the interim
-one is:
+Read `.claude/runtime/STATUS.md` before following anything below. Since
+ADR-0022 the API serves projects and 3D pieces read-only and there is no back
+office yet (V1.1): **content lives in `apps/api/src/db/seed/content.ts`**, the
+only copy, and every addition is a commit. The steps further down describe the
+intended back-office flow; the interim one is:
 
-1. Add the entry to `static-content.ts`, shaped like spec 03's entities.
+1. Add the entry to `content.ts`, shaped by `projectSchema` or `artworkSchema`
+   (`packages/shared-types/src/project.ts`); the API's typecheck holds it to
+   them.
 2. Put the image in the MinIO bucket. Media is **never** committed to the
    repository — the bucket is the store of record. Add the source-to-key line to
    `apps/api/src/scripts/seed-media.ts` and run
@@ -24,7 +26,9 @@ one is:
    plus the image's intrinsic `width` and `height` so nothing reflows on load.
 4. Write alt text that describes the picture. Not the title again — a test
    fails if alt equals the title beside it.
-5. `pnpm verify`, then look at the page in the browser.
+5. `pnpm --filter @portfolio/api db:seed` to load it into the database the
+   site is built from (idempotent), then `pnpm verify`, then look at the page
+   in the browser (`pnpm dev` writes the app's content from the seed).
 
 ## Before starting
 
@@ -34,7 +38,7 @@ Check that the environment is running:
 pnpm infra:up && pnpm dev:api
 ```
 
-The data model is authoritative in `packages/shared-types/src/project.ts`. If a field is missing to describe the project, **do not improvise it inside an existing string**: change the shared schema, then the Drizzle schema (`apps/api/src/db/schema.ts`), generate the migration (`pnpm --filter @portfolio/api db:generate`) and note it down. A field bent out of its purpose is debt you pay on the next project.
+The data model is authoritative in `packages/shared-types/src/project.ts`. If a field is missing to describe the project, **do not improvise it inside an existing string**: change the shared schema; the record is stored as a JSON document (ADR-0022), so the Drizzle schema and a migration change only if the API must filter or sort on the new field. A field bent out of its purpose is debt you pay on the next project.
 
 ## Steps
 

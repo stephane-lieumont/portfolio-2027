@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 
 import { introBase } from '@common/utils/hero-letters';
 import { workPeriod } from '@common/utils/work-count/work-count';
-import type { StaticProject } from '@core/data/static-content/static-content';
+import type { Project } from '@portfolio/shared-types';
 import { InLocalePipe, inLocale } from '@core/i18n/in-locale.pipe';
 import { PATHS } from '@core/i18n/site-locale/site-locale';
 import { heroTitle, projectLinks } from '@features/project/utils/project-view/project-view';
@@ -28,7 +28,7 @@ import { ButtonComponent } from '@shared/components/kit-ui/button/button.compone
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectHeroComponent {
-  readonly project = input.required<StaticProject>();
+  readonly project = input.required<Project>();
   readonly rank = input.required<string>();
   readonly total = input.required<string>();
 

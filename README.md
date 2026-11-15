@@ -40,24 +40,28 @@ infra/                docker-compose (MinIO, API)
 
 ## Commands
 
-| Command                        | What it does                      |
-| ------------------------------ | --------------------------------- |
-| `pnpm dev`                     | web + api in parallel             |
-| `pnpm build`                   | build every package               |
-| `pnpm test`                    | tests, 80% coverage threshold     |
-| `pnpm verify`                  | typecheck + lint + format + tests |
-| `pnpm format`                  | Prettier across the repo          |
-| `pnpm infra:up` / `infra:down` | MinIO containers                  |
+| Command                        | What it does                                          |
+| ------------------------------ | ----------------------------------------------------- |
+| `pnpm dev`                     | web + api in parallel                                 |
+| `pnpm build`                   | build every package                                   |
+| `pnpm test`                    | tests, 80% coverage threshold                         |
+| `pnpm verify`                  | typecheck + lint + format + tests + `build:site`      |
+| `pnpm build:site`              | seeds a throwaway API and prerenders the site from it |
+| `pnpm format`                  | Prettier across the repo                              |
+| `pnpm infra:up` / `infra:down` | MinIO containers                                      |
 
 `pnpm ci` is a built-in pnpm command (clean reinstall), not this project's check script — use `pnpm verify`.
 
 API-side:
 
 ```bash
+pnpm --filter @portfolio/api db:seed       # load the projects and 3D pieces (idempotent)
 pnpm --filter @portfolio/api db:generate   # migration after a schema change
 pnpm --filter @portfolio/api db:studio     # database browser
 pnpm --filter @portfolio/api admin:hash    # argon2 hash for the admin password
 ```
+
+The site is prerendered from the API (ADR-0008, ADR-0022): `pnpm --filter @portfolio/web build` reads `CONTENT_API_URL` (default `http://localhost:3000`) and fails if no seeded API answers there. `pnpm build:site` starts one for the build and stops it.
 
 ## Configuration
 

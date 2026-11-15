@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
 import { logoWidth } from '@common/utils/logo-width/logo-width';
-import type { StaticLogo } from '@core/data/static-content/static-content';
+import type { ClientLogo } from '@portfolio/shared-types';
 
 /**
  * A client's logo in its own colours, covering its whole plate, sized by its
@@ -91,7 +91,7 @@ import type { StaticLogo } from '@core/data/static-content/static-content';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientLogoComponent {
-  readonly logo = input.required<StaticLogo>();
+  readonly logo = input.required<ClientLogo>();
   readonly label = input<string | null>(null);
   /**
    * Its rendered width for a raster logo's srcset. Measured on CIR's (the one

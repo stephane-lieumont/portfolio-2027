@@ -17,7 +17,7 @@ function span(first: number, last: number | null): string {
 export function workPeriod({ startedAt, releasedAt }: WorkDates): string {
   const end = releasedAt === null ? null : year(releasedAt);
   const start = startedAt ? year(startedAt) : end;
-  // Work still going on always names its start (static-content.spec.ts).
+  // Work still going on always names its start (content.spec.ts).
   return start === null ? today() : span(start, end);
 }
 

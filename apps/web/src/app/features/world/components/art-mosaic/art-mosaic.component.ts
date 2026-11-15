@@ -21,7 +21,7 @@ import { PlateImageDirective } from '@common/directives/plate-image/plate-image.
 import { WorldRevealDirective } from '@common/directives/world-reveal/world-reveal.directive';
 import { workCount } from '@common/utils/work-count/work-count';
 import { mediaSrcset, mediaUrl } from '@core/config/media-config/media.config';
-import { ARTWORKS } from '@core/data/static-content/static-content';
+import { ARTWORKS } from '@core/data/content/content.generated';
 import { toolView } from '@core/data/tool-marks/tool-marks';
 import { inLocale } from '@core/i18n/in-locale.pipe';
 import { PATHS } from '@core/i18n/site-locale/site-locale';

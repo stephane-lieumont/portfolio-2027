@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/content/content.generated';
 import { MEDIA_BASE_URL, mediaSrcset } from './media.config';
 
 describe('mediaSrcset', () => {
@@ -40,7 +40,7 @@ describe('mediaSrcset', () => {
   });
 });
 
-describe('the images in the static content', () => {
+describe('the images in the content', () => {
   const images = [
     ...PROJECTS.flatMap((p) => (p.cover ? [p.cover] : [])),
     ...ARTWORKS.map((a) => a.image),

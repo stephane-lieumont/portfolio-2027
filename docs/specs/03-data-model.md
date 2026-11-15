@@ -189,7 +189,7 @@ On a portfolio the same render never legitimately appears in two projects, and t
 
 - The `slug` is the public URL in each tree and is **final** once published (spec 01), in both languages.
 - Media store an **object key, never an absolute URL** (ADR-0003).
-- Any schema change goes through `@portfolio/shared-types` first, then the Drizzle schema, then a generated migration (`add-project` skill).
+- Any schema change goes through `@portfolio/shared-types` first. A project or a piece is stored as a JSON document (ADR-0022): a new field changes the Drizzle schema, and needs a generated migration, only when the API filters or sorts on it.
 
 ## Open
 

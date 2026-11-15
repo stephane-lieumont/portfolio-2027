@@ -6,7 +6,7 @@ import {
 } from '@portfolio/shared-types';
 import { describe, expect, it } from 'vitest';
 
-import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/content/content.generated';
 import {
   CONTACT_PAGE,
   SITE_SETTINGS,

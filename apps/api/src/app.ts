@@ -10,6 +10,7 @@ import dbPlugin from './plugins/db.ts';
 import mailerPlugin from './plugins/mailer.ts';
 import storagePlugin from './plugins/storage.ts';
 import contactRoutes from './routes/contact.ts';
+import contentRoutes from './routes/content.ts';
 import healthRoutes from './routes/health.ts';
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -31,6 +32,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   await app.register(healthRoutes);
   await app.register(contactRoutes);
+  await app.register(contentRoutes);
 
   return app;
 }

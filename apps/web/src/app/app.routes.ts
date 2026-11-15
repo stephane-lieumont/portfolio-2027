@@ -1,7 +1,7 @@
 import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 import type { LocalizedText } from '@portfolio/shared-types';
 
-import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/content/content.generated';
 import { inLocale } from '@core/i18n/in-locale.pipe';
 import { SECTIONS, SITE_LOCALE } from '@core/i18n/site-locale/site-locale';
 import { pieceDescription } from '@core/services/page-metadata/page-metadata.service';

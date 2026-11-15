@@ -6,3 +6,4 @@ export * from './auth.js';
 export * from './world.js';
 export * from './contact.js';
 export * from './video.js';
+export * from './tool.js';

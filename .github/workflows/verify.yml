@@ -1,7 +1,8 @@
 name: verify
 
 # The same gate as `pnpm verify` locally: typecheck, lint, format, tests with
-# the 80% coverage floor, and the prerendered build with its route check.
+# the 80% coverage floor, and the prerendered build with its route check,
+# built from a throwaway API seeded into a temporary SQLite file (ADR-0022).
 on:
   pull_request:
   push:

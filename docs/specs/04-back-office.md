@@ -8,7 +8,7 @@ Drafted on 2026-11-15 from Stéphane's brief. **Status: draft, to settle with hi
 
 | Domain                                                          | Entity (spec 03)        | Today                                                                     |
 | --------------------------------------------------------------- | ----------------------- | ------------------------------------------------------------------------- |
-| Dev work, client references included                            | `Project`               | `core/data/static-content/static-content.ts`                              |
+| Dev work, client references included                            | `Project`               | `apps/api/src/db/seed/content.ts`, served read-only (ADR-0022)            |
 | 3D work                                                         | `Artwork` (+ its views) | same file                                                                 |
 | Dev and 3D tools, their marks and « Maîtrise » points           | `Tool` (new, below)     | `shared-types/registries.ts` + `core/data/world-content/world-content.ts` |
 | Media (renders, presentation visuals, client logos, tool marks) | `MediaAsset`            | MinIO bucket + `public/`                                                  |
@@ -41,7 +41,7 @@ Every visitor-facing text is `{ fr, en }` and both languages are required to pub
 ## 3. Front ↔ back ↔ MinIO
 
 - **Reads (public)**: `GET /api/projects`, `/api/artworks`, `/api/tools`, published only, Zod-validated on the way out. Images keep coming from the bucket through nginx `/medias` (ADR-0003, ADR-0012).
-- **The public site stays prerendered** (ADR-0008): the build reads the API instead of the static file, and **publishing triggers a rebuild** (a CI job or a deploy hook). No Node process serves the public site. To decide: rebuild trigger and its delay (minutes) versus a preview mode.
+- **The public site stays prerendered** (ADR-0008): the build reads the API (done in V1, ADR-0022), and **publishing triggers a rebuild** (a CI job or a deploy hook). No Node process serves the public site. To decide: rebuild trigger and its delay (minutes) versus a preview mode.
 - **Writes (admin)**: `POST/PATCH/DELETE /api/admin/...`, all behind `requireAdmin`, each body validated by the shared Zod schema.
 - **Uploads**: the browser sends the file to the API, which checks type and size **server-side**, writes it to MinIO, derives the WebP variants (existing `media:derive` logic) and records the `MediaAsset`. The bucket stays publicly readable and never publicly writable. No presigned PUT for now: one path, fully validated.
 - **The admin UI** is a separate lazy Angular area (`features/admin/`) excluded from prerendering and from the public bundle, so no admin code ships to visitors.

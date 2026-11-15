@@ -4,3 +4,4 @@ dist/
 coverage/
 pnpm-lock.yaml
 apps/api/src/db/migrations/
+apps/web/src/app/core/data/content/content.generated.ts

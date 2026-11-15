@@ -1,5 +1,5 @@
 import { type Glyph, nameWords } from '@common/utils/hero-letters';
-import type { StaticProject } from '@core/data/static-content/static-content';
+import type { Project } from '@portfolio/shared-types';
 
 export interface QualifierGlyph {
   readonly char: string;
@@ -40,7 +40,7 @@ export interface ProjectLink {
  * the store — each opening in a new tab. The video plays on YouTube, never on
  * the page (Stéphane, 2026-11-15; ADR-0016's note).
  */
-export function projectLinks(project: StaticProject): ProjectLink[] {
+export function projectLinks(project: Project): ProjectLink[] {
   const links: ProjectLink[] = [];
   if (project.websiteUrl)
     links.push({
@@ -65,7 +65,7 @@ export function projectLinks(project: StaticProject): ProjectLink[] {
 
 export interface ClosingBand {
   readonly heading: string;
-  readonly projects: readonly StaticProject[];
+  readonly projects: readonly Project[];
   /** The id of the page's own card, when the band shows it. */
   readonly current: string | null;
 }
@@ -78,10 +78,7 @@ export const OTHERS_COUNT = 3;
  * Any other ends on the projects that follow it in the list, wrapping round,
  * so every page points somewhere different and none points back at itself.
  */
-export function closingBand(
-  project: StaticProject,
-  projects: readonly StaticProject[],
-): ClosingBand {
+export function closingBand(project: Project, projects: readonly Project[]): ClosingBand {
   if (project.series) {
     return {
       heading: $localize`:@@project.series:Chez ${project.series}:series:`,

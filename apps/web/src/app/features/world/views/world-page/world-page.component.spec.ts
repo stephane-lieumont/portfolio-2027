@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MEDIA_BASE_URL } from '@core/config/media-config/media.config';
-import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/content/content.generated';
 import { WORLD_PAGES } from '@core/data/world-content/world-content';
 import { WorldPageComponent } from './world-page.component';
 

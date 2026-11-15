@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { PROJECTS, type StaticProject } from '@core/data/static-content/static-content';
+import { PROJECTS } from '@core/data/content/content.generated';
+import type { Project } from '@portfolio/shared-types';
 import { plateLean } from '@features/project/directives/plate-lean/plate-lean.directive';
 import { OTHERS_COUNT, closingBand, heroTitle, projectLinks } from './project-view';
 
 const base = PROJECTS[0];
-const variant = (changes: Partial<StaticProject>): StaticProject => ({ ...base, ...changes });
+const variant = (changes: Partial<Project>): Project => ({ ...base, ...changes });
 
 describe('heroTitle', () => {
   it('splits « Série — qualificatif » into the name and the condensed word', () => {

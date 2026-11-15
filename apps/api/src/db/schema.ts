@@ -13,49 +13,31 @@ export const mediaAssets = sqliteTable('media_assets', {
   createdAt: text('created_at').notNull(),
 });
 
-export const projects = sqliteTable(
-  'projects',
+/**
+ * Dev projects and 3D pieces, one row each (ADR-0022). The record itself is
+ * `document`, validated by its kind's schema from `@portfolio/shared-types`
+ * on the way in and on the way out; the columns beside it are copies of what
+ * the API filters and sorts on, written in the same statement as the document.
+ */
+export const works = sqliteTable(
+  'works',
   {
     id: text('id').primaryKey(),
     kind: text('kind', { enum: ['dev', 'cgi'] }).notNull(),
     status: text('status', { enum: ['draft', 'published'] })
       .notNull()
       .default('draft'),
-    slug: text('slug').notNull(),
-    title: text('title').notNull(),
-    summary: text('summary').notNull().default(''),
-    description: text('description').notNull().default(''),
-    mission: text('mission'),
-    missionSteps: text('mission_steps', { mode: 'json' }).$type<string[]>().notNull().default([]),
-    technos: text('technos', { mode: 'json' }).$type<string[]>().notNull().default([]),
-    tags: text('tags', { mode: 'json' }).$type<string[]>().notNull().default([]),
-    demoUrl: text('demo_url'),
-    sourceUrl: text('source_url'),
-    coverAssetId: text('cover_asset_id').references(() => mediaAssets.id, { onDelete: 'set null' }),
-    releasedAt: text('released_at').notNull(),
-    sortOrder: integer('sort_order').notNull().default(0),
+    slugFr: text('slug_fr').notNull(),
+    slugEn: text('slug_en').notNull(),
+    releasedAt: text('released_at'),
+    document: text('document', { mode: 'json' }).$type<unknown>().notNull(),
+    publishedAt: text('published_at'),
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
   },
   (table) => [
-    uniqueIndex('projects_slug_unique').on(table.slug),
-    index('projects_kind_status_idx').on(table.kind, table.status),
-  ],
-);
-
-export const projectGallery = sqliteTable(
-  'project_gallery',
-  {
-    projectId: text('project_id')
-      .notNull()
-      .references(() => projects.id, { onDelete: 'cascade' }),
-    assetId: text('asset_id')
-      .notNull()
-      .references(() => mediaAssets.id, { onDelete: 'cascade' }),
-    position: integer('position').notNull().default(0),
-  },
-  (table) => [
-    uniqueIndex('project_gallery_pk').on(table.projectId, table.assetId),
-    index('project_gallery_order_idx').on(table.projectId, table.position),
+    uniqueIndex('works_kind_slug_fr_unique').on(table.kind, table.slugFr),
+    uniqueIndex('works_kind_slug_en_unique').on(table.kind, table.slugEn),
+    index('works_kind_status_released_idx').on(table.kind, table.status, table.releasedAt),
   ],
 );

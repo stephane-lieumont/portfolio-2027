@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { LOCALES, localized } from './localized.js';
-import { softwareSlugSchema, technologySlugSchema } from './project.js';
+import { LOCALES, localized } from '@portfolio/shared-types/localized';
+import { softwareSlugSchema, technologySlugSchema } from '@portfolio/shared-types/project';
 
 /**
  * Editorial content of the two worlds and the contact page — see spec 03,

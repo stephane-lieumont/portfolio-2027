@@ -1,124 +1,21 @@
-import type { LocalizedSlug, LocalizedText, Project } from '@portfolio/shared-types';
-import type { SoftwareSlug, TechnologySlug } from '@portfolio/shared-types/registries';
+import type { Artwork, Project } from '@portfolio/shared-types/project';
 
 /**
- * Content held in the app until the API and back office exist.
+ * The site's projects and 3D pieces, loaded into the database by
+ * `pnpm --filter @portfolio/api db:seed` (ADR-0022). This file is their only
+ * source until the back office writes to the database (V1.1); the site never
+ * reads it, it reads the API. Every visitor-facing field is `{ fr, en }`
+ * (ADR-0017).
  *
- * Deliberately shaped like spec 03's entities so the swap is a change of source
- * and not a rewrite of the pages. Every visitor-facing field is `{ fr, en }`
- * (ADR-0017); the English is a draft written from the French, no new claim,
- * until the content review.
+ * Order is `releasedAt` descending, as the API serves it; pieces released the
+ * same day keep the order they have here, which is the order they are seeded in.
  */
-export interface StaticProject extends Pick<
-  Project,
-  'id' | 'slug' | 'title' | 'summary' | 'context' | 'role' | 'releasedAt'
-> {
-  /** What he did, when the context does not already say it all. */
-  readonly mission?: LocalizedText;
-  /**
-   * Plain sentences, never markup. The 2022 data wrapped tool names in
-   * `<strong>`, which would have to be either rendered as HTML or escaped and
-   * shown raw. Never invented: empty when none are sourced.
-   */
-  readonly missionSteps: readonly LocalizedText[];
-  readonly technologies: readonly TechnologySlug[];
-  /** A proper name, the same in both languages. */
-  readonly series?: string;
-  /** Where a period starts, when the work spans more than its release year. */
-  readonly startedAt?: string;
-  /**
-   * « Voir le site ». A demo proxied by nginx on this host is a root-relative
-   * path, never an absolute URL — the demos move with the site (ADR-0005).
-   */
-  readonly websiteUrl?: string;
-  /** « Voir la vidéo »: a YouTube address, opened on YouTube in a new tab. */
-  readonly videoUrl?: string;
-  /** « Voir sur Google Play ». */
-  readonly googlePlayUrl?: string;
-  /** The 4:3 card image. A client reference has none: it shows its logo. */
-  readonly cover?: StaticImage;
-  /** The wide visual the project page opens on: the product staged on white. */
-  readonly presentation?: StaticImage;
-  readonly presentationCaption?: LocalizedText;
-  /** A client's logo, in place of the cover and the presentation visual. */
-  readonly logo?: StaticLogo;
-  /**
-   * The brand colour (`#rrggbb`) tinting the logo plate's point field and
-   * tone; absent for a black or ink logo, which keeps the ink.
-   */
-  readonly logoTint?: string;
-  /**
-   * A dark plate, for a logo whose light colours vanish on the sand. A trial
-   * (Stéphane, 2026-11-15), front end only until he keeps it.
-   */
-  readonly logoPlate?: 'dark';
-}
 
-/**
- * A client's logo: an SVG or a transparent PNG in `public/logos/clients/`,
- * named after the project's French slug, shown in its own colours on a light
- * plate (Stéphane, 2026-11-15). Replacing the file swaps the logo with no code
- * change.
- */
-export interface StaticLogo {
-  readonly src: string;
-  /** The file's intrinsic proportions (its viewBox or pixels): they set its optical size. */
-  readonly width: number;
-  readonly height: number;
-  /**
-   * A raster logo's WebP variants (`<name>-<width>.webp`, apps/api
-   * `media:public`); an SVG has none.
-   */
-  readonly variants?: readonly number[];
-  /** Names the logo on the project page; the card leaves it to the title beside it. */
-  readonly alt: LocalizedText;
-}
-
-/** A rendered image with its intrinsic size, so nothing reflows once it loads. */
-export interface StaticImage {
-  /**
-   * Object key inside the MinIO bucket, never a URL. The origin serving it
-   * differs between development and production, so the base is injected
-   * (MEDIA_BASE_URL) and joined at render time — see media-url.ts. One file
-   * for both languages, named after the French slug.
-   */
-  readonly key: string;
-  /**
-   * Describes the picture for someone who cannot see it — never a repeat of the
-   * title, which is already read out beside it. The 2022 alt text was the title
-   * again, typos included.
-   */
-  readonly alt: LocalizedText;
-  readonly width: number;
-  readonly height: number;
-  /**
-   * The picture's mean colour (`#rrggbb`), painted on its frame while it
-   * loads, so a wall of images arrives as a wall of their own tones rather
-   * than of grey boxes. Measured on the originals (sharp channel means).
-   */
-  readonly averageColor?: string;
-}
-
-export interface StaticArtwork {
-  /** Names the piece across both trees: the language switch goes through it. */
-  readonly id: string;
-  readonly slug: LocalizedSlug;
-  readonly title: LocalizedText;
-  readonly image: StaticImage;
-  readonly software: readonly SoftwareSlug[];
-  readonly releasedAt: string;
-  readonly featured: boolean;
-  /**
-   * Where the mosaic crops around, each axis in [0, 1]; the centre when absent
-   * (spec 03, ADR-0015). The viewer always shows the whole render.
-   */
-  readonly focal?: { readonly x: number; readonly y: number };
-}
 // Ordered by releasedAt descending, as spec 03 settles, work still going on
 // first. No manual sort field: two sources of truth for order always drift.
 // Only the years are sourced and shown (Stéphane, 2026-11-15); the months of
 // the 2024 missions only keep them in the order he gave.
-export const PROJECTS: readonly StaticProject[] = [
+export const PROJECTS: readonly Project[] = [
   {
     id: '0e047938-97a1-42f5-823f-5d57a605e56f',
     slug: { fr: 'immobilier-ch', en: 'immobilier-ch' },
@@ -541,7 +438,7 @@ export const PROJECTS: readonly StaticProject[] = [
  * slider dated the same image to 2015. The file name is what he typed when he
  * saved the render.
  */
-export const ARTWORKS: readonly StaticArtwork[] = [
+export const ARTWORKS: readonly Artwork[] = [
   {
     id: '75643113-fe5b-4f36-9880-626c333087be',
     slug: { fr: 'legos-minions', en: 'lego-minions' },
@@ -806,20 +703,4 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     releasedAt: '2014-01-01',
     featured: false,
   },
-];
-
-/**
- * Highlighted on the Developer page, settled 2026-08-31.
- *
- * Flutter is deliberately absent: Stéphane no longer wants to be approached for
- * it. The Case Tes Potes mobile project keeps it below, because that is a fact
- * of his record and the one carrying the most responsibility.
- */
-export const HIGHLIGHTED_TECHNOLOGIES: readonly TechnologySlug[] = [
-  'angular',
-  'typescript',
-  'dotnet',
-  'react',
-  'docker',
-  'git',
 ];
