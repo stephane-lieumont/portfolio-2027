@@ -1,0 +1,63 @@
+name: e2e
+
+# The visitor journeys in a real browser (ADR-0024), against the prerendered
+# build served the way nginx serves it. Separate from verify so a red journey
+# and a red unit test read as different failures, and so both run in parallel.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build:site
+
+      # Keyed on the lockfile: a Playwright bump changes the browser revision.
+      - name: Cache Playwright browsers
+        id: browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Chromium
+        if: steps.browsers.outputs.cache-hit != 'true'
+        run: pnpm --filter @portfolio/e2e exec playwright install --with-deps chromium
+
+      # The cached browser still needs its system libraries on a fresh runner.
+      - name: Install Chromium's system dependencies
+        if: steps.browsers.outputs.cache-hit == 'true'
+        run: pnpm --filter @portfolio/e2e exec playwright install-deps chromium
+
+      - run: pnpm test:e2e
+
+      - name: Upload the report, traces and screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            apps/e2e/playwright-report/
+            apps/e2e/test-results/
+          retention-days: 14
