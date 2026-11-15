@@ -55,6 +55,19 @@ export function sweepKeyframes(skew: number): Keyframe[] {
   ];
 }
 
+/**
+ * Whether src/styles/_plate.scss already runs `name` on `element` or its
+ * ::after: there the stylesheet owns the wait or the arrival, from before
+ * the app booted, and a second animation would only fight it.
+ */
+export function cssRuns(element: Element, name: string): boolean {
+  if (typeof element.getAnimations !== 'function' || typeof CSSAnimation !== 'function')
+    return false;
+  return element
+    .getAnimations({ subtree: true })
+    .some((run) => run instanceof CSSAnimation && run.animationName === name);
+}
+
 const promises = new WeakMap<HTMLImageElement, Promise<boolean>>();
 const done = new WeakSet<HTMLImageElement>();
 
@@ -185,12 +198,17 @@ export class PlateImageDirective {
       const img = this.img;
       const plate = img.closest<HTMLElement>('.plate');
       if (!plate) return;
-      if (img.complete && img.naturalWidth > 0) {
+      // The head script (index.html) may have settled it before the app booted.
+      if (plate.hasAttribute('data-plate-loaded') || (img.complete && img.naturalWidth > 0)) {
         plate.dataset['plate'] = 'ready';
+        plate.dataset['plateLoaded'] ??= '';
         void painted(img);
         return;
       }
-      if (img.complete && !img.hasAttribute('srcset')) {
+      if (
+        plate.hasAttribute('data-plate-failed') ||
+        (img.complete && !img.hasAttribute('srcset'))
+      ) {
         plate.dataset['plate'] = 'error';
         return;
       }
@@ -212,6 +230,7 @@ export class PlateImageDirective {
         const shown = this.settle();
         if (ok) {
           plate.dataset['plate'] = 'ready';
+          plate.dataset['plateLoaded'] ??= '';
           if (!img.closest('[data-reveal="pending"]')) this.arrive();
           return;
         }
@@ -251,6 +270,7 @@ export class PlateImageDirective {
   }
 
   private wait(plate: HTMLElement): void {
+    if (cssRuns(plate, 'plate-wait-in')) return;
     const reduced = this.motion.reduced();
     const kind = this.kind();
     const canAnimate = typeof plate.animate === 'function';
@@ -327,7 +347,7 @@ export class PlateImageDirective {
 
   private arrive(): void {
     const img = this.img;
-    if (typeof img.animate !== 'function') return;
+    if (typeof img.animate !== 'function' || cssRuns(img, 'plate-arrive')) return;
     if (this.motion.reduced()) {
       img.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'linear' });
       return;

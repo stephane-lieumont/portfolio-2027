@@ -261,6 +261,19 @@ chip with no animation. The client logos take the same plate behaviour.
 Only the viewer's current slide may wait (an observer counts the hidden
 slides as on screen): measured with the renders held, one pulse running
 before and after a step (the slide left behind is paused).
+**Before bootstrap (`fix/image-loading-before-bootstrap`)**: on a slow line
+the prerendered renders landed seconds before the app, so the 3D wall showed
+neither band nor fade. A head script in `index.html` now stamps each plate
+`data-plate-seen` (in view), `data-plate-loaded` (`fade`, or empty when the
+resource timing says it took ≤100ms) or `data-plate-failed` (after retrying
+the original); `_plate.scss` runs the wall's band, its 180ms exit, the chip
+under reduced motion and the arrival as CSS animations on those stamps
+(`.tile.plate` only; other plates keep the directive's behaviour), and the
+directive defers to them (`cssRuns`). Measured on the production build, Slow
+4G (562.5ms, 1.26 Mbps), cache off, scrolled at 4.5s, app booted at ~7.5s:
+band 400–500ms after a plate came in view, renders loaded 5.0–7.5s and
+faded in (510ms) before bootstrap, band fading over 180ms on load; cache on:
+0 bands, 0 fades. Viewer and project page unchanged.
 
 **Content (Stéphane, 2026-11-15)**: Claude Code joins immobilier.ch's tools,
 right after Angular, TypeScript and .NET (« central dans les projets

@@ -8,6 +8,7 @@ import {
   PlateImageDirective,
   PlateWatch,
   WAIT_DELAY_MS,
+  cssRuns,
   isPainted,
   painted,
   sweepKeyframes,
@@ -83,6 +84,77 @@ describe('a picture already in cache', () => {
     await painted(img);
     expect(isPainted(img)).toBe(true);
     expect(animate).not.toHaveBeenCalled();
+  });
+});
+
+@Component({
+  imports: [PlateImageDirective],
+  template: `
+    <span class="plate" [attr.data-plate-loaded]="loaded" [attr.data-plate-failed]="failed">
+      <img appPlate="wall" src="/medias/cgi/c.jpg" alt="" />
+    </span>
+  `,
+})
+class Stamped {
+  loaded: string | null = null;
+  failed: string | null = null;
+}
+
+describe('a picture the head script settled before the app booted', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  function boot(stamp: Partial<Stamped>) {
+    const animate = vi.fn();
+    Element.prototype.animate = animate;
+    TestBed.configureTestingModule({ providers: [provideZonelessChangeDetection()] });
+    const fixture = TestBed.createComponent(Stamped);
+    Object.assign(fixture.componentInstance, stamp);
+    fixture.detectChanges();
+    const plate = (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('.plate')!;
+    return { fixture, plate, animate };
+  }
+
+  it('stays as the stylesheet left it: ready, never arriving a second time', async () => {
+    const { fixture, plate, animate } = boot({ loaded: 'fade' });
+    await fixture.whenStable();
+    expect(plate.dataset['plate']).toBe('ready');
+    expect(plate.dataset['plateLoaded']).toBe('fade');
+    expect(animate).not.toHaveBeenCalled();
+  });
+
+  it('shows the fallback when its original had already failed', async () => {
+    const { fixture, plate } = boot({ failed: '' });
+    await fixture.whenStable();
+    expect(plate.dataset['plate']).toBe('error');
+  });
+
+  it('stamps a picture complete at hydration as loaded, so the wall never hides it', async () => {
+    vi.spyOn(HTMLImageElement.prototype, 'complete', 'get').mockReturnValue(true);
+    vi.spyOn(HTMLImageElement.prototype, 'naturalWidth', 'get').mockReturnValue(1280);
+    const { fixture, plate } = boot({});
+    await fixture.whenStable();
+    expect(plate.hasAttribute('data-plate-loaded')).toBe(true);
+  });
+});
+
+describe('cssRuns', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('finds the stylesheet’s own animation by name, and nothing else', () => {
+    class FakeCssAnimation {
+      constructor(readonly animationName: string) {}
+    }
+    vi.stubGlobal('CSSAnimation', FakeCssAnimation);
+    const plate = document.createElement('span');
+    Object.defineProperty(plate, 'getAnimations', {
+      value: () => [new FakeCssAnimation('plate-wait-in')],
+    });
+    expect(cssRuns(plate, 'plate-wait-in')).toBe(true);
+    expect(cssRuns(plate, 'plate-arrive')).toBe(false);
+  });
+
+  it('is false where the browser cannot tell', () => {
+    expect(cssRuns(document.createElement('span'), 'plate-arrive')).toBe(false);
   });
 });
 
