@@ -250,6 +250,7 @@
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
+  transition: opacity var(--duration-180) var(--ease-state);
 }
 
 .copyright__link:focus-visible {
@@ -258,7 +259,15 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+  // A fade, not a thicker rule (Stéphane, 2026-11-15). 88% is the floor for AA
+  // on the orange ground: 4.55:1 for this 12px text (80% measured 3.9:1).
   .copyright__link:hover {
-    text-decoration-thickness: 2px;
+    opacity: 0.88;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copyright__link {
+    transition: none;
   }
 }

@@ -926,21 +926,37 @@
           <context context-type="linenumber">93,95</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="legal.credits.fonts" datatype="html">
-        <source> Polices Instrument Sans, Instrument Serif et JetBrains Mono, sous licence SIL Open Font License 1.1. </source>
-        <target state="translated">Typefaces Instrument Sans, Instrument Serif and JetBrains Mono, under the SIL Open Font License 1.1.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
-          <context context-type="linenumber">96,99</context>
-        </context-group>
+      <trans-unit id="legal.credits.instrumentSans" datatype="html">
+        <source>Instrument Sans, de The Instrument Sans Project Authors, sous licence SIL Open Font License 1.1.</source>
+        <target state="translated">Instrument Sans, by The Instrument Sans Project Authors, under the SIL Open Font License 1.1.</target>
       </trans-unit>
-      <trans-unit id="legal.credits.icons" datatype="html">
-        <source> Icônes des outils : Simple Icons et gilbarbara/logos (CC0 1.0), Lucide (licence ISC). Les marques restent la propriété de leurs titulaires. </source>
-        <target state="translated">Tool icons: Simple Icons and gilbarbara/logos (CC0 1.0), Lucide (ISC licence). Trademarks remain the property of their owners.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
-          <context context-type="linenumber">100,103</context>
-        </context-group>
+      <trans-unit id="legal.credits.instrumentSerif" datatype="html">
+        <source>Instrument Serif, de The Instrument Serif Project Authors, sous licence SIL Open Font License 1.1.</source>
+        <target state="translated">Instrument Serif, by The Instrument Serif Project Authors, under the SIL Open Font License 1.1.</target>
+      </trans-unit>
+      <trans-unit id="legal.credits.jetbrainsMono" datatype="html">
+        <source>JetBrains Mono, de The JetBrains Mono Project Authors, sous licence SIL Open Font License 1.1.</source>
+        <target state="translated">JetBrains Mono, by The JetBrains Mono Project Authors, under the SIL Open Font License 1.1.</target>
+      </trans-unit>
+      <trans-unit id="legal.credits.simpleIcons" datatype="html">
+        <source>Icônes des réseaux et des outils&#160;: Simple Icons, sous licence CC0 1.0.</source>
+        <target state="translated">Network and tool icons: Simple Icons, under CC0 1.0.</target>
+      </trans-unit>
+      <trans-unit id="legal.credits.logos" datatype="html">
+        <source>Icône de Segment&#160;: gilbarbara/logos, sous licence CC0 1.0.</source>
+        <target state="translated">Segment icon: gilbarbara/logos, under CC0 1.0.</target>
+      </trans-unit>
+      <trans-unit id="legal.credits.lucide" datatype="html">
+        <source>Icônes génériques (CI/CD, tests unitaires)&#160;: Lucide, sous licence ISC.</source>
+        <target state="translated">Generic icons (CI/CD, unit tests): Lucide, under the ISC licence.</target>
+      </trans-unit>
+      <trans-unit id="legal.credits.vendorLogos" datatype="html">
+        <source>Logos de V-Ray, ZBrush, Substance Painter et Illustrator&#160;: ceux de leurs éditeurs, pour désigner les outils.</source>
+        <target state="translated">V-Ray, ZBrush, Substance Painter and Illustrator logos: their publishers’ own, to name the tools.</target>
+      </trans-unit>
+      <trans-unit id="legal.credits.trademarks" datatype="html">
+        <source>Les marques citées restent la propriété de leurs titulaires.</source>
+        <target state="translated">The trademarks named remain the property of their owners.</target>
       </trans-unit>
     </body>
   </file>
