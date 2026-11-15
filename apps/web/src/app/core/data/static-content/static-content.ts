@@ -65,6 +65,11 @@ export interface StaticLogo {
   /** The file's intrinsic proportions (its viewBox or pixels): they set its optical size. */
   readonly width: number;
   readonly height: number;
+  /**
+   * A raster logo's WebP variants (`<name>-<width>.webp`, apps/api
+   * `media:public`); an SVG has none.
+   */
+  readonly variants?: readonly number[];
   /** Names the logo on the project page; the card leaves it to the title beside it. */
   readonly alt: LocalizedText;
 }
@@ -167,6 +172,7 @@ export const PROJECTS: readonly StaticProject[] = [
       'angular',
       'typescript',
       'dotnet',
+      'claude-code',
       'python',
       'aws',
       'azure',
@@ -230,6 +236,7 @@ export const PROJECTS: readonly StaticProject[] = [
       src: '/logos/clients/cir-scancir.png',
       width: 783,
       height: 414,
+      variants: [240, 480],
       alt: { fr: 'Logo de CIR', en: 'CIR logo' },
     },
     logoTint: '#e3201b',

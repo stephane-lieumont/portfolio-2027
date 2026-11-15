@@ -5,7 +5,8 @@
 }
 
 .stack {
-  padding-block: clamp(40px, 6vw, 88px) clamp(32px, 5vw, 64px);
+  // The page's last band: its end clears the fixed dock.
+  padding-block: clamp(40px, 6vw, 88px) max(clamp(32px, 5vw, 64px), var(--dock-clearance));
 }
 
 .stack__head {
@@ -166,6 +167,7 @@
 
 .mastery__list p {
   margin: 0;
+  max-inline-size: var(--measure);
   color: color-mix(in srgb, var(--world-ink) 82%, transparent);
 }
 

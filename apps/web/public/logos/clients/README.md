@@ -16,7 +16,10 @@ Sources, all supplied by Stéphane on 2026-11-15:
 
 - `immobilier-ch.svg`, `web-atrio.svg`, `ledger.svg`: his files, unchanged.
 - `cir-scancir.png`: a transparent colour PNG made from his JPG (gradients
-  kept, white background removed), 783×414.
+  kept, white background removed), 783×414. Its WebP variants
+  `cir-scancir-240.webp` and `-480.webp` (alpha kept) are written by
+  `pnpm --filter @portfolio/api media:public`; re-run it after replacing the
+  PNG.
 - `linxea.svg`: his file is the white version, invisible on the light plate;
   filled here in the site's dark ink (`#12100f`, `--color-neutral-950`) until
   a colour version arrives — replace the file to swap it.

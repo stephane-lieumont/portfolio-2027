@@ -19,6 +19,8 @@ The decorative triangle covers the home page `<h2>` and the Specialties section 
 
 **Mobile-first.** Base styles apply to the smallest screen; `min-width` media queries add complexity as space allows. No `max-width` rules for layout.
 
+_Amended 2026-11-15 (Stéphane, responsive audit): one height query is allowed, `(orientation: landscape) and (max-height: 31.25rem)`, for the 3D viewer on a landscape phone, where the caption moves beside the render instead of over it; widths stay `min-width` only._
+
 **Breakpoints are dictated by the content**, not by device sizes: we widen when a line of text exceeds its readable length, or when a grid can take one more column. They are named and live in the tokens.
 
 **No feature is removed based on width.** Whatever is reachable on desktop is reachable on mobile; only the presentation changes. Concretely, access to Contact and the CV exists at every size, and the main navigation is **visible without a burger as soon as there's room** — a collapsed menu on a 1920 px screen is a choice with no justification.

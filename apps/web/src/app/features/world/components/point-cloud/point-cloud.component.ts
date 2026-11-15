@@ -63,7 +63,8 @@ function sampleGlyph(document: Document): [number, number][] {
       display: block;
       aspect-ratio: 1;
       max-width: 100%;
-      max-height: 56svh;
+      /* 30rem: a tablet's tall screen gave the stage two-thirds of the fold. */
+      max-height: min(56svh, 30rem);
       z-index: 20;
     }
     .stage__box {

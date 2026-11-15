@@ -4,7 +4,9 @@ Last updated 2026-11-15. Describes `main` (shell, world pages, contact, the
 pointer's « fil », the project page, the 404 and the bilingual site's first
 PR, ADR-0017) with `feat/i18n-content` (its second PR, the content in both
 languages), `refactor/app-architecture` (the app's layering, ADR-0018) and
-`feat/client-references` (client references in « Réalisations ») on top.
+`feat/client-references` (client references in « Réalisations ») on top,
+and `fix/responsive-audit` (the responsive audit's fixes and the image loading
+indicator).
 
 ## Works today
 
@@ -165,6 +167,93 @@ prerender expectations and seed mapping went with them.
   `3d-portfolio-2018`, « six plates » or the video facade describe what no
   longer exists.
 
+**Responsive audit (`fix/responsive-audit`, Stéphane's decisions of
+2026-11-15)** — the fixes of the stage-1 audit, each measured in headless
+Chrome on the dev server (both locales prerender and pass the check). In
+order:
+
+- **The dock no longer covers the end of a page.** `--dock-clearance` (86px
+  plus the bottom safe area) pads the last band: the stack on the world pages,
+  the closing band on a project page (`--work-end`). Measured at the end of
+  `/developpeur`, `/graphisme-3d`, three project pages and the viewer's page
+  at 320×568, 390×844, 414×896, 844×390, 768×1024, 820×1180, 1024×768,
+  1280×800 and 1440×900: nothing under the dock, 16px between it and the last
+  line or more (was up to 38px covered). Not the 404: its clip stands on the
+  screen's bottom edge on purpose (decorative, no text there).
+- **Phone header** (deviation from the mockup): below 28rem the role takes a
+  row of its own that scrolls away; only the navigation row stays pinned.
+  89px at rest, 55px while scrolling (was 100), header and dock pinned
+  together 125px (was 170). One row from 28rem: 75px. The role line is 12px
+  (was 11).
+- **Hit areas of 44px, same look**: the header links, the flag and the
+  switch's halves keep their drawn size (32–36px) and take a 44px hit area
+  (`::before`, `--size-target`); hit-tested at ±21.5px from each centre at
+  320, 390, 430, 768, 844 and 1440. The pill buttons and the contact submit
+  are 44px tall (were 42 and 40).
+- **The role line holds AA at the worst pixel** (accessibility fix approved by
+  Stéphane on 2026-11-15): a second layer of the same glass behind the words
+  only (92% in all, with a 2px soft edge). Worst pixel behind the glyphs,
+  scrolling every page under the header (dev world, cgi world): without it
+  2.53 / 3.08:1, with it 4.86 / 4.81:1 at 1440, 768 and 600; at 390 the role
+  row scrolls away before anything passes under it. A stronger ink alone
+  (option 2) was computed, not shipped: 60% toward the primary ink gives
+  4.59 dev but 4.21 cgi.
+- **Contact**: on a phone held upright the order is title, lede, form, then
+  the portrait, then the socials, in the DOM as on screen (deviation from the
+  mockup); the portrait returns to the left column from 48rem (was 900px);
+  title `clamp(2rem, 1rem + 3.2vw, 4rem)`. First screen: at 390×844 the title
+  at 149px and the form's first field at 338 (was title at 555); at 320×568
+  the first field at 395; at 844×390 the title at 154 beside the portrait
+  (was 670). 62px at 1440 (mockup 64).
+- **Viewer on a landscape phone** (deviation from the mockup, ADR-0011
+  amended for the one height query): the caption moves to a 15rem column
+  beside the render, the close button to the corner. 844×390: plate 530×298
+  (was 480×270 under its own caption), caption, bar and close never overlap;
+  also checked at 932×430, 667×375, 568×320; portrait and desktop unchanged.
+- **Line length**: the mastery points and a project's steps stop at 62ch
+  (were 84–96 characters at 768–820).
+- **Tablet hero stage**: the point cloud at most `min(56svh, 30rem)`: 480×480
+  at 768×1024 and 820×1180; the cloud's ink stays 15px or more inside the
+  canvas at 390, 768, 820, 1024 and 1440 in both worlds.
+- **Images**: derivatives are named after their real width and never exceed
+  the original (`media:derive` and the web's `srcset` share the rule, widths
+  up to 1920 and 2560 when a master allows): the Case Tes Potes captures are
+  `-400.webp` (their masters are 400px; « -640 » lied), the 1200px renders
+  `-1200.webp`. The local bucket is re-derived; **production needs
+  `media:derive` re-run** before this ships. The contact portrait ships as a
+  500px WebP with alpha (22 KB, was a 176 KB PNG) and the CIR logo as 240 and
+  480px WebP (11 / 24 KB, was a 98 KB PNG), from `media:public`
+  (`apps/api`). No render is above 1280px and the 2022 portrait is 500px, so
+  the under-resolution measured at DPR 3 remains until larger masters exist.
+- **Not changed**: the scroll position after a rotation (it moved in the
+  emulation), **to confirm on a real device** (Stéphane, 2026-11-15). The
+  « leave as is » list of the plan stands (hero CTAs on phones, viewer ticks,
+  the dock over text mid-scroll, the Escart warm-up, the 2560 column).
+- **Budgets**: the viewer's and the contact page's stylesheets now pass the
+  4 kB component-style warning budget by 305 and 17 bytes (warnings, not
+  errors). Reported, not raised.
+
+**Image loading indicator (spec 07 §16, motion-expert spec approved
+2026-11-15)** — a picture still loading 400ms after its plate came on screen
+shows a band sweeping across the plate (`::after`, Web Animations, skewed by
+the sweep's lean); in the viewer, three pulsing points after the 360ms morph;
+under reduced motion a still « Chargement… » / « Loading… » chip
+(`@@plate.loading`, 9.0:1 on the orange). One shared observer (`PlateWatch`)
+starts the delay in view only and pauses a running band off screen. Arrival:
+510ms fade with a settle from 1.025 on the wall, 360ms fade in the viewer.
+Measured with the renders held 2.5s by request interception at 1440: the band
+stamped 695ms after loading began (timer from the moment in view), six bands
+running in view, all paused once scrolled away, none left after load; a
+cached revisit stamped 0 of 32 plates; the viewer pulse 772ms after loading;
+a failure fades the band then shows the fallback; reduced motion shows the
+chip with no animation. The client logos take the same plate behaviour.
+Known: a hidden viewer slide that is warmed but not current may run its
+pulse while invisible.
+
+**Content (Stéphane, 2026-11-15)**: Claude Code joins immobilier.ch's tools,
+right after Angular, TypeScript and .NET (« central dans les projets
+d'immobilier.ch »), so it shows on the card.
+
 **App layering (ADR-0018, `refactor/app-architecture`)** — `apps/web/src/app`
 is split into `core/` (services, stores, i18n, config, static data), `shared/`
 (generic UI: today only the pill button, `a[appButton]`), `common/` (domain
@@ -203,11 +292,13 @@ is replaced by PRs 3–6.
 & graphiste 3D » (mono, uppercase) on the left; « Contact » and the world
 switch (two links with `aria-current`, a thumb that slides after the sweep) on
 the right; glass over the world's ground. Iso with the mockup, contrast included:
-the role line in the world's muted tone, links 32–36px tall (see « Known
-accessibility debt »). The language link (« EN » / « FR », see « Bilingual »)
+the role line in the world's muted tone, links 32–36px tall (44px hit areas
+and the role's AA glass since the responsive audit). The language link (« EN » / « FR », see « Bilingual »)
 sits between « Contact » and the switch. Below about 448px in French and 420px
 in English (measured: header 100px → 71px) the right-hand group takes a second
-row: the mockup's narrow layout leaves the role 0px wide at 320px. Below 375px
+row: the mockup's narrow layout leaves the role 0px wide at 320px (superseded
+2026-11-15 by the responsive audit: below 28rem the role has its own row,
+which scrolls away). Below 375px
 that row's horizontal spacing tightens (gap 3px, link padding 3px, switch link
 padding 4px; heights unchanged, every target at least 24px wide) so it fits at
 320px in French, the switch's two halves equal (thumb on the current link to
@@ -400,8 +491,8 @@ Deviations from the mockup, each on purpose:
 **Contact (« Bascule » PR 6)** — the mockup's contact view, measured iso
 against it in headless Chrome at 1440 (every box of portrait, plate, figure,
 caption, eyebrow, title, lede, fields, button and socials within 0.1px, both
-worlds), 1024, 390 and 320 (no horizontal overflow). Two columns from 900px
-(5fr/7fr), portrait sticky at 96px. The portrait is the 2022 « pensif »
+worlds), 1024, 390 and 320 (no horizontal overflow). Two columns from 48rem since the responsive audit
+(was 900px; 5fr/7fr), portrait sticky at 96px. The portrait is the 2022 « pensif »
 cut-out, shipped from `public/images/` (not MinIO) until ADR-0012's pipeline
 takes it over. Form: Nom, Email, Message, Reactive Forms, the mockup's French
 messages, focus to the first invalid field, a flagged field re-checked on
@@ -700,7 +791,7 @@ read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository. Locally the renders need
 `pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 534 passing on the web side, 97.6% lines, 87.9% branches, 93.5%
+**Tests** — 585 passing on the web side, 98.1% lines, 88.4% branches, 94.2%
 functions (plus 53 for the prerender check); axe on every page, every project page included. Every route, the
 404, the project guard, the API client, the gallery, contact, the project page,
 its video facade and the YouTube address parser have their own specs; the
@@ -806,9 +897,6 @@ on the production build (1440 and 390), and is to be fixed later.
 
 | Where                                                                          | Measured                                                                         | Requirement                                            |
 | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Header role line, muted on 72% glass, dev world, over a light cover            | 2.35:1 (5.82:1 on bare glass)                                                    | 4.5:1                                                  |
-| Same, 3D world, over a dark render                                             | 3.13:1 at 1440, 3.31:1 at 390 (5.63:1 bare)                                      | 4.5:1                                                  |
-| Header links 32–36px tall (mockup)                                             | under 44px                                                                       | ADR-0010 target 44px (WCAG 2.5.8 minimum 24px is met)  |
 | Copyright spine over the 3D mosaic (it sits above everything, per Stéphane)    | 1.00:1 over a dark render (5.70:1 on bare orange; 5.26:1 worst in the dev world) | 4.5:1                                                  |
 | Inactive stack marks: icon at 50% opacity, 3D world                            | ≈2.9:1 (label stays 5.67:1)                                                      | 3:1 for graphics, if the icon is held to carry meaning |
 | 404 clip loops with no pause control (Stéphane removed the button, 2026-11-15) | plays past 5s, decorative                                                        | WCAG 2.2.2 Pause, Stop, Hide                           |

@@ -28,8 +28,11 @@
   --motes-max: 0;
 
   // What the fixed social dock covers at the bottom of the viewport: its 44px
-  // targets, its padding and border, and the gap under it. Page ends pad by it.
-  --dock-clearance: calc(2.75rem + 2 * var(--space-1) + 2px + 2 * var(--space-3));
+  // targets, its padding and border, its offset and as much again above it.
+  // Page ends pad by it.
+  --dock-clearance: calc(
+    2.75rem + 2 * var(--space-1) + 2px + 2 * var(--space-3) + env(safe-area-inset-bottom, 0px)
+  );
 }
 
 // The developer world is dark. The pages written before the worlds read the

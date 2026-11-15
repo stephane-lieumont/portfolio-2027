@@ -13,15 +13,30 @@ describe('mediaSrcset', () => {
     srcset = TestBed.runInInjectionContext(() => mediaSrcset());
   });
 
-  it('lists the three WebP widths beside the key, under the media base', () => {
+  it('lists the WebP widths up to the original’s beside the key, under the media base', () => {
     expect(srcset('cgi/escart-wild.jpg', 1280)).toBe(
       '/medias/cgi/escart-wild-640.webp 640w, /medias/cgi/escart-wild-960.webp 960w, /medias/cgi/escart-wild-1280.webp 1280w',
     );
   });
 
-  it('declares a derivative at its real width, never wider than the original', () => {
-    expect(srcset('cgi/legos-minions.jpg', 1200)).toMatch(/legos-minions-1280\.webp 1200w$/);
-    expect(srcset('projects/pixmodels.jpg', 400)).toBe('/medias/projects/pixmodels-640.webp 400w');
+  it('names and declares every derivative at its real width, never above the original', () => {
+    expect(srcset('cgi/legos-minions.jpg', 1200)).toMatch(
+      /legos-minions-960\.webp 960w, \/medias\/cgi\/legos-minions-1200\.webp 1200w$/,
+    );
+    expect(srcset('projects/case-tes-potes-mobile.jpg', 400)).toBe(
+      '/medias/projects/case-tes-potes-mobile-400.webp 400w',
+    );
+    expect(srcset('cgi/large.jpg', 4000)).toMatch(/large-2560\.webp 2560w$/);
+  });
+
+  it('never lists a candidate whose name and width disagree', () => {
+    for (const width of [400, 640, 900, 1080, 1100, 1280, 1920, 2400, 2560, 5000]) {
+      for (const candidate of srcset('cgi/x.jpg', width).split(', ')) {
+        const [url, descriptor] = candidate.split(' ');
+        expect(url.match(/-(\d+)\.webp$/)?.[1] + 'w').toBe(descriptor);
+        expect(parseInt(descriptor, 10)).toBeLessThanOrEqual(width);
+      }
+    }
   });
 });
 

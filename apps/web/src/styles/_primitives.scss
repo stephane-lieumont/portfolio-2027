@@ -169,11 +169,14 @@
 
   // Layout
   --measure: 62ch;
+  // The smallest thing a finger is asked to hit (ADR-0010).
+  --size-target: 2.75rem;
   --width-content: 72rem;
   --width-wide: 90rem;
   --page-inline: var(--space-4);
-  // The sticky header at its tallest: two rows below about 410px (112px),
-  // one row of 83px above. Read by scroll-padding, so it errs tall.
+  // The sticky header at its tallest: 89px below 28rem (its role row scrolls
+  // away, 55px stay pinned), one row of 75px above. Read by scroll-padding,
+  // so it errs tall.
   --header-height: 7rem;
 }
 

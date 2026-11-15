@@ -227,6 +227,42 @@
     border-radius: 4px;
   }
 }
+// A landscape phone has no height for a caption under the plate: it moves to
+// a column beside it and the close button to the corner (ADR-0011, amended).
+// 92px: the dialog's padding, the bar and the gap above it.
+@media (orientation: landscape) and (max-height: 31.25rem) {
+  .lb[open] {
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .lb__close {
+    position: absolute;
+    inset-block-start: max(16px, env(safe-area-inset-top));
+    inset-inline-end: max(16px, env(safe-area-inset-right));
+    z-index: 1;
+    margin: 0;
+  }
+  .show {
+    --show-plate: min((100dvh - 92px) * 16 / 9, 100vw - 48px - 16px - 15rem);
+    grid-template-columns: var(--show-plate) 15rem;
+    grid-template-areas:
+      'stage cap'
+      'bar bar';
+    gap: 12px 16px;
+    justify-content: center;
+  }
+  .show__stage {
+    grid-area: stage;
+  }
+  .show__cap {
+    grid-area: cap;
+    align-self: end;
+    width: auto;
+  }
+  .show__bar {
+    grid-area: bar;
+    width: 100%;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .show__tick span,
   .show__tick span::after,

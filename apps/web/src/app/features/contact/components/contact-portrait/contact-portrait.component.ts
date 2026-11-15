@@ -1,10 +1,11 @@
-import { NgOptimizedImage } from '@angular/common';
+import { IMAGE_LOADER, type ImageLoaderConfig, NgOptimizedImage } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
   afterNextRender,
+  computed,
   effect,
   inject,
   input,
@@ -28,6 +29,11 @@ import {
 
 const AT_REST: Offset = { x: 0, y: 0 };
 
+/** A width asks for its WebP variant beside the PNG; the PNG stays the `src`. */
+export function publicVariant({ src, width }: ImageLoaderConfig): string {
+  return width ? src.replace(/\.png$/, `-${width}.webp`) : src;
+}
+
 /**
  * The cut-out standing on its diagonal plate. On a mouse, the plate swings
  * against the pointer and the figure follows it, each easing at its own pace.
@@ -35,6 +41,7 @@ const AT_REST: Offset = { x: 0, y: 0 };
 @Component({
   selector: 'app-contact-portrait',
   imports: [NgOptimizedImage, InLocalePipe],
+  providers: [{ provide: IMAGE_LOADER, useValue: publicVariant }],
   template: `
     <figure>
       <div #portraitEl class="portrait">
@@ -43,6 +50,8 @@ const AT_REST: Offset = { x: 0, y: 0 };
           <img
             class="portrait__img"
             [ngSrc]="image().src"
+            [ngSrcset]="srcset()"
+            sizes="min(460px, 100vw)"
             [alt]="image().alt | inLocale"
             [width]="image().width"
             [height]="image().height"
@@ -61,6 +70,12 @@ export class ContactPortraitComponent {
   readonly caption = input.required<string>();
   /** Where the pointer is followed: the whole contact view, as on the mockup. */
   readonly area = input.required<HTMLElement>();
+
+  protected readonly srcset = computed(() =>
+    this.image()
+      .variants.map((width) => `${width}w`)
+      .join(', '),
+  );
 
   private readonly frames = inject(FrameLoopService);
   private readonly reduced = inject(ReducedMotionService).reduced;

@@ -18,25 +18,25 @@ export function mediaUrl(): (key: string) => string {
 }
 
 /**
- * The WebP widths derived next to every image in the bucket: `cgi/x.jpg` has
- * `cgi/x-640.webp`, `cgi/x-960.webp` and `cgi/x-1280.webp` (apps/api
- * `media:derive`). A derivative is never wider than its original, so each is
- * declared at its real width and duplicates are dropped (a 400px cover has
- * three 400px files: one candidate).
+ * The WebP widths derived next to every image in the bucket (apps/api
+ * `media:derive`, the same rule): each width below the original's, then the
+ * original's own, never above it. A 1280px render has `-640`, `-960` and
+ * `-1280.webp`; a 400px capture only `-400.webp`. Every name is its real width.
  */
-export const MEDIA_WIDTHS = [640, 960, 1280] as const;
+export const MEDIA_WIDTHS = [640, 960, 1280, 1920, 2560] as const;
+
+export function derivedWidths(width: number): number[] {
+  const below = MEDIA_WIDTHS.filter((derived) => derived < width);
+  return width <= MEDIA_WIDTHS[MEDIA_WIDTHS.length - 1] ? [...below, width] : below;
+}
 
 /** Builds the `srcset` of an image's WebP derivatives; the original stays its `src`. */
 export function mediaSrcset(): (key: string, width: number) => string {
   const url = mediaUrl();
   return (key, width) => {
     const stem = key.replace(/\.[a-z0-9]+$/i, '');
-    const seen = new Set<number>();
-    return MEDIA_WIDTHS.flatMap((derived) => {
-      const real = Math.min(derived, width);
-      if (seen.has(real)) return [];
-      seen.add(real);
-      return [`${url(`${stem}-${derived}.webp`)} ${real}w`];
-    }).join(', ');
+    return derivedWidths(width)
+      .map((derived) => `${url(`${stem}-${derived}.webp`)} ${derived}w`)
+      .join(', ');
   };
 }
