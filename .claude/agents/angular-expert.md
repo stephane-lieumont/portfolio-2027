@@ -31,10 +31,17 @@ Read `.claude/memory/tech-stack.md`, `.claude/runtime/STATUS.md` and the ADRs in
 
 ```
 src/app/
-├── core/       # cross-cutting services, singletons (API, config, interceptors)
-├── shared/     # reusable components and pipes, no business logic
-└── features/   # one feature = one folder, lazy-loaded via loadComponent
+├── core/       singletons: services/ (+ motion/), stores/, i18n/, config/, data/ (static content until the API serves it)
+├── shared/     generic UI primitives, no domain: components/kit-ui/ (e.g. button)
+├── common/     domain pieces used by several features: components/, directives/, constants/, utils/
+├── features/   one folder per page area: <name>/views/ (routed) + components/ (+ directives/, utils/ when needed)
+└── layouts/    the site chrome: site-layout/ (the root, `app-root`) + its components (motes, social dock, thread)
 ```
+
+- **Pick the layer before coding: shared → common → features.** Generic and domain-free goes in `shared`; domain but used by several features goes in `common`; the rest stays in its feature.
+- **Imports only go down**, enforced by ESLint in `pnpm verify`: `shared` imports no other layer; `common` never imports `features`/`layouts`; `core` imports no UI layer; a feature never imports another feature or the layout. Cross-layer imports use the aliases `@core/* @shared/* @common/* @features/* @layouts/*`; relative imports stay inside a folder (no `../`).
+- **One folder per component, Angular suffixes kept** (Stéphane's choice, against Angular 22's default): `xxx.component.ts|html|scss|spec.ts`, `xxx.service.ts`, `xxx.store.ts`, `xxx.directive.ts`, `xxx.pipe.ts`. Shared state is a plain signal service named `XxxStore` in `core/stores/` — no @ngrx/signals at this size.
+- Domain types still come from `@portfolio/shared-types`, never redeclared. Full reasoning: ADR-0018.
 
 Every route is loaded with `loadComponent`. Heavy images (3D renders): `NgOptimizedImage`, plus `@defer` for anything below the fold — visual weight is the main performance risk on this site.
 

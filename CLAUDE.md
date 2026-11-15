@@ -63,6 +63,22 @@ Standalone, **zoneless**, signals. Full detail in the `angular-expert` agent —
 
 Non-negotiable: no `NgModule`; `OnPush` everywhere; `input()`/`output()`/`computed()` over decorators; `@if`/`@for` (with `track`) over structural directives; domain types imported from `@portfolio/shared-types` and never redeclared.
 
+### App architecture (ADR-0018)
+
+```
+src/app/
+├── core/       singletons: services/ (+ motion/), stores/, i18n/, config/, data/ (static content until the API serves it)
+├── shared/     generic UI primitives, no domain: components/kit-ui/ (e.g. button)
+├── common/     domain pieces used by several features: components/, directives/, constants/, utils/
+├── features/   one folder per page area: <name>/views/ (routed) + components/ (+ directives/, utils/ when needed)
+└── layouts/    the site chrome: site-layout/ (the root, `app-root`) + its components (motes, social dock, thread)
+```
+
+- **Pick the layer before coding: shared → common → features.** Generic and domain-free goes in `shared`; domain but used by several features goes in `common`; the rest stays in its feature.
+- **Imports only go down**, enforced by ESLint in `pnpm verify`: `shared` imports no other layer; `common` never imports `features`/`layouts`; `core` imports no UI layer; a feature never imports another feature or the layout. Cross-layer imports use the aliases `@core/* @shared/* @common/* @features/* @layouts/*`; relative imports stay inside a folder (no `../`).
+- **One folder per component, Angular suffixes kept** (Stéphane's choice, against Angular 22's default): `xxx.component.ts|html|scss|spec.ts`, `xxx.service.ts`, `xxx.store.ts`, `xxx.directive.ts`, `xxx.pipe.ts`. Shared state is a plain signal service named `XxxStore` in `core/stores/` — no @ngrx/signals at this size.
+- Domain types still come from `@portfolio/shared-types`, never redeclared. Full reasoning: ADR-0018.
+
 ## Backend — Fastify
 
 Node 22 runs TypeScript natively: **no build step**, and relative imports carry the `.ts` extension. `erasableSyntaxOnly` is on, so no TypeScript enums, no namespaces, no constructor parameter properties.
