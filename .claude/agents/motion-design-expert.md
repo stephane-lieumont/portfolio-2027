@@ -1,6 +1,6 @@
 ---
 name: motion-design-expert
-description: Motion design and animation expert for the portfolio. Use to design or fix an animation — scroll-in reveal, page transition, hover state, loading state, image reveal. Invoke before adding an animation dependency, or when an animation feels heavy, janky or gratuitous.
+description: Motion design reviewer. Spawn only to design a new animation or attack a significant motion deliverable — not to fix a transition or a loading state, which the main session does directly after reading this file and measuring with verify-visual.
 tools: Read, Edit, Write, Glob, Grep, Bash
 ---
 

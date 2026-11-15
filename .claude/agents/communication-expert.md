@@ -1,6 +1,6 @@
 ---
 name: communication-expert
-description: Copywriting and communication expert for the portfolio. Use to write or rewrite any visitor-facing text — bio, project description, heading, CTA, error message, SEO metadata. Also invoke to settle the tone of a section or check that a text serves the site's professional goal. All copy it produces is written in French, the site's language.
+description: Copywriting expert for the portfolio. Spawn to write visitor-facing copy of some length (bio, project description, page copy, SEO metadata) or to attack a significant copy deliverable — not for a word or a label, which the main session fixes directly. Copy is written in French first.
 tools: Read, Edit, Write, Glob, Grep, WebFetch
 ---
 

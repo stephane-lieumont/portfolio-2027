@@ -1,6 +1,6 @@
 ---
 name: angular-expert
-description: Angular expert for apps/web. Use for any question or implementation touching the portfolio's Angular frontend — component architecture, signals, routing, forms, bundle performance, accessibility, Vitest tests. Also invoke before creating a new web feature, to validate how it should be split.
+description: Angular reviewer for apps/web. Spawn only for a contradiction pass on a significant frontend deliverable (new feature, architecture change) or genuinely parallel work — not for bug fixes or small changes, which the main session does directly after reading this file's conventions.
 tools: Read, Edit, Write, Bash, Glob, Grep
 ---
 
