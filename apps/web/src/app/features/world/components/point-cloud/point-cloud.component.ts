@@ -89,19 +89,24 @@ function sampleGlyph(document: Document): [number, number][] {
       cursor: grabbing;
     }
     /* The text column sets the row's height and the stage spans it, so the
-       two end together; the box holding the canvas stays in view meanwhile. */
+       two end together; the box holding the canvas stays in view meanwhile.
+       The box itself is the same size in both worlds, whatever their text:
+       sized on the text, it was 551px in one and 604px in the other, and the
+       cloud shifted as the sweep morphed one box into the other (Stéphane,
+       2026-11-15). */
     @media (min-width: 900px) {
       :host {
+        --box: min(560px, calc(100svh - 120px));
         align-self: stretch;
         aspect-ratio: auto;
         max-height: none;
-        min-height: min(420px, calc(100svh - 120px));
+        min-height: var(--box);
       }
       .stage__box {
         position: sticky;
         inset: auto;
         top: 96px;
-        height: min(100%, calc(100svh - 120px));
+        height: var(--box);
       }
     }
   `,

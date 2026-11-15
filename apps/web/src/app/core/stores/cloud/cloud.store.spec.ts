@@ -65,6 +65,35 @@ describe('CloudModel', () => {
     expect(model.t).toBeCloseTo(1 / 3, 5);
   });
 
+  it('turns its ink within the sweep, well before the shape lands', () => {
+    const inks: string[] = [];
+    const base = surface();
+    const recording: CloudSurface = {
+      ...base,
+      get fillStyle() {
+        return inks.at(-1) ?? '';
+      },
+      set fillStyle(value: string) {
+        if (value.startsWith('rgb(')) inks.push(value);
+      },
+    };
+    const model = new CloudModel(seeded());
+    model.init(glyph, 240, 150, 'dev');
+    model.aim('cgi');
+    for (let i = 0; i < 7; i++) model.frame(recording, 50, view, false);
+    expect(model.t).toBeLessThan(0.3);
+    expect(inks.at(-1)).toBe('rgb(18,16,15)');
+
+    // Back to the developer world the band reaches the cloud later: still dark
+    // at 250ms, light by 650ms.
+    for (let i = 0; i < 30; i++) model.frame(recording, 50, view, false);
+    model.aim('dev');
+    for (let i = 0; i < 5; i++) model.frame(recording, 50, view, false);
+    expect(inks.at(-1)).toBe('rgb(18,16,15)');
+    for (let i = 0; i < 8; i++) model.frame(recording, 50, view, false);
+    expect(inks.at(-1)).toBe('rgb(243,238,232)');
+  });
+
   it('lands on the target at once under reduced motion', () => {
     const model = new CloudModel(seeded());
     model.init(glyph, 240, 150, 'dev');

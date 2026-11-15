@@ -13,6 +13,13 @@ const SWEEP_WIDTH = 0.1;
 const FIELD_RADIUS = 0.45;
 const FIELD_PUSH = 0.2;
 const MORPH_MS = 1500;
+// The ink turns faster than the shape, as the sweep's band (640ms) passes the
+// cloud: a cloud still white over the orange band, or already white over the
+// orange page, read as a glitch (Stéphane, 2026-11-15). Into the 3D world the
+// band comes from the right, the cloud's side, and reaches it at once; back to
+// the developer world it comes from the left and reaches it about halfway.
+const INK_MS = 320;
+const INK_DELAY_DEV_MS = 300;
 const SPIN = 0.45;
 const PITCH = 1.05;
 const PITCH_SWAY = 0.15;
@@ -260,7 +267,10 @@ export class CloudModel {
     const tiltY = pointer[0] * 0.35;
     const tiltX = pointer[1] * 0.25;
 
-    const inkT = ease(this.t);
+    const inkT =
+      this.target === 1
+        ? ease(Math.min(1, (this.t * MORPH_MS) / INK_MS))
+        : 1 - ease(Math.min(1, Math.max(0, ((1 - this.t) * MORPH_MS - INK_DELAY_DEV_MS) / INK_MS)));
     if (inkT !== this.inkAt) {
       this.inkAt = inkT;
       const [r0, g0, b0] = INK.dev;
