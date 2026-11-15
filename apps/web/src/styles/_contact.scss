@@ -5,10 +5,3 @@
 :root[data-world='cgi'] .portrait__plate {
   background: var(--world-ink);
 }
-
-// The interim page surface under the 3D world's main (_world.scss) does not
-// apply here: the contact view stands on the world's own ground, as on the
-// mockup. Goes with that interim rule.
-:root[data-world='cgi'] main:has(> app-contact) {
-  background: none;
-}

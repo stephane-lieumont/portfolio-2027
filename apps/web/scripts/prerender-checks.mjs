@@ -46,7 +46,7 @@ export const EXPECTED = new Map([
     `developpeur/${p.slug}`,
     { h1: p.title, text: [p.context, p.mission, p.presentationCaption, ...p.missionSteps] },
   ]),
-  ['404', { h1: 'Page introuvable', text: ['Erreur 404'], noindex: true }],
+  ['404', { h1: 'Mais où est l’interphone ?', text: ['Erreur 404'], noindex: true }],
 ]);
 
 const HIDING_STYLE =

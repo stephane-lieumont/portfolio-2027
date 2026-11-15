@@ -57,14 +57,6 @@
   --motes-max: 0.5;
 }
 
-// Interim, until the contact page is redesigned (PR 6): it was designed on
-// light or dark grounds, and secondary ink on the orange ground measures 3.3:1,
-// so it keeps a page surface in the 3D world. The world pages paint nothing:
-// the motes behind the page show through them, as on the mockup.
-:root[data-world='cgi'] main:not(:has(> app-world-page)) {
-  background: var(--surface-page);
-}
-
 // Glass is kept to what floats over moving content. 72% of the ground keeps
 // the ink legible whatever passes beneath; blur alone guarantees nothing.
 .glass {

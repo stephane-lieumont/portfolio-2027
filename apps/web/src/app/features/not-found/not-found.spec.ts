@@ -2,17 +2,38 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import axe from 'axe-core';
-import { describe, expect, it } from 'vitest';
+import { type MockInstance, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { ReducedMotion } from '../../core/motion/reduced-motion';
 
 import { NotFound } from './not-found';
 
-async function render(): Promise<HTMLElement> {
+let play: MockInstance<HTMLMediaElement['play']>;
+
+beforeEach(() => {
+  // jsdom has no media playback; the stubs fire the events a browser would.
+  play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(function (
+    this: HTMLMediaElement,
+  ) {
+    this.dispatchEvent(new Event('play'));
+    return Promise.resolve();
+  });
+});
+
+afterEach(() => vi.restoreAllMocks());
+
+async function render(reduced = false): Promise<HTMLElement> {
   await TestBed.configureTestingModule({
     imports: [NotFound],
-    providers: [provideZonelessChangeDetection(), provideRouter([])],
+    providers: [
+      provideZonelessChangeDetection(),
+      provideRouter([]),
+      { provide: ReducedMotion, useValue: { reduced: () => reduced } },
+    ],
   }).compileComponents();
 
   const fixture = TestBed.createComponent(NotFound);
+  await fixture.whenStable();
   fixture.detectChanges();
   return fixture.nativeElement as HTMLElement;
 }
@@ -26,6 +47,18 @@ describe('NotFound', () => {
     expect(Array.from(host.querySelectorAll('a')).map((a) => a.getAttribute('href'))).toEqual([
       '/developpeur',
     ]);
+  });
+
+  it('plays the clip on arrival', async () => {
+    await render();
+
+    expect(play).toHaveBeenCalledTimes(1);
+  });
+
+  it('leaves the clip on its poster under reduced motion', async () => {
+    await render(true);
+
+    expect(play).not.toHaveBeenCalled();
   });
 
   it('has no detectable accessibility violation', async () => {
