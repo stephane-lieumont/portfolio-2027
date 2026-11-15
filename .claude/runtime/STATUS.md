@@ -12,6 +12,21 @@ ADR-0022, issue #40).
 
 ## Works today
 
+**Site image (`feat/site-nginx`, ADR-0023, issue #43)** — `apps/web/Dockerfile`
+copies `dist/web/browser` into `nginxinc/nginx-unprivileged:1.30.6-alpine3.24`
+with `apps/web/nginx/nginx.conf`: port 8080, `/healthz`, per-tree
+`try_files` and 404, the `/` 302 (cookie `lang`, then the first
+`Accept-Language` tag; `no-store`, `Vary: Accept-Language, Cookie`), `/en` and
+`/en/` 302 to `/en/developer`, cache headers (hashed bundles immutable, HTML
+`no-cache`, sitemap/robots 1 h, the rest 1 day), gzip (no brotli in the
+image), security headers and a CSP whose script hashes the build writes to
+`dist/web/nginx/csp-inline-scripts.conf`. `pnpm test:site-image` builds and
+runs it: 26 checks pass locally (every prerendered route 200 with its own
+canonical, nine redirect cases, FR/EN 404s, headers), and headless Chrome
+loads `/contact` and `/en/contact` with Turnstile, plus four other pages, with
+no CSP violation; with the hashes removed the same check fails. CI: workflow
+`site image`. Not deployed (see Missing).
+
 **Foundations** — pnpm monorepo, Angular 22 standalone/zoneless/signals, shared
 Zod types, Fastify API with `/health`, the contact relay and the public
 content routes, MinIO in docker-compose. 22 ADRs, 6 specs.
@@ -1132,13 +1147,13 @@ on the production build (1440 and 390), and is to be fixed later.
 
 Ordered by what hurts most on the day the site goes live.
 
-| Gap                                    | Consequence                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **nginx not updated for prerendering** | Outside the repository. ADR-0005 (amended 2026-11-14) now prescribes `try_files $uri $uri/index.html =404;` and `error_page 404 /404/index.html;` for `/*`. The live config still has the `index.html` fallback, which would serve the prerendered home with a 200 under every unknown URL.                                                                                                                                                                      |
-| **Contact keys not in production**     | The route works (`feat/contact-smtp`, ADR-0020) but production needs, in the server `.env`: `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER` and `CONTACT_TO` (his Gmail address), `SMTP_PASSWORD` (a Google app password), `TURNSTILE_SECRET`; and the Turnstile site key in `apps/web/src/app/core/config/turnstile.config.ts` (`PRODUCTION_SITE_KEY`, still the test key: the form fails closed). The API refuses to boot in production without them. |
-| **API has no write routes**            | V1 serves content read-only (ADR-0022). Media, tools as records and admin writes are V1.1. A record removed from the seed is not deleted from a database that holds it.                                                                                                                                                                                                                                                                                          |
-| **No back office**                     | Content lives in `apps/api/src/db/seed/`, loaded with `db:seed`. Every edit is a commit and a reseed. The world pages' top content (eyebrow tools, current position, facts, lede) is to become editable fields with the back office (spec 04 §1, #54); it stays in `world-content.ts` for V1.                                                                                                                                                                    |
-| **Spec 05 missing; spec 04 drafted**   | `docs/specs/04-back-office.md` is a draft (2026-11-15) awaiting Stéphane's answers, with ADR-0019 (admin access hardening) proposed. The content spec 05 was never written (the SEO it was to cover is built, `feat/seo`).                                                                                                                                                                                                                                       |
+| Gap                                  | Consequence                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Site image not deployed**          | The site's nginx is built and tested in this repository (`apps/web/Dockerfile`, `apps/web/nginx/nginx.conf`, ADR-0023, `feat/site-nginx`). Still to do in the infrastructure repository: run the image, forward everything but `/api`, `/medias` and `/demo` to it on 8080, keep HSTS at the TLS proxy. Until then the live config has the `index.html` fallback, which would serve the home with a 200 under every unknown URL.                                 |
+| **Contact keys not in production**   | The route works (`feat/contact-smtp`, ADR-0020) but production needs, in the server `.env`: `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER` and `CONTACT_TO` (his Gmail address), `SMTP_PASSWORD` (a Google app password), `TURNSTILE_SECRET`; and the Turnstile site key in `apps/web/src/app/core/config/turnstile.config.ts` (`PRODUCTION_SITE_KEY`, still the test key: the form fails closed). The API refuses to boot in production without them. |
+| **API has no write routes**          | V1 serves content read-only (ADR-0022). Media, tools as records and admin writes are V1.1. A record removed from the seed is not deleted from a database that holds it.                                                                                                                                                                                                                                                                                          |
+| **No back office**                   | Content lives in `apps/api/src/db/seed/`, loaded with `db:seed`. Every edit is a commit and a reseed. The world pages' top content (eyebrow tools, current position, facts, lede) is to become editable fields with the back office (spec 04 §1, #54); it stays in `world-content.ts` for V1.                                                                                                                                                                    |
+| **Spec 05 missing; spec 04 drafted** | `docs/specs/04-back-office.md` is a draft (2026-11-15) awaiting Stéphane's answers, with ADR-0019 (admin access hardening) proposed. The content spec 05 was never written (the SEO it was to cover is built, `feat/seo`).                                                                                                                                                                                                                                       |
 
 ## Known accessibility debt — contact page
 

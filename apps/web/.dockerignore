@@ -1,0 +1,7 @@
+# The image takes the build output and the nginx config, nothing else.
+*
+!nginx/nginx.conf
+!dist/web/nginx/csp-inline-scripts.conf
+!dist/web/browser
+dist/web/browser/**/index.csr.html
+dist/web/browser/**/README.md
