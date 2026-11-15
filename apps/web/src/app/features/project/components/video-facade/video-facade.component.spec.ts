@@ -4,8 +4,8 @@ import { youtubeVideoId } from '@portfolio/shared-types/video';
 import axe from 'axe-core';
 import { describe, expect, it } from 'vitest';
 
-import { MEDIA_BASE_URL } from '../../../../core/config/media.config';
-import { PROJECTS } from '../../../../core/data/static-content';
+import { MEDIA_BASE_URL } from '@core/config/media.config';
+import { PROJECTS } from '@core/data/static-content';
 import { VideoFacadeComponent } from './video-facade.component';
 
 describe('youtubeVideoId', () => {

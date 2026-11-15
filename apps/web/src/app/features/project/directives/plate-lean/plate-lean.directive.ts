@@ -1,6 +1,6 @@
 import { DestroyRef, Directive, ElementRef, afterNextRender, inject } from '@angular/core';
 
-import { SWEEP_LEAN } from '../../../../common/directives/world-reveal/world-reveal.directive';
+import { SWEEP_LEAN } from '@common/directives/world-reveal/world-reveal.directive';
 
 /**
  * How far the plate's left edge leans, in px: the sweep's angle at the

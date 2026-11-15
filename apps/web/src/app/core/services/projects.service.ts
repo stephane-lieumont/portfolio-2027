@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import type { ListProjectsQuery, Project, ProjectSummary } from '@portfolio/shared-types';
 import type { Observable } from 'rxjs';
 
-import { API_BASE_URL } from '../config/api.config';
+import { API_BASE_URL } from '@core/config/api.config';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectsService {

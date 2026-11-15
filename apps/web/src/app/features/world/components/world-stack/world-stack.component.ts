@@ -14,13 +14,13 @@ import {
 } from '@angular/core';
 import type { WorldStack as WorldStackContent } from '@portfolio/shared-types';
 
-import { toolView } from '../../../../core/data/tool-marks';
-import { InLocalePipe } from '../../../../core/i18n/in-locale.pipe';
-import { ReducedMotionService } from '../../../../core/services/motion/reduced-motion.service';
 import {
   EASE_OUT,
   WorldRevealDirective,
-} from '../../../../common/directives/world-reveal/world-reveal.directive';
+} from '@common/directives/world-reveal/world-reveal.directive';
+import { toolView } from '@core/data/tool-marks';
+import { InLocalePipe } from '@core/i18n/in-locale.pipe';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
 
 const SUBTITLES = {
   dev: $localize`:@@stack.subtitle.dev:Ce avec quoi je travaille`,

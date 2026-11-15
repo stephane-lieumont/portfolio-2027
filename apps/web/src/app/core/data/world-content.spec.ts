@@ -6,6 +6,7 @@ import {
 } from '@portfolio/shared-types';
 import { describe, expect, it } from 'vitest';
 
+import { ARTWORKS, PROJECTS } from './static-content';
 import {
   CONTACT_PAGE,
   SITE_SETTINGS,
@@ -14,7 +15,6 @@ import {
   WORLD_PAGES,
   WORLD_STACKS,
 } from './world-content';
-import { ARTWORKS, PROJECTS } from './static-content';
 
 // The static content stands in for the API. If it drifts from the schemas the
 // API will validate against, the swap stops being a change of source and the

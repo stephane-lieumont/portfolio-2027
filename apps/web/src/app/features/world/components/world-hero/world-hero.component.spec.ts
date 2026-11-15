@@ -2,8 +2,8 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it } from 'vitest';
 
-import { WORLD_PAGES } from '../../../../core/data/world-content';
-import { introBase } from '../../../../common/utils/hero-letters';
+import { introBase } from '@common/utils/hero-letters';
+import { WORLD_PAGES } from '@core/data/world-content';
 import { WorldHeroComponent, roleGlyphs } from './world-hero.component';
 
 function render(world: 'dev' | 'cgi'): HTMLElement {

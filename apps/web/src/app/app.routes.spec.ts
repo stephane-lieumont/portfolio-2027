@@ -1,7 +1,7 @@
 import { ActivatedRouteSnapshot, convertToParamMap } from '@angular/router';
 import { describe, expect, it } from 'vitest';
 
-import { ARTWORKS, PROJECTS } from './core/data/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/static-content';
 import { artworkSlugExists, projectSlugExists, routes } from './app.routes';
 
 function segmentsOf(path: string): { readonly path: string }[] {

@@ -2,14 +2,14 @@ import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { mediaSrcset, mediaUrl } from '../../../core/config/media.config';
-import { toolView } from '../../../core/data/tool-marks';
-import { InLocalePipe } from '../../../core/i18n/in-locale.pipe';
-import { PATHS } from '../../../core/i18n/site-locale';
-import { PROJECTS, type StaticProject } from '../../../core/data/static-content';
-import { PlateImageDirective } from '../../directives/plate-image/plate-image.directive';
-import { workCount } from '../../utils/work-count';
-import { WorldRevealDirective } from '../../directives/world-reveal/world-reveal.directive';
+import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
+import { WorldRevealDirective } from '@common/directives/world-reveal/world-reveal.directive';
+import { workCount } from '@common/utils/work-count';
+import { mediaSrcset, mediaUrl } from '@core/config/media.config';
+import { PROJECTS, type StaticProject } from '@core/data/static-content';
+import { toolView } from '@core/data/tool-marks';
+import { InLocalePipe } from '@core/i18n/in-locale.pipe';
+import { PATHS } from '@core/i18n/site-locale';
 
 /**
  * The developer world's work: a sticky label column, then the projects as

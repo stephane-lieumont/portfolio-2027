@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import axe from 'axe-core';
 import { type MockInstance, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ReducedMotionService } from '../../../../core/services/motion/reduced-motion.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
 
 import { NotFoundComponent } from './not-found.component';
 

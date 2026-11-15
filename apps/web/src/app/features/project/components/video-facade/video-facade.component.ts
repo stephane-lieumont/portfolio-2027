@@ -13,8 +13,8 @@ import {
 import { DomSanitizer } from '@angular/platform-browser';
 import { youtubeEmbedUrl, youtubeVideoId } from '@portfolio/shared-types/video';
 
-import { mediaSrcset, mediaUrl } from '../../../../core/config/media.config';
-import type { StaticImage } from '../../../../core/data/static-content';
+import { mediaSrcset, mediaUrl } from '@core/config/media.config';
+import type { StaticImage } from '@core/data/static-content';
 
 /**
  * A YouTube video behind its own poster (ADR-0016). Until the visitor presses

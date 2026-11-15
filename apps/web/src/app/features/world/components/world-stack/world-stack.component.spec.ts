@@ -2,7 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { WORLD_STACKS } from '../../../../core/data/world-content';
+import { WORLD_STACKS } from '@core/data/world-content';
 import { WorldStackComponent } from './world-stack.component';
 
 function render(world: 'dev' | 'cgi') {

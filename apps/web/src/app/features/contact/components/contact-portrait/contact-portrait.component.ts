@@ -11,10 +11,10 @@ import {
   viewChild,
 } from '@angular/core';
 
-import type { PublicImage } from '../../../../core/data/world-content';
-import { InLocalePipe } from '../../../../core/i18n/in-locale.pipe';
-import { FrameLoopService } from '../../../../core/services/motion/frame-loop.service';
-import { ReducedMotionService } from '../../../../core/services/motion/reduced-motion.service';
+import type { PublicImage } from '@core/data/world-content';
+import { InLocalePipe } from '@core/i18n/in-locale.pipe';
+import { FrameLoopService } from '@core/services/motion/frame-loop.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
 import {
   FIGURE_TAU,
   FIGURE_TRAVEL,

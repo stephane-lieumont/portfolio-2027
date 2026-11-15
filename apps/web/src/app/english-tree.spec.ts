@@ -17,11 +17,11 @@ async function english() {
   $localize.locale = 'en';
   try {
     const [content, media, devWork, mosaic, hero] = await Promise.all([
-      import('./core/data/static-content'),
-      import('./core/config/media.config'),
-      import('./common/components/dev-work/dev-work.component'),
-      import('./features/world/components/art-mosaic/art-mosaic.component'),
-      import('./features/project/components/project-hero/project-hero.component'),
+      import('@core/data/static-content'),
+      import('@core/config/media.config'),
+      import('@common/components/dev-work/dev-work.component'),
+      import('@features/world/components/art-mosaic/art-mosaic.component'),
+      import('@features/project/components/project-hero/project-hero.component'),
     ]);
     TestBed.configureTestingModule({
       providers: [

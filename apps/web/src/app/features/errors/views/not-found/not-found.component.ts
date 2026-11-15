@@ -8,9 +8,9 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { ReducedMotionService } from '../../../../core/services/motion/reduced-motion.service';
-import { NAV } from '../../../../core/data/nav-items';
-import { ButtonComponent } from '../../../../shared/components/kit-ui/button/button.component';
+import { NAV } from '@core/data/nav-items';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
+import { ButtonComponent } from '@shared/components/kit-ui/button/button.component';
 
 /**
  * The 2022 site's 404, kept at Stéphane's request: Travolta lost, and the

@@ -17,17 +17,12 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { ContactService, contactFailureOf } from '../../../../core/services/contact.service';
-import { InLocalePipe } from '../../../../core/i18n/in-locale.pipe';
-import {
-  CONTACT_PAGE,
-  SITE_SETTINGS,
-  STATIC_ASSETS,
-  STATIC_FILES,
-} from '../../../../core/data/world-content';
-import { ICONS } from '../../../../common/constants/icons';
-import { NETWORK_NAMES } from '../../../../common/constants/network-names';
-import { ContactPortraitComponent } from '../../components/contact-portrait/contact-portrait.component';
+import { ICONS } from '@common/constants/icons';
+import { NETWORK_NAMES } from '@common/constants/network-names';
+import { CONTACT_PAGE, SITE_SETTINGS, STATIC_ASSETS, STATIC_FILES } from '@core/data/world-content';
+import { InLocalePipe } from '@core/i18n/in-locale.pipe';
+import { ContactService, contactFailureOf } from '@core/services/contact.service';
+import { ContactPortraitComponent } from '@features/contact/components/contact-portrait/contact-portrait.component';
 
 const FIELDS = ['name', 'email', 'message'] as const;
 type Field = (typeof FIELDS)[number];

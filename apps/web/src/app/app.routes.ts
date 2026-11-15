@@ -1,9 +1,9 @@
 import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 import type { LocalizedText } from '@portfolio/shared-types';
 
-import { inLocale } from './core/i18n/in-locale.pipe';
-import { SECTIONS, SITE_LOCALE } from './core/i18n/site-locale';
-import { ARTWORKS, PROJECTS } from './core/data/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/static-content';
+import { inLocale } from '@core/i18n/in-locale.pipe';
+import { SECTIONS, SITE_LOCALE } from '@core/i18n/site-locale';
 
 const DEV = SECTIONS.dev[SITE_LOCALE];
 const CGI = SECTIONS.cgi[SITE_LOCALE];
@@ -53,7 +53,7 @@ export const routes: Routes = [
       description: $localize`:@@page.dev.description:J’arbitre les choix techniques, j’encadre, et j’écris du code tous les jours. Quatorze ans dans l’aéronautique avant de basculer vers le développement : c’est de là que vient ma façon de travailler.`,
     },
     loadComponent: () =>
-      import('./features/world/views/world-page/world-page.component').then(
+      import('@features/world/views/world-page/world-page.component').then(
         (m) => m.WorldPageComponent,
       ),
   },
@@ -73,7 +73,7 @@ export const routes: Routes = [
       description: (route: ActivatedRouteSnapshot) => inLocale(projectOf(route)?.summary ?? EMPTY),
     },
     loadComponent: () =>
-      import('./features/project/views/project-page/project-page.component').then(
+      import('@features/project/views/project-page/project-page.component').then(
         (m) => m.ProjectPageComponent,
       ),
   },
@@ -88,7 +88,7 @@ export const routes: Routes = [
       description: $localize`:@@page.cgi.description:J’ai commencé la 3D bien avant le développement. C’est là que j’ai appris à apprendre seul — et à regarder une image jusqu’à voir ce qui ne va pas.`,
     },
     loadComponent: () =>
-      import('./features/world/views/world-page/world-page.component').then(
+      import('@features/world/views/world-page/world-page.component').then(
         (m) => m.WorldPageComponent,
       ),
     // Each piece has its own address (spec 01), which opens the viewer over the
@@ -120,7 +120,7 @@ export const routes: Routes = [
       description: $localize`:@@page.contact.description:Un projet, une question ou juste un Hello World ? Je réponds à tout, y compris pour dire non.`,
     },
     loadComponent: () =>
-      import('./features/contact/views/contact/contact.component').then((m) => m.ContactComponent),
+      import('@features/contact/views/contact/contact.component').then((m) => m.ContactComponent),
   },
   // A real page rather than a redirect home. Redirecting hides dead links
   // instead of reporting them, and it is what the current site does — every
@@ -132,7 +132,7 @@ export const routes: Routes = [
     title: $localize`:@@page.notFound.title:Erreur 404`,
     data: { page: 'not-found', noindex: true },
     loadComponent: () =>
-      import('./features/errors/views/not-found/not-found.component').then(
+      import('@features/errors/views/not-found/not-found.component').then(
         (m) => m.NotFoundComponent,
       ),
   },

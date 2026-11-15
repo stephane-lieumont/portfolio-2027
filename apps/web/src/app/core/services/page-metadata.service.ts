@@ -11,7 +11,7 @@ import {
   type SiteLocale,
   pageHref,
   pageRef,
-} from '../i18n/site-locale';
+} from '@core/i18n/site-locale';
 
 export const SITE_NAME = 'Stéphane Lieumont';
 export const SITE_TITLE = `${SITE_NAME} — ${$localize`:@@site.role:Lead Tech & graphiste 3D`}`;

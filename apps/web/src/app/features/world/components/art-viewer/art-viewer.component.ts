@@ -13,15 +13,15 @@ import {
   viewChild,
 } from '@angular/core';
 
-import type { ToolView } from '../../../../core/data/tool-marks';
-import { ReducedMotionService } from '../../../../core/services/motion/reduced-motion.service';
-import { SmoothScrollService } from '../../../../core/services/motion/smooth-scroll.service';
-import { PlateImageDirective } from '../../../../common/directives/plate-image/plate-image.directive';
+import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
 import {
   EASE_CUT,
   EASE_SETTLE,
   diagonalCut,
-} from '../../../../common/directives/world-reveal/world-reveal.directive';
+} from '@common/directives/world-reveal/world-reveal.directive';
+import type { ToolView } from '@core/data/tool-marks';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
+import { SmoothScrollService } from '@core/services/motion/smooth-scroll.service';
 
 export interface ViewerPiece {
   readonly slug: string;

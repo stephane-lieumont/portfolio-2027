@@ -4,7 +4,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { API_BASE_URL } from '../config/api.config';
+import { API_BASE_URL } from '@core/config/api.config';
 import { ProjectsService } from './projects.service';
 
 describe('ProjectsService', () => {

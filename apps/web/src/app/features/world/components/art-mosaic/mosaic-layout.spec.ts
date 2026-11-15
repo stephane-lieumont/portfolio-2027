@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ARTWORKS } from '../../../../core/data/static-content';
+import { ARTWORKS } from '@core/data/static-content';
 import { mosaicLayout } from './mosaic-layout';
 
 /** Every cell of the 12-column grid, and how many tiles cover it. */

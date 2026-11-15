@@ -5,11 +5,11 @@ import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { MEDIA_BASE_URL } from '../../../../core/config/media.config';
-import { SmoothScrollService } from '../../../../core/services/motion/smooth-scroll.service';
-import { ARTWORKS } from '../../../../core/data/static-content';
+import { MEDIA_BASE_URL } from '@core/config/media.config';
+import { ARTWORKS } from '@core/data/static-content';
+import { SmoothScrollService } from '@core/services/motion/smooth-scroll.service';
+import { keyStep } from '@features/world/components/art-viewer/art-viewer.component';
 import { ArtMosaicComponent } from './art-mosaic.component';
-import { keyStep } from '../art-viewer/art-viewer.component';
 
 describe('keyStep', () => {
   it('maps the arrows, Home and End to a piece and a direction', () => {

@@ -10,23 +10,21 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import type { WorldKey } from '@portfolio/shared-types';
 
+import { DevWorkComponent } from '@common/components/dev-work/dev-work.component';
+import { ScrubSentenceComponent } from '@common/components/scrub-sentence/scrub-sentence.component';
+import { introBase } from '@common/utils/hero-letters';
+import { SITE_SETTINGS, STATIC_FILES, WORLD_PAGES, WORLD_STACKS } from '@core/data/world-content';
+import { InLocalePipe } from '@core/i18n/in-locale.pipe';
+import { PATHS } from '@core/i18n/site-locale';
+import { CloudStore } from '@core/stores/cloud.store';
+import { ArtMosaicComponent } from '@features/world/components/art-mosaic/art-mosaic.component';
+import { PointCloudComponent } from '@features/world/components/point-cloud/point-cloud.component';
 import {
-  SITE_SETTINGS,
-  STATIC_FILES,
-  WORLD_PAGES,
-  WORLD_STACKS,
-} from '../../../../core/data/world-content';
-import { InLocalePipe } from '../../../../core/i18n/in-locale.pipe';
-import { PATHS } from '../../../../core/i18n/site-locale';
-import { CloudStore } from '../../../../core/stores/cloud.store';
-import { ArtMosaicComponent } from '../../components/art-mosaic/art-mosaic.component';
-import { DevWorkComponent } from '../../../../common/components/dev-work/dev-work.component';
-import { PointCloudComponent } from '../../components/point-cloud/point-cloud.component';
-import { ScrubSentenceComponent } from '../../../../common/components/scrub-sentence/scrub-sentence.component';
-import { introBase } from '../../../../common/utils/hero-letters';
-import { NAME, WorldHeroComponent } from '../../components/world-hero/world-hero.component';
-import { WorldStackComponent } from '../../components/world-stack/world-stack.component';
-import { ButtonComponent } from '../../../../shared/components/kit-ui/button/button.component';
+  NAME,
+  WorldHeroComponent,
+} from '@features/world/components/world-hero/world-hero.component';
+import { WorldStackComponent } from '@features/world/components/world-stack/world-stack.component';
+import { ButtonComponent } from '@shared/components/kit-ui/button/button.component';
 
 /**
  * How the page arrives:

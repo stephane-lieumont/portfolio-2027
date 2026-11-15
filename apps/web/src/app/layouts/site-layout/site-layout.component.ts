@@ -12,6 +12,7 @@ import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, skip } from 'rxjs';
 
+import { NAV } from '@core/data/nav-items';
 import {
   PATHS,
   SITE_LOCALE,
@@ -20,14 +21,13 @@ import {
   otherLocale,
   pageAt,
   pageHref,
-} from '../../core/i18n/site-locale';
-import { SmoothScrollService } from '../../core/services/motion/smooth-scroll.service';
-import { RouteTransitionsService } from '../../core/services/route-transitions.service';
-import { WorldStore, currentness } from '../../core/stores/world.store';
-import { MotesComponent } from './components/motes/motes.component';
-import { NAV } from '../../core/data/nav-items';
-import { SocialDockComponent } from './components/social-dock/social-dock.component';
-import { ThreadComponent } from './components/thread/thread.component';
+} from '@core/i18n/site-locale';
+import { SmoothScrollService } from '@core/services/motion/smooth-scroll.service';
+import { RouteTransitionsService } from '@core/services/route-transitions.service';
+import { WorldStore, currentness } from '@core/stores/world.store';
+import { MotesComponent } from '@layouts/site-layout/components/motes/motes.component';
+import { SocialDockComponent } from '@layouts/site-layout/components/social-dock/social-dock.component';
+import { ThreadComponent } from '@layouts/site-layout/components/thread/thread.component';
 
 @Component({
   selector: 'app-root',

@@ -1,6 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
-import { SiteLayoutComponent } from './app/layouts/site-layout/site-layout.component';
+import { SiteLayoutComponent } from '@layouts/site-layout/site-layout.component';
 
 bootstrapApplication(SiteLayoutComponent, appConfig).catch((err) => {
   // Nothing will reveal what the page hid: show it as it stands.

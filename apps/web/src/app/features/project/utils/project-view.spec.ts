@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { PROJECTS, type StaticProject } from '../../../core/data/static-content';
-import { plateLean } from '../directives/plate-lean/plate-lean.directive';
+import { PROJECTS, type StaticProject } from '@core/data/static-content';
+import { plateLean } from '@features/project/directives/plate-lean/plate-lean.directive';
 import { OTHERS_COUNT, closingBand, heroTitle, projectLinks } from './project-view';
 
 const base = PROJECTS[0];

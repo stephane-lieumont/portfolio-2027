@@ -5,13 +5,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import axe from 'axe-core';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { API_BASE_URL } from '../../../../core/config/api.config';
-import { CONTACT_PAGE, SITE_SETTINGS } from '../../../../core/data/world-content';
-import {
-  type FrameCallback,
-  FrameLoopService,
-} from '../../../../core/services/motion/frame-loop.service';
-import { ReducedMotionService } from '../../../../core/services/motion/reduced-motion.service';
+import { API_BASE_URL } from '@core/config/api.config';
+import { CONTACT_PAGE, SITE_SETTINGS } from '@core/data/world-content';
+import { type FrameCallback, FrameLoopService } from '@core/services/motion/frame-loop.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
 import { ContactComponent } from './contact.component';
 
 interface Setup {

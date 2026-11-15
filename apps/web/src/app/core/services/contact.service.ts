@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import type { ContactMessage } from '@portfolio/shared-types';
 import { type Observable, map } from 'rxjs';
 
-import { API_BASE_URL } from '../config/api.config';
+import { API_BASE_URL } from '@core/config/api.config';
 
 /**
  * - `unavailable`: nothing answers at the route yet — no network, no API, or an

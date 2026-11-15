@@ -3,12 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  FrameLoopService,
-  type FrameCallback,
-} from '../../../../core/services/motion/frame-loop.service';
-import { ReducedMotionService } from '../../../../core/services/motion/reduced-motion.service';
-import { WorldStore } from '../../../../core/stores/world.store';
+import { FrameLoopService, type FrameCallback } from '@core/services/motion/frame-loop.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
+import { WorldStore } from '@core/stores/world.store';
 import { MoteField, MotesComponent, type MoteSurface } from './motes.component';
 
 function surface() {

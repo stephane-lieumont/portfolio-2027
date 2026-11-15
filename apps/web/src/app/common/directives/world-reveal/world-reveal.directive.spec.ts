@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { signal } from '@angular/core';
 
-import { ReducedMotionService } from '../../../core/services/motion/reduced-motion.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
 import { SAFETY_MS, WorldRevealDirective, diagonalCut } from './world-reveal.directive';
 
 @Component({

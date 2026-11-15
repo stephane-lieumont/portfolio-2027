@@ -17,18 +17,22 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
 
-import { mediaSrcset, mediaUrl } from '../../../../core/config/media.config';
-import { ReducedMotionService } from '../../../../core/services/motion/reduced-motion.service';
-import { toolView } from '../../../../core/data/tool-marks';
-import { inLocale } from '../../../../core/i18n/in-locale.pipe';
-import { PATHS } from '../../../../core/i18n/site-locale';
-import { RouteTransitionsService } from '../../../../core/services/route-transitions.service';
-import { ARTWORKS } from '../../../../core/data/static-content';
-import { ArtViewerComponent, PLATE, type ViewerPiece } from '../art-viewer/art-viewer.component';
+import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
+import { WorldRevealDirective } from '@common/directives/world-reveal/world-reveal.directive';
+import { workCount } from '@common/utils/work-count';
+import { mediaSrcset, mediaUrl } from '@core/config/media.config';
+import { ARTWORKS } from '@core/data/static-content';
+import { toolView } from '@core/data/tool-marks';
+import { inLocale } from '@core/i18n/in-locale.pipe';
+import { PATHS } from '@core/i18n/site-locale';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
+import { RouteTransitionsService } from '@core/services/route-transitions.service';
+import {
+  ArtViewerComponent,
+  PLATE,
+  type ViewerPiece,
+} from '@features/world/components/art-viewer/art-viewer.component';
 import { mosaicLayout } from './mosaic-layout';
-import { PlateImageDirective } from '../../../../common/directives/plate-image/plate-image.directive';
-import { workCount } from '../../../../common/utils/work-count';
-import { WorldRevealDirective } from '../../../../common/directives/world-reveal/world-reveal.directive';
 
 export const GALLERY_PATH = PATHS.cgi;
 

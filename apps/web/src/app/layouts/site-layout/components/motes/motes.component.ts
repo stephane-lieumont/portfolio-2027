@@ -11,10 +11,10 @@ import {
   viewChild,
 } from '@angular/core';
 
-import { FrameLoopService } from '../../../../core/services/motion/frame-loop.service';
-import { ReducedMotionService } from '../../../../core/services/motion/reduced-motion.service';
-import { CloudStore } from '../../../../core/stores/cloud.store';
-import { WorldStore } from '../../../../core/stores/world.store';
+import { FrameLoopService } from '@core/services/motion/frame-loop.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
+import { CloudStore } from '@core/stores/cloud.store';
+import { WorldStore } from '@core/stores/world.store';
 
 const MAX = 120;
 const MIN = 16;

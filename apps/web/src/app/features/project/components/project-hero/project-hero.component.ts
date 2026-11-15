@@ -2,12 +2,12 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { InLocalePipe, inLocale } from '../../../../core/i18n/in-locale.pipe';
-import { PATHS } from '../../../../core/i18n/site-locale';
-import type { StaticProject } from '../../../../core/data/static-content';
-import { introBase } from '../../../../common/utils/hero-letters';
-import { heroTitle, projectLinks } from '../../utils/project-view';
-import { ButtonComponent } from '../../../../shared/components/kit-ui/button/button.component';
+import { introBase } from '@common/utils/hero-letters';
+import type { StaticProject } from '@core/data/static-content';
+import { InLocalePipe, inLocale } from '@core/i18n/in-locale.pipe';
+import { PATHS } from '@core/i18n/site-locale';
+import { heroTitle, projectLinks } from '@features/project/utils/project-view';
+import { ButtonComponent } from '@shared/components/kit-ui/button/button.component';
 
 /**
  * The project page's hero: the way back and the project's rank, series · year

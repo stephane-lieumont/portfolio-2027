@@ -18,10 +18,10 @@ import {
   withViewTransitions,
 } from '@angular/router';
 
-import { API_BASE_URL } from './core/config/api.config';
-import { MEDIA_BASE_URL } from './core/config/media.config';
-import { PageMetadataService } from './core/services/page-metadata.service';
-import { RouteTransitionsService } from './core/services/route-transitions.service';
+import { API_BASE_URL } from '@core/config/api.config';
+import { MEDIA_BASE_URL } from '@core/config/media.config';
+import { PageMetadataService } from '@core/services/page-metadata.service';
+import { RouteTransitionsService } from '@core/services/route-transitions.service';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {

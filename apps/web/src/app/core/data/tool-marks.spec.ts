@@ -4,8 +4,8 @@ import { join } from 'node:path';
 import { SOFTWARE, TECHNOLOGIES } from '@portfolio/shared-types/registries';
 import { describe, expect, it } from 'vitest';
 
-import { WORLD_PAGES, WORLD_STACKS } from './world-content';
 import { toolView } from './tool-marks';
+import { WORLD_PAGES, WORLD_STACKS } from './world-content';
 
 const PUBLIC = join(process.cwd(), 'public');
 

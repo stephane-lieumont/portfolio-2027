@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { SITE_SETTINGS, STATIC_FILES } from '../../../../core/data/world-content';
-import { PATHS } from '../../../../core/i18n/site-locale';
-import { ICONS, type Icon } from '../../../../common/constants/icons';
-import { NETWORK_NAMES } from '../../../../common/constants/network-names';
+import { ICONS, type Icon } from '@common/constants/icons';
+import { NETWORK_NAMES } from '@common/constants/network-names';
+import { SITE_SETTINGS, STATIC_FILES } from '@core/data/world-content';
+import { PATHS } from '@core/i18n/site-locale';
 
 export interface DockLink {
   readonly key: string;

@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { ARTWORKS, PROJECTS } from '@core/data/static-content';
 import { MEDIA_BASE_URL, mediaSrcset } from './media.config';
-import { ARTWORKS, PROJECTS } from '../data/static-content';
 
 describe('mediaSrcset', () => {
   let srcset: ReturnType<typeof mediaSrcset>;

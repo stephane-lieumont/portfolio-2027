@@ -8,23 +8,23 @@ import {
   viewChild,
 } from '@angular/core';
 
-import { toolView } from '../../../../core/data/tool-marks';
-import { InLocalePipe } from '../../../../core/i18n/in-locale.pipe';
-import { SITE_LOCALE } from '../../../../core/i18n/site-locale';
-import { mediaSrcset, mediaUrl } from '../../../../core/config/media.config';
-import { SmoothScrollService } from '../../../../core/services/motion/smooth-scroll.service';
-import { PROJECTS, type StaticProject } from '../../../../core/data/static-content';
-import { DevWorkComponent } from '../../../../common/components/dev-work/dev-work.component';
-import { PlateImageDirective } from '../../../../common/directives/plate-image/plate-image.directive';
+import { DevWorkComponent } from '@common/components/dev-work/dev-work.component';
 import {
   BODY_RAMP,
   ScrubSentenceComponent,
-} from '../../../../common/components/scrub-sentence/scrub-sentence.component';
-import { WorldRevealDirective } from '../../../../common/directives/world-reveal/world-reveal.directive';
-import { PlateLeanDirective } from '../../directives/plate-lean/plate-lean.directive';
-import { ProjectHeroComponent } from '../../components/project-hero/project-hero.component';
-import { closingBand } from '../../utils/project-view';
-import { VideoFacadeComponent } from '../../components/video-facade/video-facade.component';
+} from '@common/components/scrub-sentence/scrub-sentence.component';
+import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
+import { WorldRevealDirective } from '@common/directives/world-reveal/world-reveal.directive';
+import { mediaSrcset, mediaUrl } from '@core/config/media.config';
+import { PROJECTS, type StaticProject } from '@core/data/static-content';
+import { toolView } from '@core/data/tool-marks';
+import { InLocalePipe } from '@core/i18n/in-locale.pipe';
+import { SITE_LOCALE } from '@core/i18n/site-locale';
+import { SmoothScrollService } from '@core/services/motion/smooth-scroll.service';
+import { ProjectHeroComponent } from '@features/project/components/project-hero/project-hero.component';
+import { VideoFacadeComponent } from '@features/project/components/video-facade/video-facade.component';
+import { PlateLeanDirective } from '@features/project/directives/plate-lean/plate-lean.directive';
+import { closingBand } from '@features/project/utils/project-view';
 
 /** Where the sticky header ends: the video lands under it, not behind it. */
 const HEADER_CLEARANCE = 96;
