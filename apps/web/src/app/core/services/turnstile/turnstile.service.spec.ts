@@ -54,8 +54,10 @@ async function scriptArrives(api: TurnstileApi | null = fake): Promise<void> {
   scripts().at(-1)?.dispatchEvent(new Event('load'));
 }
 
+// Other spec files sharing this document may have left a Turnstile script behind.
 beforeEach(() => {
   fake = new FakeTurnstile();
+  for (const script of scripts()) script.remove();
 });
 
 afterEach(() => {
