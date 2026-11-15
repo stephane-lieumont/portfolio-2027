@@ -21,6 +21,7 @@
   --world-band: var(--world-ground);
   // The copyright spine: muted where muted holds on the bare ground.
   --world-spine: var(--world-muted);
+  --world-flag: var(--world-ink);
 
   // The cap on the motes' opacity: canvas alpha never exceeds 1, so no overlap
   // of motes can pass it.
@@ -54,6 +55,7 @@
   --world-band: color-mix(in srgb, var(--world-cgi-ink) 6%, var(--world-cgi-ground));
   // A neutral, not the brown muted, as Stéphane asked: 5.7:1 on the orange.
   --world-spine: var(--color-neutral-750);
+  --world-flag: var(--color-neutral-750);
   --motes-max: 0.5;
 }
 
