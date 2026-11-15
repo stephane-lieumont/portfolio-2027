@@ -82,6 +82,9 @@
       </button>
       <p class="form__status" role="status">{{ status() }}</p>
     </div>
+    <!-- Cloudflare draws its challenge here only when it wants the visitor to act;
+         until then the box stays out of the grid and adds no gap. -->
+    <div #captchaEl class="form__captcha" [class.form__captcha--challenge]="challenge()"></div>
   </form>
 
   @if (portrait; as image) {

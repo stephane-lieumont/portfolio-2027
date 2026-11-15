@@ -12,6 +12,10 @@ describe('contactFailureOf', () => {
     expect(contactFailureOf(answer(status))).toBe('unavailable');
   });
 
+  it('reads 403 as a refused anti-spam check', () => {
+    expect(contactFailureOf(answer(403))).toBe('captcha');
+  });
+
   it.each([400, 413, 429, 500, 502, 503])('reads %i as a failure worth retrying', (status) => {
     expect(contactFailureOf(answer(status))).toBe('rejected');
   });

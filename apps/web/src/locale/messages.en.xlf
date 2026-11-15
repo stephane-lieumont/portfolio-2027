@@ -242,6 +242,14 @@
           <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="contact.status.captcha" datatype="html">
+        <source>La vérification anti-spam n’a pas abouti. Réessayez, ou écrivez-moi sur LinkedIn.</source>
+        <target state="translated">The spam check did not go through. Try again, or write to me on LinkedIn.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="contact.status.rejected" datatype="html">
         <source>Le message n’est pas parti. Réessayez dans un instant, ou écrivez-moi sur LinkedIn.</source>
         <target state="translated">The message was not sent. Try again in a moment, or write to me on LinkedIn.</target>

@@ -68,6 +68,10 @@
   margin-block-end: 1em;
 }
 
+.form__captcha:not(.form__captcha--challenge) {
+  position: absolute;
+}
+
 .form__field {
   display: grid;
   gap: 8px;

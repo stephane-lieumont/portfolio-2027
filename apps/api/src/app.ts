@@ -4,9 +4,12 @@ import rateLimit from '@fastify/rate-limit';
 import Fastify, { type FastifyInstance } from 'fastify';
 
 import authPlugin from './plugins/auth.ts';
+import captchaPlugin from './plugins/captcha.ts';
 import configPlugin from './plugins/config.ts';
 import dbPlugin from './plugins/db.ts';
+import mailerPlugin from './plugins/mailer.ts';
 import storagePlugin from './plugins/storage.ts';
+import contactRoutes from './routes/contact.ts';
 import healthRoutes from './routes/health.ts';
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -23,8 +26,11 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(dbPlugin);
   await app.register(storagePlugin);
   await app.register(authPlugin);
+  await app.register(mailerPlugin);
+  await app.register(captchaPlugin);
 
   await app.register(healthRoutes);
+  await app.register(contactRoutes);
 
   return app;
 }

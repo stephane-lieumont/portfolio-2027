@@ -8,6 +8,9 @@ const productionEnv = {
   ADMIN_EMAIL: 'admin@example.com',
   ADMIN_PASSWORD_HASH: '$argon2id$v=19$m=65536,t=3,p=4$abc$def',
   SESSION_SECRET: 'a'.repeat(48),
+  SMTP_PASSWORD: 'app-password',
+  CONTACT_TO: 'owner@example.com',
+  TURNSTILE_SECRET: '0x4AAAAAAA-real-secret',
 };
 
 describe('loadConfig', () => {
@@ -54,5 +57,27 @@ describe('loadConfig', () => {
         loadConfig({ ...productionEnv, SESSION_SECRET: 'dev-only-secret-change-me-32-chars-min' }),
       /SESSION_SECRET/,
     );
+  });
+
+  it('points the mailer at Mailpit and the captcha at the test secret in development', () => {
+    const config = loadConfig({});
+
+    assert.equal(config.SMTP_HOST, 'localhost');
+    assert.equal(config.SMTP_PORT, 1025);
+    assert.equal(config.TURNSTILE_SECRET, '1x0000000000000000000000000000000AA');
+  });
+
+  it('refuses to boot in production without the mail settings', () => {
+    assert.throws(() => loadConfig({ ...productionEnv, SMTP_PASSWORD: '' }), /SMTP_PASSWORD/);
+    assert.throws(() => loadConfig({ ...productionEnv, CONTACT_TO: undefined }), /CONTACT_TO/);
+  });
+
+  it('refuses to boot in production with a Turnstile test secret', () => {
+    for (const secret of ['1x', '2x', '3x'].map((prefix) => `${prefix}${'0'.repeat(31)}AA`)) {
+      assert.throws(
+        () => loadConfig({ ...productionEnv, TURNSTILE_SECRET: secret }),
+        /TURNSTILE_SECRET/,
+      );
+    }
   });
 });
