@@ -315,7 +315,8 @@ function checkShareHead(document, route, expected) {
   };
   for (const [property, value] of Object.entries(wanted)) {
     const found = og(property);
-    if (!found || found !== value) fail(`${property} is "${found ?? ''}", expected "${value}"`);
+    if (!found || squash(found) !== squash(value))
+      fail(`${property} is "${found ?? ''}", expected "${value}"`);
   }
   if (!['website', 'profile'].includes(og('og:type') ?? '')) fail('og:type missing');
   if (!og('og:image:alt')) fail('og:image:alt missing');

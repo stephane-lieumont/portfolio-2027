@@ -573,7 +573,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="viewer.tick" datatype="html">
-        <source>Rendu <x id="position" equiv-text="index + 1"/> : <x id="title" equiv-text="title"/></source>
+        <source>Rendu <x id="position" equiv-text="index + 1"/>&#160;: <x id="title" equiv-text="title"/></source>
         <target state="translated">Render <x id="position" equiv-text="index + 1"/>: <x id="title" equiv-text="title"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.ts</context>

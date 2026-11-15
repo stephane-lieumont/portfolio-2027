@@ -68,7 +68,7 @@ describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (slug,
     expect(host.querySelector('.mission__text')?.textContent?.trim()).toBe(project.mission?.fr);
     expect(Boolean(host.querySelector('.steps'))).toBe(project.missionSteps.length > 0);
     expect(Array.from(host.querySelectorAll('.steps li'), (li) => squash(li.textContent))).toEqual(
-      project.missionSteps.map((step) => step.fr),
+      project.missionSteps.map((step) => squash(step.fr)),
     );
     expect(host.querySelectorAll('.tools li')).toHaveLength(project.technologies.length);
   });

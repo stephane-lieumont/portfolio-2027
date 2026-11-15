@@ -108,7 +108,7 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
     roleWord: { fr: 'GRAPHISTE 3D', en: '3D ARTIST' },
     eyebrowTools: ['3dsmax', 'vray', 'zbrush'],
     lede: {
-      lead: { fr: 'Une pratique apprise seule.', en: 'A self-taught practice.' },
+      lead: { fr: 'Une pratique d’autodidacte.', en: 'A self-taught practice.' },
       text: {
         fr: 'Sans école, avant le développement.',
         en: 'No formal training, before development.',
@@ -148,7 +148,7 @@ export const CONTACT_PAGE: ContactPage = {
   },
   lede: {
     fr: 'Une idée à confronter, un retour d’expérience ou simplement l’envie d’échanger\u00a0: écrivez-moi ici ou sur LinkedIn.',
-    en: 'An idea to challenge, experience to compare or just a chat: write to me here or on LinkedIn.',
+    en: 'An idea to challenge, lessons learned to share or just a chat: write to me here or on LinkedIn.',
   },
   portraitAssetId: PORTRAIT_ID,
   portraitCaption: { fr: 'Fontenilles, France', en: 'Fontenilles, France' },
