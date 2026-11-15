@@ -2,6 +2,14 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="fr" target-language="en" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="boot.label" datatype="html">
+        <source>Chargement</source>
+        <target state="translated">Loading</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layouts/site-layout/site-layout.component.ts</context>
+          <context context-type="linenumber">57</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="shell.skipLink" datatype="html">
         <source>Aller au contenu</source>
         <target state="translated">Skip to content</target>

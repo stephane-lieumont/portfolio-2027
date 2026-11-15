@@ -1,0 +1,15 @@
+// The startup loader holds the page's entrance (issue #47). The loader itself
+// is styled inline in index.html, so it paints before this stylesheet; this
+// rule only has to arrive with the entrances it holds, which live here too.
+// `data-boot` is `wait` while the loader decides whether to show, `on`
+// while it covers the page and `out` for the first moment of its exit; the
+// entrance starts from its first frame as the band uncovers the hero (`clear`).
+// `!important` because each entrance's `animation` shorthand resets
+// the play state, with more specificity than this rule.
+:root:is([data-boot='wait'], [data-boot='on'], [data-boot='out']) {
+  app-root :not(.boot, .boot *),
+  app-root :not(.boot, .boot *)::before,
+  app-root :not(.boot, .boot *)::after {
+    animation-play-state: paused !important;
+  }
+}

@@ -16,6 +16,7 @@ import type { WorldKey } from '@portfolio/shared-types';
 
 import { FrameLoopService } from '@core/services/motion/frame-loop/frame-loop.service';
 import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
+import { StartupService } from '@core/services/startup/startup.service';
 import { CloudStore } from '@core/stores/cloud/cloud.store';
 
 const GLYPH_W = 240;
@@ -120,6 +121,7 @@ export class PointCloudComponent {
   private readonly state = inject(CloudStore);
   private readonly frames = inject(FrameLoopService);
   private readonly motion = inject(ReducedMotionService);
+  private readonly startup = inject(StartupService);
   private wake: () => void = () => undefined;
 
   constructor() {
@@ -299,9 +301,12 @@ export class PointCloudComponent {
       };
       // The glyph is sampled from the real face, so it waits for it; a page
       // whose font never arrives still gets its cloud, sampled from the fallback.
+      // The assembly is the hero's entrance: it waits for the startup loader
+      // to uncover the page instead of playing beneath it.
       const fonts = this.document.fonts;
-      if (model.ready || !fonts) start();
-      else fonts.load(GLYPH_FONT).then(start, start);
+      const release = () => this.startup.afterEntranceRelease(start);
+      if (model.ready || !fonts) release();
+      else fonts.load(GLYPH_FONT).then(release, release);
 
       destroyRef.onDestroy(() => {
         alive = false;

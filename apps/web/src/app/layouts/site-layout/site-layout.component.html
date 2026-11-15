@@ -1,3 +1,23 @@
+<!-- The startup loader. Prerendered so it paints before the bundle; styled and
+     run from index.html, where it shows only on a cold load and never
+     without script. Nothing in it takes focus. -->
+<div class="boot" role="status">
+  <div class="boot__ground"></div>
+  <div class="boot__mark" aria-hidden="true">
+    <div class="boot__mouth">
+      <div class="boot__jaw boot__jaw--top"></div>
+      <div class="boot__jaw boot__jaw--bottom"></div>
+      <div class="boot__lane"><div class="boot__dots"></div></div>
+    </div>
+    <p class="boot__label">
+      @for (letter of bootLetters; track $index) {
+        <span [style.--i]="$index">{{ letter }}</span>
+      }
+    </p>
+  </div>
+  <span class="boot__say">{{ bootLabel }}</span>
+</div>
+
 <!-- Handled here: the fragment alone resolves against <base href> to the
      home page, and a full load lands elsewhere with focus on the body. -->
 <a class="skip-link" href="#contenu" (click)="skipToContent($event)" i18n="@@shell.skipLink"
