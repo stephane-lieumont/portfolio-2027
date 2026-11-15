@@ -146,6 +146,9 @@ mockup's unreset 8px body margin. In order:
   250ms crossfade, so closing went dark → black → orange in one frame
   (measured, close button, Escape, Back, after a step, reduced motion);
   now the crossfade alone carries dark to orange, with no relapse.
+  Not fixed: a viewer opened without user activation (a scripted click) and
+  closed with Escape lets both `cancel` and `close` emit `closing`, so history
+  goes back twice. Not seen with a real click.
 - Stack: marks as a tab list (`role=tab`, `aria-selected`, roving tabindex,
   arrows/Home/End; the panel a `tabpanel`; Simple Icons masks; the 3D tools' PNGs),
   bubble once in view (on a wrapper: the dim of inactive icons no longer
