@@ -373,7 +373,7 @@ describe('the links of a page', () => {
 describe('the French denylists', () => {
   it('hold the content no English page may say, and never an English string', async () => {
     const { FRENCH_CONTENT, FRENCH_WORDS } = await import('./prerender-checks.mjs');
-    assert.ok(FRENCH_CONTENT.includes('Sans école, avant le développement.'));
+    assert.ok(FRENCH_CONTENT.includes('Apprise seul, avant le code.'));
     assert.ok(FRENCH_CONTENT.includes('Lego\u00a0: les Minions'));
     assert.ok(FRENCH_WORDS.includes('éclairage'));
     // Shared values are English too: a proper name or a tool list is not French.
