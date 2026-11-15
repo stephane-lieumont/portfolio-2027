@@ -15,14 +15,15 @@ import type { StaticLogo } from '@core/data/static-content/static-content';
  */
 @Component({
   selector: 'app-client-logo',
-  template: `<img
-    class="logo"
-    [src]="logo().src"
-    [alt]="label() ?? ''"
-    [width]="logo().width"
-    [height]="logo().height"
-    decoding="async"
-  />`,
+  template: `<span class="field" aria-hidden="true"><span class="field__dots"></span></span
+    ><img
+      class="logo"
+      [src]="logo().src"
+      [alt]="label() ?? ''"
+      [width]="logo().width"
+      [height]="logo().height"
+      decoding="async"
+    />`,
   styles: `
     :host {
       position: absolute;
@@ -32,9 +33,18 @@ import type { StaticLogo } from '@core/data/static-content/static-content';
 
     /* A field of points in the brand's tint, the cloud's motes at rest: a
        fixed-size tile, so a point is the same size on a card and on the page,
-       cleared in an ellipse around the logo. */
-    :host::before {
-      content: '';
+       cleared in an ellipse around the logo. The card spreads it on hover by
+       --logo-spread: the scale is on the unmasked wrapper, because Chrome
+       repaints a masked element on every frame its transform moves. */
+    .field {
+      position: absolute;
+      inset: 0;
+      scale: var(--logo-spread, 1);
+      transform-origin: 50% var(--logo-y, 47%);
+      transition: scale var(--logo-spread-duration, var(--duration-360)) var(--ease-state);
+    }
+
+    .field__dots {
       position: absolute;
       inset: 0;
       background: color-mix(in srgb, var(--logo-tint) 40%, var(--logo-plate));
@@ -57,7 +67,7 @@ import type { StaticLogo } from '@core/data/static-content/static-content';
     }
 
     @media (forced-colors: active) {
-      :host::before {
+      .field {
         display: none;
       }
     }

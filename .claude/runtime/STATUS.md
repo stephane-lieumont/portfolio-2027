@@ -83,6 +83,17 @@ prerender expectations and seed mapping went with them.
   575 at 1485). Sticky holds the box at 96px on a 560px-tall window; the
   dev→cgi sweep keeps the cloud drawn on every frame (min 1288 sampled
   points); the torus grab still holds (`data-grab` held while dragged).
+- **Logo card hover (motion-expert spec, approved)**: on hover (fine
+  pointer) and focus the point field spreads from the logo, `--zoom-spread`
+  1.06 on top of the card's 1.03, enter 510ms / leave 360ms `--ease-state`;
+  none under reduced motion (`--zoom-spread: 1`), none on the project page's
+  plate or the current card. The spec scaled the masked `::before`; measured,
+  Chrome repainted the masked layer on every frame (184 paints in the hover's
+  700ms against 140 without the spread), so the field is a wrapper scaled
+  around its masked dots instead: 142 paints, i.e. composited. Measured at
+  1440: transform-origin 237px 167.1px on a 474×356 plate (50% 47%), scale
+  sampled every 50ms 1 → 1.0075 → 1.030 → 1.051 → 1.060 on enter and back
+  to 1 within ~400ms on leave; reduced motion stays at 1.
 - 3D scrub sentence (Stéphane): « De la forme à la lumière, je construis
   l'image jusqu'au moindre reflet. Le détail, c'est là que tout se joue. »
   (EN draft « From form to light, I build the image down to the last

@@ -96,6 +96,20 @@
   object-fit: cover;
 }
 
+// The logo plate's point field spreads from the logo on hover and focus
+// (ClientLogoComponent scales it by these two properties, composited).
+.row__link:focus-visible .row__logo {
+  --logo-spread: var(--zoom-spread);
+  --logo-spread-duration: var(--duration-510);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.row__link:hover .row__logo {
+    --logo-spread: var(--zoom-spread);
+    --logo-spread-duration: var(--duration-510);
+  }
+}
+
 // The role, between the title and the tools: what Stéphane was there, read
 // before the stack.
 .row__role {
