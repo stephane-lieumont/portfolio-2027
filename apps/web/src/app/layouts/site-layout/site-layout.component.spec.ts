@@ -117,6 +117,17 @@ describe('App shell', () => {
     expect(document.documentElement.getAttribute('data-world')).toBe('cgi');
   });
 
+  it('idles the world switch off the worlds, and wakes it back on a world page', async () => {
+    const idle = () => host.querySelector('.switch')?.classList.contains('switch--idle');
+
+    await visit('/developpeur');
+    expect(idle()).toBe(false);
+    await visit('/contact');
+    expect(idle()).toBe(true);
+    await visit('/developpeur/linxea');
+    expect(idle()).toBe(false);
+  });
+
   // The old footer is gone; the only contentinfo landmark is the copyright spine.
   it('ends on the page, its only footer the copyright', async () => {
     await visit('/contact');

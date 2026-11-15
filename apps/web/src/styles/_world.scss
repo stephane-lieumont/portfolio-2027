@@ -120,6 +120,21 @@
   }
 }
 
+// Off the worlds (contact, the 404) the thumb stays on the world you came
+// from, greyed, and neither label is inverted: you are not there, but that is
+// where the switch takes you back (Stéphane, 2026-11-15).
+.switch--idle::before {
+  background: color-mix(in srgb, var(--world-ink) 16%, transparent);
+}
+
+:root[data-world] .switch--idle .switch__link {
+  color: var(--world-ink);
+}
+
+:root[data-world] .switch--idle .switch__link:focus-visible {
+  outline-color: var(--world-ink);
+}
+
 // The focus ring would be drawn in the ink the thumb is painted in.
 :root[data-world='dev'] .switch__link--dev:focus-visible,
 :root[data-world='cgi'] .switch__link--cgi:focus-visible {

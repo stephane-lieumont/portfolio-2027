@@ -54,7 +54,7 @@
       </a>
       <!-- The world switch is navigation (ADR-0014): two links. The thumb
            behind them is painted from the document's world. -->
-      <ul class="switch" role="list">
+      <ul class="switch" [class.switch--idle]="switchIdle()" role="list">
         <li>
           <a
             class="switch__link switch__link--dev"

@@ -889,6 +889,8 @@ The stack's marks need SVG logos (ADR-0012); the mockup used Simple Icons
 
 **Tool marks completed (2026-11-15).** Azure and Azure DevOps (Simple Icons 9.21.0, CC0, since removed upstream at Microsoft's request), Segment (gilbarbara/logos, CC0), TestFlight (Apple's App Store mark), CI/CD and unit tests (Lucide, ISC) live in `public/logos/other/` with their sources in its README. Ledger shows no .NET: its backend is Python (Stéphane, correcting the CV's « outils .NET Core »).
 
+**World switch off the worlds (2026-11-15, Stéphane).** On contact and the 404 the switch idles: the thumb stays on the world you came from but greyed (16% ink), neither label inverted, no `aria-current` on either world; it wakes on any world page.
+
 ## Known accessibility debt (deferred by Stéphane, 2026-11-14)
 
 « sois iso maquette, on verra plus tard pour les contrastes ». The mockup's
