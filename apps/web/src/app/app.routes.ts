@@ -4,6 +4,7 @@ import type { LocalizedText } from '@portfolio/shared-types';
 import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
 import { inLocale } from '@core/i18n/in-locale.pipe';
 import { SECTIONS, SITE_LOCALE } from '@core/i18n/site-locale/site-locale';
+import { pieceDescription } from '@core/services/page-metadata/page-metadata.service';
 
 const DEV = SECTIONS.dev[SITE_LOCALE];
 const CGI = SECTIONS.cgi[SITE_LOCALE];
@@ -39,7 +40,8 @@ function projectOf(route: ActivatedRouteSnapshot) {
   return PROJECTS.find((p) => p.slug[SITE_LOCALE] === route.paramMap.get('slug'));
 }
 
-// Descriptions reuse each page's own lead rather than separate marketing copy.
+// Descriptions are sized for search results, 120 to 160 characters, from the
+// facts the page itself shows: no claim of their own.
 // `data.page` names the page across both trees, for the switcher and hreflang.
 export const routes: Routes = [
   // The mockup opens on the developer world; there is no home page of its own.
@@ -50,7 +52,7 @@ export const routes: Routes = [
     data: {
       page: 'dev',
       world: 'dev',
-      description: $localize`:@@page.dev.description:J’arbitre les choix techniques, j’encadre, et j’écris du code tous les jours. Quatorze ans dans l’aéronautique avant de basculer vers le développement : c’est de là que vient ma façon de travailler.`,
+      description: $localize`:@@page.dev.description:Lead Tech Angular et .NET, j’encadre jusqu’à 8 développeurs et je continue à écrire du code. Avant le développement, quatorze ans dans l’aéronautique.`,
     },
     loadComponent: () =>
       import('@features/world/views/world-page/world-page.component').then(
@@ -102,8 +104,10 @@ export const routes: Routes = [
         ],
         title: (route: ActivatedRouteSnapshot) => inLocale(artworkOf(route)?.title ?? EMPTY),
         resolve: {
-          description: (route: ActivatedRouteSnapshot) =>
-            inLocale(artworkOf(route)?.image.alt ?? EMPTY),
+          description: (route: ActivatedRouteSnapshot) => {
+            const artwork = artworkOf(route);
+            return artwork ? pieceDescription(artwork) : '';
+          },
         },
         children: [],
       },
@@ -115,7 +119,7 @@ export const routes: Routes = [
     data: {
       page: 'contact',
       // Without the lead's « par email »: the contact redesign publishes none.
-      description: $localize`:@@page.contact.description:Un projet, une question ou juste un Hello World ? Je réponds à tout, y compris pour dire non.`,
+      description: $localize`:@@page.contact.description:Un projet, une question ou juste un Hello World\u00a0? Je réponds à tout, y compris pour dire non. Écrivez-moi par formulaire ou sur LinkedIn.`,
     },
     loadComponent: () =>
       import('@features/contact/views/contact/contact.component').then((m) => m.ContactComponent),

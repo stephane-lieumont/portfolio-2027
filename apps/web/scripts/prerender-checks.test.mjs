@@ -291,7 +291,7 @@ describe('a page in either tree', () => {
     'when the English page is described in French',
     'en/contact',
     english({
-      head: '<meta name="description" content="La refonte du parcours d’adhésion en ligne, avec un déploiement automatique en CI/CD.">',
+      head: '<meta name="description" content="La refonte du parcours d’adhésion en ligne, en React et TypeScript. Référent technique de la squad Web-Atrio, j’ai aussi automatisé le déploiement en CI/CD.">',
     }),
   );
   caught(

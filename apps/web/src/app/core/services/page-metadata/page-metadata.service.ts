@@ -1,7 +1,10 @@
 import { DOCUMENT, Injectable, inject } from '@angular/core';
 import { Meta, MetaDefinition, Title } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy } from '@angular/router';
+import { softwareOf } from '@portfolio/shared-types/registries';
 
+import type { StaticArtwork } from '@core/data/static-content/static-content';
+import { inLocale } from '@core/i18n/in-locale.pipe';
 import {
   OG_IMAGE,
   type PageKey,
@@ -40,6 +43,32 @@ const SHARE_CARD_ALT = {
   dev: $localize`:@@og.image.dev.alt:Stéphane Lieumont, Lead Tech`,
   cgi: $localize`:@@og.image.cgi.alt:Stéphane Lieumont, graphiste 3D`,
 };
+
+/** Past this, search results cut the description off. */
+const DESCRIPTION_MAX_LENGTH = 160;
+
+/**
+ * A piece's description, built from its own fields so a piece added from the
+ * back office gets one without anyone writing it. The credit shortens, then
+ * goes, then the alt text goes, when the whole would run past what search
+ * results show.
+ */
+export function pieceDescription(
+  piece: Pick<StaticArtwork, 'title' | 'image' | 'software' | 'releasedAt'>,
+): string {
+  const title = inLocale(piece.title);
+  const tools = piece.software.map((slug) => softwareOf(slug).label).join(', ');
+  const year = piece.releasedAt.slice(0, 4);
+  const head = $localize`:@@piece.description.head:${title}:title: — rendu 3D (${tools}:tools:), ${year}:year:.`;
+  const body = `${head} ${inLocale(piece.image.alt)}.`;
+  const credit = $localize`:@@piece.description.credit:Par Stéphane Lieumont, Lead Tech et graphiste 3D autodidacte.`;
+  const shortCredit = $localize`:@@piece.description.shortCredit:Par Stéphane Lieumont, graphiste 3D.`;
+  return (
+    [`${body} ${credit}`, `${body} ${shortCredit}`, body].find(
+      (description) => description.length <= DESCRIPTION_MAX_LENGTH,
+    ) ?? head
+  );
+}
 
 /** What the head says about a page, beyond its title and description. */
 const PAGE_HEAD =

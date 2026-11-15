@@ -131,8 +131,8 @@ export const PROJECTS: readonly StaticProject[] = [
     logoTint: '#dc1622',
     title: { fr: 'immobilier.ch', en: 'immobilier.ch' },
     summary: {
-      fr: 'Des outils de gestion des candidatures pour les agences immobilières. Je mène une équipe de 5 à 8 développeurs, de l’étude de faisabilité à la mise en production, CI/CD et instances AWS comprises.',
-      en: 'Application-management tools for real-estate agencies. I lead a team of five to eight developers, from the feasibility study to production, CI/CD and AWS instances included.',
+      fr: 'Des outils de gestion des candidatures pour agences immobilières. Lead Tech Angular et .NET, j’encadre 5 à 8 développeurs, de la faisabilité à la production.',
+      en: 'Application-management tools for real-estate agencies. As Angular and .NET Lead Tech, I lead five to eight developers, from feasibility to production.',
     },
     context: {
       fr: 'Des outils de gestion des candidatures pour les agences immobilières.',
@@ -203,8 +203,8 @@ export const PROJECTS: readonly StaticProject[] = [
     logoPlate: 'dark',
     title: { fr: 'Web-Atrio', en: 'Web-Atrio' },
     summary: {
-      fr: 'La refonte complète du site de Web-Atrio, design et développement, en React.',
-      en: 'A complete redesign of the Web-Atrio website, design and development, in React.',
+      fr: 'La refonte complète du site vitrine de Web-Atrio, en 2024. J’ai conçu le nouveau design puis je l’ai développé en React et TypeScript.',
+      en: 'A complete redesign of the Web-Atrio showcase website, in 2024. I designed the new look, then developed it in React and TypeScript.',
     },
     context: {
       fr: 'La refonte complète du site de Web-Atrio, design et développement, en React.',
@@ -242,8 +242,8 @@ export const PROJECTS: readonly StaticProject[] = [
     logoTint: '#e3201b',
     title: { fr: 'CIR — Scancir', en: 'CIR — Scancir' },
     summary: {
-      fr: 'Une application mobile de gestion des commandes pour une entreprise de roulements. Je l’ai menée seul : recueil du besoin, maquettes jusqu’à leur validation, développement et ajustements, puis publication sur l’App Store et Google Play.',
-      en: 'A mobile order-management app for a bearings company. I ran it on my own: gathering the needs, mockups through to sign-off, development and adjustments, then release on the App Store and Google Play.',
+      fr: 'Une application mobile de gestion des commandes en React Native. Je l’ai menée seul, du recueil du besoin à la publication sur l’App Store et Google Play.',
+      en: 'A mobile order-management app in React Native. I ran it on my own, from gathering the requirements to release on the App Store and Google Play.',
     },
     context: {
       fr: 'Une application mobile de gestion des commandes pour une entreprise de roulements.',
@@ -298,8 +298,8 @@ export const PROJECTS: readonly StaticProject[] = [
     },
     title: { fr: 'Linxea', en: 'Linxea' },
     summary: {
-      fr: 'La refonte du parcours d’adhésion en ligne, avec un déploiement automatique en CI/CD.',
-      en: 'The redesign of the online sign-up journey, with automatic CI/CD deployment.',
+      fr: 'La refonte du parcours d’adhésion en ligne, en React et TypeScript. Référent technique de la squad Web-Atrio, j’ai aussi automatisé le déploiement en CI/CD.',
+      en: 'I rebuilt the online sign-up journey in React and TypeScript. As the Web-Atrio squad’s technical point of reference, I also automated CI/CD deployment.',
     },
     context: {
       fr: 'La refonte du parcours d’adhésion en ligne, avec un déploiement automatique en CI/CD.',
@@ -351,8 +351,8 @@ export const PROJECTS: readonly StaticProject[] = [
     },
     title: { fr: 'Ledger', en: 'Ledger' },
     summary: {
-      fr: 'L’application web d’un service grand public, en Next.js, et son intégration dans l’application mobile Ledger, en React Native, tests de bout en bout automatisés.',
-      en: 'The web app of a consumer service, in Next.js, and its integration into the Ledger mobile app, in React Native, with automated end-to-end tests.',
+      fr: 'J’ai travaillé sur une application web grand public en Next.js et sur son intégration dans l’application mobile Ledger en React Native. Tests e2e automatisés.',
+      en: 'I worked on a consumer web app in Next.js and on its integration into the Ledger mobile app in React Native, with automated end-to-end tests.',
     },
     context: {
       fr: 'L’application web d’un service grand public, en Next.js, et son intégration dans l’application mobile Ledger, en React Native.',
@@ -420,8 +420,8 @@ export const PROJECTS: readonly StaticProject[] = [
       en: 'Case Tes Potes — mobile app',
     },
     summary: {
-      fr: 'Une application de rencontre où ce sont les amis qui présentent. J’ai défini la stratégie technique, écrit les user stories et la roadmap, et mené le développement avec deux développeurs.',
-      en: 'A dating app where friends do the introducing. I set the technical strategy, wrote the user stories and the roadmap, and led development with two developers.',
+      fr: 'Une application de rencontre où ce sont les amis qui présentent. Co-fondateur, j’ai défini la stratégie technique et piloté une équipe de deux développeurs.',
+      en: 'A dating app where friends do the introducing. As co-founder, I set the technical strategy and led a team of two developers through to market testing.',
     },
     context: {
       fr: 'Une application de rencontre où ce sont les amis qui présentent le célibataire. Le parcours accompagne les deux côtés, de la recherche de profils à l’organisation du premier rendez-vous.',

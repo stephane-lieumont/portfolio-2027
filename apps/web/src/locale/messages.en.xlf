@@ -38,6 +38,30 @@
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="piece.description.head" datatype="html">
+        <source><x id="title" equiv-text="title"/> — rendu 3D (<x id="tools" equiv-text="tools"/>), <x id="year" equiv-text="year"/>.</source>
+        <target state="translated"><x id="title" equiv-text="title"/> — 3D render (<x id="tools" equiv-text="tools"/>), <x id="year" equiv-text="year"/>.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/page-metadata/page-metadata.service.ts</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="piece.description.credit" datatype="html">
+        <source>Par Stéphane Lieumont, Lead Tech et graphiste 3D autodidacte.</source>
+        <target state="translated">By Stéphane Lieumont, Lead Tech and self-taught 3D artist.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/page-metadata/page-metadata.service.ts</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="piece.description.shortCredit" datatype="html">
+        <source>Par Stéphane Lieumont, graphiste 3D.</source>
+        <target state="translated">By Stéphane Lieumont, 3D artist.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/page-metadata/page-metadata.service.ts</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="shell.nav" datatype="html">
         <source>Navigation principale</source>
         <target state="translated">Main navigation</target>
@@ -55,8 +79,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="page.dev.description" datatype="html">
-        <source>J’arbitre les choix techniques, j’encadre, et j’écris du code tous les jours. Quatorze ans dans l’aéronautique avant de basculer vers le développement : c’est de là que vient ma façon de travailler.</source>
-        <target state="translated">I make the technical calls, I mentor, and I write code every day. Fourteen years in aeronautics before switching to software development: that is where my way of working comes from.</target>
+        <source>Lead Tech Angular et .NET, j’encadre jusqu’à 8 développeurs et je continue à écrire du code. Avant le développement, quatorze ans dans l’aéronautique.</source>
+        <target state="translated">Angular and .NET Lead Tech: I lead up to eight developers and still write code myself. Before software, fourteen years in aeronautics.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
           <context context-type="linenumber">49</context>
@@ -87,8 +111,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="page.contact.description" datatype="html">
-        <source>Un projet, une question ou juste un Hello World ? Je réponds à tout, y compris pour dire non.</source>
-        <target state="translated">A project, a question or just a Hello World? I answer every message, even if it is to say no.</target>
+        <source>Un projet, une question ou juste un Hello World&#160;? Je réponds à tout, y compris pour dire non. Écrivez-moi par formulaire ou sur LinkedIn.</source>
+        <target state="translated">A project, a question or just a Hello World? I answer every message, even if it is to say no. Get in touch through the form or on LinkedIn.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
           <context context-type="linenumber">104</context>

@@ -793,8 +793,9 @@ Known limits, deliberately not fixed here:
 
 **Page metadata** — each route sets its `<title>` and meta description, in the
 prerendered HTML and on client navigation (`PageMetadataService`, a `TitleStrategy`).
-Descriptions reuse each page's lead; a project's is its summary. The 404 is
-`noindex`.
+Descriptions are sized for search results (120–160) from the page's own
+facts; a project's is its summary, a piece's is built by `pieceDescription`.
+The 404 is `noindex`.
 
 **SEO (`feat/seo`, issues #37 and #38)** — the same service writes, on every
 indexable page of both trees, in the prerendered head:
@@ -854,13 +855,21 @@ indexable page of both trees, in the prerendered head:
   `/sitemap.xml` 200, `/en/robots.txt` and `/en/sitemap.xml` 404. Not
   verified: a real share preview (LinkedIn Post Inspector, Slack) once
   deployed, Google's Rich Results test.
-- **Copy out of the usual lengths** (titles ≤ 60: all pass; descriptions
-  120–160), to the communication expert, not rewritten here: too long —
-  `/developpeur` 198, `/en/developer` 181, `/developpeur/cir-scancir` 236
-  (`/en/…` 199), `/developpeur/immobilier-ch` 196 (`/en/…` 173),
-  `/developpeur/case-tes-potes-mobile` 187, `/developpeur/ledger` 161; too
-  short — contact 93 (both trees), linxea 85 / 76, web-atrio 76 / 79, and
-  all 32 piece pages (22–49: a piece's description is its alt text).
+- **Descriptions held to 120–160** (titles ≤ 60 unchanged). Rewritten by the
+  communication expert from the sourced facts: the developer and contact
+  descriptions (`@@page.dev.description`, `@@page.contact.description`), and
+  the summaries of immobilier.ch, Web-Atrio, CIR — Scancir, Linxea, Ledger and
+  Case Tes Potes mobile, both languages. A piece's description is no longer
+  its alt text: `pieceDescription` (page-metadata) builds « <titre> — rendu 3D
+  (<logiciels>), <année>. <alt>. Par Stéphane Lieumont, Lead Tech et graphiste
+  3D autodidacte. » from the piece's own fields, so a piece from the back
+  office gets one too; it falls back to a shorter credit, then none, then
+  drops the alt, rather than run past 160. Three new strings
+  `@@piece.description.*`. `page-metadata.service.spec` fails a project
+  summary out of range in either language, or a French piece description;
+  the English piece descriptions were counted by hand (136–160), not by a
+  test — the test runtime carries no translations. Not yet measured on the
+  build.
 - Initial bundle 445.49 kB raw / 127.12 kB transfer per tree, +2.4 kB raw /
   +0.8 kB transfer over `main` (443.13 / 126.34). The art viewer's stylesheet
   budget warning (4.30 kB over 4 kB) predates this branch.

@@ -6,10 +6,15 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { API_BASE_URL } from '@core/config/api.config';
 import { MEDIA_BASE_URL } from '@core/config/media-config/media.config';
-import { PROJECTS } from '@core/data/static-content/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
 import { SITE_SETTINGS } from '@core/data/world-content/world-content';
 import { pageRef } from '@core/i18n/site-locale/site-locale';
-import { PageMetadataService, alternates, shareTags } from './page-metadata.service';
+import {
+  PageMetadataService,
+  alternates,
+  pieceDescription,
+  shareTags,
+} from './page-metadata.service';
 
 // The real route table is what this spec checks the titles against; it
 // belongs to the app's root, which has no alias.
@@ -203,6 +208,43 @@ describe('page metadata', () => {
     expect(document.head.querySelector('meta[property]')).toBeNull();
     expect(twitterCard()).toBeUndefined();
     expect(document.head.querySelector('script[type="application/ld+json"]')).toBeNull();
+  });
+});
+
+// Shorter reads as thin in search results; longer is cut off.
+const inSearchResultRange = (text: string) => text.length >= 120 && text.length <= 160;
+
+describe('descriptions', () => {
+  it('keeps every project summary, in both languages, within what search results show', () => {
+    for (const project of PROJECTS) {
+      for (const summary of [project.summary.fr, project.summary.en]) {
+        expect(inSearchResultRange(summary), `${summary.length}: ${summary}`).toBe(true);
+      }
+    }
+  });
+
+  it('describes a piece by its title, tools, year and alt text, credited', () => {
+    expect(pieceDescription(ARTWORKS[2])).toBe(
+      'Escart Wild — rendu 3D (3ds Max, V-Ray, ZBrush, Photoshop), 2015. Escargot cartoon photoréaliste. Par Stéphane Lieumont, Lead Tech et graphiste 3D autodidacte.',
+    );
+    for (const artwork of ARTWORKS) {
+      const text = pieceDescription(artwork);
+      expect(inSearchResultRange(text), `${text.length}: ${text}`).toBe(true);
+    }
+  });
+
+  it('shortens the credit, then drops it, then the alt text, rather than run long', () => {
+    const piece = (alt: string) => ({
+      ...ARTWORKS[2],
+      image: { ...ARTWORKS[2].image, alt: { fr: alt, en: alt } },
+    });
+    const head = 'Escart Wild — rendu 3D (3ds Max, V-Ray, ZBrush, Photoshop), 2015.';
+
+    expect(pieceDescription(piece('x'.repeat(40)))).toBe(
+      `${head} ${'x'.repeat(40)}. Par Stéphane Lieumont, graphiste 3D.`,
+    );
+    expect(pieceDescription(piece('x'.repeat(80)))).toBe(`${head} ${'x'.repeat(80)}.`);
+    expect(pieceDescription(piece('x'.repeat(100)))).toBe(head);
   });
 });
 
