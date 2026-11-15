@@ -51,6 +51,7 @@
 
 .row {
   counter-increment: work;
+  min-width: 0;
 }
 
 .row__link {
@@ -91,19 +92,19 @@
 .row__link:focus-visible .row__tools {
   color: var(--world-ink);
 }
-.rows:has(.row__link:focus-visible) .row__link:not(:focus-visible) .row__img {
+.rows:has(a.row__link:focus-visible) a.row__link:not(:focus-visible) .row__img {
   filter: grayscale(1) opacity(0.6);
 }
 
 @media (hover: hover) {
-  .row__link:hover .row__cap::after {
+  a.row__link:hover .row__cap::after {
     scale: 1 1;
   }
-  .row__link:hover .row__cap::before,
-  .row__link:hover .row__tools {
+  a.row__link:hover .row__cap::before,
+  a.row__link:hover .row__tools {
     color: var(--world-ink);
   }
-  .rows:has(.row__link:hover) .row__link:not(:hover) .row__img {
+  .rows:has(a.row__link:hover) a.row__link:not(:hover) .row__img {
     filter: grayscale(1) opacity(0.6);
   }
 }
@@ -115,9 +116,39 @@
 }
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .row__link:hover .row__img {
+  a.row__link:hover .row__img {
     scale: 1.03;
   }
+}
+
+// The page this band closes: its rule already drawn in the accent, its
+// picture at rest in grey — present in the series, not a destination.
+.row.is-current .row__cap::after {
+  scale: 1 1;
+}
+
+.row.is-current .row__img {
+  filter: grayscale(1) opacity(0.45);
+}
+
+.row__here {
+  grid-column: 2 / -1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--world-accent);
+}
+
+.row__here::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -135,6 +166,9 @@
 @media (min-width: 900px) {
   .work {
     grid-template-columns: 1fr 3fr;
+  }
+  .rows--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .work__head {
     position: sticky;

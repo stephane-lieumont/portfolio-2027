@@ -1,3 +1,4 @@
+import type { Project } from '@portfolio/shared-types';
 import type { SoftwareSlug, TechnologySlug } from '@portfolio/shared-types/registries';
 
 /**
@@ -6,32 +7,30 @@ import type { SoftwareSlug, TechnologySlug } from '@portfolio/shared-types/regis
  * Deliberately shaped like spec 03's entities so the swap is a change of source
  * and not a rewrite of the pages. Copy is French: it is what a visitor reads.
  */
-export interface StaticProject {
-  readonly slug: string;
-  readonly title: string;
-  /** One sentence, for the card. The detail page never repeats it. */
-  readonly summary: string;
-  /** What the product is, for someone who has never heard of it. */
-  readonly context: string;
-  /** What Stéphane was responsible for. */
-  readonly mission: string;
+export interface StaticProject extends Pick<
+  Project,
+  'slug' | 'title' | 'summary' | 'context' | 'role' | 'mission' | 'releasedAt'
+> {
   /**
    * Plain sentences, never markup. The 2022 data wrapped tool names in
    * `<strong>`, which would have to be either rendered as HTML or escaped and
-   * shown raw. The tools are already listed as chips, so the emphasis carried
-   * nothing the page does not say elsewhere.
+   * shown raw.
    */
   readonly missionSteps: readonly string[];
   readonly technologies: readonly TechnologySlug[];
   readonly series?: string;
-  readonly releasedAt: string;
-  readonly role: string;
   /**
-   * Served by the nginx reverse proxy on this host, so a root-relative path and
-   * never an absolute URL — the demos move with the site (see ADR-0005).
+   * « Voir le site ». A demo proxied by nginx on this host is a root-relative
+   * path, never an absolute URL — the demos move with the site (ADR-0005).
    */
-  readonly demoUrl?: string;
+  readonly websiteUrl?: string;
+  /** « Voir la vidéo »: a YouTube address, embedded after a click (ADR-0016). */
+  readonly videoUrl?: string;
+  /** The 4:3 card image. */
   readonly cover: StaticImage;
+  /** The wide visual the project page opens on: the product staged on white. */
+  readonly presentation: StaticImage;
+  readonly presentationCaption: Project['presentationCaption'];
 }
 
 /** A rendered image with its intrinsic size, so nothing reflows once it loads. */
@@ -84,6 +83,14 @@ export const PROJECTS: readonly StaticProject[] = [
       width: 400,
       height: 300,
     },
+    presentation: {
+      key: 'projects/case-tes-potes-mobile-presentation.jpg',
+      alt: 'Six écrans de l’application mobile alignés, du fil des profils au rendez-vous',
+      width: 1080,
+      height: 384,
+    },
+    presentationCaption:
+      'Six écrans de l’application, du fil des profils à la création d’un rendez-vous.',
     title: 'Case Tes Potes — application mobile',
     summary:
       'Une application de rencontre où ce sont les amis qui présentent. J’ai défini la stratégie technique, écrit les user stories et la roadmap, et mené le développement avec deux développeurs.',
@@ -112,6 +119,13 @@ export const PROJECTS: readonly StaticProject[] = [
       width: 400,
       height: 329,
     },
+    presentation: {
+      key: 'projects/case-tes-potes-landing-page-presentation.jpg',
+      alt: 'La landing page affichée sur un ordinateur, une tablette et un téléphone',
+      width: 1100,
+      height: 434,
+    },
+    presentationCaption: 'La landing page sur ordinateur, tablette et mobile.',
     title: 'Case Tes Potes — landing page',
     summary:
       'La page d’entrée de la campagne de préinscription. Développée en React, adossée à une API Koa qui alimente la base de contacts et déclenche les envois.',
@@ -127,7 +141,7 @@ export const PROJECTS: readonly StaticProject[] = [
       'Tests unitaires et d’intégration avec Jest.',
       'Déploiement en image Docker.',
     ],
-    demoUrl: '/demo/casetespotes-landingpage',
+    websiteUrl: '/demo/casetespotes-landingpage',
     technologies: ['react', 'typescript', 'sass', 'node', 'mongodb', 'docker'],
     series: 'Case Tes Potes',
     releasedAt: '2022-03-15',
@@ -142,6 +156,13 @@ export const PROJECTS: readonly StaticProject[] = [
       width: 400,
       height: 300,
     },
+    presentation: {
+      key: 'projects/case-tes-potes-web-app-presentation.jpg',
+      alt: 'Écrans successifs du parcours de témoignage de la web app',
+      width: 1100,
+      height: 434,
+    },
+    presentationCaption: 'Le parcours de témoignage, de l’invitation à l’envoi.',
     title: 'Case Tes Potes — web app',
     summary:
       'Une application accessible par lien d’invitation, pour que les proches d’un célibataire complètent son profil sans installer l’application mobile.',
@@ -155,7 +176,7 @@ export const PROJECTS: readonly StaticProject[] = [
       'Validation des invitations et authentification avant rédaction.',
       'Branchement direct sur l’API de l’application mobile.',
     ],
-    demoUrl: '/demo/casetespotes-webapp',
+    websiteUrl: '/demo/casetespotes-webapp',
     technologies: ['webpack', 'javascript', 'sass', 'node'],
     series: 'Case Tes Potes',
     releasedAt: '2021-11-10',
@@ -170,6 +191,13 @@ export const PROJECTS: readonly StaticProject[] = [
       width: 500,
       height: 375,
     },
+    presentation: {
+      key: 'projects/kasa-openclassrooms-presentation.jpg',
+      alt: 'Pages de Kasa en perspective : accueil, fiche logement, version mobile',
+      width: 1100,
+      height: 434,
+    },
+    presentationCaption: 'Kasa sur ordinateur, tablette et mobile.',
     title: 'Kasa — OpenClassrooms',
     summary:
       'Une plateforme de location entre particuliers, réalisée dans le cadre de ma formation. L’occasion de poser proprement une architecture React et un typage strict.',
@@ -182,7 +210,7 @@ export const PROJECTS: readonly StaticProject[] = [
       'Routage applicatif avec React Router.',
       'Passage à TypeScript et typage strict des composants.',
     ],
-    demoUrl: '/demo/openclassrooms-kasa',
+    websiteUrl: '/demo/openclassrooms-kasa',
     technologies: ['react', 'typescript', 'sass', 'node'],
     releasedAt: '2021-06-01',
     role: 'Développement',
@@ -196,6 +224,13 @@ export const PROJECTS: readonly StaticProject[] = [
       width: 400,
       height: 300,
     },
+    presentation: {
+      key: 'projects/portfolio-3d-2018-presentation.jpg',
+      alt: 'Pages du portfolio 2018 en perspective, sur fond sombre',
+      width: 1100,
+      height: 434,
+    },
+    presentationCaption: 'Le portfolio sur ordinateur, tablette et mobile.',
     title: 'Portfolio 3D',
     summary:
       'Ma première vitrine, écrite sans framework. Elle m’a appris ce que coûte une animation mal pensée bien avant que je sache le nommer.',
@@ -207,7 +242,7 @@ export const PROJECTS: readonly StaticProject[] = [
       'Développement sans framework, en JavaScript natif.',
       'Première confrontation au coût réel d’une animation mal pensée.',
     ],
-    demoUrl: '/demo/portfolio2018',
+    websiteUrl: '/demo/portfolio2018',
     technologies: ['javascript'],
     releasedAt: '2018-04-01',
     role: 'Conception et développement',
@@ -221,6 +256,13 @@ export const PROJECTS: readonly StaticProject[] = [
       width: 400,
       height: 300,
     },
+    presentation: {
+      key: 'projects/pixmodels-presentation.jpg',
+      alt: 'Pages du site Pixmodels en perspective, bandeaux corail et gris',
+      width: 1100,
+      height: 434,
+    },
+    presentationCaption: 'Le site vitrine sur ordinateur, tablette et mobile.',
     title: 'Pixmodels',
     summary:
       'Un service de communication audiovisuelle : site vitrine et outils de gestion, à une époque où je faisais encore de la 3D à plein temps.',
@@ -233,7 +275,7 @@ export const PROJECTS: readonly StaticProject[] = [
       'Développement du site vitrine et du formulaire de contact.',
       'Outils de gestion pour le suivi des prestations.',
     ],
-    demoUrl: '/demo/pixmodels',
+    websiteUrl: '/demo/pixmodels',
     technologies: ['javascript', 'php'],
     releasedAt: '2015-09-01',
     role: 'Conception et développement',

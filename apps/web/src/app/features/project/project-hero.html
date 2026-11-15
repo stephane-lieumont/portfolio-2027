@@ -1,0 +1,65 @@
+<header>
+  <nav class="crumbs" aria-label="Fil d’Ariane">
+    <a class="back" routerLink="/developpeur"
+      ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg
+      >Réalisations</a
+    >
+    <span class="crumbs__pos"
+      ><span class="visually-hidden">Projet </span><b>{{ rank() }}</b> / {{ total() }}</span
+    >
+  </nav>
+  <p class="eyebrow">
+    <span class="enter-line" style="--line: 0">{{ eyebrow() }}</span>
+    <span class="enter-line" style="--line: 1">{{ project().role }}</span>
+  </p>
+  <h1 class="title" id="fiche-title">
+    <span class="visually-hidden">{{ project().title }}</span>
+    <span class="name" aria-hidden="true">
+      @for (word of heading().name; track $index) {
+        <span class="name__word">
+          @for (glyph of word; track glyph.index) {
+            <span class="name__char" [style.--c]="glyph.index">{{ glyph.char }}</span>
+          }
+        </span>
+        {{ ' ' }}
+      }
+    </span>
+    @if (heading().qualifier.length) {
+      <span class="word" aria-hidden="true">
+        @for (glyph of heading().qualifier; track $index) {
+          @if (glyph.space) {
+            <span class="word__space"></span>
+          } @else {
+            <span class="word__char" [style.--c]="glyph.step">{{ glyph.char }}</span>
+          }
+        }
+      </span>
+    }
+  </h1>
+  @if (links().length) {
+    <div class="ctas">
+      @for (link of links(); track link.kind) {
+        @if (link.kind === 'site') {
+          <a
+            class="btn enter-line"
+            [class.btn--ghost]="!$first"
+            [style.--line]="2 + $index"
+            [href]="link.href"
+            target="_blank"
+            rel="noopener"
+            >{{ link.label }}<span class="visually-hidden"> (nouvel onglet)</span></a
+          >
+        } @else {
+          <a
+            class="btn enter-line"
+            [class.btn--ghost]="!$first"
+            [style.--line]="2 + $index"
+            [href]="videoHref()"
+            (click)="requestVideo($event)"
+            >{{ link.label }}</a
+          >
+        }
+      }
+    </div>
+  }
+</header>

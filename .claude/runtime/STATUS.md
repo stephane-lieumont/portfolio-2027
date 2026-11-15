@@ -1,13 +1,14 @@
 # Status
 
-Last updated 2026-11-15. Describes `main` (world pages, PR #21, merged) with
-`feat/contact-page` (« Bascule » PR 6, the contact page) on top.
+Last updated 2026-11-15. Describes `main` (shell, world pages, contact and
+the pointer's « fil », PRs #20–#24, merged) with `feat/project-page` (the
+« fiche projet ») on top.
 
 ## Works today
 
 **Foundations** — pnpm monorepo, Angular 22 standalone/zoneless/signals, shared
 Zod types, Fastify API skeleton with `/health`, MinIO in docker-compose
-(declared, not yet used). 13 ADRs, 6 specs.
+(declared, not yet used). 16 ADRs, 6 specs.
 
 **Design system** — primitive and semantic tokens, `light-dark()`, typography
 scale, base reset. Contrast measured against the worst pixel a blended texture
@@ -144,8 +145,8 @@ mockup's unreset 8px body margin. In order:
 - Lede, scrubbed sentence (unlit floor 55%: 5.54:1 dev, 3.33:1 cgi, large
   text), facts as a `dl`, CTAs « Me contacter » → /contact, « Mon CV » → the PDF.
 - Dev work: six numbered plates (title, year, tools with marks) to
-  `/developpeur/<slug>` (the interim detail page, unchanged; a redesign
-  comes later). Count derived: « 06 projets · 2015 – 2022 ».
+  `/developpeur/<slug>`, the project page below. Count derived:
+  « 06 projets · 2015 – 2022 ».
 - 3D work: the full-bleed mosaic, every tile a link to `/graphisme-3d/<slug>`,
   which opens a native `<dialog>` viewer over the wall (16:9 plate, diagonal
   cut from SWEEP_LEAN, drift and darken, counter, 44px ticks, arrows/Home/End,
@@ -187,6 +188,10 @@ mockup's unreset 8px body margin. In order:
 
 Deviations from the mockup, each on purpose:
 
+- Only the tiles' 2px seam under the 3D wall (mockup 120px), then the stack's
+  own top padding, 88px at 1512 (Stéphane, 2026-11-15:
+  « l'espace en bas de la section ne semble pas nécessaire »). The viewer's
+  host no longer opens an empty grid row (it added a 56px gap).
 - Hero type smaller than the mockup's (name capped at 80px instead of 104px,
   role 54 instead of 72, scrub 36 instead of 46): Stéphane, 2026-11-15.
 - Mosaic shapes: tiles between 4:3 and 2:1 in blocks of eight (Stéphane, on 16
@@ -233,19 +238,85 @@ mockup at five pointer positions. Deviations, all from the mockup's quirks mode:
 body margin (content 24px from the edge) and its form's 1em bottom margin are
 reproduced on purpose; its 3px horizontal overflow at 390 is not.
 
-**Pages (interim)** — project detail at `/developpeur/<slug>`, awaiting its
-redesign. In the dev world it follows the dark scheme on the world's ground.
+**Project page (« fiche projet », `feat/project-page`)** — `/developpeur/<slug>`,
+iso with the prototype Stéphane approved on 2026-11-15 (« top », its closing
+contact block removed). Measured in headless Chrome against the prototype
+served from file, element by element (crumbs, eyebrow, title, name, word,
+buttons, plate ground and image, caption, the three blocks and their parts,
+the band, its head, rows, images and « Cette fiche »): **every box identical
+to 0.0px at 1440×900 and within 0.3px at 1024×768**; at 390 and 320 everything
+sits 20px lower, the shell's header taking two rows below 410px (see Shell),
+and nothing else differs. Same fonts loaded, page heights equal (3016 /
+2495px). No horizontal overflow at 320, 390, 1024, 1440 on all six projects
+(the prototype overflows by 65px at 320, its header). In order:
 
-**Section reveal** — the 2022 scroll-in, on an IntersectionObserver. Content
-already on screen at arrival plays with the page's entrance; the rest waits
-until it is a third into the viewport. One rise, duration and step for every
-reveal; travel zeroed under `prefers-reduced-motion`. Nothing hides without
-script.
+- Hero (`ProjectHero`): « Réalisations » back to `/developpeur`, the rank
+  « 02 / 06 », series · year and role, the title split on « — » into the name
+  rising letter by letter and the condensed qualifier flipping in (the world
+  pages' keyframes, reused), then « Voir le site » (`websiteUrl`, new tab) and
+  « Voir la vidéo » (`videoUrl`), each only when the project has one. The h1
+  is read as the plain title (a visually hidden copy; the letters are
+  `aria-hidden`).
+- The presentation visual on a light plate (the world's ink, the shot
+  multiplied onto it), its left edge cut at the sweep's lean, computed from
+  the viewport's aspect (`PlateLean`), bleeding off both sides on a phone,
+  from the column's edge to the right from 900px; « Fig. » caption. WebP
+  derivatives with real widths and `sizes`, `fetchpriority="high"`.
+- Contexte: the context as the scrub sentence (`ScrubSentence`, with the
+  prototype's ramp from 85% of the viewport, `BODY_RAMP`). **The summary is not
+  shown**; it stays the meta description (Stéphane, 2026-11-15).
+- Mission (role set large, mission, numbered steps), Outils (marks as masks,
+  name only where no mark exists: Adobe XD, Jira, MongoDB, PHP).
+- Vidéo, when there is one: a facade (ADR-0016) — the presentation visual as
+  poster and a real `<button>` « Lire la vidéo : <titre> »; the press swaps in
+  the `youtube-nocookie.com` player, playing, focus moved into it. « Voir la
+  vidéo » jumps to it and focuses the button. No project has a video yet; with
+  one added locally for the measurement: resource hosts before the press
+  `localhost` only, after it `www.youtube-nocookie.com`; no iframe before. The
+  schema accepts https YouTube video addresses only.
+- The band (`DevWork`, now parameterised): a project in a series ends on the
+  whole series, its own card marked « Cette fiche », grey, not a link
+  (`aria-current="page"`); any other ends on « Autres réalisations », the
+  three projects that follow it in the list, wrapping. Three columns from
+  900px. Count derived from the cards shown.
+- Entrance in CSS from first paint, every value sampled against the
+  prototype's Web Animations: crumbs 120/165ms, name 260 + 38ms × letter,
+  qualifier and lines from 936ms (« Case Tes Potes »), plate cut 520ms +
+  1100ms, image settle 520 + 1700ms, caption 1320 + 520ms; the cut's
+  clip-path at 0/25/50/75% of its run: 0, 5.28, 50, 94.72% on both. It plays
+  on every arrival, as on the prototype: from a card (the §9.2 crossfade, no
+  morph: neither the prototype nor ADR-0014 asks for one) and from one project
+  to the next, the page being rebuilt per slug. Measured: scrollY 0, focus on
+  `<main>`, title and description updated, during the crossfade; Back restores
+  the scroll. Under reduced motion the title fades (400ms) and nothing else
+  moves; the sentence is lit whole.
+- Scroll reveal as the prototype: blocks below the fold draw their hairline
+  and raise their parts, rows cut in along the diagonal (measured: pending at
+  load, running at 250ms, settled by 1.75s).
+- axe in the browser, 1440 and 390, two projects: no violation.
 
-**Tool marks** — the Developer page's tools as mark and name: the 2022 PNG,
-else the icon-font glyph, else the tool's initial as a monogram (Angular and
-.NET today). Glyphs, monograms and names in `--text-secondary`: orange
-unboxed text is a tertiary button at rest in spec 06 §10, and these do nothing.
+Deviations, each on purpose:
+
+- The entrance starts at first paint, as on the world pages; the prototype
+  starts it once its web fonts are ready.
+- The presentation image of `case-tes-potes-mobile` is declared at its real
+  size, 1080×384 (the prototype said 1100×434); the rendered box is the same.
+- The prototype's « Voir la vidéo » opened YouTube in a new tab; the video now
+  plays on the page (Stéphane, 2026-11-15), in a « Vidéo » block after Outils
+  that the prototype did not draw.
+- The title follows the world pages' scale, not the prototype's 104px cap
+  (Stéphane, 2026-11-15): name / qualifier 52/36px at 1512×771, 66/45 at
+  1920×970, 32/24 at 390 and 320; no horizontal overflow.
+- The presentation visual drifts against the scroll inside its plate
+  (Stéphane, 2026-11-15), a CSS scroll-driven animation on a view timeline
+  named on the plate (`view()` on the image would bind to the plate, a scroll
+  container through `overflow: hidden`). Drift ±12px below 900px, ±32px above,
+  measured within the plate's room on four projects: at most 6px of the
+  shot's drop shadow is cut at 768. Off under reduced motion and where scroll
+  timelines are unsupported (Firefox today).
+
+The interim detail page, its `Reveal` directive, `TechChip` and their
+stylesheets (`_page.scss`, `_reveal.scss`) are removed: nothing else used them.
 
 **Prerendering (ADR-0008)** — `outputMode: 'static'`: the build writes one
 complete HTML file per route under `dist/web/browser` — `/` (a redirect to
@@ -262,7 +333,10 @@ visible link at 390px (measured with script disabled).
 `pnpm verify` now ends with the web build, which fails unless every expected
 route was emitted with its own `<title>`, its heading and copy as text, a
 description (`noindex` on the 404 only), hydration data, and nothing hidden
-before script. The rules are tested against mutated pages
+before script, and nothing loaded from another origin (`src`, `srcset`,
+`<link href>`: the YouTube player only after a click, ADR-0016). The heading
+is read as spoken (its `aria-label`, else its text without `aria-hidden`
+parts). The rules are tested against mutated pages
 (`scripts/prerender-checks.test.mjs`).
 
 Known limits, deliberately not fixed here:
@@ -271,26 +345,22 @@ Known limits, deliberately not fixed here:
   `app.routes.server.ts` (prerender params), the route resolvers and
   `scripts/prerender-checks.mjs`. All three move to the API (ADR-0008).
 
-**Section reveal at boot** — the page is painted complete before the bundle
-arrives, so the reveal hides only what nobody has seen yet: content below the
-fold. Content on screen at hydration is settled where it stands (`reveal--settled`). Hiding needs `js-motion`, set in
-the document head and withdrawn if bootstrap fails, plus the directive's
-`data-reveal-ready` stamp, which comes after its first render (spec 07 §4.2).
-
 **Page metadata** — each route sets its `<title>` and meta description, in the
 prerendered HTML and on client navigation (`PageMetadata`, a `TitleStrategy`).
 Descriptions reuse each page's lead; a project's is its summary. The 404 is
 `noindex`.
 
-**Media** — 16 renders and 6 project covers in MinIO, served through `/medias`
+**Media** — 16 renders, 6 project covers and 6 presentation visuals in MinIO, served through `/medias`
 (nginx in production, the dev server's proxy locally). Bucket policy is
 read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository. Locally the renders need
 `pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 350 passing on the web side, 97.3% lines, 87.0% branches, 93.6%
-functions; axe on every page. Every route, the 404, the detail guard, the API
-client, the gallery, contact and the tool chips now have their own specs.
+**Tests** — 436 passing on the web side, 97.1% lines, 86.4% branches, 93.2%
+functions; axe on every page, every project page included. Every route, the
+404, the project guard, the API client, the gallery, contact, the project page,
+its video facade and the YouTube address parser have their own specs; the
+static projects are parsed against the `Project` schema.
 
 What the numbers do not cover, deliberately: the motes run against
 a stubbed 2D context in the tests; what they look like is checked in a browser.
@@ -327,8 +397,7 @@ motes and smooth scrolling. It ships as six PRs:
      a touch device (Lenis is wheel-only by design), frame timings under load.
      3–5. World pages, work, viewer, stack: this branch (`feat/world-pages`), see
      « Works today ». Not verified: Safari, Firefox, a real phone, touch swipe on
-     a device. The interim project page at `/developpeur/<slug>` awaits its
-     redesign.
+     a device.
 3. Contact: portrait, form, no published email — `feat/contact-page`, see
    « Works today ». Open: the copy of the three send outcomes (« Merci… »,
    « pas encore en service », « Réessayez… ») was written here, not on the
@@ -336,6 +405,11 @@ motes and smooth scrolling. It ships as six PRs:
 
 **Content review at the end of the integration** (Stéphane, 2026-11-14: the
 copy is reviewed once, after the six PRs). Collected so far:
+
+- Project page, written here and not on the prototype: the captions of Kasa,
+  Portfolio 3D and Pixmodels (« … sur ordinateur, tablette et mobile. »); the
+  six presentation alt texts; « Autres réalisations »; the « Vidéo » block's
+  « Lire la vidéo : … », « Vid. » and « Regarder sur YouTube ».
 
 - Mastery points flagged « à valider » on the mockup: RxJS « L’interop
   maîtrisée »; .NET points 2–4; React points 2–4; V-Ray « Les matières ».
@@ -349,6 +423,16 @@ copy is reviewed once, after the six PRs). Collected so far:
 - « Zoneless » sits under RxJS; it belongs with Angular.
 - « Les seize rendus » hard-codes a count spec 03 says is derived.
 - French typography: no non-breaking spaces before « : », « ? », « ! ».
+
+**Project contract changed (`feat/project-page`), API not yet:** the `Project`
+schema in shared-types gained `context` (replacing the unused `description`),
+`role`, `series`, `websiteUrl` (replacing `demoUrl`: a root-relative demo
+path or an https site), `videoUrl` (https YouTube only), `presentationAsset`
+and `presentationCaption`; `mission` is now required, `missionSteps` 1–10.
+Spec 03 follows. The Drizzle schema (`apps/api/src/db/schema.ts`) and its
+migration still have the old columns (`description`, `demo_url`), and the
+`add-project` skill still says `demoUrl`: both to follow when the API serves
+projects.
 
 **Gaps in the model:** `focal` on artwork views is specified (spec 03,
 ADR-0015) but `Artwork` has no Zod schema in shared-types yet. The contact

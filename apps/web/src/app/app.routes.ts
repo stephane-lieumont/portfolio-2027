@@ -45,9 +45,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/world/world-page').then((m) => m.WorldPage),
   },
   // Only known slugs match. An unknown one falls through to the 404 below
-  // rather than rendering an empty detail page, which keeps the dead-link
+  // rather than rendering an empty project page, which keeps the dead-link
   // reporting honest and lets the component treat its project as always
-  // present.
+  // present. The summary is the description: the page itself opens on the
+  // context instead.
   {
     path: 'developpeur/:slug',
     canMatch: [
@@ -55,8 +56,7 @@ export const routes: Routes = [
     ],
     title: (route: ActivatedRouteSnapshot) => projectOf(route)?.title ?? '',
     resolve: { description: (route: ActivatedRouteSnapshot) => projectOf(route)?.summary ?? '' },
-    loadComponent: () =>
-      import('./features/project-detail/project-detail').then((m) => m.ProjectDetail),
+    loadComponent: () => import('./features/project/project-page').then((m) => m.ProjectPage),
   },
   {
     path: 'graphisme-3d',
