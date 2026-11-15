@@ -62,6 +62,7 @@ The mockup's grouped names in the Stack (« RxJS / Signals », « .NET / C# ») 
 - **Writes (admin)**: `POST/PATCH/DELETE /api/admin/...`, all behind `requireAdmin`, each body validated by the shared Zod schema.
 - **Uploads**: the browser sends the file to the API, which checks type and size **server-side**, writes it to MinIO, derives the WebP variants (existing `media:derive` logic) and records the `MediaAsset`. The bucket stays publicly readable and never publicly writable. No presigned PUT for now: one path, fully validated.
 - **The admin UI** is a separate lazy Angular area (`features/admin/`) excluded from prerendering and from the public bundle, so no admin code ships to visitors.
+- **Preview before publishing** (Stéphane, 2026-11-15: « prévoir l'aperçu dans le back office des éléments en brouillon non publiés pour vérifier si l'intégration se fera correctement »). A draft, or the pending edit of a published record, is shown in the back office exactly as the public page will render it, in French and in English, at phone and desktop widths, before « Publier le site ». The preview reuses the public page components fed by the admin API (drafts included, behind `requireAdmin`), rendered client-side in the admin area — never prerendered, never reachable without a session, `noindex`. It also shows what the build would check: the meta description length, the presence of both languages, the visual rule (logo or presentation visual), the derived image sizes.
 
 ## 4. Access: only Stéphane
 
