@@ -85,3 +85,5 @@ and `layouts/site-layout/` (the root). Aliases `@core`, `@shared`, `@common`,
 (`world-page.component.ts`, `WorldStore`).
 
 **Folders (ADR-0018):** anything made of more than one file (code + spec, template, styles) lives in its own folder named after it — services, stores and helpers too, e.g. `core/services/contact/contact.service.ts`.
+
+**Build and deployment (ADR-0021, 2026-11-15)**: a `v*` tag runs GitHub Actions — `pnpm verify`, API image to GHCR, deploy over SSH (dedicated `deploy` user, forced command `deploy.sh <service> <tag>`), then the site is prerendered against the production API's public GET routes, packaged as an nginx image and deployed the same way. From V1.1 the back office's « Publier le site » re-runs the site steps through `workflow_dispatch`.
