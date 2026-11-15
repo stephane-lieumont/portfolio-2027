@@ -97,3 +97,28 @@ In production the API refuses to start if `ADMIN_PASSWORD_HASH` is empty or if `
 ## Conventions
 
 Code, security and testing rules live in [CLAUDE.md](CLAUDE.md). The reasoning behind the technical choices lives in [docs/adr](docs/adr/), and what the site must do in [docs/specs](docs/specs/).
+
+## Deployment
+
+A version tag on `main` deploys to production (ADR-0021, `.github/workflows/deploy.yml`):
+
+```bash
+git tag v1.0.0 && git push origin v1.0.0
+```
+
+The workflow checks the tag sits on `main` and runs `pnpm verify`, then:
+
+1. it builds and pushes the API image to GHCR;
+2. it waits for Stéphane's approval (environment `production`) and deploys the API over SSH;
+3. it prerenders the site against the production API and pushes the site image;
+4. it deploys the site.
+
+**Rollback**: Actions → deploy → Run workflow with an earlier tag. Its images are redeployed as they are, nothing is rebuilt.
+
+GitHub settings it needs (once):
+
+- environment `production`: required reviewer Stéphane, no secrets;
+- environment `production-ssh`: secrets `DEPLOY_SSH_KEY` (the private key whose public half is locked to `deploy.sh` on the VPS), `DEPLOY_KNOWN_HOSTS` (the server's host key line), `DEPLOY_HOST`;
+- repository variable `CONTENT_API_URL` = `https://stephane-lieumont.fr`. The build fails without it.
+
+The GHCR images are private: the VPS logs in once with a read-only token (`docker login ghcr.io`).

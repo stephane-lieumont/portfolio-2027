@@ -81,6 +81,11 @@ function render({ projects, artworks, tools, stack }, source) {
 }
 
 const fromTheSeed = process.argv.includes('--seed');
+// A production build must name its API: never the localhost default (#42).
+if (process.env.CONTENT_API_REQUIRED === '1' && !process.env.CONTENT_API_URL) {
+  console.error('content: CONTENT_API_URL is required for a production build.');
+  process.exit(1);
+}
 const base = process.env.CONTENT_API_URL ?? 'http://localhost:3000';
 const source = fromTheSeed ? 'the API seed' : base;
 
