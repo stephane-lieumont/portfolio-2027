@@ -11,10 +11,10 @@
   </nav>
   <p class="eyebrow">
     <span class="enter-line" style="--line: 0">{{ eyebrow() }}</span>
-    <span class="enter-line" style="--line: 1">{{ project().role | localized }}</span>
+    <span class="enter-line" style="--line: 1">{{ project().role | inLocale }}</span>
   </p>
   <h1 class="title" id="fiche-title">
-    <span class="visually-hidden">{{ project().title | localized }}</span>
+    <span class="visually-hidden">{{ project().title | inLocale }}</span>
     <span class="name" aria-hidden="true">
       @for (word of heading().name; track $index) {
         <span class="name__word">

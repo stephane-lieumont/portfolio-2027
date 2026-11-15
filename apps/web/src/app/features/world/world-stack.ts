@@ -15,7 +15,7 @@ import {
 import type { WorldStack as WorldStackContent } from '@portfolio/shared-types';
 
 import { toolView } from '../../core/content/tool-marks';
-import { LocalizedPipe } from '../../core/i18n/localized';
+import { InLocalePipe } from '../../core/i18n/in-locale';
 import { ReducedMotion } from '../../core/motion/reduced-motion';
 import { EASE_OUT, WorldReveal } from './world-reveal';
 
@@ -31,7 +31,7 @@ const SUBTITLES = {
  */
 @Component({
   selector: 'app-world-stack',
-  imports: [WorldReveal, LocalizedPipe],
+  imports: [WorldReveal, InLocalePipe],
   templateUrl: './world-stack.html',
   styleUrl: './world-stack.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

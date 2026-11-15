@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import type { WorldKey, WorldPage } from '@portfolio/shared-types';
 
 import { toolView } from '../../core/content/tool-marks';
-import { localized } from '../../core/i18n/localized';
+import { inLocale } from '../../core/i18n/in-locale';
 import { SITE_LOCALE, type SiteLocale } from '../../core/i18n/site-locale';
 import { NAV } from '../../shell/nav-items';
 
@@ -112,6 +112,6 @@ export class WorldHero {
     const page = this.page();
     return page.eyebrowTools.map((slug) => toolView(slug).label).join(' · ');
   });
-  protected readonly roleWord = computed(() => localized(this.page().roleWord));
+  protected readonly roleWord = computed(() => inLocale(this.page().roleWord));
   protected readonly role = computed(() => roleGlyphs(this.roleWord(), this.page().world));
 }

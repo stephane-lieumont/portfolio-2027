@@ -67,4 +67,4 @@ Built in the second implementation. `LocalizedText` and `localized(schema)` live
 - **A record is named across the trees by its id, not by a slug.** The switcher and the `hreflang` links read the slug in the tree's language, find the record, and write its slug in the other. A French slug under `/en` is a 404, not a redirect.
 - **`series` stays one string.** It is a proper name and the key that groups projects; translating it would split a series in two.
 
-Accepted downside, measured: until the content comes from the API, each tree's bundle carries both languages of the static content (about 18.6 kB raw, 5.5 kB transfer).
+Accepted downside, measured: each tree's bundle carries both languages of the static content (about 18.6 kB raw, 5.5 kB transfer). Fetching `{ fr, en }` records from the API would only move that weight into the hydration state; it goes away when the public API serves one language per request.

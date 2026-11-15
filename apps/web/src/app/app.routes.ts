@@ -1,7 +1,7 @@
 import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 import type { LocalizedText } from '@portfolio/shared-types';
 
-import { localized } from './core/i18n/localized';
+import { inLocale } from './core/i18n/in-locale';
 import { SECTIONS, SITE_LOCALE } from './core/i18n/site-locale';
 import { ARTWORKS, PROJECTS } from './core/static-content';
 
@@ -65,9 +65,9 @@ export const routes: Routes = [
     canMatch: [
       (_route: unknown, segments: readonly { path: string }[]) => projectSlugExists(segments),
     ],
-    title: (route: ActivatedRouteSnapshot) => localized(projectOf(route)?.title ?? EMPTY),
+    title: (route: ActivatedRouteSnapshot) => inLocale(projectOf(route)?.title ?? EMPTY),
     resolve: {
-      description: (route: ActivatedRouteSnapshot) => localized(projectOf(route)?.summary ?? EMPTY),
+      description: (route: ActivatedRouteSnapshot) => inLocale(projectOf(route)?.summary ?? EMPTY),
     },
     loadComponent: () => import('./features/project/project-page').then((m) => m.ProjectPage),
   },
@@ -93,10 +93,10 @@ export const routes: Routes = [
         canMatch: [
           (_route: unknown, segments: readonly { path: string }[]) => artworkSlugExists(segments),
         ],
-        title: (route: ActivatedRouteSnapshot) => localized(artworkOf(route)?.title ?? EMPTY),
+        title: (route: ActivatedRouteSnapshot) => inLocale(artworkOf(route)?.title ?? EMPTY),
         resolve: {
           description: (route: ActivatedRouteSnapshot) =>
-            localized(artworkOf(route)?.image.alt ?? EMPTY),
+            inLocale(artworkOf(route)?.image.alt ?? EMPTY),
         },
         children: [],
       },

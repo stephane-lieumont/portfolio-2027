@@ -2,7 +2,7 @@
   @if (portrait; as image) {
     <app-contact-portrait
       [image]="image"
-      [caption]="page.portraitCaption | localized"
+      [caption]="page.portraitCaption | inLocale"
       [area]="sectionEl"
     />
   }
@@ -10,8 +10,8 @@
   <div class="contact__main">
     <header class="rise" style="--i: 0">
       <p class="mono" i18n="@@contact.eyebrow">Contact</p>
-      <h1 class="contact__title" id="contact-title">{{ page.title | localized }}</h1>
-      <p class="contact__lede">{{ page.lede | localized }}</p>
+      <h1 class="contact__title" id="contact-title">{{ page.title | inLocale }}</h1>
+      <p class="contact__lede">{{ page.lede | inLocale }}</p>
     </header>
 
     <form

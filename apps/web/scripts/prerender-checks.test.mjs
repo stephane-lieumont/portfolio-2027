@@ -260,6 +260,56 @@ describe('a page in either tree', () => {
   );
 });
 
+describe('the links of a page', () => {
+  const links = (...hrefs) => hrefs.map((href) => `<a href="${href}">x</a>`).join('');
+
+  it('pass when every page link names a page of its own tree, in its words', () => {
+    const form = `${FORM_EN}${links(
+      '/en/3d-art/alien',
+      '/en/developer/3d-portfolio-2018#video',
+      '/en/developer',
+      '#contenu',
+      '/cv-stephane-lieumont.pdf',
+      '/demo/pixmodels',
+      'https://github.com/stephane-lieumont',
+    )}`;
+    assert.deepEqual(checkPage('en/contact', english({ form })), []);
+    assert.deepEqual(
+      checkPage('contact', page({ form: `${FORM}${links('/graphisme-3d/extraterrestre')}` })),
+      [],
+    );
+  });
+
+  const caught = (name, route, html) =>
+    it(`fail ${name}`, () => assert.notDeepEqual(checkPage(route, html), []));
+
+  caught(
+    'when an English tile keeps the French slug',
+    'en/contact',
+    english({ form: `${FORM_EN}${links('/en/3d-art/extraterrestre')}` }),
+  );
+  caught(
+    'when an English card keeps the French slug',
+    'en/contact',
+    english({ form: `${FORM_EN}${links('/en/developer/portfolio-3d-2018')}` }),
+  );
+  caught(
+    'when an English page links into the French tree outside the switch',
+    'en/contact',
+    english({ form: `${FORM_EN}${links('/developpeur')}` }),
+  );
+  caught(
+    'when a French page links an English slug',
+    'contact',
+    page({ form: `${FORM}${links('/graphisme-3d/alien')}` }),
+  );
+  caught(
+    'when a French page links into the English tree outside the switch',
+    'contact',
+    page({ form: `${FORM}${links('/en/contact')}` }),
+  );
+});
+
 describe('the French denylists', () => {
   it('hold the content no English page may say, and never an English string', async () => {
     const { FRENCH_CONTENT, FRENCH_WORDS } = await import('./prerender-checks.mjs');

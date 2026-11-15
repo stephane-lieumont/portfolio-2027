@@ -116,6 +116,13 @@ describe('world content schemas', () => {
     expect(siteSettingsSchema.safeParse(settings).success).toBe(false);
   });
 
+  it.each(['', '   '])('refuses a world text left blank (%j) in English', (blank) => {
+    const lede = { ...WORLD_PAGES.dev.lede, text: { fr: WORLD_PAGES.dev.lede.text.fr, en: blank } };
+    expect(worldPageSchema.safeParse({ ...WORLD_PAGES.dev, lede }).success).toBe(false);
+    const title = { fr: CONTACT_PAGE.title.fr, en: blank };
+    expect(contactPageSchema.safeParse({ ...CONTACT_PAGE, title }).success).toBe(false);
+  });
+
   it('requires fact labels unique in each language, not only in French', () => {
     const [first, second, ...rest] = WORLD_PAGES.dev.facts;
     const clash = {

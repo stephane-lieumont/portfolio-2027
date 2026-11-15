@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 
 import { toolView } from '../../core/content/tool-marks';
-import { LocalizedPipe } from '../../core/i18n/localized';
+import { InLocalePipe } from '../../core/i18n/in-locale';
 import { SITE_LOCALE } from '../../core/i18n/site-locale';
 import { mediaSrcset, mediaUrl } from '../../core/media.config';
 import { SmoothScroll } from '../../core/motion/smooth-scroll';
@@ -42,7 +42,7 @@ function projectBySlug(slug: string): StaticProject {
 @Component({
   selector: 'app-project-page',
   imports: [
-    LocalizedPipe,
+    InLocalePipe,
     ProjectHero,
     ScrubSentence,
     DevWork,

@@ -1,4 +1,10 @@
-import { localizedSlugSchema, localizedTextSchema, projectSchema } from '@portfolio/shared-types';
+import {
+  altTextSchema,
+  confirmUploadInputSchema,
+  localizedSlugSchema,
+  localizedTextSchema,
+  projectSchema,
+} from '@portfolio/shared-types';
 import { describe, expect, it } from 'vitest';
 
 import { SITE_LOCALES } from './i18n/site-locale';
@@ -137,12 +143,65 @@ describe('the Project contract', () => {
 
   // A record ships in both trees or in neither (ADR-0017): an English page
   // must never fall back to the French copy.
-  it('refuses a project whose English is missing or blank', () => {
+  it('refuses a project whose English is missing', () => {
     const [project] = PROJECTS;
-    const title = (shape: unknown) => projectContent.shape.title.safeParse(shape).success;
-    expect(title(project.title)).toBe(true);
-    expect(title({ fr: project.title.fr })).toBe(false);
-    expect(title({ fr: project.title.fr, en: '' })).toBe(false);
+    expect(projectContent.shape.title.safeParse(project.title).success).toBe(true);
+    expect(projectContent.shape.title.safeParse({ fr: project.title.fr }).success).toBe(false);
+  });
+
+  // Each field, each language, empty and whitespace only: a blank side would
+  // render an empty heading or line in that tree.
+  describe.each(['title', 'summary', 'context', 'role', 'mission', 'presentationCaption'] as const)(
+    '%s',
+    (field) => {
+      const [project] = PROJECTS;
+      const accepts = (fr: string, en: string) =>
+        projectContent.shape[field].safeParse({ fr, en }).success;
+
+      it.each(['', '   '])('is refused blank (%j) in either language', (blank) => {
+        expect(accepts(project[field].fr, project[field].en)).toBe(true);
+        expect(accepts(blank, project[field].en)).toBe(false);
+        expect(accepts(project[field].fr, blank)).toBe(false);
+      });
+    },
+  );
+
+  it('refuses a blank mission step in either language', () => {
+    const step = projectContent.shape.missionSteps;
+    expect(step.safeParse([{ fr: 'Un pas.', en: 'A step.' }]).success).toBe(true);
+    expect(step.safeParse([{ fr: 'Un pas.', en: '  ' }]).success).toBe(false);
+    expect(step.safeParse([{ fr: '', en: 'A step.' }]).success).toBe(false);
+  });
+});
+
+describe('an alt text', () => {
+  const alt = (fr: string, en: string) => altTextSchema.safeParse({ fr, en }).success;
+
+  it('is written in both languages, or blank in both for a decorative image', () => {
+    expect(alt('Tomates photoréalistes', 'Photorealistic tomatoes')).toBe(true);
+    expect(alt('', '')).toBe(true);
+    expect(alt('   ', '  ')).toBe(true);
+  });
+
+  it.each(['', '   '])('is refused blank (%j) in one language only', (blank) => {
+    expect(alt('Tomates photoréalistes', blank)).toBe(false);
+    expect(alt(blank, 'Photorealistic tomatoes')).toBe(false);
+  });
+
+  it('is decorative by default on upload, and held to the same rule when given', () => {
+    const upload = (shape: Record<string, unknown>) =>
+      confirmUploadInputSchema.safeParse({
+        assetId: '6b7c2a0e-1f3d-4c5a-9e8b-2d4f6a8c0e11',
+        ...shape,
+      });
+    expect(upload({}).data?.alt).toEqual({ fr: '', en: '' });
+    expect(upload({ alt: { fr: 'Tomates', en: 'Tomatoes' } }).success).toBe(true);
+    expect(upload({ alt: { fr: 'Tomates', en: '' } }).success).toBe(false);
+    expect(upload({ alt: { fr: '   ', en: 'Tomatoes' } }).success).toBe(false);
+  });
+
+  it('is what every static image carries', () => {
+    for (const [, image] of IMAGES) expect(altTextSchema.safeParse(image.alt).success).toBe(true);
   });
 
   it('holds each language to the slug rule', () => {

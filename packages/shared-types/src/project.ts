@@ -51,9 +51,9 @@ export const projectSchema = z.object({
   kind: projectKindSchema,
   status: projectStatusSchema,
   slug: localizedSlugSchema,
-  title: localized(z.string().min(1).max(160)),
+  title: localized(z.string().trim().max(160)),
   /** For cards and the meta description. The project page does not show it. */
-  summary: localized(z.string().max(320)),
+  summary: localized(z.string().trim().max(320)),
   /** What the product was: the page's introduction, coloured word by word. */
   context: localized(copy(400)),
   /** In what capacity Stéphane worked, set large beside the mission. */

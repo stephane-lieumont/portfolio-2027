@@ -64,7 +64,7 @@
           @for (point of entry.points; track $index) {
             <li [attr.data-reveal-part]="i === selected() ? '' : null">
               <p>
-                <b>{{ point.lead | localized }}</b> {{ point.text | localized }}
+                <b>{{ point.lead | inLocale }}</b> {{ point.text | inLocale }}
               </p>
             </li>
           }

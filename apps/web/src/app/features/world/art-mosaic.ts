@@ -20,7 +20,7 @@ import { filter, map } from 'rxjs';
 import { mediaSrcset, mediaUrl } from '../../core/media.config';
 import { ReducedMotion } from '../../core/motion/reduced-motion';
 import { toolView } from '../../core/content/tool-marks';
-import { localized } from '../../core/i18n/localized';
+import { inLocale } from '../../core/i18n/in-locale';
 import { PATHS } from '../../core/i18n/site-locale';
 import { RouteTransitions } from '../../core/route-transitions';
 import { ARTWORKS } from '../../core/static-content';
@@ -95,13 +95,13 @@ export class ArtMosaic {
     const media = mediaUrl();
     const srcset = mediaSrcset();
     this.pieces = ARTWORKS.map((artwork, i) => {
-      const slug = localized(artwork.slug);
-      const title = localized(artwork.title);
+      const slug = inLocale(artwork.slug);
+      const title = inLocale(artwork.title);
       return {
         slug,
         title,
         year: artwork.releasedAt.slice(0, 4),
-        alt: localized(artwork.image.alt),
+        alt: inLocale(artwork.image.alt),
         src: media(artwork.image.key),
         srcset: srcset(artwork.image.key, artwork.image.width),
         tone: artwork.image.averageColor,

@@ -16,7 +16,7 @@ import {
   WORLD_PAGES,
   WORLD_STACKS,
 } from '../../core/content/world-content';
-import { LocalizedPipe } from '../../core/i18n/localized';
+import { InLocalePipe } from '../../core/i18n/in-locale';
 import { PATHS } from '../../core/i18n/site-locale';
 import { CloudState } from '../../core/world/cloud-state';
 import { ArtMosaic } from './art-mosaic';
@@ -46,7 +46,7 @@ const LEAD_LINES = 3;
   selector: 'app-world-page',
   imports: [
     RouterLink,
-    LocalizedPipe,
+    InLocalePipe,
     WorldHero,
     PointCloud,
     ScrubSentence,

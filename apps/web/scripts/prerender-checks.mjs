@@ -176,6 +176,31 @@ function tree(locale) {
  */
 export const EXPECTED = new Map([...tree('fr'), ...tree('en')]);
 
+/** Each tree's pages as a link names them, from the site root; the 404 is no destination. */
+const PAGES = Object.fromEntries(
+  ['fr', 'en'].map((locale) => [
+    locale,
+    new Set(
+      [...EXPECTED]
+        .filter(([, expected]) => expected.locale === locale && !expected.noindex)
+        .map(([route]) => `/${route}`),
+    ),
+  ]),
+);
+
+/**
+ * The site's own page links, the language switch excepted: a fragment, a file
+ * (the CV), a proxied demo or another origin is not a page of either tree.
+ */
+function pageLinks(document) {
+  return Array.from(document.querySelectorAll('a[href]:not([hreflang])'), (a) =>
+    a.getAttribute('href'),
+  )
+    .filter((href) => href.startsWith('/') && !href.startsWith('//'))
+    .map((href) => href.split(/[?#]/)[0])
+    .filter((path) => !path.startsWith('/demo/') && !/\.[a-z0-9]+$/i.test(path));
+}
+
 const HIDING_STYLE =
   /(?:^|;)\s*(?:opacity\s*:\s*0(?:\.0*)?\s*(?:;|$|!)|display\s*:\s*none|visibility\s*:\s*hidden)/i;
 
@@ -302,6 +327,12 @@ export function checkPage(route, html) {
   }
 
   for (const url of thirdParty(document)) fail(`loads from another origin: ${url}`);
+
+  // A link names a page of its own tree, in that tree's words: an English
+  // page leading to a French slug, or to a slug no tree has, is a dead end.
+  for (const path of pageLinks(document)) {
+    if (!PAGES[expected.locale].has(path)) fail(`links to ${path}, not a page of this tree`);
+  }
 
   // Stéphane's address is never published (ADR-0007, spec 03): the contact
   // form is the way in.

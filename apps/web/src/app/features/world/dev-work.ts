@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 
 import { mediaSrcset, mediaUrl } from '../../core/media.config';
 import { toolView } from '../../core/content/tool-marks';
-import { LocalizedPipe } from '../../core/i18n/localized';
+import { InLocalePipe } from '../../core/i18n/in-locale';
 import { PATHS } from '../../core/i18n/site-locale';
 import { PROJECTS, type StaticProject } from '../../core/static-content';
 import { PlateImage } from './plate-image';
@@ -21,7 +21,7 @@ import { WorldReveal } from './world-reveal';
  */
 @Component({
   selector: 'app-dev-work',
-  imports: [NgTemplateOutlet, RouterLink, LocalizedPipe, WorldReveal, PlateImage],
+  imports: [NgTemplateOutlet, RouterLink, InLocalePipe, WorldReveal, PlateImage],
   template: `
     <section class="work band" aria-labelledby="work-title">
       <div class="work__head" appWorldReveal="lines">
@@ -48,7 +48,7 @@ import { WorldReveal } from './world-reveal';
                 />
               </div>
             } @else {
-              <a class="row__link" [routerLink]="[devPath, project.slug | localized]">
+              <a class="row__link" [routerLink]="[devPath, project.slug | inLocale]">
                 <ng-container
                   [ngTemplateOutlet]="card"
                   [ngTemplateOutletContext]="{ $implicit: project, here: false }"
@@ -68,7 +68,7 @@ import { WorldReveal } from './world-reveal';
           [src]="mediaUrl(project.cover.key)"
           [srcset]="srcset(project.cover.key, project.cover.width)"
           [sizes]="sizes()"
-          [alt]="project.cover.alt | localized"
+          [alt]="project.cover.alt | inLocale"
           [width]="project.cover.width"
           [height]="project.cover.height"
           loading="lazy"
@@ -76,11 +76,11 @@ import { WorldReveal } from './world-reveal';
         />
         <span class="plate__fallback" aria-hidden="true">
           <span class="plate__fallback-label" i18n="@@plate.unavailable">Image indisponible</span>
-          <span class="plate__fallback-alt">{{ project.cover.alt | localized }}</span>
+          <span class="plate__fallback-alt">{{ project.cover.alt | inLocale }}</span>
         </span>
       </span>
       <span class="row__cap">
-        <span class="row__title">{{ project.title | localized }}</span>
+        <span class="row__title">{{ project.title | inLocale }}</span>
         <span class="row__year">{{ project.year }}</span>
         <span class="row__tools">
           @for (tool of project.tools; track tool.slug) {

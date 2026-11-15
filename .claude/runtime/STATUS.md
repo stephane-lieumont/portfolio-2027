@@ -397,16 +397,25 @@ rel="alternate" hreflang="fr|en|x-default">` with absolute addresses on
 **Bilingual, PR 2 of 3 (ADR-0017, `feat/i18n-content`)** — the content in
 both languages, at the source.
 
-- shared-types: `LocalizedText` `{ fr, en }` and `localized(schema)`
-  (`src/localized.ts`), each language held to the field's own rule, both
-  required. Applied to every visitor-facing text field: `WorldPage` (role
+- shared-types: `LocalizedText` `{ fr, en }` and
+  `localized(schema)` (`src/localized.ts`), each language held to the
+  field's own rule, trimmed and never blank, both required.
+  `MediaAsset.alt` is `altTextSchema`: blank in both languages (decorative)
+  or in neither. Applied to every visitor-facing text field: `WorldPage` (role
   word, lede, scrub, facts — labels unique in each language), `WorldStack`
   points, `ContactPage` (title, lede, portrait caption), `Project` (title,
   summary, context, role, mission, mission steps, presentation caption),
-  `MediaAsset.alt`. Slugs are `LocalizedSlug`. `series` stays one string: a
+  `MediaAsset.alt` (above). Slugs are `LocalizedSlug`. `series` stays one string: a
   proper name and the grouping key. `SiteSettings` has no text. Spec 03
-  amended. **Contract change not yet carried to the API**: its Drizzle schema
-  (provisional, spec 03) still has one `title`, `slug` and `alt` column.
+  amended. **Contract change not yet carried to the API** — follow-ups for
+  `apps/api`, none started:
+  - migrate the content contract: the Drizzle schema (provisional, spec 03)
+    still has one `title`, `slug` and `alt` column; every localized field
+    becomes a pair (two columns or JSON), with a generated migration;
+  - slug uniqueness per language: two unique indexes (`slug_fr`, `slug_en`)
+    in place of `projects_slug_unique`, and the same for artworks;
+  - `ProjectsApi.bySlug` (and the API route) takes a locale, since the same
+    slug string can name different records in the two trees.
 - Static content migrated, ids added to projects and pieces (uuid, as the
   schema has them). **The English is a draft** written from the French, no
   new claim, to be rewritten by the communication expert in PR 3: every
@@ -423,8 +432,9 @@ both languages, at the source.
   `modern-house`, `entrance-hall`, `exterior`, `light-bulb`,
   `marketing-visual`, `tomatoes`). Bucket keys stay on the French slug: one
   file per picture for both trees.
-- Pages read `text[SITE_LOCALE]` through `localized()` and the `localized`
-  pipe (`core/i18n/localized.ts`). Route guards, resolvers (title,
+- Pages read `text[SITE_LOCALE]` through `inLocale()` and the `inLocale`
+  pipe (`core/i18n/in-locale.ts`), named apart from shared-types' Zod
+  `localized()` so an auto-import cannot pull Zod into the browser. Route guards, resolvers (title,
   description), prerender params, links, the mosaic's hrefs and the project
   hero's `#video` link use the tree's slug. A `PageRef` names a project or a
   piece by its record id: the switcher and the `hreflang` links go slug →
@@ -436,7 +446,15 @@ both languages, at the source.
   captions, contact title and lede), and that no French content reaches the
   English tree: every French value that is not also English, whole, and every
   accented word of the French content, in the text, `alt`, `aria-label`,
-  `title` and the meta description.
+  `title` and the meta description. Every page link (the switch, fragments,
+  files, demos and other origins excepted) must name a page of its own tree:
+  an English tile or card on a French slug fails. Unit tests re-import the
+  app's modules under `en` (`features/english-tree.spec.ts`) to check the
+  cards', tiles' and video link's English slugs, titles and alt texts.
+  **Known gap**: French that is neither a whole French value nor an accented
+  word of it passes — a half-translated sentence of unaccented words (« the
+  same salon de jour »), or French chrome missing from the `FRENCH_CHROME`
+  list. The final content review is the backstop.
 - Measured on the production build served statically (port 4211, the
   ADR-0005 stand-in): all 52 pages of both trees 200 with the right `lang`,
   h1, switcher target and `hreflang` slugs; the four unknown addresses tried
@@ -453,8 +471,13 @@ both languages, at the source.
   hydration, no console error, tab visible.
 - Initial bundle 437.58 kB raw / 123.71 kB transfer per tree, up from
   418.97 / 118.2: each tree ships both languages of the static content
-  (about 18.6 kB raw, 5.5 kB transfer). Under the 500 kB warning. Goes away
-  when the content comes from the API.
+  (about 18.6 kB raw, 5.5 kB transfer). Under the 500 kB warning. Moving
+  the content to the API does **not** remove it by itself: records fetched
+  as `{ fr, en }` would carry both languages in the hydration state instead.
+  It goes away only if the public API serves one language per request (a
+  locale parameter, the back office alone reading both) — the intended
+  route — or, short of that, if the heavy fields (stack points, project
+  copy) move behind lazy-loaded routes, which only defers the weight.
 
 **Prerendering (ADR-0008)** — `outputMode: 'static'`: the build writes one
 complete HTML file per route under `dist/web/browser` — `/` (a redirect to
@@ -500,8 +523,8 @@ read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository. Locally the renders need
 `pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 509 passing on the web side, 97.6% lines, 87.8% branches, 93.4%
-functions (plus 47 for the prerender check); axe on every page, every project page included. Every route, the
+**Tests** — 532 passing on the web side, 97.6% lines, 87.9% branches, 93.5%
+functions (plus 53 for the prerender check); axe on every page, every project page included. Every route, the
 404, the project guard, the API client, the gallery, contact, the project page,
 its video facade and the YouTube address parser have their own specs; the
 static projects are parsed against the `Project` schema.
