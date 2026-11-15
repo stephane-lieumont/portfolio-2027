@@ -8,13 +8,14 @@ languages), `refactor/app-architecture` (the app's layering, ADR-0018) and
 and `fix/responsive-audit` (the responsive audit's fixes and the image loading
 indicator), and `feat/seo` (canonical, Open Graph, JSON-LD, sitemap, robots),
 and `feat/api-read` (the read-only content API the site is built from,
-ADR-0022, issue #40).
+ADR-0022, issue #40), and `feat/e2e-playwright` (end-to-end tests, ADR-0024,
+issue #45).
 
 ## Works today
 
 **Foundations** — pnpm monorepo, Angular 22 standalone/zoneless/signals, shared
 Zod types, Fastify API with `/health`, the contact relay and the public
-content routes, MinIO in docker-compose. 22 ADRs, 6 specs.
+content routes, MinIO in docker-compose. ADRs up to 0024, 6 specs.
 
 **Content API, read-only (`feat/api-read`, ADR-0022)** — projects and 3D
 pieces are rows of a SQLite `works` table, each record a JSON document
@@ -1011,9 +1012,25 @@ a stubbed 2D context in the tests; what they look like is checked in a browser.
 **CI** — `.github/workflows/verify.yml` runs `pnpm verify` on every pull
 request and on `main`: typecheck, lint, format, tests with the 80% floor, and
 the prerendered build with its route check. Node from `.nvmrc`, pnpm from
-`packageManager`, frozen lockfile. Integration and end-to-end tests
-(Playwright) come once the « Bascule » design has landed, so they test the
-final journeys rather than ones about to be rewritten (Stéphane, 2026-11-14).
+`packageManager`, frozen lockfile.
+
+**End-to-end tests (`feat/e2e-playwright`, ADR-0024, issue #45)** —
+`apps/e2e`, Playwright 1.65.0, Chromium only. `pnpm test:e2e` runs 32 tests
+headless against `apps/web/dist/web/browser` (run `pnpm build:site` first; the
+server says so if the build is missing), served by
+`apps/e2e/support/static-server.ts` with nginx's `try_files` and per-tree 404.
+`/medias`, Cloudflare's Turnstile script and `/api/contact` are intercepted in
+the browser: no MinIO, no API, no network. Covered: the world switch both ways
+(and under reduced motion), the language switch on a world and a project page
+with the scroll kept, the 3D viewer from the wall (keyboard, Escape, focus back
+on the tile, URL per piece), a project page (title, tools, external links'
+`target`/`rel`), the contact form in FR and EN (validation and focus, sending
+with `aria-busy`/`aria-disabled`, sent with its icon, captcha refused, server
+error), the 404 in each tree with its status, a 320px phone, axe on eight pages
+(serious and critical: none today). About 7s locally once built.
+`.github/workflows/e2e.yml` runs it on pull requests and `main`, beside
+`verify.yml`; report, traces and screenshots uploaded on failure. Not yet
+covered: WebKit, the YouTube facade, the startup loader on a slow line.
 
 ## In progress — the « Bascule » world pages
 

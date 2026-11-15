@@ -31,6 +31,7 @@ pnpm dev
 ```
 apps/web              Angular 22 — public site and back office
 apps/api              Fastify + SQLite — projects, media, contact
+apps/e2e              Playwright journeys against the prerendered build
 packages/shared-types Zod schemas shared between front and back
 docs/adr              Architecture decisions
 docs/specs            Functional and design specifications
@@ -47,8 +48,19 @@ infra/                docker-compose (MinIO, API)
 | `pnpm test`                    | tests, 80% coverage threshold                         |
 | `pnpm verify`                  | typecheck + lint + format + tests + `build:site`      |
 | `pnpm build:site`              | seeds a throwaway API and prerenders the site from it |
+| `pnpm test:e2e`                | Playwright journeys against the built site (below)    |
 | `pnpm format`                  | Prettier across the repo                              |
 | `pnpm infra:up` / `infra:down` | MinIO containers                                      |
+
+End-to-end tests (ADR-0024) run against the prerendered build, so build it first. Once per machine, install the browser:
+
+```bash
+pnpm --filter @portfolio/e2e exec playwright install chromium
+pnpm build:site
+pnpm test:e2e
+```
+
+They need neither MinIO nor the API: pictures, Turnstile and the contact route are intercepted in the browser. On failure, `apps/e2e/test-results/` holds a trace per test (`pnpm --filter @portfolio/e2e exec playwright show-trace <trace.zip>`). CI runs them in `.github/workflows/e2e.yml`.
 
 `pnpm ci` is a built-in pnpm command (clean reinstall), not this project's check script — use `pnpm verify`.
 
