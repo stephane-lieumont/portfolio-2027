@@ -179,6 +179,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
     id: 'e9ddf086-9f58-4bcf-b34a-cbf2d58b7ecf',
     slug: { fr: 'linxea', en: 'linxea' },
     logo: mediaId('/logos/clients/linxea.svg'),
+    logoTint: '#d9661f',
     title: { fr: 'Linxea', en: 'Linxea' },
     summary: {
       fr: 'La refonte du parcours d’adhésion en ligne, en React et TypeScript. Référent technique de la squad Web-Atrio, j’ai aussi automatisé le déploiement en CI/CD.',
