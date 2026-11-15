@@ -9,7 +9,7 @@ import {
   WORLD_PAGES,
   WORLD_STACKS,
 } from '../src/app/core/data/world-content/world-content.ts';
-import { SECTIONS, SITE_ORIGIN } from '../src/app/core/i18n/site-paths.ts';
+import { OG_IMAGE, SECTIONS, SITE_ORIGIN } from '../src/app/core/i18n/site-paths.ts';
 import { ARTWORKS, PROJECTS } from '../src/app/core/data/static-content/static-content.ts';
 
 // Both worlds open on the name, set by the page itself.
@@ -228,12 +228,180 @@ function thirdParty(document) {
   const urls = [
     ...Array.from(document.querySelectorAll('[src]'), (el) => el.getAttribute('src')),
     ...Array.from(document.querySelectorAll('[srcset]'), (el) => el.getAttribute('srcset')),
-    // The hreflang alternates name this site's own addresses; nothing loads them.
-    ...Array.from(document.querySelectorAll('link[href]:not([rel="alternate"])'), (el) =>
-      el.getAttribute('href'),
+    // The hreflang alternates and the canonical name this site's own
+    // addresses; nothing loads them.
+    ...Array.from(
+      document.querySelectorAll('link[href]:not([rel="alternate"]):not([rel="canonical"])'),
+      (el) => el.getAttribute('href'),
     ),
   ];
   return urls.filter((url) => /(?:^|[\s,])(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(url ?? ''));
+}
+
+/** A page's address in each tree, French as the default (ADR-0017). */
+export function alternatesOf(ref) {
+  return {
+    fr: `${SITE_ORIGIN}/${routeOf(ref, 'fr')}`,
+    en: `${SITE_ORIGIN}/${routeOf(ref, 'en')}`,
+    'x-default': `${SITE_ORIGIN}/${routeOf(ref, 'fr')}`,
+  };
+}
+
+const OG_LOCALES = { fr: 'fr_FR', en: 'en_GB' };
+
+/** The JSON-LD blocks of a page, parsed; a block that is not JSON is reported. */
+function structuredData(document, fail) {
+  return Array.from(document.querySelectorAll('script[type="application/ld+json"]'), (script) => {
+    try {
+      return JSON.parse(script.textContent ?? '');
+    } catch {
+      fail('JSON-LD is not valid JSON');
+      return null;
+    }
+  }).filter(Boolean);
+}
+
+/**
+ * What a share and a search engine read: the canonical, Open Graph, the
+ * Twitter card, schema.org. Each indexable page names itself; the 404 names
+ * nothing.
+ */
+function checkShareHead(document, route, expected) {
+  const failures = [];
+  const fail = (reason) => failures.push(reason);
+  const head = document.head;
+  const canonicals = Array.from(head.querySelectorAll('link[rel="canonical"]'), (link) =>
+    link.getAttribute('href'),
+  );
+  const og = (property) =>
+    Array.from(head.querySelectorAll('meta[property]'))
+      .find((m) => m.getAttribute('property') === property)
+      ?.getAttribute('content');
+  const meta = (name) =>
+    Array.from(head.querySelectorAll('meta[name]'))
+      .find((m) => m.getAttribute('name') === name)
+      ?.getAttribute('content');
+  const data = structuredData(document, fail);
+
+  if (expected.noindex) {
+    if (canonicals.length > 0) fail('the 404 names a canonical address');
+    if (head.querySelector('meta[property^="og:"]')) fail('the 404 carries Open Graph tags');
+    if (meta('twitter:card')) fail('the 404 carries a Twitter card');
+    if (data.length > 0) fail('the 404 carries JSON-LD');
+    return failures;
+  }
+
+  const url = `${SITE_ORIGIN}/${route}`;
+  if (canonicals.length !== 1 || canonicals[0] !== url)
+    fail(`canonical is ${JSON.stringify(canonicals)}, expected ["${url}"]`);
+
+  const world = ['cgi', 'piece'].includes(expected.ref.page) ? 'cgi' : 'dev';
+  const other = expected.locale === 'fr' ? 'en' : 'fr';
+  const wanted = {
+    'og:site_name': NAME,
+    'og:title': squash(document.title),
+    'og:description': meta('description'),
+    'og:url': url,
+    'og:locale': OG_LOCALES[expected.locale],
+    'og:locale:alternate': OG_LOCALES[other],
+    'og:image': `${SITE_ORIGIN}${OG_IMAGE.file(world, expected.locale)}`,
+    'og:image:width': `${OG_IMAGE.width}`,
+    'og:image:height': `${OG_IMAGE.height}`,
+  };
+  for (const [property, value] of Object.entries(wanted)) {
+    const found = og(property);
+    if (!found || found !== value) fail(`${property} is "${found ?? ''}", expected "${value}"`);
+  }
+  if (!['website', 'profile'].includes(og('og:type') ?? '')) fail('og:type missing');
+  if (!og('og:image:alt')) fail('og:image:alt missing');
+  if (meta('twitter:card') !== 'summary_large_image')
+    fail('twitter:card is not summary_large_image');
+
+  if (data.length !== 1) {
+    fail(`${data.length} JSON-LD blocks, expected 1`);
+    return failures;
+  }
+  const [graph] = data;
+  if (graph['@context'] !== 'https://schema.org') fail('JSON-LD has no schema.org context');
+  const nodes = graph['@graph'] ?? [graph];
+  if (!nodes.some((node) => node.url === url && node.inLanguage === expected.locale))
+    fail('JSON-LD does not describe this page in its language');
+  if (['dev', 'cgi'].includes(expected.ref.page)) {
+    const person = nodes.find((node) => node['@type'] === 'Person');
+    if (person?.name !== NAME) fail('JSON-LD has no Person');
+    else if (!person.sameAs?.length || !person.sameAs.every((link) => /^https:\/\//.test(link)))
+      fail('the Person links to no profile');
+  }
+  return failures;
+}
+
+/** The routes a search engine should list: every page of both trees but the 404. */
+export const INDEXABLE = [...EXPECTED]
+  .filter(([, expected]) => !expected.noindex && !expected.redirect)
+  .map(([route, expected]) => ({ url: `${SITE_ORIGIN}/${route}`, ref: expected.ref }));
+
+/** What is wrong with the sitemap: it lists exactly the indexable pages, with their alternates. */
+export function checkSitemap(xml) {
+  const failures = [];
+  let document;
+  try {
+    ({ document } = new JSDOM(xml, { contentType: 'text/xml' }).window);
+  } catch {
+    return ['sitemap.xml is not well-formed XML'];
+  }
+  const listed = new Map(
+    Array.from(document.getElementsByTagName('url'), (url) => [
+      url.getElementsByTagName('loc')[0]?.textContent?.trim() ?? '',
+      url,
+    ]),
+  );
+  for (const { url, ref } of INDEXABLE) {
+    const entry = listed.get(url);
+    if (!entry) {
+      failures.push(`sitemap.xml misses ${url}`);
+      continue;
+    }
+    listed.delete(url);
+    const alternates = Object.fromEntries(
+      Array.from(entry.getElementsByTagNameNS('http://www.w3.org/1999/xhtml', 'link'), (link) => [
+        link.getAttribute('hreflang'),
+        link.getAttribute('href'),
+      ]),
+    );
+    if (JSON.stringify(alternates) !== JSON.stringify(alternatesOf(ref)))
+      failures.push(`sitemap.xml: ${url} has alternates ${JSON.stringify(alternates)}`);
+    const lastmod = entry.getElementsByTagName('lastmod')[0]?.textContent ?? '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(lastmod)) failures.push(`sitemap.xml: ${url} has no lastmod`);
+  }
+  for (const url of listed.keys()) failures.push(`sitemap.xml lists ${url}, not an indexable page`);
+  return failures;
+}
+
+/**
+ * What is wrong with robots.txt: it must point at the sitemap and hide no
+ * path, since a Disallow line publishes the address it hides.
+ */
+export function checkRobots(text) {
+  const failures = [];
+  if (!/^Sitemap: https:\/\/stephane-lieumont\.fr\/sitemap\.xml$/m.test(text))
+    failures.push('robots.txt does not point at the sitemap');
+  if (/^Disallow:\s*\S/im.test(text)) failures.push('robots.txt disallows a path');
+  if (/admin/i.test(text)) failures.push('robots.txt names the back office');
+  return failures;
+}
+
+const PNG_SIGNATURE = '89504e470d0a1a0a';
+
+/** What is wrong with a share card: a PNG of 1200 × 630, light enough to be fetched. */
+export function checkShareCard(file, bytes) {
+  if (bytes.subarray(0, 8).toString('hex') !== PNG_SIGNATURE) return [`${file}: not a PNG`];
+  const width = bytes.readUInt32BE(16);
+  const height = bytes.readUInt32BE(20);
+  const failures = [];
+  if (width !== OG_IMAGE.width || height !== OG_IMAGE.height)
+    failures.push(`${file}: ${width} × ${height}, expected ${OG_IMAGE.width} × ${OG_IMAGE.height}`);
+  if (bytes.length >= 300 * 1024) failures.push(`${file}: ${Math.round(bytes.length / 1024)} KB`);
+  return failures;
 }
 
 /** Returns what is wrong with one page; empty when it is complete. */
@@ -264,15 +432,11 @@ export function checkPage(route, html) {
       link.getAttribute('href'),
     ]),
   );
-  const wanted = expected.noindex
-    ? {}
-    : {
-        fr: `${SITE_ORIGIN}/${routeOf(expected.ref, 'fr')}`,
-        en: `${SITE_ORIGIN}/${routeOf(expected.ref, 'en')}`,
-        'x-default': `${SITE_ORIGIN}/${routeOf(expected.ref, 'fr')}`,
-      };
+  const wanted = expected.noindex ? {} : alternatesOf(expected.ref);
   if (JSON.stringify(alternates) !== JSON.stringify(wanted))
     fail(`hreflang links are ${JSON.stringify(alternates)}, expected ${JSON.stringify(wanted)}`);
+
+  failures.push(...checkShareHead(document, route, expected));
 
   // The switcher leads to the same page in the other tree, as a plain link.
   const other = expected.locale === 'fr' ? 'en' : 'fr';

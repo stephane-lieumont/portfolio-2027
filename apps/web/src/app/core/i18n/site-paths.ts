@@ -13,3 +13,13 @@ export const SECTIONS = {
 
 /** Where alternate addresses point: ADR-0008 serves the site without `www`. */
 export const SITE_ORIGIN = 'https://stephane-lieumont.fr';
+
+/**
+ * The share cards, one per world and language, drawn by scripts/og-images.mjs
+ * into public/og/. A project or a piece shares its world's card.
+ */
+export const OG_IMAGE = {
+  width: 1200,
+  height: 630,
+  file: (world: 'dev' | 'cgi', locale: 'fr' | 'en') => `/og/${world}-${locale}.png`,
+} as const;

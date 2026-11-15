@@ -7,8 +7,9 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { API_BASE_URL } from '@core/config/api.config';
 import { MEDIA_BASE_URL } from '@core/config/media-config/media.config';
 import { PROJECTS } from '@core/data/static-content/static-content';
+import { SITE_SETTINGS } from '@core/data/world-content/world-content';
 import { pageRef } from '@core/i18n/site-locale/site-locale';
-import { PageMetadataService, alternates } from './page-metadata.service';
+import { PageMetadataService, alternates, shareTags } from './page-metadata.service';
 
 // The real route table is what this spec checks the titles against; it
 // belongs to the app's root, which has no alias.
@@ -120,4 +121,108 @@ describe('page metadata', () => {
     expect(robots()).toBeUndefined();
     expect(description()).toBeTruthy();
   });
+
+  it('names every indexable page by its own address, the one its hreflang gives this tree', async () => {
+    for (const url of PAGES) {
+      await harness.navigateByUrl(url);
+      const own = `https://stephane-lieumont.fr${url}`;
+
+      expect(canonicals(), url).toEqual([own]);
+      expect(alternateLinks(), url).toContain(`fr ${own}`);
+      expect(og('og:url'), url).toBe(own);
+      expect(og('og:title'), url).toBe(document.title);
+      expect(og('og:description'), url).toBe(description());
+      expect(og('og:locale'), url).toBe('fr_FR');
+      expect(og('og:locale:alternate'), url).toBe('en_GB');
+      expect(twitterCard(), url).toBe('summary_large_image');
+    }
+  });
+
+  it('shares each world’s card, a project its world’s', async () => {
+    await harness.navigateByUrl('/graphisme-3d');
+    expect(og('og:image')).toBe('https://stephane-lieumont.fr/og/cgi-fr.png');
+    expect(og('og:type')).toBe('profile');
+
+    await harness.navigateByUrl('/developpeur/ledger');
+    expect(og('og:image')).toBe('https://stephane-lieumont.fr/og/dev-fr.png');
+    expect(og('og:type')).toBe('website');
+    expect(og('og:image:width')).toBe('1200');
+    expect(og('og:image:height')).toBe('630');
+    expect(og('og:image:alt')).toBe('Stéphane Lieumont, Lead Tech');
+
+    const piece = shareTags(pageRef('piece', 'salon-nuit', 'fr'), 'x', 'x', null);
+    expect(piece).toContainEqual({
+      property: 'og:image',
+      content: 'https://stephane-lieumont.fr/og/cgi-fr.png',
+    });
+    expect(piece).toContainEqual({
+      property: 'og:image:alt',
+      content: 'Stéphane Lieumont, graphiste 3D',
+    });
+  });
+
+  it('describes the person on a world page from what the site already shows', async () => {
+    await harness.navigateByUrl('/developpeur');
+    const graph = jsonLd();
+    const person = graph.find((node) => node['@type'] === 'Person');
+
+    expect(person).toMatchObject({
+      name: 'Stéphane Lieumont',
+      jobTitle: 'Lead Tech & graphiste 3D',
+      address: { addressLocality: 'Fontenilles', addressCountry: 'France' },
+      sameAs: SITE_SETTINGS.socials.map((social) => social.url),
+    });
+    expect(graph.find((node) => node['@type'] === 'WebSite')).toMatchObject({
+      inLanguage: 'fr',
+      url: 'https://stephane-lieumont.fr/developpeur',
+    });
+  });
+
+  it('places a project page in the site, without claiming who made the product', async () => {
+    const [project] = PROJECTS;
+    await harness.navigateByUrl(`/developpeur/${project.slug.fr}`);
+    const graph = jsonLd();
+
+    expect(graph.find((node) => node['@type'] === 'WebPage')).toMatchObject({
+      url: `https://stephane-lieumont.fr/developpeur/${project.slug.fr}`,
+      name: `${project.title.fr} — Stéphane Lieumont`,
+      description: project.summary.fr,
+      inLanguage: 'fr',
+      isPartOf: { '@id': 'https://stephane-lieumont.fr/developpeur#website' },
+    });
+    expect(graph.some((node) => node['@type'] === 'Person')).toBe(false);
+  });
+
+  // Left behind, the previous page's canonical and og:url would name the 404
+  // as that page.
+  it('withdraws the canonical, the share tags and the JSON-LD on the 404', async () => {
+    await harness.navigateByUrl('/contact');
+    await harness.navigateByUrl('/nulle-part');
+
+    expect(canonicals()).toEqual([]);
+    expect(document.head.querySelector('meta[property]')).toBeNull();
+    expect(twitterCard()).toBeUndefined();
+    expect(document.head.querySelector('script[type="application/ld+json"]')).toBeNull();
+  });
 });
+
+const canonicals = () =>
+  Array.from(document.head.querySelectorAll('link[rel="canonical"]'), (link) =>
+    link.getAttribute('href'),
+  );
+const og = (property: string) =>
+  document.head.querySelector<HTMLMetaElement>(`meta[property="${property}"]`)?.content;
+const twitterCard = () =>
+  document.head.querySelector<HTMLMetaElement>('meta[name="twitter:card"]')?.content;
+
+type JsonLdNode = Record<string, unknown>;
+
+function jsonLd(): JsonLdNode[] {
+  const scripts = document.head.querySelectorAll('script[type="application/ld+json"]');
+  expect(scripts.length).toBe(1);
+  const data: { '@context': string; '@graph': JsonLdNode[] } = JSON.parse(
+    scripts[0].textContent ?? '',
+  );
+  expect(data['@context']).toBe('https://schema.org');
+  return data['@graph'];
+}

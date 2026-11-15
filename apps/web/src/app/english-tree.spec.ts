@@ -86,4 +86,47 @@ describe('the English tree', () => {
     expect(host.querySelector('.eyebrow')?.textContent).toContain(project.role.en);
     expect(host.querySelector('.eyebrow')?.textContent).toContain('2023 – 2024');
   });
+
+  it('shares its pages in English, on the English cards, inside the English site', async () => {
+    vi.resetModules();
+    const previous = $localize.locale;
+    $localize.locale = 'en';
+    try {
+      const [{ shareTags }, { structuredData }, { pageRef }] = await Promise.all([
+        import('@core/services/page-metadata/page-metadata.service'),
+        import('@core/services/page-metadata/structured-data'),
+        import('@core/i18n/site-locale/site-locale'),
+      ]);
+      const piece = pageRef('piece', 'living-room-night', 'en');
+      const tags = shareTags(piece, 'x', 'x', null);
+
+      expect(tags).toContainEqual({ property: 'og:locale', content: 'en_GB' });
+      expect(tags).toContainEqual({ property: 'og:locale:alternate', content: 'fr_FR' });
+      expect(tags).toContainEqual({
+        property: 'og:image',
+        content: 'https://stephane-lieumont.fr/og/cgi-en.png',
+      });
+      expect(
+        structuredData({
+          ref: piece,
+          url: 'x',
+          title: 'x',
+          description: null,
+          name: 'x',
+          role: 'x',
+        }),
+      ).toMatchObject({
+        '@graph': [
+          { '@type': 'WebPage', inLanguage: 'en' },
+          {
+            '@type': 'WebSite',
+            url: 'https://stephane-lieumont.fr/en/developer',
+            inLanguage: 'en',
+          },
+        ],
+      });
+    } finally {
+      $localize.locale = previous;
+    }
+  });
 });

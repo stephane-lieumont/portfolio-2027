@@ -6,7 +6,7 @@ PR, ADR-0017) with `feat/i18n-content` (its second PR, the content in both
 languages), `refactor/app-architecture` (the app's layering, ADR-0018) and
 `feat/client-references` (client references in « Réalisations ») on top,
 and `fix/responsive-audit` (the responsive audit's fixes and the image loading
-indicator).
+indicator), and `feat/seo` (canonical, Open Graph, JSON-LD, sitemap, robots).
 
 ## Works today
 
@@ -643,7 +643,7 @@ SameSite=Lax` (a native listener: event replay cancels a link's default
   build), the localized title and description, and three `<link
 rel="alternate" hreflang="fr|en|x-default">` with absolute addresses on
   `https://stephane-lieumont.fr` (ADR-0008's host; x-default = French); none
-  on the 404. No Open Graph locale: the site has no Open Graph yet (Missing).
+  on the 404. Open Graph locale per tree since `feat/seo` (see « SEO »).
 - `withI18nSupport()` added to hydration: without it Angular skips hydrating
   any component holding an `i18n` block, the root included (the prerender
   check caught it: no `ngh` on any page).
@@ -796,14 +796,83 @@ prerendered HTML and on client navigation (`PageMetadataService`, a `TitleStrate
 Descriptions reuse each page's lead; a project's is its summary. The 404 is
 `noindex`.
 
+**SEO (`feat/seo`, issues #37 and #38)** — the same service writes, on every
+indexable page of both trees, in the prerendered head:
+
+- `<link rel="canonical">`: the page's own absolute address in its own tree,
+  the same as its `hreflang` entry for that tree. None on the 404, nor any of
+  what follows.
+- Open Graph: `og:type` (`profile` on the two world pages, `website`
+  elsewhere, with `profile:first_name` / `last_name`), `og:site_name`
+  « Stéphane Lieumont », `og:title` (the page's title), `og:description` (its
+  meta description), `og:url` (= canonical), `og:locale` `fr_FR` / `en_GB`
+  and the other as `og:locale:alternate`, `og:image` with type, 1200 × 630
+  and alt (« Stéphane Lieumont, Lead Tech » / « …, graphiste 3D », English
+  « …, 3D artist »: two new `@@og.image.*.alt` strings); `twitter:card`
+  `summary_large_image`.
+- Share cards: `public/og/{dev,cgi}-{fr,en}.png`, 1200 × 630, 15–27 KB,
+  drawn by `pnpm --filter @portfolio/web og:images`
+  (`apps/web/scripts/og-images.mjs`, committed output): the world's ground,
+  the hero's eyebrow (world label, its three tools), the name, the role word
+  with its italic accent letters, and the world's point cloud (`</>` in dots,
+  the torus). Text is drawn as glyph outlines from `public/fonts` (fontkit,
+  after wawoff2 decompresses the WOFF2: fontkit cannot apply a variable
+  font's axes to WOFF2), so no system font is involved. New web
+  devDependencies: `sharp` (same 0.34.4 as the API), `fontkit`, `wawoff2`.
+  A project or a piece shares its world's card; contact the developer's. The
+  English tree's copy of `public/` duplicates them under `/en/og/`, never
+  referenced.
+- JSON-LD (one `@graph`): world pages carry a `ProfilePage`, the tree's
+  `WebSite` (`inLanguage`, url = its developer page) and the `Person` (name,
+  `jobTitle` = `@@site.role`, url = the root, address Fontenilles, France
+  from the contact caption, `sameAs` = the three social links of
+  `SITE_SETTINGS`). Project and piece pages a `WebPage`, contact a
+  `ContactPage`, each with name, description, `inLanguage`, `isPartOf` the
+  tree's site. Projects are not `CreativeWork`: a client's product credited to
+  Stéphane would be a claim the site does not make.
+- `sitemap.xml` and `robots.txt` are written at the root of the build only
+  (`scripts/write-seo-files.mjs`, after `ng build`), never under `en/`. The
+  sitemap lists every prerendered page that names a canonical and is not
+  `noindex` — 52 pages, both trees, the 404 and the two root redirects out —
+  each with its three `xhtml:link` alternates read from the page itself, and
+  the build date as `lastmod`. `robots.txt` allows everything and names the
+  sitemap; it disallows no path, since a `Disallow: /admin` would publish
+  the back office's address (spec 01 amended: the admin keeps itself out
+  with `noindex`).
+- The prerender check now fails a page without exactly one canonical on its
+  own address, without each `og:*` above matching the page (image of its
+  world and language, size, locale), without the Twitter card, or whose
+  JSON-LD does not parse, does not describe the page in its language, or (on
+  a world page) has no `Person` with profile links; the 404 with any of
+  them; a sitemap that does not list exactly the indexable routes of both
+  trees with their alternates and a date; a `robots.txt` that does not name
+  the sitemap or disallows a path; a share card that is not a 1200 × 630 PNG
+  under 300 KB; a robots or sitemap under `en/`.
+- Measured on the production build served statically: `/en/developer/ledger`
+  and `/graphisme-3d` fetched and their head parsed (canonical, every `og:*`,
+  the card fetched back as a 1200 × 630 PNG); `/robots.txt` and
+  `/sitemap.xml` 200, `/en/robots.txt` and `/en/sitemap.xml` 404. Not
+  verified: a real share preview (LinkedIn Post Inspector, Slack) once
+  deployed, Google's Rich Results test.
+- **Copy out of the usual lengths** (titles ≤ 60: all pass; descriptions
+  120–160), to the communication expert, not rewritten here: too long —
+  `/developpeur` 198, `/en/developer` 181, `/developpeur/cir-scancir` 236
+  (`/en/…` 199), `/developpeur/immobilier-ch` 196 (`/en/…` 173),
+  `/developpeur/case-tes-potes-mobile` 187, `/developpeur/ledger` 161; too
+  short — contact 93 (both trees), linxea 85 / 76, web-atrio 76 / 79, and
+  all 32 piece pages (22–49: a piece's description is its alt text).
+- Initial bundle 445.49 kB raw / 127.12 kB transfer per tree, +2.4 kB raw /
+  +0.8 kB transfer over `main` (443.13 / 126.34). The art viewer's stylesheet
+  budget warning (4.30 kB over 4 kB) predates this branch.
+
 **Media** — 16 renders, 6 project covers and 6 presentation visuals in MinIO, served through `/medias`
 (nginx in production, the dev server's proxy locally). Bucket policy is
 read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository. Locally the renders need
 `pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 585 passing on the web side, 98.1% lines, 88.4% branches, 94.2%
-functions (plus 53 for the prerender check); axe on every page, every project page included. Every route, the
+**Tests** — 593 passing on the web side, 98.2% lines, 88.7% branches, 94.3%
+functions (plus 96 for the prerender check and the SEO files); axe on every page, every project page included. Every route, the
 404, the project guard, the API client, the gallery, contact, the project page,
 its video facade and the YouTube address parser have their own specs; the
 static projects are parsed against the `Project` schema.
@@ -934,13 +1003,12 @@ Ordered by what hurts most on the day the site goes live.
 
 | Gap                                    | Consequence                                                                                                                                                                                                                                                                                 |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **SEO is partial**                     | Per-route `<title>` and meta description exist. Still no `robots.txt`, no `sitemap.xml`, no canonical, no Open Graph, no JSON-LD (ADR-0008, spec 01) — share previews are as broken as on the current site.                                                                                 |
 | **nginx not updated for prerendering** | Outside the repository. ADR-0005 (amended 2026-11-14) now prescribes `try_files $uri $uri/index.html =404;` and `error_page 404 /404/index.html;` for `/*`. The live config still has the `index.html` fallback, which would serve the prerendered home with a 200 under every unknown URL. |
 | **`pnpm infra:up` is broken**          | `minio/minio` no longer exists on Docker Hub (nor on quay.io), so the compose file cannot pull. `cgr.dev/chainguard/minio` runs the same binary and works with the seed script; switching to it is undecided.                                                                               |
 | **Contact route missing in the API**   | The form posts to `/api/contact` and tells the visitor sending is not available yet. Needs the Fastify route: Zod `contactMessageSchema`, rate limit, relay to a mail service (ADR-0007).                                                                                                   |
 | **API is a skeleton**                  | Only `/health`. No projects, no media, no contact route.                                                                                                                                                                                                                                    |
 | **No back office**                     | Content lives in `apps/web/src/app/core/data/static-content/static-content.ts`. Every edit is a commit.                                                                                                                                                                                     |
-| **Spec 05 missing; spec 04 drafted**   | `docs/specs/04-back-office.md` is a draft (2026-11-15) awaiting Stéphane's answers, with ADR-0019 (admin access hardening) proposed. The content/SEO spec 05 was never written.                                                                                                             |
+| **Spec 05 missing; spec 04 drafted**   | `docs/specs/04-back-office.md` is a draft (2026-11-15) awaiting Stéphane's answers, with ADR-0019 (admin access hardening) proposed. The content spec 05 was never written (the SEO it was to cover is built, `feat/seo`).                                                                  |
 
 ## Known accessibility debt — contact page
 
