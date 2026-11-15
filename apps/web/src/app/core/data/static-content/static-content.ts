@@ -370,7 +370,7 @@ export const PROJECTS: readonly StaticProject[] = [
     ],
     // Only the open-source stack: the rest of the environment is not shown
     // (Stéphane, 2026-11-15).
-    technologies: ['nextjs', 'react-native', 'typescript'],
+    technologies: ['nextjs', 'react-native', 'typescript', 'jira', 'github'],
     series: 'Web-Atrio',
     websiteUrl: 'https://www.ledger.com/',
     videoUrl: 'https://www.youtube.com/watch?v=e6Ioxi1UBgI',

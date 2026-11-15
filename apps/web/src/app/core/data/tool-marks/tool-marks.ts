@@ -47,6 +47,7 @@ const MARKS: Partial<Record<ToolSlug, string>> = {
   'google-analytics': simpleIcon('googleanalytics'),
   docker: simpleIcon('docker'),
   git: simpleIcon('git'),
+  github: simpleIcon('github'),
   aws: simpleIcon('amazonwebservices'),
   'claude-code': simpleIcon('claude'),
   flutter: simpleIcon('flutter'),
