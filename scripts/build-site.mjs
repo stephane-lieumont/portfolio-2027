@@ -3,6 +3,7 @@
 // serving its read routes only, so neither MinIO nor a mail server has to
 // run. `pnpm verify` ends with it, locally and in CI.
 import { spawn, spawnSync } from 'node:child_process';
+import { once } from 'node:events';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
@@ -26,7 +27,7 @@ async function waitUntilServing(url, server) {
   const deadline = Date.now() + 20_000;
   while (Date.now() < deadline) {
     if (server.exitCode !== null) throw new Error(`the content API exited (${server.exitCode})`);
-    const response = await fetch(url).catch(() => null);
+    const response = await fetch(url, { signal: AbortSignal.timeout(2_000) }).catch(() => null);
     if (response?.ok) return;
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
@@ -45,6 +46,13 @@ const apiEnv = {
 
 let server;
 let status = 1;
+// A cancelled CI job or Ctrl-C must not leave the API holding its port.
+for (const signal of ['SIGINT', 'SIGTERM']) {
+  process.once(signal, () => {
+    server?.kill();
+    process.exit(1);
+  });
+}
 try {
   const seed = spawnSync(process.execPath, ['src/scripts/seed-content.ts'], {
     cwd: api,
@@ -69,7 +77,11 @@ try {
 } catch (error) {
   console.error(`build-site: ${error.message}`);
 } finally {
-  server?.kill();
+  if (server && server.exitCode === null) {
+    const exited = once(server, 'exit');
+    server.kill();
+    await exited;
+  }
   rmSync(directory, { recursive: true, force: true });
 }
 

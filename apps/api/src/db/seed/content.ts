@@ -11,8 +11,6 @@ import type { Artwork, Project } from '@portfolio/shared-types/project';
  * same day keep the order they have here, which is the order they are seeded in.
  */
 
-// Ordered by releasedAt descending, as spec 03 settles, work still going on
-// first. No manual sort field: two sources of truth for order always drift.
 // Only the years are sourced and shown (Stéphane, 2026-11-15); the months of
 // the 2024 missions only keep them in the order he gave.
 export const PROJECTS: readonly Project[] = [

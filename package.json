@@ -11,7 +11,7 @@
     "dev": "pnpm --parallel --filter \"./apps/*\" dev",
     "dev:web": "pnpm --filter @portfolio/web dev",
     "dev:api": "pnpm --filter @portfolio/api dev",
-    "build": "pnpm -r build",
+    "build": "pnpm -r --filter=!@portfolio/web build && pnpm build:site",
     "build:site": "node scripts/build-site.mjs",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",

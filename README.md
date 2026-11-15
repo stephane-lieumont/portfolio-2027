@@ -43,7 +43,7 @@ infra/                docker-compose (MinIO, API)
 | Command                        | What it does                                          |
 | ------------------------------ | ----------------------------------------------------- |
 | `pnpm dev`                     | web + api in parallel                                 |
-| `pnpm build`                   | build every package                                   |
+| `pnpm build`                   | build every package, the site through `build:site`    |
 | `pnpm test`                    | tests, 80% coverage threshold                         |
 | `pnpm verify`                  | typecheck + lint + format + tests + `build:site`      |
 | `pnpm build:site`              | seeds a throwaway API and prerenders the site from it |

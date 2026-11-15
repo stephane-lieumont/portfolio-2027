@@ -18,7 +18,7 @@ async function fromApi(base) {
     const url = `${base.replace(/\/$/, '')}${path}`;
     let response;
     try {
-      response = await fetch(url);
+      response = await fetch(url, { signal: AbortSignal.timeout(10_000) });
     } catch (error) {
       throw new Error(
         `cannot reach the content API at ${url} (${error.cause?.code ?? error.message}). ` +
@@ -29,12 +29,23 @@ async function fromApi(base) {
     if (!response.ok) throw new Error(`${url} answered ${response.status}`);
     return response.json();
   };
-  return { projects: await read('/api/projects'), artworks: await read('/api/artworks') };
+  const content = { projects: await read('/api/projects'), artworks: await read('/api/artworks') };
+  // An unseeded database answers 200 with nothing: a site with no work is a failed build.
+  if (content.projects.length === 0 || content.artworks.length === 0) {
+    throw new Error(`${base} serves no project or no piece: is its database seeded?`);
+  }
+  return content;
 }
 
+// Parsed as the API parses it on the way out (trimmed, unknown keys dropped),
+// so the tests see what a build would.
 async function fromSeed() {
   const { PROJECTS, ARTWORKS } = await import(SEED.href);
-  return { projects: PROJECTS, artworks: ARTWORKS };
+  const { artworkSchema, projectSchema } = await import('@portfolio/shared-types/project');
+  return {
+    projects: PROJECTS.map((project) => projectSchema.parse(project)),
+    artworks: ARTWORKS.map((artwork) => artworkSchema.parse(artwork)),
+  };
 }
 
 function render({ projects, artworks }, source) {
