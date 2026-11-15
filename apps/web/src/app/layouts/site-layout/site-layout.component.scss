@@ -1,16 +1,19 @@
 // The header of the approved « Bascule » mockup, value for value, written
 // mobile-first (ADR-0011): 72% glass, the role line in the world's muted tone,
-// links 32–36px tall. Shipped as the mockup on purpose (Stéphane, 2026-11-14:
-// « sois iso maquette, on verra plus tard pour les contrastes »): the muted
-// role falls below AA over a passing image and the links are under the 44px
-// target of ADR-0010. Both are listed as deferred debt in STATUS.md.
+// links 32–36px tall drawn, 44px to the touch (an invisible hit area, the
+// responsive audit of 2026-11-15), the role on a glass of its own (below).
 //
 // Rules keyed on the document's world (the switch's thumb and the ink on it)
 // live in src/styles/_world.scss: from here encapsulation would scope them away.
 
 .top {
+  // Below 28rem the role takes a row of its own, which scrolls away: only the
+  // navigation row stays pinned (the responsive audit, Stéphane 2026-11-15).
+  --top-pad: 12px;
+  --who-size: 12px;
+  --who-row: calc(var(--top-pad) + var(--who-size) * 1.15 + var(--space-2));
   position: sticky;
-  inset-block-start: env(safe-area-inset-top, 0px);
+  inset-block-start: calc(env(safe-area-inset-top, 0px) - var(--who-row));
   // The mockup's layers: the stage (20) passes under the header (30) and the
   // dock (50), blurred by their glass; only the sweep lifts it, as its own
   // view-transition group.
@@ -23,27 +26,38 @@
 
 .top__inner {
   display: flex;
-  // The one narrow-width addition. Below about 410px the mockup's right-hand
-  // group leaves the role narrower than its longest word (0px at 320px), so
-  // the text spills out of its box. Here the group drops to a second row
-  // instead, still aligned right.
+  // The one narrow-width addition. Below 28rem the mockup's right-hand group
+  // leaves the role narrower than its longest word (0px at 320px), so the
+  // role takes the first row and the group a second, still aligned right.
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-2) 16px;
   max-inline-size: 1320px;
   margin-inline: auto;
-  padding-block: 14px;
+  padding-block: var(--top-pad);
 }
 
 .top__who {
-  flex: 1 1 3.5rem;
+  flex: 1 1 100%;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--who-size);
   line-height: 1.15;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--world-muted);
+}
+
+// The muted role on the 72% glass fell to 2.35:1 over a light cover. A second
+// layer of the same glass behind the words only (92% in all) holds AA at the
+// worst pixel in both worlds, and vanishes over the bare ground
+// (accessibility fix, Stéphane 2026-11-15).
+.top__who-text {
+  --who-glass: color-mix(in srgb, var(--world-ground) 72%, transparent);
+  background: var(--who-glass);
+  box-shadow: 0 0 4px 2px var(--who-glass);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 // The language link (ADR-0017) made the second row 34px too wide at 320px in
@@ -51,13 +65,15 @@
 // switch keeps its two columns equal (they part as soon as it is squeezed,
 // and the thumb, half its width, no longer sits on the current link).
 .top__end {
+  --end-gap: 3px;
   margin-inline-start: auto;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: var(--end-gap);
 }
 
 .top__link {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -67,6 +83,18 @@
   font: 500 12px/1 var(--font-sans);
   color: inherit;
   text-decoration: none;
+}
+
+// Drawn as the mockup, touched at 44px: the hit area grows to the target on
+// whichever axis falls short, and never shrinks the link. Sideways it grows
+// by half the gap at most, so two neighbours never share a point (the flag
+// stays under 44px wide below 375px: 30px at 320).
+.top__link::before,
+.switch__link::before {
+  content: '';
+  position: absolute;
+  inset: min(0px, calc(50% - var(--size-target) / 2));
+  inset-inline: max(min(0px, calc(50% - var(--size-target) / 2)), var(--end-gap, 0px) / -2);
 }
 
 .top__flag {
@@ -116,6 +144,7 @@
 }
 
 .switch__link {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,9 +161,20 @@
   outline-offset: -1px;
 }
 
+@media (min-width: 28rem) {
+  .top {
+    --top-pad: 14px;
+    inset-block-start: env(safe-area-inset-top, 0px);
+  }
+
+  .top__who {
+    flex: 1 1 3.5rem;
+  }
+}
+
 @media (min-width: 375px) {
   .top__end {
-    gap: 8px;
+    --end-gap: 8px;
   }
 
   .top__link {

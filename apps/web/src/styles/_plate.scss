@@ -24,6 +24,71 @@
   transition: background-color 400ms linear 400ms;
 }
 
+// A picture slow to come (spec 07 §16). PlateImage stamps `data-plate-wait`
+// once the plate has waited, on screen, past its delay, and drives the
+// ::after with Web Animations: here only its shape. Nothing in it is read by
+// assistive technology; the alt stays on the image.
+.plate[data-plate-wait] {
+  overflow: clip;
+}
+
+// A wall plate: a band 60% of the plate wide, a highlight then a shadow, so it
+// reads on light, dark and orange plates alike without a blend mode.
+.plate[data-plate-wait='sweep']::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 1;
+  inline-size: 60%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.14) 40%,
+    rgb(255 255 255 / 0.14) 50%,
+    rgb(0 0 0 / 0.08) 50%,
+    rgb(0 0 0 / 0.08) 62%,
+    transparent
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+// The viewer: three points, light on its dark ground.
+.plate--contain[data-plate-wait='pulse']::after {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 1;
+  inline-size: 48px;
+  block-size: 8px;
+  translate: -50% -50%;
+  background: radial-gradient(circle, var(--world-ink) 3px, transparent 3.5px) 0 50% / 16px 8px
+    repeat-x;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+// Under reduced motion: no band, a still word, ink on the page's ground.
+.plate__wait {
+  display: none;
+}
+
+.plate[data-plate-wait='still'] .plate__wait {
+  position: absolute;
+  inset-block-start: 16px;
+  inset-inline-start: 16px;
+  z-index: 1;
+  display: block;
+  padding: 4px 8px;
+  background: var(--world-ground);
+  color: var(--world-ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .plate__fallback {
   display: none;
 }

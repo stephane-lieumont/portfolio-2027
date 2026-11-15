@@ -6,6 +6,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  min-block-size: var(--size-target);
   padding: 13px 20px;
   border-radius: 999px;
   font: 500 14px/1 var(--font-sans);

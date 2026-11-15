@@ -107,6 +107,7 @@ function roleLine(project: StaticProject): string {
             loading="lazy"
             decoding="async"
           />
+          <span class="plate__wait" aria-hidden="true" i18n="@@plate.loading">Chargement…</span>
           <span class="plate__fallback" aria-hidden="true">
             <span class="plate__fallback-label" i18n="@@plate.unavailable">Image indisponible</span>
             <span class="plate__fallback-alt">{{ cover.alt | inLocale }}</span>

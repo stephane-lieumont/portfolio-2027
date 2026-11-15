@@ -47,6 +47,12 @@ export class SiteLayoutComponent {
   // The contact page carries the same networks in its own content; the dock
   // would only repeat them (Stéphane, 2026-11-15).
   protected readonly showDock = computed(() => this.active.path() !== PATHS.contact);
+  /** Neither world is the page (contact, the 404): the switch shows where you came from, idle. */
+  protected readonly switchIdle = computed(
+    () =>
+      currentness(this.active.path(), PATHS.dev) === null &&
+      currentness(this.active.path(), PATHS.cgi) === null,
+  );
 
   /** The same page in the other tree: a plain link, which works without script. */
   protected readonly language = computed(() => languageSwitch(this.active.path(), SITE_LOCALE));

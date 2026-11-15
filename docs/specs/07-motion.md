@@ -1587,3 +1587,23 @@ The world pages were redesigned on a mockup Stéphane approved on 2026-11-14. Th
 - **§9.1–9.3 (route transitions)** — amended by ADR-0014 between `/developpeur`, `/graphisme-3d` and `/contact`: a diagonal sweep at the home split's angle, about 1.3 s, every new navigation landing at the top. All other routes keep §9.2's crossfade. §9.4 (the lightbox opening from its tile) stands.
 
 Two moving parts this spec did not foresee also ship with the world pages: a background particle canvas and the hero point cloud, each a `requestAnimationFrame` loop. They share one frame loop with Lenis, stop when the tab is hidden, and draw a single still frame under `prefers-reduced-motion`.
+
+## 16. A picture loading, and its arrival (2026-11-15)
+
+Motion-expert spec, approved by Stéphane on 2026-11-15 with the responsive audit. Implemented by `PlateImageDirective` (`common/directives/plate-image/`) and `src/styles/_plate.scss`.
+
+**When it shows.** Only for a picture still loading after a delay **while its plate is on screen**: 400 ms on the wall (the mosaic, the project cards, a project's presentation visual, a client's logo), 360 + 400 ms in the viewer, so its plate ↔ tile morph never captures it. A cached picture, or one arriving within the delay, shows nothing. One shared `IntersectionObserver` (`PlateWatch`) starts the delay only in view, restarts it when a plate comes back, and pauses a running indicator off screen: at most one composited layer per visible plate.
+
+**The wall: « the fold ».** `data-plate-wait="sweep"` on the plate; its `::after` is a band 60 % of the plate's width, a 14 % white stripe then an 8 % black one (a highlight and a shadow, legible on light, dark and orange plates with no blend mode), skewed by the sweep's lean on this viewport, `atan(SWEEP_LEAN · vw / vh)` (about 20° at 16:9, 5° on an upright phone). Web Animations on `pseudoElement: '::after'`: `transform` over 2100 ms, infinite, crossing the plate in the first 67 % on `--ease-state` then resting off it; `opacity` 0 → 1 in 255 ms (`--motion-enter`) on `--ease-enter`. The plate clips it (`overflow: clip`, while waiting only).
+
+**The viewer.** `data-plate-wait="pulse"`: three points, light on the dark ground, centred, opacity 0.35 ↔ 1 over 1200 ms on `--ease-state`.
+
+**Stopping.** On load or on error the indicator fades from its current opacity to 0 in 180 ms (`--motion-exit`) on `--ease-exit`; then both animations are cancelled and the attribute removed. A failure shows the existing fallback (« Image indisponible » and the alt) only after that fade.
+
+**The arrival.** Opacity 0 → 1 over 510 ms (`--duration-510`) on `EASE_ARRIVE`; wall pictures also settle from `scale: 1.025` on `--ease-enter`. The viewer's picture fades only, in 360 ms. No blur (it re-rasterises), no diagonal clip (it would fight the row reveal's `clip-path`). A picture held by the scroll reveal leaves its arrival to the reveal.
+
+**Reduced motion.** No band, no pulse, no settle: after the same delay, a still chip « Chargement… » (EN « Loading… », `@@plate.loading`), mono like the fallback's label, the world's ink on its ground (AA), `aria-hidden`; the arrival is a 200 ms linear fade.
+
+**Accessibility.** Nothing is announced: no text in `::after`, the chip hidden from assistive technology, no `aria-busy` or live region; the alt stays on the image.
+
+**Shared properties.** The band lives on the plate's `::after` and touches no property used by the scroll reveal (`clip-path`, `scale` on the picture), the hero's cut, settle and drift, or the viewer's morph. The reveal waits on the same decode (`painted()`); its 2 s safety net only releases into that wait, which the band now fills. A tile's hover scale is masked during its arrival (accepted).

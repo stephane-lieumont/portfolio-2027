@@ -27,6 +27,11 @@ export interface PublicImage {
   readonly alt: LocalizedText;
   readonly width: number;
   readonly height: number;
+  /**
+   * The widths of its WebP variants beside it (`<name>-<width>.webp`, apps/api
+   * `media:public`), never above the source's own.
+   */
+  readonly variants: readonly number[];
 }
 
 /**
@@ -43,6 +48,8 @@ export const STATIC_ASSETS: Readonly<Record<string, PublicImage>> = {
     },
     width: 500,
     height: 392,
+    // The 2022 cut-out is 500px wide: no larger variant until a larger master.
+    variants: [500],
   },
 };
 

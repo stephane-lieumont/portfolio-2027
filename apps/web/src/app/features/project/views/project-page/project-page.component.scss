@@ -190,6 +190,7 @@ h2.block__label {
 
 .steps p {
   margin: 0;
+  max-inline-size: var(--measure);
   color: color-mix(in srgb, var(--world-ink) 82%, var(--world-ground));
 }
 
@@ -224,6 +225,7 @@ h2.block__label {
 }
 
 .closing {
+  --work-end: var(--dock-clearance);
   display: block;
   margin-top: clamp(64px, 9vw, 136px);
 }

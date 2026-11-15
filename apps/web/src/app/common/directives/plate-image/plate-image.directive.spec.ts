@@ -2,9 +2,17 @@ import { Component, provideZonelessChangeDetection, signal } from '@angular/core
 
 import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
 import { TestBed } from '@angular/core/testing';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PlateImageDirective, PlateWarmer, isPainted, painted } from './plate-image.directive';
+import {
+  PlateImageDirective,
+  PlateWatch,
+  WAIT_DELAY_MS,
+  isPainted,
+  painted,
+  sweepKeyframes,
+  sweepSkew,
+} from './plate-image.directive';
 
 @Component({
   imports: [PlateImageDirective],
@@ -78,7 +86,7 @@ describe('a picture already in cache', () => {
   });
 });
 
-describe('PlateWarmer', () => {
+describe('PlateWatch', () => {
   it('turns a lazy picture eager and low priority once it is a screen and a half away', () => {
     let report: ((entries: { target: Element; isIntersecting: boolean }[]) => void) | null = null;
     vi.stubGlobal(
@@ -94,7 +102,7 @@ describe('PlateWarmer', () => {
     TestBed.configureTestingModule({ providers: [provideZonelessChangeDetection()] });
     const img = document.createElement('img');
     img.loading = 'lazy';
-    TestBed.inject(PlateWarmer).warm(img);
+    TestBed.inject(PlateWatch).warm(img);
 
     report!([{ target: img, isIntersecting: false }]);
     expect(img.loading).toBe('lazy');
@@ -108,7 +116,7 @@ describe('PlateWarmer', () => {
 @Component({
   imports: [PlateImageDirective],
   template: `
-    <span class="plate" [attr.data-reveal]="pending ? 'pending' : null">
+    <span class="plate is-current" [attr.data-reveal]="pending ? 'pending' : null">
       <img appPlate="viewer" src="/medias/cgi/b.jpg" alt="" />
     </span>
   `,
@@ -141,11 +149,12 @@ describe('a picture arriving', () => {
     return { animate, plate: host.querySelector<HTMLElement>('.plate')! };
   }
 
-  it('fades in once decoded, in the viewer’s 400ms', async () => {
+  it('fades in once decoded, in the viewer’s 360ms, without the wall’s settle', async () => {
     const { animate, plate } = await load(false, false);
     expect(plate.dataset['plate']).toBe('ready');
+    expect(animate).toHaveBeenCalledTimes(1);
     expect(animate).toHaveBeenCalledWith([{ opacity: 0 }, { opacity: 1 }], {
-      duration: 400,
+      duration: 360,
       easing: 'cubic-bezier(0.45, 0, 0.25, 1)',
     });
   });
@@ -159,5 +168,157 @@ describe('a picture arriving', () => {
     const { animate, plate } = await load(false, true);
     expect(plate.dataset['plate']).toBe('ready');
     expect(animate).not.toHaveBeenCalled();
+  });
+});
+
+describe('the band’s lean', () => {
+  it('follows the sweep’s diagonal on the viewport', () => {
+    expect(sweepSkew(1600, 900)).toBeCloseTo(19.6, 1);
+    expect(sweepSkew(390, 844)).toBeCloseTo(5.3, 1);
+  });
+
+  it('crosses the plate in the first two-thirds of a cycle, then rests off it', () => {
+    const frames = sweepKeyframes(20);
+    expect(frames.map((f) => f.offset)).toEqual([0, 0.67, 1]);
+    expect(frames[1]['transform']).toBe(frames[2]['transform']);
+    expect(frames[0]['transform']).toContain('skewX(-20deg)');
+  });
+});
+
+describe('a picture slow to come', () => {
+  let report: ((entries: { target: Element; isIntersecting: boolean }[]) => void) | null = null;
+  const runs: { play: ReturnType<typeof vi.fn>; pause: ReturnType<typeof vi.fn> }[] = [];
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    report = null;
+    runs.length = 0;
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(callback: typeof report) {
+          report = callback;
+        }
+        observe = () => undefined;
+        unobserve = () => undefined;
+      },
+    );
+    Element.prototype.animate = vi.fn(() => {
+      const run = {
+        play: vi.fn(),
+        pause: vi.fn(),
+        cancel: vi.fn(),
+        finished: Promise.resolve(),
+      };
+      runs.push(run);
+      return run as unknown as Animation;
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  function render(reduced = false, kind: 'wall' | 'viewer' = 'wall') {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: ReducedMotionService, useValue: { reduced: signal(reduced) } },
+      ],
+    });
+    const fixture =
+      kind === 'wall' ? TestBed.createComponent(Host) : TestBed.createComponent(Viewer);
+    fixture.detectChanges();
+    TestBed.tick();
+    const host = fixture.nativeElement as HTMLElement;
+    const plate = host.querySelector<HTMLElement>('.plate')!;
+    return { plate, img: host.querySelector('img')! };
+  }
+
+  const inView = (plate: Element, isIntersecting: boolean) =>
+    report!([{ target: plate, isIntersecting }]);
+
+  it('says nothing before its delay', () => {
+    const { plate } = render();
+    inView(plate, true);
+    vi.advanceTimersByTime(WAIT_DELAY_MS.wall - 1);
+    expect(plate.hasAttribute('data-plate-wait')).toBe(false);
+    vi.advanceTimersByTime(1);
+    expect(plate.dataset['plateWait']).toBe('sweep');
+  });
+
+  it('only waits while on screen: the delay restarts once back in view', () => {
+    const { plate } = render();
+    inView(plate, true);
+    vi.advanceTimersByTime(WAIT_DELAY_MS.wall - 100);
+    inView(plate, false);
+    vi.advanceTimersByTime(WAIT_DELAY_MS.wall);
+    expect(plate.hasAttribute('data-plate-wait')).toBe(false);
+    inView(plate, true);
+    vi.advanceTimersByTime(WAIT_DELAY_MS.wall);
+    expect(plate.dataset['plateWait']).toBe('sweep');
+  });
+
+  it('pauses its sweep off screen and resumes it in view', () => {
+    const { plate } = render();
+    inView(plate, true);
+    vi.advanceTimersByTime(WAIT_DELAY_MS.wall);
+    inView(plate, false);
+    expect(runs.every((run) => run.pause.mock.calls.length === 1)).toBe(true);
+    inView(plate, true);
+    expect(runs.every((run) => run.play.mock.calls.length === 1)).toBe(true);
+  });
+
+  it('stops once the picture is there, and lets it arrive', async () => {
+    const { plate, img } = render();
+    inView(plate, true);
+    vi.advanceTimersByTime(WAIT_DELAY_MS.wall);
+    img.dispatchEvent(new Event('load'));
+    await vi.runAllTimersAsync();
+    expect(plate.dataset['plate']).toBe('ready');
+    expect(plate.hasAttribute('data-plate-wait')).toBe(false);
+  });
+
+  it('says it in words, still, under reduced motion', () => {
+    const { plate } = render(true);
+    inView(plate, true);
+    vi.advanceTimersByTime(WAIT_DELAY_MS.wall);
+    expect(plate.dataset['plateWait']).toBe('still');
+    expect(runs).toHaveLength(0);
+  });
+
+  it('waits in the viewer until its morph is over, then pulses', () => {
+    const { plate } = render(false, 'viewer');
+    inView(plate, true);
+    vi.advanceTimersByTime(WAIT_DELAY_MS.viewer - 1);
+    expect(plate.hasAttribute('data-plate-wait')).toBe(false);
+    vi.advanceTimersByTime(1);
+    expect(plate.dataset['plateWait']).toBe('pulse');
+  });
+
+  it('never waits on a viewer slide that is not shown, until it is', async () => {
+    const { plate } = render(false, 'viewer');
+    plate.classList.remove('is-current');
+    await Promise.resolve();
+    inView(plate, true);
+    vi.advanceTimersByTime(WAIT_DELAY_MS.viewer * 2);
+    expect(plate.hasAttribute('data-plate-wait')).toBe(false);
+    plate.classList.add('is-current');
+    await Promise.resolve();
+    vi.advanceTimersByTime(WAIT_DELAY_MS.viewer);
+    expect(plate.dataset['plateWait']).toBe('pulse');
+  });
+
+  it('fades out before the fallback shows when the picture fails', async () => {
+    const { plate, img } = render();
+    inView(plate, true);
+    vi.advanceTimersByTime(WAIT_DELAY_MS.wall);
+    img.removeAttribute('srcset');
+    img.dispatchEvent(new Event('error'));
+    await vi.runAllTimersAsync();
+    expect(plate.dataset['plate']).toBe('error');
+    expect(plate.hasAttribute('data-plate-wait')).toBe(false);
   });
 });

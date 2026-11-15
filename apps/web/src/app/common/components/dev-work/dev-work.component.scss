@@ -10,7 +10,8 @@
 .work {
   display: grid;
   gap: 24px;
-  padding-block: clamp(32px, 5vw, 72px) clamp(48px, 8vw, 120px);
+  // `--work-end`: set by a page that ends on this band, to clear the fixed dock.
+  padding-block: clamp(32px, 5vw, 72px) max(clamp(48px, 8vw, 120px), var(--work-end, 0px));
 }
 
 .work__head {

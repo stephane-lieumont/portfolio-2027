@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
+import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
 import { logoWidth } from '@common/utils/logo-width/logo-width';
 import type { StaticLogo } from '@core/data/static-content/static-content';
 
@@ -15,15 +16,19 @@ import type { StaticLogo } from '@core/data/static-content/static-content';
  */
 @Component({
   selector: 'app-client-logo',
+  imports: [PlateImageDirective],
   template: `<span class="field" aria-hidden="true"><span class="field__dots"></span></span
     ><img
       class="logo"
+      appPlate="wall"
       [src]="logo().src"
+      [attr.srcset]="srcset()"
+      [attr.sizes]="srcset() ? sizes() : null"
       [alt]="label() ?? ''"
       [width]="logo().width"
       [height]="logo().height"
       decoding="async"
-    />`,
+    /><span class="plate__wait" aria-hidden="true" i18n="@@plate.loading">Chargement…</span>`,
   styles: `
     :host {
       position: absolute;
@@ -88,6 +93,19 @@ import type { StaticLogo } from '@core/data/static-content/static-content';
 export class ClientLogoComponent {
   readonly logo = input.required<StaticLogo>();
   readonly label = input<string | null>(null);
+  /**
+   * Its rendered width for a raster logo's srcset. Measured on CIR's (the one
+   * raster logo): 74–214px on a card, 107–281px on its page.
+   */
+  readonly sizes = input('(min-width: 900px) 179px, 214px');
+
+  protected readonly srcset = computed(() => {
+    const { src, variants } = this.logo();
+    if (!variants?.length) return null;
+    return variants
+      .map((width) => `${src.replace(/\.[a-z]+$/, `-${width}.webp`)} ${width}w`)
+      .join(', ');
+  });
 
   protected readonly width = computed(() => logoWidth(this.logo()).toFixed(3));
 }

@@ -7,7 +7,9 @@
      hero; the CV in the dock. -->
 <header class="top glass">
   <div class="top__inner">
-    <p class="top__who" i18n="@@site.role">Lead Tech &amp; graphiste 3D</p>
+    <p class="top__who">
+      <span class="top__who-text" i18n="@@site.role">Lead Tech &amp; graphiste 3D</span>
+    </p>
     <nav class="top__end" aria-label="Navigation principale" i18n-aria-label="@@shell.nav">
       <a
         class="top__link"
@@ -52,7 +54,7 @@
       </a>
       <!-- The world switch is navigation (ADR-0014): two links. The thumb
            behind them is painted from the document's world. -->
-      <ul class="switch" role="list">
+      <ul class="switch" [class.switch--idle]="switchIdle()" role="list">
         <li>
           <a
             class="switch__link switch__link--dev"
