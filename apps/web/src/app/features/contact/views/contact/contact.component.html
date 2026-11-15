@@ -84,7 +84,18 @@
       >
         Envoyer
       </button>
-      <p class="form__status" [class.form__status--sent]="state() === 'sent'" role="status">
+      <p
+        class="form__status"
+        [class.form__status--sent]="state() === 'sent'"
+        [class.form__status--error]="failed()"
+        role="status"
+      >
+        @if (state() === 'sent') {
+          <svg class="form__status-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <path d="m8.5 12.5 2.5 2.5 4.5-5" />
+          </svg>
+        }
         {{ status() }}
       </p>
     </div>

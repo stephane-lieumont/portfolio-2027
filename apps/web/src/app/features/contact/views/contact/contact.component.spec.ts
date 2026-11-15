@@ -205,6 +205,8 @@ describe('Contact — sending', () => {
     expect(button(host)?.classList).not.toContain('form__submit--sending');
     expect(statusOf(host)).toMatch(/^Merci/);
     expect(host.querySelector('.form__status')?.classList).toContain('form__status--sent');
+    expect(host.querySelector('.form__status')?.classList).not.toContain('form__status--error');
+    expect(host.querySelector('.form__status svg')?.getAttribute('aria-hidden')).toBe('true');
     expect(field(host, 'message').value).toBe('');
   });
 
@@ -249,6 +251,8 @@ describe('Contact — sending', () => {
 
     http.expectOne('/api/contact').flush(null, { status: 500, statusText: 'Server Error' });
     await fixture.whenStable();
+
+    expect(host.querySelector('.form__status')?.classList).toContain('form__status--error');
 
     expect(statusOf(host)).toMatch(/^Le message n’est pas parti\. Réessayez/);
   });

@@ -5,3 +5,21 @@
 :root[data-world='cgi'] .portrait__plate {
   background: var(--world-ink);
 }
+
+// The form's success and error colours follow the world the visitor came from
+// (Stéphane, 2026-11-15): vivid on the dark developer ground (6.9:1 and 6.2:1),
+// deep on the orange (4.9:1 and 5.5:1). Off the worlds, the scheme's semantics.
+:root {
+  --form-success: var(--text-success);
+  --form-danger: var(--text-danger);
+}
+
+:root[data-world='dev'] {
+  --form-success: var(--color-green-400);
+  --form-danger: var(--color-red-400);
+}
+
+:root[data-world='cgi'] {
+  --form-success: var(--color-green-800);
+  --form-danger: var(--color-red-800);
+}

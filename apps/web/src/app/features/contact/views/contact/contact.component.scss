@@ -119,15 +119,21 @@ textarea.form__control {
   }
 }
 
+// Red and dashed: the dash keeps the state readable without colour.
 .form__control[aria-invalid='true'] {
-  border-block-end-style: dashed;
-  border-block-end-color: var(--world-ink);
+  border-block-end: 2px dashed var(--form-danger);
+  padding-block-end: 9px;
+}
+
+.form__control[aria-invalid='true']:focus {
+  border-block-end-style: solid;
 }
 
 .form__error {
   margin: 0;
   font-size: 14px;
   font-weight: 600;
+  color: var(--form-danger);
 
   &::before {
     content: '↳ ';
@@ -185,9 +191,29 @@ textarea.form__control {
   }
 }
 
-.form__status--sent {
-  color: var(--world-ink);
+.form__status.form__status--sent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--form-success);
+  font-weight: 500;
   animation: form-thanks 520ms var(--ease-out) both;
+}
+
+.form__status.form__status--error {
+  color: var(--form-danger);
+  font-weight: 500;
+}
+
+.form__status-icon {
+  flex: none;
+  inline-size: 20px;
+  block-size: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 @keyframes form-thanks-fade {
@@ -302,7 +328,7 @@ textarea.form__control {
     animation-duration: 2.4s;
   }
 
-  .form__status--sent {
+  .form__status.form__status--sent {
     animation-name: form-thanks-fade;
   }
 

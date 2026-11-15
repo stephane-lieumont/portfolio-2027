@@ -137,6 +137,7 @@ export class ContactComponent {
   protected readonly errors = signal<Readonly<Record<Field, string>>>(NO_ERRORS);
   protected readonly state = signal<SendState>('idle');
   protected readonly status = computed(() => STATUS[this.state()]);
+  protected readonly failed = computed(() => !['idle', 'sending', 'sent'].includes(this.state()));
 
   protected submit(): void {
     if (this.state() === 'sending') return;
