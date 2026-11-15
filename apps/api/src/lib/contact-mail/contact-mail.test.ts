@@ -29,10 +29,7 @@ describe('renderContactMail', () => {
       { name: 'Ada', email: 'ada@example.org', message: 'Ligne 1\nLigne 2\n\nParagraphe 2' },
       SENT_AT,
     );
-    assert.match(
-      html,
-      /<p style="[^"]*">Ligne 1<br \/>Ligne 2<\/p><p style="[^"]*">Paragraphe 2<\/p>/,
-    );
+    assert.match(html, /Ligne 1<br \/>Ligne 2<br \/><br \/>Paragraphe 2/);
   });
 
   it('escapes everything the visitor wrote', () => {

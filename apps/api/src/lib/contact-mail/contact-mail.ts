@@ -10,6 +10,7 @@ export interface ContactMail {
 const INK = '#12100f';
 const ORANGE = '#f2a154';
 const MUTED = '#5c5652';
+const SERIF = "'Instrument Serif', Georgia, 'Times New Roman', serif";
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
 
 const ENTITIES: Readonly<Record<string, string>> = {
@@ -28,8 +29,7 @@ function paragraphsOf(message: string): string {
   return message
     .split(/\n{2,}/)
     .map((paragraph) => escapeHtml(paragraph).replace(/\n/g, '<br />'))
-    .map((paragraph) => `<p style="margin: 0 0 12px;">${paragraph}</p>`)
-    .join('');
+    .join('<br /><br />');
 }
 
 const formatDate = (date: Date): string =>
@@ -54,11 +54,12 @@ export function renderContactMail(message: ContactMessage, sentAt: Date): Contac
     message.message,
     '',
     '—',
-    'Envoyé depuis le formulaire de contact de stephane-lieumont.fr.',
-    `Répondre à ce mail écrit directement à ${name}.`,
+    'Envoyé depuis le formulaire de contact de stephane-lieumont.fr',
     '',
   ].join('\n');
 
+  // Tables, cell padding and longhand properties only: the shapes every mail
+  // client renders (Mailpit's HTML check, 2026-11-15). No style on <body>.
   const html = `<!doctype html>
 <html lang="fr">
 <head>
@@ -66,14 +67,28 @@ export function renderContactMail(message: ContactMessage, sentAt: Date): Contac
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${escapeHtml(subject)}</title>
 </head>
-<body style="margin: 0; padding: 24px 16px; background: #ffffff; font: 400 15px/1.6 ${SANS}; color: ${INK};">
-<div style="max-width: 600px; margin: 0 auto;">
-  <p style="margin: 0 0 20px; padding-bottom: 10px; border-bottom: 3px solid ${ORANGE}; font: 600 15px/1.3 ${SANS};">Stéphane Lieumont <span style="font-weight: 400; color: ${MUTED};">— portfolio</span></p>
-  <p style="margin: 0;"><strong>${escapeHtml(name)}</strong> &lt;${escapeHtml(message.email)}&gt;</p>
-  <p style="margin: 0 0 20px; font-size: 13px; color: ${MUTED};">${escapeHtml(date)}</p>
-  <div style="border-left: 3px solid ${ORANGE}; padding: 4px 0 4px 16px;">${paragraphsOf(message.message)}</div>
-  <p style="margin: 24px 0 0; padding-top: 10px; border-top: 1px solid #e6e3df; font-size: 12px; color: ${MUTED};">Envoyé depuis le formulaire de contact de stephane-lieumont.fr. Répondre à ce mail écrit directement à ${escapeHtml(name)}.</p>
-</div>
+<body>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff">
+<tr><td align="center" style="padding-top: 24px; padding-right: 16px; padding-bottom: 24px; padding-left: 16px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 600px;">
+  <tr>
+    <td style="padding-bottom: 12px; border-bottom: 3px solid ${ORANGE}; font-family: ${SANS}; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; color: ${INK};">Stéphane Lieumont <span style="font-family: ${SERIF}; font-style: italic; font-weight: 400; color: ${MUTED};">portfolio</span></td>
+  </tr>
+  <tr>
+    <td style="padding-top: 20px; font-family: ${SANS}; font-size: 15px; line-height: 22px; color: ${INK};"><strong>${escapeHtml(name)}</strong> &lt;${escapeHtml(message.email)}&gt;</td>
+  </tr>
+  <tr>
+    <td style="padding-bottom: 20px; font-family: ${SANS}; font-size: 13px; line-height: 20px; color: ${MUTED};">${escapeHtml(date)}</td>
+  </tr>
+  <tr>
+    <td style="padding-top: 4px; padding-left: 16px; border-left: 3px solid ${ORANGE}; font-family: ${SANS}; font-size: 15px; line-height: 24px; color: ${INK};">${paragraphsOf(message.message)}</td>
+  </tr>
+  <tr>
+    <td style="padding-top: 20px; font-family: ${SANS}; font-size: 12px; line-height: 18px; color: ${MUTED};">Envoyé depuis le formulaire de contact de stephane-lieumont.fr</td>
+  </tr>
+</table>
+</td></tr>
+</table>
 </body>
 </html>
 `;
