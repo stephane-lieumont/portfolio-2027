@@ -47,6 +47,7 @@ infra/                docker-compose (MinIO, API)
 | `pnpm test`                    | tests, 80% coverage threshold                         |
 | `pnpm verify`                  | typecheck + lint + format + tests + `build:site`      |
 | `pnpm build:site`              | seeds a throwaway API and prerenders the site from it |
+| `pnpm test:site-image`         | builds the site's nginx image and checks it (Docker)  |
 | `pnpm format`                  | Prettier across the repo                              |
 | `pnpm infra:up` / `infra:down` | MinIO containers                                      |
 
@@ -62,6 +63,18 @@ pnpm --filter @portfolio/api admin:hash    # argon2 hash for the admin password
 ```
 
 The site is prerendered from the API (ADR-0008, ADR-0022): `pnpm --filter @portfolio/web build` reads `CONTENT_API_URL` (default `http://localhost:3000`) and fails if no seeded API answers there. `pnpm build:site` starts one for the build and stops it.
+
+### The site image
+
+Production serves the prerendered trees from an nginx image (ADR-0021, ADR-0023): [`apps/web/Dockerfile`](apps/web/Dockerfile) copies `dist/web/browser` and [`apps/web/nginx/nginx.conf`](apps/web/nginx/nginx.conf), listens on 8080 and answers `/healthz`. It builds nothing; build the site first:
+
+```bash
+pnpm build:site
+docker build -t portfolio-site apps/web
+pnpm test:site-image   # builds and runs the image, checks routes, redirects, 404s and headers
+```
+
+The CSP hashes of the inline scripts are written by the build to `dist/web/nginx/csp-inline-scripts.conf`. `test:site-image` opens pages in headless Chrome when one is installed (`CHROME_PATH` to point at it) and skips that part otherwise. TLS, HSTS, `/api` and `/medias` belong to the VPS's reverse proxy, in the infrastructure repository.
 
 ## Configuration
 
