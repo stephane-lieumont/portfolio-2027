@@ -59,7 +59,7 @@ export class ProjectPageComponent {
     String(PROJECTS.indexOf(this.project()) + 1).padStart(2, '0'),
   );
   protected readonly tools = computed(() =>
-    this.project().technologies.map((slug) => toolView(slug)),
+    this.project().technologies.map((tool) => toolView(tool)),
   );
   protected readonly band = computed(() => closingBand(this.project(), PROJECTS));
 

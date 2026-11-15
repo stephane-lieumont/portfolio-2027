@@ -1,7 +1,6 @@
 import { DOCUMENT, Injectable, inject } from '@angular/core';
 import { Meta, MetaDefinition, Title } from '@angular/platform-browser';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy } from '@angular/router';
-import { softwareOf } from '@portfolio/shared-types/registries';
 
 import type { Artwork } from '@portfolio/shared-types';
 import { inLocale } from '@core/i18n/in-locale.pipe';
@@ -57,7 +56,7 @@ export function pieceDescription(
   piece: Pick<Artwork, 'title' | 'image' | 'software' | 'releasedAt'>,
 ): string {
   const title = inLocale(piece.title);
-  const tools = piece.software.map((slug) => softwareOf(slug).label).join(', ');
+  const tools = piece.software.map((tool) => inLocale(tool.label)).join(', ');
   const year = piece.releasedAt.slice(0, 4);
   const head = $localize`:@@piece.description.head:${title}:title: — rendu 3D (${tools}:tools:), ${year}:year:.`;
   const body = `${head} ${inLocale(piece.image.alt)}.`;

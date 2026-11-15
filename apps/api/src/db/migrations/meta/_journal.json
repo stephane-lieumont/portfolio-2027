@@ -22,6 +22,20 @@
       "when": 1794772642841,
       "tag": "0002_works",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1794776488009,
+      "tag": "0003_drop_provisional_media",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1794776488437,
+      "tag": "0004_media_tools_stack",
+      "breakpoints": true
     }
   ]
 }

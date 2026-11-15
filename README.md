@@ -55,7 +55,7 @@ infra/                docker-compose (MinIO, API)
 API-side:
 
 ```bash
-pnpm --filter @portfolio/api db:seed       # load the projects and 3D pieces (idempotent)
+pnpm --filter @portfolio/api db:seed       # load media, tools, Stack, projects, 3D pieces (idempotent)
 pnpm --filter @portfolio/api db:generate   # migration after a schema change
 pnpm --filter @portfolio/api db:studio     # database browser
 pnpm --filter @portfolio/api admin:hash    # argon2 hash for the admin password

@@ -13,8 +13,7 @@ import * as fontkit from 'fontkit';
 import sharp from 'sharp';
 import wawoff2 from 'wawoff2';
 
-import { SOFTWARE, TECHNOLOGIES } from '@portfolio/shared-types/registries';
-
+import { TOOLS } from '../src/app/core/data/content/content.generated.ts';
 import { WORLD_PAGES } from '../src/app/core/data/world-content/world-content.ts';
 import { OG_IMAGE } from '../src/app/core/i18n/site-paths.ts';
 
@@ -166,7 +165,7 @@ async function card(world, locale) {
   const colours = COLOURS[world];
   const label = LABELS[world][locale].toLocaleUpperCase(locale);
   const tools = WORLD_PAGES[world].eyebrowTools
-    .map((slug) => [...TECHNOLOGIES, ...SOFTWARE].find((tool) => tool.slug === slug)?.label ?? slug)
+    .map((slug) => TOOLS.find((tool) => tool.slug === slug)?.label[locale] ?? slug)
     .join(' · ')
     .toLocaleUpperCase(locale);
 

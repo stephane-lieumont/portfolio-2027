@@ -1,19 +1,8 @@
 import { z } from 'zod';
 
 import { localized } from '@portfolio/shared-types/localized';
-import { SOFTWARE, TECHNOLOGIES } from '@portfolio/shared-types/registries';
-import type { SoftwareSlug, TechnologySlug } from '@portfolio/shared-types/registries';
+import { toolSchema } from '@portfolio/shared-types/tool';
 import { youtubeVideoId } from '@portfolio/shared-types/video';
-
-// Validating against the registries means a typo fails at the API boundary
-// rather than rendering a missing glyph nobody notices. These live here rather
-// than in registries.ts so the browser can read the registries without pulling
-// Zod into its bundle.
-const technologySlugs = TECHNOLOGIES.map((t) => t.slug) as [TechnologySlug, ...TechnologySlug[]];
-const softwareSlugs = SOFTWARE.map((s) => s.slug) as [SoftwareSlug, ...SoftwareSlug[]];
-
-export const technologySlugSchema = z.enum(technologySlugs);
-export const softwareSlugSchema = z.enum(softwareSlugs);
 
 /** Which world a record belongs to: a dev `Project` or a 3D `Artwork` (spec 03). */
 export const workKindSchema = z.enum(['dev', 'cgi']);
@@ -133,7 +122,8 @@ export const projectFieldsSchema = z.object({
    * Never invented: empty when none are sourced.
    */
   missionSteps: z.array(localized(copy(240))).max(10),
-  technologies: z.array(technologySlugSchema),
+  /** The tools credited, resolved from the ids the record stores (spec 04 §2). */
+  technologies: z.array(toolSchema),
   /**
    * Groups related projects: their pages end on the series rather than on
    * other work. A proper name, the same in both languages, and the grouping key.
@@ -190,10 +180,27 @@ export function visualIssues({
   return issues;
 }
 
-export const projectSchema = projectFieldsSchema.superRefine((project, context) => {
+const refuseVisualIssues = (project: ProjectVisuals, context: z.RefinementCtx): void => {
   for (const message of visualIssues(project)) context.addIssue({ code: 'custom', message });
-});
+};
+
+export const projectSchema = projectFieldsSchema.superRefine(refuseVisualIssues);
 export type Project = z.infer<typeof projectSchema>;
+
+/**
+ * A project as stored (ADR-0022): its images are media assets and its tools
+ * are tools, all by id, so renaming a slug or replacing a file breaks no
+ * reference; the API resolves them into the shapes above when it serves it.
+ */
+export const projectRecordSchema = projectFieldsSchema
+  .extend({
+    technologies: z.array(z.uuid()),
+    cover: z.uuid().optional(),
+    presentation: z.uuid().optional(),
+    logo: z.uuid().optional(),
+  })
+  .superRefine(refuseVisualIssues);
+export type ProjectRecord = z.infer<typeof projectRecordSchema>;
 
 /** Where the mosaic crops a render around, each axis in [0, 1] (spec 03, ADR-0015). */
 export const focalPointSchema = z.object({
@@ -208,7 +215,7 @@ export const artworkSchema = z.object({
   slug: localizedSlugSchema,
   title: localized(z.string().max(160)),
   image: contentImageSchema,
-  software: z.array(softwareSlugSchema).min(1),
+  software: z.array(toolSchema).min(1),
   releasedAt: z.iso.date(),
   /** Doubles the tile in the mosaic. */
   featured: z.boolean(),
@@ -216,3 +223,10 @@ export const artworkSchema = z.object({
   focal: focalPointSchema.optional(),
 });
 export type Artwork = z.infer<typeof artworkSchema>;
+
+/** A 3D piece as stored (ADR-0022): its render and its tools by id. */
+export const artworkRecordSchema = artworkSchema.extend({
+  image: z.uuid(),
+  software: z.array(z.uuid()).min(1),
+});
+export type ArtworkRecord = z.infer<typeof artworkRecordSchema>;

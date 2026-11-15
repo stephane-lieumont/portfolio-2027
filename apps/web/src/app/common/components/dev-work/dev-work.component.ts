@@ -171,7 +171,7 @@ export class DevWorkComponent {
       ...project,
       period: workPeriod(project),
       roleLine: roleLine(project),
-      tools: project.technologies.slice(0, CARD_TOOLS).map((slug) => toolView(slug)),
+      tools: project.technologies.slice(0, CARD_TOOLS).map((tool) => toolView(tool)),
       moreTools: Math.max(0, project.technologies.length - CARD_TOOLS),
     })),
   );

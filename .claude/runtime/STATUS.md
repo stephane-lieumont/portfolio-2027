@@ -22,9 +22,22 @@ validated by `projectSchema` / `artworkSchema` (shared-types, now the shape the
 site renders; the provisional schema, its create/update inputs and the unused
 `ProjectsService` are gone), with `kind`, `status`, `slug_fr`/`slug_en`,
 `released_at` and timestamps as columns. Routes: `GET /api/projects`,
-`/api/artworks`, `/api/{projects,artworks}/:locale/:slug`, `/api/tools` (the
-code registries tagged with their world; tools stay in code for V1, the world
-pages and their stack stay static per spec 04 §1). Published only, validated on
+`/api/artworks`, `/api/{projects,artworks}/:locale/:slug`, `/api/tools` (every
+tool, icon resolved) and `/api/stack?domain=dev|cgi` (the world pages' Stack
+entries in order, tool resolved). **Media, tools and Stack in the database**
+(Stéphane's model, 2026-11-15, spec 04 §2, ADR-0022 amended): `media_assets`
+holds every image's metadata (16 renders, 2 covers and 2 presentation visuals
+in the bucket, 5 client logos and 46 tool marks in `public/`; files unmoved), `tools` (slug,
+label `{ fr, en }`, icon → asset), `stack` (tool → `tools` ON DELETE RESTRICT,
+unique per domain, position, points `[{ strongLine, secondLine }]` as JSON).
+Works store image and tool **ids**; the API resolves them
+(`src/lib/resolve-content/`) into the shapes the site rendered before, so the
+58 prerendered pages match `main`'s once bundle hashes, preload order and
+hydration template ids are set aside (measured). `deleteTool` / `toolUsage`
+(`src/db/tool-usage/`) refuse to delete a tool still credited or shown. The
+registries (`shared-types/registries.ts`), the front's mark map and
+`WORLD_STACKS` are gone; the front keeps only the Stack's grouped names
+(« RxJS / Signals », « .NET / C# ») and the world pages' top content. Published only, validated on
 the way out, `Cache-Control: no-cache`, no auth. The content's single source is
 `apps/api/src/db/seed/content.ts`, loaded by `pnpm --filter @portfolio/api
 db:seed` (validated, idempotent upsert). The site no longer holds it: the build
@@ -1122,7 +1135,7 @@ Ordered by what hurts most on the day the site goes live.
 | **nginx not updated for prerendering** | Outside the repository. ADR-0005 (amended 2026-11-14) now prescribes `try_files $uri $uri/index.html =404;` and `error_page 404 /404/index.html;` for `/*`. The live config still has the `index.html` fallback, which would serve the prerendered home with a 200 under every unknown URL.                                                                                                                                                                      |
 | **Contact keys not in production**     | The route works (`feat/contact-smtp`, ADR-0020) but production needs, in the server `.env`: `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER` and `CONTACT_TO` (his Gmail address), `SMTP_PASSWORD` (a Google app password), `TURNSTILE_SECRET`; and the Turnstile site key in `apps/web/src/app/core/config/turnstile.config.ts` (`PRODUCTION_SITE_KEY`, still the test key: the form fails closed). The API refuses to boot in production without them. |
 | **API has no write routes**            | V1 serves content read-only (ADR-0022). Media, tools as records and admin writes are V1.1. A record removed from the seed is not deleted from a database that holds it.                                                                                                                                                                                                                                                                                          |
-| **No back office**                     | Content lives in `apps/api/src/db/seed/content.ts`, loaded with `db:seed`. Every edit is a commit and a reseed.                                                                                                                                                                                                                                                                                                                                                  |
+| **No back office**                     | Content lives in `apps/api/src/db/seed/`, loaded with `db:seed`. Every edit is a commit and a reseed. The world pages' top content (eyebrow tools, current position, facts, lede) is to become editable fields with the back office (spec 04 §1, #54); it stays in `world-content.ts` for V1.                                                                                                                                                                    |
 | **Spec 05 missing; spec 04 drafted**   | `docs/specs/04-back-office.md` is a draft (2026-11-15) awaiting Stéphane's answers, with ADR-0019 (admin access hardening) proposed. The content spec 05 was never written (the SEO it was to cover is built, `feat/seo`).                                                                                                                                                                                                                                       |
 
 ## Known accessibility debt — contact page

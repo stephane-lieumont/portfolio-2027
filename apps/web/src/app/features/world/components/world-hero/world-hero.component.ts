@@ -3,7 +3,7 @@ import type { WorldKey, WorldPage } from '@portfolio/shared-types';
 
 import { type Glyph, nameWords } from '@common/utils/hero-letters';
 import { NAV } from '@core/data/nav-items';
-import { toolView } from '@core/data/tool-marks/tool-marks';
+import { toolBySlug, toolView } from '@core/data/tool-marks/tool-marks';
 import { inLocale } from '@core/i18n/in-locale.pipe';
 import { SITE_LOCALE, type SiteLocale } from '@core/i18n/site-locale/site-locale';
 
@@ -94,7 +94,7 @@ export class WorldHeroComponent {
   protected readonly label = computed(() => NAV[this.page().world].label);
   protected readonly tools = computed(() => {
     const page = this.page();
-    return page.eyebrowTools.map((slug) => toolView(slug).label).join(' · ');
+    return page.eyebrowTools.map((slug) => toolView(toolBySlug(slug)).label).join(' · ');
   });
   protected readonly roleWord = computed(() => inLocale(this.page().roleWord));
   protected readonly role = computed(() => roleGlyphs(this.roleWord(), this.page().world));

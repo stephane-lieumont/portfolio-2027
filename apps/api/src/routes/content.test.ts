@@ -1,4 +1,6 @@
 import type { Artwork, Project, PublicationStatus } from '@portfolio/shared-types/project';
+import type { StackEntry } from '@portfolio/shared-types/stack';
+import type { Tool } from '@portfolio/shared-types/tool';
 import { eq } from 'drizzle-orm';
 import Fastify, { type FastifyInstance } from 'fastify';
 import assert from 'node:assert/strict';
@@ -8,10 +10,23 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import { type OpenDatabase, openDatabase } from '../db/open-database.ts';
-import { works } from '../db/schema.ts';
+import { mediaAssets, works } from '../db/schema.ts';
 import { ARTWORKS, PROJECTS } from '../db/seed/content.ts';
+import { MEDIA, mediaId } from '../db/seed/media.ts';
 import { seedContent } from '../db/seed/seed.ts';
+import { STACK } from '../db/seed/stack.ts';
+import { TOOLS, toolId } from '../db/seed/tools.ts';
+import { resolveContent } from '../lib/resolve-content/resolve-content.ts';
 import contentRoutes from './content.ts';
+
+const CONTENT = {
+  media: MEDIA,
+  tools: TOOLS,
+  stack: STACK,
+  projects: PROJECTS,
+  artworks: ARTWORKS,
+};
+const SERVED = resolveContent(CONTENT);
 
 let directory: string;
 let database: OpenDatabase;
@@ -20,7 +35,7 @@ let app: FastifyInstance;
 beforeEach(async () => {
   directory = mkdtempSync(join(tmpdir(), 'portfolio-content-'));
   database = openDatabase(join(directory, 'content.sqlite'));
-  seedContent(database.db, { projects: PROJECTS, artworks: ARTWORKS });
+  seedContent(database.db, CONTENT);
   app = Fastify();
   app.decorate('db', database.db);
   await app.register(contentRoutes);
@@ -55,8 +70,8 @@ describe('GET /api/projects', () => {
     ]);
   });
 
-  it('serves each project as written, and no piece', async () => {
-    assert.deepEqual((await get('/api/projects')).json(), PROJECTS);
+  it('serves each project with its images and tools resolved, and no piece', async () => {
+    assert.deepEqual((await get('/api/projects')).json(), SERVED.projects);
   });
 
   it('tells caches to ask again, so a build right after a publish reads it', async () => {
@@ -78,6 +93,16 @@ describe('GET /api/projects', () => {
 
     assert.equal((await get('/api/projects')).statusCode, 500);
   });
+
+  it('fails rather than serve a project whose image is gone', async () => {
+    database.db
+      .update(works)
+      .set({ document: { ...PROJECTS[0], logo: mediaId('cgi/beebop.jpg') } })
+      .where(eq(works.slugFr, 'immobilier-ch'))
+      .run();
+
+    assert.equal((await get('/api/projects')).statusCode, 500);
+  });
 });
 
 describe('GET /api/artworks', () => {
@@ -87,7 +112,7 @@ describe('GET /api/artworks', () => {
     const response = await get('/api/artworks');
 
     assert.equal(response.statusCode, 200);
-    assert.deepEqual(response.json(), ARTWORKS);
+    assert.deepEqual(response.json(), SERVED.artworks);
   });
 });
 
@@ -125,15 +150,67 @@ describe('GET /api/:kind/:locale/:slug', () => {
 });
 
 describe('GET /api/tools', () => {
-  it('serves both registries, each tool tagged with its world', async () => {
+  it('serves every tool with its icon resolved', async () => {
     const response = await get('/api/tools');
-    const tools = response.json<{ world: string; slug: string; label: string }[]>();
+    const tools = response.json<Tool[]>();
 
     assert.equal(response.statusCode, 200);
+    assert.equal(tools.length, TOOLS.length);
     assert.deepEqual(
-      tools.find((tool) => tool.slug === 'angular'),
-      { world: 'dev', slug: 'angular', label: 'Angular', glyph: null, logo: null },
+      tools.find((tool) => tool.slug === 'zbrush'),
+      {
+        id: toolId('zbrush'),
+        slug: 'zbrush',
+        label: { fr: 'ZBrush', en: 'ZBrush' },
+        icon: { src: '/logos/zbrush.png', width: 110, height: 97 },
+      },
     );
-    assert.equal(tools.find((tool) => tool.slug === 'zbrush')?.world, 'cgi');
+  });
+
+  it('fails rather than serve a tool whose icon is not a mark', async () => {
+    database.db
+      .update(mediaAssets)
+      .set({ purpose: 'logo' })
+      .where(eq(mediaAssets.key, '/logos/zbrush.png'))
+      .run();
+
+    assert.equal((await get('/api/tools')).statusCode, 500);
+  });
+});
+
+describe('GET /api/stack', () => {
+  const domainsAndTools = (entries: StackEntry[]) =>
+    entries.map((entry) => `${entry.domain} ${entry.tool.slug}`);
+
+  it('serves one domain in its order, each entry with its tool', async () => {
+    const response = await get('/api/stack?domain=cgi');
+
+    assert.equal(response.statusCode, 200);
+    assert.deepEqual(domainsAndTools(response.json()), [
+      'cgi 3dsmax',
+      'cgi vray',
+      'cgi zbrush',
+      'cgi substance-painter',
+      'cgi photoshop',
+    ]);
+    assert.deepEqual(response.json<StackEntry[]>()[0]?.points[0]?.strongLine, {
+      fr: 'La modélisation polygonale.',
+      en: 'Polygon modelling.',
+    });
+  });
+
+  it('serves both domains, dev first, when none is asked', async () => {
+    const entries = (await get('/api/stack')).json<StackEntry[]>();
+
+    assert.equal(entries.length, STACK.length);
+    assert.equal(domainsAndTools(entries)[0], 'dev angular');
+    assert.equal(entries.at(-1)?.domain, 'cgi');
+  });
+
+  it('refuses a domain that is not a world', async () => {
+    const response = await get('/api/stack?domain=music');
+
+    assert.equal(response.statusCode, 400);
+    assert.deepEqual(response.json(), { error: 'invalid-domain' });
   });
 });

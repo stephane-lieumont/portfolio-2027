@@ -52,9 +52,14 @@ alone.
 
 **The site is built from the API (ADR-0022).** Projects and 3D pieces live in
 the API's SQLite (`works`, one JSON document per record, validated by the
-shared Zod schemas), seeded from `apps/api/src/db/seed/content.ts`, their only
-source until the back office. Before `ng build`, `apps/web/scripts/content.mjs`
-fetches `CONTENT_API_URL` (default `http://localhost:3000`) into the gitignored
+shared Zod schemas), beside `media_assets` (every image's metadata, the files
+staying in the bucket or `public/`), `tools` and `stack` (the world pages'
+Stack and « Maîtrise » points). Works name media and tools by id; the API
+resolves them (`src/lib/resolve-content/`). All four are seeded from
+`apps/api/src/db/seed/` (`media.ts`, `tools.ts`, `stack.ts`, `content.ts`),
+their only source until the back office. Before `ng build`, `apps/web/scripts/content.mjs`
+fetches works, tools and Stack from `CONTENT_API_URL` (default
+`http://localhost:3000`) into the gitignored
 `core/data/content/content.generated.ts`; an unreachable API fails the build.
 Tests, typecheck, lint and `ng serve` write that file from the seed instead
 (`--seed`), no server needed. `pnpm --filter @portfolio/web build` alone

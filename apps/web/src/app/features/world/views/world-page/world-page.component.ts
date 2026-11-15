@@ -13,12 +13,7 @@ import type { WorldKey } from '@portfolio/shared-types';
 import { DevWorkComponent } from '@common/components/dev-work/dev-work.component';
 import { ScrubSentenceComponent } from '@common/components/scrub-sentence/scrub-sentence.component';
 import { introBase } from '@common/utils/hero-letters';
-import {
-  SITE_SETTINGS,
-  STATIC_FILES,
-  WORLD_PAGES,
-  WORLD_STACKS,
-} from '@core/data/world-content/world-content';
+import { SITE_SETTINGS, STATIC_FILES, WORLD_PAGES } from '@core/data/world-content/world-content';
 import { InLocalePipe } from '@core/i18n/in-locale.pipe';
 import { PATHS } from '@core/i18n/site-locale/site-locale';
 import { CloudStore } from '@core/stores/cloud/cloud.store';
@@ -73,7 +68,6 @@ export class WorldPageComponent {
   readonly world = input.required<WorldKey>();
 
   protected readonly page = computed(() => WORLD_PAGES[this.world()]);
-  protected readonly stack = computed(() => WORLD_STACKS[this.world()]);
   protected readonly workStart = computed(() => LEAD_LINES + this.page().facts.length);
   protected readonly cv = STATIC_FILES[SITE_SETTINGS.cvAssetId];
   protected readonly contactPath = PATHS.contact;

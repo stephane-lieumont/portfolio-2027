@@ -7,7 +7,7 @@ pages, as used on the approved mockup (2026-11-14).
 - License: CC0 1.0. Brand marks remain trademarks of their owners.
 - Single-path, 24×24, no script. Rendered monochrome in the world's ink.
 
-File names are Simple Icons' slugs, not the registry slugs (`dotnet`,
+File names are Simple Icons' slugs, not the tools' slugs (`dotnet`,
 `reactivex` for RxJS, `amazonwebservices` for AWS, `nodedotjs` for Node.js,
 `adobephotoshop` for Photoshop, `nextdotjs` for Next.js). React Native uses `react`.
 

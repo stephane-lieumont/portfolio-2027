@@ -7,10 +7,14 @@ import {
   CONTACT_PAGE,
   STATIC_ASSETS,
   WORLD_PAGES,
-  WORLD_STACKS,
 } from '../src/app/core/data/world-content/world-content.ts';
 import { OG_IMAGE, SECTIONS, SITE_ORIGIN } from '../src/app/core/i18n/site-paths.ts';
-import { ARTWORKS, PROJECTS } from '../src/app/core/data/content/content.generated.ts';
+import {
+  ARTWORKS,
+  PROJECTS,
+  STACK,
+  TOOLS,
+} from '../src/app/core/data/content/content.generated.ts';
 
 // Both worlds open on the name, set by the page itself.
 const NAME = 'Stéphane Lieumont';
@@ -68,7 +72,8 @@ function localizedPairs(value) {
 
 const CONTENT = localizedPairs([
   WORLD_PAGES,
-  WORLD_STACKS,
+  TOOLS,
+  STACK,
   CONTACT_PAGE,
   STATIC_ASSETS,
   PROJECTS,

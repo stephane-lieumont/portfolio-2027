@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { LOCALES, localized } from '@portfolio/shared-types/localized';
-import { softwareSlugSchema, technologySlugSchema } from '@portfolio/shared-types/project';
+import { toolSlugSchema } from '@portfolio/shared-types/tool';
 
 /**
  * Editorial content of the two worlds and the contact page — see spec 03,
@@ -74,63 +74,17 @@ const worldPageFields = {
   updatedAt: z.iso.datetime(),
 };
 
-/**
- * One record per world. Discriminated on `world` so each world can only name
- * tools from its own registry — a 3D page cannot list Angular in its eyebrow.
- */
-export const worldPageSchema = z.discriminatedUnion('world', [
-  z.object({
-    world: z.literal('dev'),
-    eyebrowTools: z
-      .array(technologySlugSchema)
-      .min(1)
-      .max(4)
-      .refine(uniqueBy(String), 'each tool appears once'),
-    ...worldPageFields,
-  }),
-  z.object({
-    world: z.literal('cgi'),
-    eyebrowTools: z
-      .array(softwareSlugSchema)
-      .min(1)
-      .max(4)
-      .refine(uniqueBy(String), 'each tool appears once'),
-    ...worldPageFields,
-  }),
-]);
-export type WorldPage = z.infer<typeof worldPageSchema>;
-
-export const masteryPointSchema = z.object({
-  lead: localized(text(1, 60)),
-  text: localized(text(1, 220)),
+/** One record per world. Its eyebrow names tools by slug (spec 04 §2). */
+export const worldPageSchema = z.object({
+  world: worldKeySchema,
+  eyebrowTools: z
+    .array(toolSlugSchema)
+    .min(1)
+    .max(4)
+    .refine(uniqueBy(String), 'each tool appears once'),
+  ...worldPageFields,
 });
-export type MasteryPoint = z.infer<typeof masteryPointSchema>;
-
-const masteryPoints = z.array(masteryPointSchema).min(2).max(6);
-const oneEntryPerTool = uniqueBy((e: { tool: string }) => e.tool);
-
-/** The marks row and its « Maîtrise » panel, one record per world. */
-export const worldStackSchema = z.discriminatedUnion('world', [
-  z.object({
-    world: z.literal('dev'),
-    entries: z
-      .array(z.object({ tool: technologySlugSchema, points: masteryPoints }))
-      .min(3)
-      .max(10)
-      .refine(oneEntryPerTool, 'each tool appears once'),
-    updatedAt: z.iso.datetime(),
-  }),
-  z.object({
-    world: z.literal('cgi'),
-    entries: z
-      .array(z.object({ tool: softwareSlugSchema, points: masteryPoints }))
-      .min(3)
-      .max(10)
-      .refine(oneEntryPerTool, 'each tool appears once'),
-    updatedAt: z.iso.datetime(),
-  }),
-]);
-export type WorldStack = z.infer<typeof worldStackSchema>;
+export type WorldPage = z.infer<typeof worldPageSchema>;
 
 export const contactPageSchema = z.object({
   title: localized(text(1, 120)),

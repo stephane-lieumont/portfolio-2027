@@ -111,7 +111,7 @@ export class ArtMosaicComponent {
         tone: artwork.image.averageColor,
         width: artwork.image.width,
         height: artwork.image.height,
-        tools: artwork.software.map((slug) => toolView(slug)),
+        tools: artwork.software.map((tool) => toolView(tool)),
         // A plain href, so it carries the tree's base (`/en/`) itself.
         href: this.location.prepareExternalUrl(`${GALLERY_PATH}/${slug}`),
         label: $localize`:@@mosaic.tileLabel:${title}:title: (${artwork.releasedAt.slice(0, 4)}:year:), agrandir`,

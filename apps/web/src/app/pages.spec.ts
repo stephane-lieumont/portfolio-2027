@@ -72,7 +72,7 @@ describe.each<Page>(['dev', 'cgi', 'contact'])('%s page', (page) => {
   });
 });
 
-describe('registries', () => {
+describe('the two worlds’ tools', () => {
   it('keeps the dev stack out of the 3D page', async () => {
     // Two vocabularies that must never appear in one list (spec 03).
     const cgi = (await render('cgi')).textContent ?? '';

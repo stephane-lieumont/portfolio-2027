@@ -8,10 +8,11 @@
   "exports": {
     ".": "./src/index.ts",
     "./localized": "./src/localized.ts",
-    "./registries": "./src/registries.ts",
     "./video": "./src/video.ts",
     "./project": "./src/project.ts",
     "./tool": "./src/tool.ts",
+    "./stack": "./src/stack.ts",
+    "./media": "./src/media.ts",
     "./world": "./src/world.ts",
     "./contact": "./src/contact.ts"
   },

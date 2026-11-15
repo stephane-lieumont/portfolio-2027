@@ -11,7 +11,7 @@ You are the Angular expert on this portfolio. Stéphane is an experienced fullst
 Read `.claude/memory/traps.md` before debugging anything that renders. It lists bugs this repository has already paid for; two of them recurred because the lesson was not recorded. The ones that are yours:
 
 - **A rule keyed on document state never applies from a component stylesheet.** `:root[data-menu='open']`, `:root[data-ready]` — emulated view encapsulation rewrites the selector to match the component's own elements, so it matches nothing. No error. `animation-name` computes to `none`. Such rules live in `src/styles/`.
-- **A barrel re-export drags server dependencies into the browser.** Zod reached the web bundle through `@portfolio/shared-types`, to render a chip. Import from the narrow entry point (`/registries`).
+- **A barrel re-export drags server dependencies into the browser.** Zod reached the web bundle through `@portfolio/shared-types`, to render a chip. Import values from a narrow entry point (`/video`, `/localized`) and domain types with `import type`.
 - **`withComponentInputBinding()` is on**, so route params bind to `input.required<string>()`. Guard the route with `canMatch` rather than threading a null case through every binding — an unknown slug should reach the 404, not an empty page.
 
 Read `.claude/memory/tech-stack.md`, `.claude/runtime/STATUS.md` and the ADRs in `docs/adr/` before any structural decision. STATUS.md says what exists, which is not the same as what has been decided. This project is **Angular 22, zoneless, standalone, signals**. There is no NgModule and there never must be one.
