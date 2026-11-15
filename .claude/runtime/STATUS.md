@@ -188,7 +188,11 @@ order:
 - **Hit areas of 44px, same look**: the header links, the flag and the
   switch's halves keep their drawn size (32–36px) and take a 44px hit area
   (`::before`, `--size-target`); hit-tested at ±21.5px from each centre at
-  320, 390, 430, 768, 844 and 1440. The pill buttons and the contact submit
+  320, 390, 430, 768, 844 and 1440. Sideways a hit area grows by half the gap
+  at most, so neighbours never overlap (after review: the flag's had covered
+  the last 6px of « Contact » at 320). Every point of each link's drawn box
+  hit-tests to that link at 320, 360 and 390; the flag is 30px wide to the
+  touch at 320 and 41px at 390 (over 24px, WCAG 2.5.8). The pill buttons and the contact submit
   are 44px tall (were 42 and 40).
 - **The role line holds AA at the worst pixel** (accessibility fix approved by
   Stéphane on 2026-11-15): a second layer of the same glass behind the words
@@ -201,7 +205,10 @@ order:
 - **Contact**: on a phone held upright the order is title, lede, form, then
   the portrait, then the socials, in the DOM as on screen (deviation from the
   mockup); the portrait returns to the left column from 48rem (was 900px);
-  title `clamp(2rem, 1rem + 3.2vw, 4rem)`. First screen: at 390×844 the title
+  title `clamp(2rem, 1rem + 3.2vw, 4rem)`. The portrait spans the right
+  column's three rows (an empty fourth row added 48px, fixed after review):
+  the section is 1029px at 1440×900 as on `main`, 996 at 1280×800 (`main`
+  1007, the smaller title). First screen: at 390×844 the title
   at 149px and the form's first field at 338 (was title at 555); at 320×568
   the first field at 395; at 844×390 the title at 154 beside the portrait
   (was 670). 62px at 1440 (mockup 64).
@@ -229,6 +236,9 @@ order:
   emulation), **to confirm on a real device** (Stéphane, 2026-11-15). The
   « leave as is » list of the plan stands (hero CTAs on phones, viewer ticks,
   the dock over text mid-scroll, the Escart warm-up, the 2560 column).
+- `viewport-fit=cover` in the viewport meta, so the `env(safe-area-*)` terms
+  apply on iOS; `--header-height` (scroll padding) is 90px, the tallest
+  header measured (was 7rem).
 - **Budgets**: the viewer's and the contact page's stylesheets now pass the
   4 kB component-style warning budget by 305 and 17 bytes (warnings, not
   errors). Reported, not raised.
@@ -247,8 +257,9 @@ running in view, all paused once scrolled away, none left after load; a
 cached revisit stamped 0 of 32 plates; the viewer pulse 772ms after loading;
 a failure fades the band then shows the fallback; reduced motion shows the
 chip with no animation. The client logos take the same plate behaviour.
-Known: a hidden viewer slide that is warmed but not current may run its
-pulse while invisible.
+Only the viewer's current slide may wait (an observer counts the hidden
+slides as on screen): measured with the renders held, one pulse running
+before and after a step (the slide left behind is paused).
 
 **Content (Stéphane, 2026-11-15)**: Claude Code joins immobilier.ch's tools,
 right after Angular, TypeScript and .NET (« central dans les projets

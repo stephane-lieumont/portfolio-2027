@@ -173,6 +173,8 @@ export class PlateImageDirective {
   private readonly watcher = inject(PlateWatch);
 
   private timer: ReturnType<typeof setTimeout> | null = null;
+  private inView = false;
+  private slideWatch: MutationObserver | null = null;
   private waiting: Animation[] = [];
   private unwatch: () => void = () => undefined;
 
@@ -196,7 +198,16 @@ export class PlateImageDirective {
       if (img.complete) this.retry();
       plate.dataset['plate'] = 'loading';
       if (img.loading === 'lazy') destroyRef.onDestroy(this.watcher.warm(img));
-      this.unwatch = this.watcher.watch(plate, (inView) => this.seen(plate, inView));
+      this.unwatch = this.watcher.watch(plate, (inView) => {
+        this.inView = inView;
+        this.seen(plate);
+      });
+      // The viewer's slides are all laid out, the hidden ones too, and an
+      // observer counts them as on screen: only the current one may wait.
+      if (this.kind() === 'viewer' && typeof MutationObserver === 'function') {
+        this.slideWatch = new MutationObserver(() => this.seen(plate));
+        this.slideWatch.observe(plate, { attributeFilter: ['class'] });
+      }
       void painted(img).then(async (ok) => {
         const shown = this.settle();
         if (ok) {
@@ -217,8 +228,10 @@ export class PlateImageDirective {
     this.img.removeAttribute('sizes');
   }
 
-  private seen(plate: HTMLElement, inView: boolean): void {
+  private seen(plate: HTMLElement): void {
     if (plate.dataset['plate'] !== 'loading') return;
+    const inView =
+      this.inView && (this.kind() !== 'viewer' || plate.classList.contains('is-current'));
     if (this.waiting.length || plate.hasAttribute('data-plate-wait')) {
       for (const run of this.waiting) {
         if (inView) run.play();
@@ -281,6 +294,8 @@ export class PlateImageDirective {
   private settle(): Promise<void> | null {
     this.unwatch();
     this.unwatch = () => undefined;
+    this.slideWatch?.disconnect();
+    this.slideWatch = null;
     if (this.timer !== null) clearTimeout(this.timer);
     this.timer = null;
     const plate = this.img.closest<HTMLElement>('.plate');

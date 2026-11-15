@@ -176,8 +176,8 @@
   --page-inline: var(--space-4);
   // The sticky header at its tallest: 89px below 28rem (its role row scrolls
   // away, 55px stay pinned), one row of 75px above. Read by scroll-padding,
-  // so it errs tall.
-  --header-height: 7rem;
+  // so it errs tall by a pixel.
+  --header-height: 5.625rem;
 }
 
 @media (min-width: 48rem) {

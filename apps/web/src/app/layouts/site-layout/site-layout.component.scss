@@ -65,10 +65,11 @@
 // switch keeps its two columns equal (they part as soon as it is squeezed,
 // and the thumb, half its width, no longer sits on the current link).
 .top__end {
+  --end-gap: 3px;
   margin-inline-start: auto;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: var(--end-gap);
 }
 
 .top__link {
@@ -85,12 +86,15 @@
 }
 
 // Drawn as the mockup, touched at 44px: the hit area grows to the target on
-// whichever axis falls short, and never shrinks the link.
+// whichever axis falls short, and never shrinks the link. Sideways it grows
+// by half the gap at most, so two neighbours never share a point (the flag
+// stays under 44px wide below 375px: 30px at 320).
 .top__link::before,
 .switch__link::before {
   content: '';
   position: absolute;
   inset: min(0px, calc(50% - var(--size-target) / 2));
+  inset-inline: max(min(0px, calc(50% - var(--size-target) / 2)), var(--end-gap, 0px) / -2);
 }
 
 .top__flag {
@@ -170,7 +174,7 @@
 
 @media (min-width: 375px) {
   .top__end {
-    gap: 8px;
+    --end-gap: 8px;
   }
 
   .top__link {

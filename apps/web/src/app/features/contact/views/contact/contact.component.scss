@@ -218,12 +218,11 @@ textarea.form__control {
   }
 }
 
-// The portrait spans every row of the left column; the last row takes what
-// it adds, so the right column's gaps stay as they are.
+// The portrait spans the right column's three rows, which are taller than
+// it at every width from 48rem.
 @media (min-width: 48rem) {
   .contact {
     grid-template-columns: 5fr 7fr;
-    grid-template-rows: auto auto auto 1fr;
     align-items: start;
   }
 
@@ -234,7 +233,7 @@ textarea.form__control {
 
   app-contact-portrait {
     grid-column: 1;
-    grid-row: 1 / -1;
+    grid-row: 1 / span 3;
     position: sticky;
     inset-block-start: 96px;
   }

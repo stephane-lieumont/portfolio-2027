@@ -116,7 +116,7 @@ describe('PlateWatch', () => {
 @Component({
   imports: [PlateImageDirective],
   template: `
-    <span class="plate" [attr.data-reveal]="pending ? 'pending' : null">
+    <span class="plate is-current" [attr.data-reveal]="pending ? 'pending' : null">
       <img appPlate="viewer" src="/medias/cgi/b.jpg" alt="" />
     </span>
   `,
@@ -295,6 +295,19 @@ describe('a picture slow to come', () => {
     vi.advanceTimersByTime(WAIT_DELAY_MS.viewer - 1);
     expect(plate.hasAttribute('data-plate-wait')).toBe(false);
     vi.advanceTimersByTime(1);
+    expect(plate.dataset['plateWait']).toBe('pulse');
+  });
+
+  it('never waits on a viewer slide that is not shown, until it is', async () => {
+    const { plate } = render(false, 'viewer');
+    plate.classList.remove('is-current');
+    await Promise.resolve();
+    inView(plate, true);
+    vi.advanceTimersByTime(WAIT_DELAY_MS.viewer * 2);
+    expect(plate.hasAttribute('data-plate-wait')).toBe(false);
+    plate.classList.add('is-current');
+    await Promise.resolve();
+    vi.advanceTimersByTime(WAIT_DELAY_MS.viewer);
     expect(plate.dataset['plateWait']).toBe('pulse');
   });
 
