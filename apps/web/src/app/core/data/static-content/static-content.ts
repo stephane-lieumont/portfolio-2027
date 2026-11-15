@@ -11,25 +11,21 @@ import type { SoftwareSlug, TechnologySlug } from '@portfolio/shared-types/regis
  */
 export interface StaticProject extends Pick<
   Project,
-  | 'id'
-  | 'slug'
-  | 'title'
-  | 'summary'
-  | 'context'
-  | 'role'
-  | 'mission'
-  | 'presentationCaption'
-  | 'releasedAt'
+  'id' | 'slug' | 'title' | 'summary' | 'context' | 'role' | 'releasedAt'
 > {
+  /** What he did, when the context does not already say it all. */
+  readonly mission?: LocalizedText;
   /**
    * Plain sentences, never markup. The 2022 data wrapped tool names in
    * `<strong>`, which would have to be either rendered as HTML or escaped and
-   * shown raw.
+   * shown raw. Never invented: empty when none are sourced.
    */
   readonly missionSteps: readonly LocalizedText[];
   readonly technologies: readonly TechnologySlug[];
   /** A proper name, the same in both languages. */
   readonly series?: string;
+  /** Where a period starts, when the work spans more than its release year. */
+  readonly startedAt?: string;
   /**
    * « Voir le site ». A demo proxied by nginx on this host is a root-relative
    * path, never an absolute URL — the demos move with the site (ADR-0005).
@@ -37,10 +33,30 @@ export interface StaticProject extends Pick<
   readonly websiteUrl?: string;
   /** « Voir la vidéo »: a YouTube address, embedded after a click (ADR-0016). */
   readonly videoUrl?: string;
-  /** The 4:3 card image. */
-  readonly cover: StaticImage;
+  /** « Voir sur Google Play ». */
+  readonly googlePlayUrl?: string;
+  /** The 4:3 card image. A client reference has none: it shows its logo. */
+  readonly cover?: StaticImage;
   /** The wide visual the project page opens on: the product staged on white. */
-  readonly presentation: StaticImage;
+  readonly presentation?: StaticImage;
+  readonly presentationCaption?: LocalizedText;
+  /** A client's logo, in place of the cover and the presentation visual. */
+  readonly logo?: StaticLogo;
+}
+
+/**
+ * A client's logo: an SVG, or a PNG whose alpha is the mark, in
+ * `public/logos/clients/`, named after the project's French slug. It is drawn
+ * as a CSS mask in the world's ink, so its own colours never show and
+ * replacing the file swaps the logo with no code change.
+ */
+export interface StaticLogo {
+  readonly src: string;
+  /** The file's intrinsic proportions (its viewBox or pixels): they set its optical size. */
+  readonly width: number;
+  readonly height: number;
+  /** Names the logo on the project page; the card leaves it to the title beside it. */
+  readonly alt: LocalizedText;
 }
 
 /** A rendered image with its intrinsic size, so nothing reflows once it loads. */
@@ -83,10 +99,166 @@ export interface StaticArtwork {
    */
   readonly focal?: { readonly x: number; readonly y: number };
 }
-
-// Ordered by releasedAt descending, as spec 03 settles. No manual sort field:
-// two sources of truth for order always drift.
+// Ordered by releasedAt descending, as spec 03 settles, work still going on
+// first. No manual sort field: two sources of truth for order always drift.
+// Only the years are sourced and shown (Stéphane, 2026-11-15); the months of
+// the 2024 missions only keep them in the order he gave.
 export const PROJECTS: readonly StaticProject[] = [
+  {
+    id: '0e047938-97a1-42f5-823f-5d57a605e56f',
+    slug: { fr: 'immobilier-ch', en: 'immobilier-ch' },
+    logo: {
+      src: '/logos/clients/immobilier-ch.svg',
+      width: 433.15,
+      height: 61.2,
+      alt: { fr: 'Logo d’immobilier.ch', en: 'immobilier.ch logo' },
+    },
+    title: { fr: 'immobilier.ch', en: 'immobilier.ch' },
+    summary: {
+      fr: 'Des outils de gestion des candidatures pour les agences immobilières. Je mène une équipe de 5 à 8 développeurs, de l’étude de faisabilité à la mise en production, CI/CD et instances AWS comprises.',
+      en: 'Application-management tools for real-estate agencies. I lead a team of five to eight developers, from the feasibility study to production, CI/CD and AWS instances included.',
+    },
+    context: {
+      fr: 'Des outils de gestion des candidatures pour les agences immobilières.',
+      en: 'Application-management tools for real-estate agencies.',
+    },
+    mission: {
+      fr: 'Je mène une équipe de 5 à 8 développeurs, de l’étude de faisabilité à la mise en production, CI/CD et instances AWS comprises.',
+      en: 'I lead a team of five to eight developers, from the feasibility study to production, CI/CD and AWS instances included.',
+    },
+    missionSteps: [],
+    technologies: ['angular', 'dotnet', 'aws'],
+    series: 'Web-Atrio',
+    websiteUrl: 'https://www.immobilier.ch/',
+    videoUrl: 'https://www.youtube.com/watch?v=5BKBQRbmZE8',
+    startedAt: '2025-01-01',
+    releasedAt: null,
+    role: {
+      fr: 'Tech Lead front & back — Angular / .NET',
+      en: 'Front & back-end Tech Lead — Angular / .NET',
+    },
+  },
+  {
+    id: 'e9afb2f8-9b7b-48a4-b31c-972cfcc56bb2',
+    slug: { fr: 'web-atrio', en: 'web-atrio' },
+    logo: {
+      src: '/logos/clients/web-atrio.svg',
+      width: 72.731,
+      height: 59.227,
+      alt: { fr: 'Logo de Web-Atrio', en: 'Web-Atrio logo' },
+    },
+    title: { fr: 'Web-Atrio', en: 'Web-Atrio' },
+    summary: {
+      fr: 'La refonte complète du site de Web-Atrio, design et développement, en React.',
+      en: 'A complete redesign of the Web-Atrio website, design and development, in React.',
+    },
+    context: {
+      fr: 'La refonte complète du site de Web-Atrio, design et développement, en React.',
+      en: 'A complete redesign of the Web-Atrio website, design and development, in React.',
+    },
+    missionSteps: [],
+    technologies: ['react'],
+    series: 'Web-Atrio',
+    websiteUrl: 'https://web-atrio.com/',
+    releasedAt: '2024-12-01',
+    role: {
+      fr: 'Refonte du site vitrine, conçu et développé — React',
+      en: 'Showcase website redesign, designed and built — React',
+    },
+  },
+  {
+    id: 'eff2a265-368b-49aa-a4dc-a5215723f46e',
+    slug: { fr: 'cir-scancir', en: 'cir-scancir' },
+    logo: {
+      src: '/logos/clients/cir-scancir.png',
+      width: 783,
+      height: 414,
+      alt: { fr: 'Logo de CIR', en: 'CIR logo' },
+    },
+    title: { fr: 'CIR — Scancir', en: 'CIR — Scancir' },
+    summary: {
+      fr: 'Une application mobile de gestion des commandes pour un distributeur de roulements. Je l’ai menée seul : recueil du besoin, maquettes jusqu’à leur validation, développement et ajustements, puis publication sur l’App Store et Google Play.',
+      en: 'A mobile order-management app for a bearings distributor. I ran it on my own: gathering the needs, mockups through to sign-off, development and adjustments, then release on the App Store and Google Play.',
+    },
+    context: {
+      fr: 'Une application mobile de gestion des commandes pour un distributeur de roulements.',
+      en: 'A mobile order-management app for a bearings distributor.',
+    },
+    mission: {
+      fr: 'Je l’ai menée seul : recueil du besoin, maquettes jusqu’à leur validation, développement et ajustements, puis publication sur l’App Store et Google Play.',
+      en: 'I ran it on my own: gathering the needs, mockups through to sign-off, development and adjustments, then release on the App Store and Google Play.',
+    },
+    missionSteps: [],
+    technologies: ['react-native'],
+    series: 'Web-Atrio',
+    googlePlayUrl: 'https://play.google.com/store/apps/details?id=com.cir.scancir&hl=fr',
+    releasedAt: '2024-09-01',
+    role: { fr: 'Seul, de bout en bout — React Native', en: 'Solo, end to end — React Native' },
+  },
+  {
+    id: 'e9ddf086-9f58-4bcf-b34a-cbf2d58b7ecf',
+    slug: { fr: 'linxea', en: 'linxea' },
+    logo: {
+      src: '/logos/clients/linxea.svg',
+      width: 1678.45,
+      height: 366.17,
+      alt: { fr: 'Logo de Linxea', en: 'Linxea logo' },
+    },
+    title: { fr: 'Linxea', en: 'Linxea' },
+    summary: {
+      fr: 'La refonte du parcours d’adhésion en ligne, avec un déploiement automatique en CI/CD.',
+      en: 'The redesign of the online sign-up journey, with automatic CI/CD deployment.',
+    },
+    context: {
+      fr: 'La refonte du parcours d’adhésion en ligne, avec un déploiement automatique en CI/CD.',
+      en: 'The redesign of the online sign-up journey, with automatic CI/CD deployment.',
+    },
+    missionSteps: [],
+    technologies: ['react'],
+    series: 'Web-Atrio',
+    websiteUrl: 'https://www.linxea.com/',
+    videoUrl: 'https://www.youtube.com/watch?v=d7Em82mCUWY',
+    startedAt: '2023-01-01',
+    releasedAt: '2024-06-01',
+    role: {
+      fr: 'Référent technique de la squad Web-Atrio — React',
+      en: 'Technical point of reference, Web-Atrio squad — React',
+    },
+  },
+  {
+    id: '67de9227-795d-466d-842e-557cc24a3d58',
+    slug: { fr: 'ledger', en: 'ledger' },
+    logo: {
+      src: '/logos/clients/ledger.svg',
+      width: 383,
+      height: 128,
+      alt: { fr: 'Logo de Ledger', en: 'Ledger logo' },
+    },
+    title: { fr: 'Ledger', en: 'Ledger' },
+    summary: {
+      fr: 'L’application web d’un service grand public, en Next.js, et son intégration dans l’application mobile Ledger, en React Native. Déploiement (Nginx, Docker, Helm) et automatisation des tests de bout en bout.',
+      en: 'The web app of a consumer service, in Next.js, and its integration into the Ledger mobile app, in React Native. Deployment (Nginx, Docker, Helm) and end-to-end test automation.',
+    },
+    context: {
+      fr: 'L’application web d’un service grand public, en Next.js, et son intégration dans l’application mobile Ledger, en React Native.',
+      en: 'The web app of a consumer service, in Next.js, and its integration into the Ledger mobile app, in React Native.',
+    },
+    mission: {
+      fr: 'Déploiement (Nginx, Docker, Helm) et automatisation des tests de bout en bout.',
+      en: 'Deployment (Nginx, Docker, Helm) and end-to-end test automation.',
+    },
+    missionSteps: [],
+    technologies: ['nextjs', 'react-native', 'docker', 'nginx', 'helm', 'dotnet'],
+    series: 'Web-Atrio',
+    websiteUrl: 'https://www.ledger.com/',
+    videoUrl: 'https://www.youtube.com/watch?v=e6Ioxi1UBgI',
+    startedAt: '2022-01-01',
+    releasedAt: '2023-06-01',
+    role: {
+      fr: 'Développement web et mobile — Next.js, React Native',
+      en: 'Web and mobile development — Next.js, React Native',
+    },
+  },
   {
     id: 'ecf5e664-665a-4f13-a302-6f508fe887ca',
     slug: { fr: 'case-tes-potes-mobile', en: 'case-tes-potes-mobile' },
@@ -150,11 +322,19 @@ export const PROJECTS: readonly StaticProject[] = [
         fr: 'Développement multiplateforme en Flutter, livré sur Android et iOS.',
         en: 'Cross-platform development in Flutter, shipped on Android and iOS.',
       },
+      {
+        fr: 'Une web app ouverte par lien d’invitation, pour que les proches complètent le profil sans installer l’application.',
+        en: 'A web app opened from an invitation link, so friends can fill in the profile without installing the app.',
+      },
     ],
     technologies: ['flutter', 'dart', 'xd', 'git', 'jira'],
     series: 'Case Tes Potes',
+    startedAt: '2020-01-01',
     releasedAt: '2022-08-30',
-    role: { fr: 'Co-fondateur et lead developer', en: 'Co-founder and lead developer' },
+    role: {
+      fr: 'Associé, co-fondateur et Lead Developer Frontend',
+      en: 'Partner, co-founder and Lead Frontend Developer',
+    },
   },
   {
     id: 'a695d06f-5a4c-4101-864d-acc071656954',
@@ -216,235 +396,6 @@ export const PROJECTS: readonly StaticProject[] = [
     technologies: ['react', 'typescript', 'sass', 'node', 'mongodb', 'docker'],
     series: 'Case Tes Potes',
     releasedAt: '2022-03-15',
-    role: { fr: 'Conception et développement', en: 'Design and development' },
-  },
-  {
-    id: '12274607-8f2f-4fee-b1d9-5400c230e306',
-    slug: { fr: 'case-tes-potes-web-app', en: 'case-tes-potes-web-app' },
-    cover: {
-      key: 'projects/case-tes-potes-web-app.jpg',
-      averageColor: '#f3ecec',
-      alt: {
-        fr: 'Formulaire de témoignage de la web app Case Tes Potes',
-        en: 'Testimonial form of the Case Tes Potes web app',
-      },
-      width: 400,
-      height: 300,
-    },
-    presentation: {
-      key: 'projects/case-tes-potes-web-app-presentation.jpg',
-      alt: {
-        fr: 'Écrans successifs du parcours de témoignage de la web app',
-        en: 'Successive screens of the web app’s testimonial journey',
-      },
-      width: 1100,
-      height: 434,
-    },
-    presentationCaption: {
-      fr: 'Le parcours de témoignage, de l’invitation à l’envoi.',
-      en: 'The testimonial journey, from the invitation to sending.',
-    },
-    title: { fr: 'Case Tes Potes — web app', en: 'Case Tes Potes — web app' },
-    summary: {
-      fr: 'Une application accessible par lien d’invitation, pour que les proches d’un célibataire complètent son profil sans installer l’application mobile.',
-      en: 'An app opened from an invitation link, so that a single person’s friends and family can fill in their profile without installing the mobile app.',
-    },
-    context: {
-      fr: 'Le profil d’un célibataire se nourrit des témoignages de ses proches. Cette application, ouverte par lien d’invitation, leur permet de les écrire sans installer l’application mobile.',
-      en: 'A single person’s profile is built from what their friends and family say about them. This app, opened from an invitation link, lets them write it without installing the mobile app.',
-    },
-    mission: {
-      fr: 'Conception et développement d’une application autonome branchée sur l’API du produit mobile.',
-      en: 'Design and development of a standalone app connected to the mobile product’s API.',
-    },
-    missionSteps: [
-      {
-        fr: 'Maquette Adobe XD, cohérente avec l’application mobile.',
-        en: 'Adobe XD mockup, consistent with the mobile app.',
-      },
-      {
-        fr: 'Développement avec Webpack, sans framework.',
-        en: 'Development with Webpack, no framework.',
-      },
-      {
-        fr: 'Validation des invitations et authentification avant rédaction.',
-        en: 'Invitation checks and authentication before writing.',
-      },
-      {
-        fr: 'Branchement direct sur l’API de l’application mobile.',
-        en: 'Direct connection to the mobile app’s API.',
-      },
-    ],
-    websiteUrl: '/demo/casetespotes-webapp',
-    technologies: ['webpack', 'javascript', 'sass', 'node'],
-    series: 'Case Tes Potes',
-    releasedAt: '2021-11-10',
-    role: { fr: 'Conception et développement', en: 'Design and development' },
-  },
-  {
-    id: '170e8b9e-b686-4f5b-910c-8aaddf683eb5',
-    slug: { fr: 'kasa-openclassrooms', en: 'kasa-openclassrooms' },
-    cover: {
-      key: 'projects/kasa-openclassrooms.jpg',
-      averageColor: '#bab5b4',
-      alt: {
-        fr: 'Page d’accueil de la plateforme de location Kasa',
-        en: 'Home page of the Kasa rental platform',
-      },
-      width: 500,
-      height: 375,
-    },
-    presentation: {
-      key: 'projects/kasa-openclassrooms-presentation.jpg',
-      alt: {
-        fr: 'Pages de Kasa en perspective : accueil, fiche logement, version mobile',
-        en: 'Kasa pages in perspective: home, listing page, mobile version',
-      },
-      width: 1100,
-      height: 434,
-    },
-    presentationCaption: {
-      fr: 'Kasa sur ordinateur, tablette et mobile.',
-      en: 'Kasa on desktop, tablet and mobile.',
-    },
-    title: { fr: 'Kasa — OpenClassrooms', en: 'Kasa — OpenClassrooms' },
-    summary: {
-      fr: 'Une plateforme de location entre particuliers, réalisée dans le cadre de ma formation. L’occasion de poser proprement une architecture React et un typage strict.',
-      en: 'A peer-to-peer rental platform, built as part of my training. A chance to set up a clean React architecture and strict typing.',
-    },
-    context: {
-      fr: 'Une plateforme de location entre particuliers, sujet d’un projet de formation OpenClassrooms : intégrer fidèlement une maquette Figma sur une stack JavaScript moderne.',
-      en: 'A peer-to-peer rental platform, the subject of an OpenClassrooms training project: building a Figma mockup faithfully on a modern JavaScript stack.',
-    },
-    mission: {
-      fr: 'Développement de l’application. Ma première expérience React, et l’occasion de poser proprement le routage et un typage strict.',
-      en: 'Development of the application. My first experience of React, and a chance to set up routing and strict typing properly.',
-    },
-    missionSteps: [
-      {
-        fr: 'Développement en React, au plus près de la maquette Figma.',
-        en: 'Development in React, as close to the Figma mockup as possible.',
-      },
-      {
-        fr: 'Routage applicatif avec React Router.',
-        en: 'Application routing with React Router.',
-      },
-      {
-        fr: 'Passage à TypeScript et typage strict des composants.',
-        en: 'Move to TypeScript and strict typing of the components.',
-      },
-    ],
-    websiteUrl: '/demo/openclassrooms-kasa',
-    technologies: ['react', 'typescript', 'sass', 'node'],
-    releasedAt: '2021-06-01',
-    role: { fr: 'Développement', en: 'Development' },
-  },
-  {
-    id: 'd60d32b5-665c-482e-a849-d27bec13c4d7',
-    slug: { fr: 'portfolio-3d-2018', en: '3d-portfolio-2018' },
-    cover: {
-      key: 'projects/portfolio-3d-2018.jpg',
-      averageColor: '#312d18',
-      alt: {
-        fr: 'Page d’accueil du portfolio 3D de 2018',
-        en: 'Home page of the 2018 3D portfolio',
-      },
-      width: 400,
-      height: 300,
-    },
-    presentation: {
-      key: 'projects/portfolio-3d-2018-presentation.jpg',
-      alt: {
-        fr: 'Pages du portfolio 2018 en perspective, sur fond sombre',
-        en: 'Pages of the 2018 portfolio in perspective, on a dark background',
-      },
-      width: 1100,
-      height: 434,
-    },
-    presentationCaption: {
-      fr: 'Le portfolio sur ordinateur, tablette et mobile.',
-      en: 'The portfolio on desktop, tablet and mobile.',
-    },
-    title: { fr: 'Portfolio 3D', en: '3D portfolio' },
-    summary: {
-      fr: 'Ma première vitrine, écrite sans framework. Elle m’a appris ce que coûte une animation mal pensée bien avant que je sache le nommer.',
-      en: 'My first showcase, written without a framework. It taught me what a badly thought-out animation costs long before I could name it.',
-    },
-    context: {
-      fr: 'Ma première vitrine en ligne, écrite sans framework, pour montrer mes créations 3D à une époque où c’était mon métier à plein temps.',
-      en: 'My first online showcase, written without a framework, to show my 3D work at a time when it was my full-time job.',
-    },
-    mission: {
-      fr: 'Conception et développement, seul, en JavaScript natif.',
-      en: 'Design and development, on my own, in plain JavaScript.',
-    },
-    missionSteps: [
-      { fr: 'Mise en ligne de mes réalisations 3D.', en: 'Putting my 3D work online.' },
-      {
-        fr: 'Développement sans framework, en JavaScript natif.',
-        en: 'Development without a framework, in plain JavaScript.',
-      },
-      {
-        fr: 'Première confrontation au coût réel d’une animation mal pensée.',
-        en: 'A first encounter with the real cost of a badly thought-out animation.',
-      },
-    ],
-    websiteUrl: '/demo/portfolio2018',
-    technologies: ['javascript'],
-    releasedAt: '2018-04-01',
-    role: { fr: 'Conception et développement', en: 'Design and development' },
-  },
-  {
-    id: 'de341e7b-2125-41f3-8627-89a291847102',
-    slug: { fr: 'pixmodels', en: 'pixmodels' },
-    cover: {
-      key: 'projects/pixmodels.jpg',
-      averageColor: '#4e4f36',
-      alt: { fr: 'Site vitrine de Pixmodels', en: 'The Pixmodels showcase website' },
-      width: 400,
-      height: 300,
-    },
-    presentation: {
-      key: 'projects/pixmodels-presentation.jpg',
-      alt: {
-        fr: 'Pages du site Pixmodels en perspective, bandeaux corail et gris',
-        en: 'Pages of the Pixmodels website in perspective, coral and grey banners',
-      },
-      width: 1100,
-      height: 434,
-    },
-    presentationCaption: {
-      fr: 'Le site vitrine sur ordinateur, tablette et mobile.',
-      en: 'The showcase website on desktop, tablet and mobile.',
-    },
-    title: { fr: 'Pixmodels', en: 'Pixmodels' },
-    summary: {
-      fr: 'Un service de communication audiovisuelle : site vitrine et outils de gestion, à une époque où je faisais encore de la 3D à plein temps.',
-      en: 'An audiovisual communication service: showcase website and management tools, at a time when I was still doing 3D full time.',
-    },
-    context: {
-      fr: 'En 2015 je crée mon entreprise de communication audiovisuelle. Il fallait une présence en ligne à la hauteur : sur ce marché, l’image de marque est l’argument.',
-      en: 'In 2015 I started my audiovisual communication business. It needed an online presence to match: in that market, the brand image is the selling point.',
-    },
-    mission: {
-      fr: 'Conception et développement du site vitrine et des outils de gestion associés.',
-      en: 'Design and development of the showcase website and its management tools.',
-    },
-    missionSteps: [
-      { fr: 'Étude du marché et des besoins.', en: 'Market and needs research.' },
-      { fr: 'Identité visuelle et maquettes.', en: 'Visual identity and mockups.' },
-      {
-        fr: 'Développement du site vitrine et du formulaire de contact.',
-        en: 'Building the showcase website and its contact form.',
-      },
-      {
-        fr: 'Outils de gestion pour le suivi des prestations.',
-        en: 'Management tools to track the services delivered.',
-      },
-    ],
-    websiteUrl: '/demo/pixmodels',
-    technologies: ['javascript', 'php'],
-    releasedAt: '2015-09-01',
     role: { fr: 'Conception et développement', en: 'Design and development' },
   },
 ];

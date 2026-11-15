@@ -3,14 +3,82 @@
 Last updated 2026-11-15. Describes `main` (shell, world pages, contact, the
 pointer's « fil », the project page, the 404 and the bilingual site's first
 PR, ADR-0017) with `feat/i18n-content` (its second PR, the content in both
-languages) and `refactor/app-architecture` (the app's layering, ADR-0018) on
-top.
+languages), `refactor/app-architecture` (the app's layering, ADR-0018) and
+`feat/client-references` (client references in « Réalisations ») on top.
 
 ## Works today
 
 **Foundations** — pnpm monorepo, Angular 22 standalone/zoneless/signals, shared
 Zod types, Fastify API skeleton with `/health`, MinIO in docker-compose
 (declared, not yet used). 18 ADRs, 6 specs.
+
+**Client references (`feat/client-references`, Stéphane's decisions of
+2026-11-15)** — « Réalisations » now lists, newest first: immobilier.ch
+(2025 – aujourd'hui), Web-Atrio (2024), CIR — Scancir (2024), Linxea
+(2023 – 2024), Ledger (2022 – 2023), Case Tes Potes — application mobile
+(2020 – 2022) and its landing page (2022). Count derived:
+« 07 projets · 2020 – aujourd'hui » (EN « 07 projects · 2020 – today »). Kasa,
+the 2018 portfolio and Pixmodels are gone from the dev list, and the Case Tes
+Potes web app is a step of the mobile app's mission; their pages, routes,
+prerender expectations and seed mapping went with them.
+
+- Model (`@portfolio/shared-types`, a contract change the API has not
+  followed yet): `Project` gains `logo` (an SVG asset), `googlePlayUrl`
+  (« Voir sur Google Play », Google Play app pages only) and `startedAt`;
+  `presentationAsset`, `presentationCaption` and `mission` become nullable,
+  `missionSteps` may be empty, `releasedAt` is null for work still going on
+  (listed first, read « aujourd'hui »). Registry: `react-native`, `nextjs`,
+  `nginx`, `helm` (Simple Icons marks; React Native uses React's). The Drizzle
+  schema still has `released_at NOT NULL` and no logo column: a migration is
+  due when the API serves projects. Nothing enforces « a logo, or a cover and
+  a presentation » in the schema (Zod 4 refinements block `.pick`/`.omit`);
+  `static-content.spec.ts` does.
+- A reference shows its client's logo, never a screenshot: one ink mask
+  (`ClientLogoComponent`) covering the plate, sized by equal bounding-box
+  area from the file's proportions (`logoWidth`, design-expert spec): card
+  4:3 plate at 6% ink, logo in `--world-ink` (12.8:1); project page, the ink
+  plate with the lean cut, logo in `--world-ground` (16.5:1), from the content
+  column at 900px+, `clamp(320px, 36vw, 560px)` tall; the video facade's
+  poster is the same plate (logo raised, play button below). Card caption:
+  title and period (period under the title below a 360px card), the role
+  (« Chez Web-Atrio · … » on the four client missions), the tools. Pages with
+  one sentence of copy (Web-Atrio, Linxea) show the context and no Mission
+  block. Hero links: site, video, then Google Play. Series « Web-Atrio »
+  groups the five Web-Atrio entries; a series band now reads « Chez
+  Web-Atrio » / « Chez Case Tes Potes » (EN « At … »), not « Série ».
+- Logos, all supplied by Stéphane on 2026-11-15, in
+  `apps/web/public/logos/clients/<French slug>.svg|png` (README there):
+  replacing a file swaps the logo with no code change. Ledger is not in
+  Simple Icons; his file from Ledger's site is used. immobilier.ch's white
+  Swiss cross was merged into its red square as an even-odd hole so it stays
+  cut out in one ink; Linxea's and immobilier.ch's embedded styles removed;
+  CIR is an alpha PNG made from his JPG. Web-Atrio's three shapes stay
+  separate in one ink (checked at 1440px on the page's plate).
+- Measured in Chrome (dev server, 320/390/900/1440): no horizontal overflow
+  on the dev page or any reference page; immobilier.ch logo 178px wide on a
+  320px card, 293px on a 1440px card, 428px on its 1440px page, 121px in the
+  900px three-column band (the smallest); Web-Atrio 178px on its 1440px page;
+  no request to another origin before the play button, the nocookie player
+  after it.
+- Dev facts: « Rôle » reads « Aujourd'hui — Tech Lead front & back, équipe de
+  5 à 8 ». 3D lede: « Sans école, avant le développement. » (« sans
+  commande » gone); a « Distinction » fact: « Escart Wild, distingué par
+  TDT3D », no link. No « 3D à plein temps » claim remains (it lived in the
+  removed projects).
+- **English copy of all of the above is draft for PR 3**, written from the
+  French with no new claim: roles (« Front & back-end Tech Lead », « Technical
+  point of reference, Web-Atrio squad », « Solo, end to end »), summaries,
+  « Application-management tools for real-estate agencies », « At Web-Atrio »,
+  « today », « View on Google Play », « Recognition ».
+- **Orphaned in the bucket** (left alone, no longer referenced):
+  `projects/case-tes-potes-web-app.jpg`, `projects/kasa-openclassrooms.jpg`,
+  `projects/portfolio-3d-2018.jpg`, `projects/pixmodels.jpg` and their
+  `-presentation.jpg`, with their derived `-<width>.webp` variants.
+- Not done: a reference's logo card has no picture to decode, so its cut-in
+  reveal starts at once; the motion expert has not reviewed it. The 2024
+  missions' months (only years are sourced) are set to keep Stéphane's order.
+  Older notes below about `/developpeur/pixmodels`, `3d-portfolio-2018` or
+  « six plates » describe pages that no longer exist.
 
 **App layering (ADR-0018, `refactor/app-architecture`)** — `apps/web/src/app`
 is split into `core/` (services, stores, i18n, config, static data), `shared/`
@@ -172,9 +240,9 @@ mockup's unreset 8px body margin. In order:
   it.
 - Lede, scrubbed sentence (unlit floor 55%: 5.54:1 dev, 3.33:1 cgi, large
   text), facts as a `dl`, CTAs « Me contacter » → /contact, « Mon CV » → the PDF.
-- Dev work: six numbered plates (title, year, tools with marks) to
-  `/developpeur/<slug>`, the project page below. Count derived:
-  « 06 projets · 2015 – 2022 ».
+- Dev work: seven numbered plates (logo or cover, title, period, role, tools
+  with marks) to `/developpeur/<slug>`, the project page below. Count derived:
+  « 07 projets · 2020 – aujourd'hui » (see « Client references »).
 - 3D work: the full-bleed mosaic, every tile a link to `/graphisme-3d/<slug>`,
   which opens a native `<dialog>` viewer over the wall (16:9 plate, diagonal
   cut from SWEEP_LEAN, drift and darken, counter, 44px ticks, arrows/Home/End,
@@ -596,10 +664,11 @@ motes and smooth scrolling. It ships as six PRs:
 **Content review at the end of the integration** (Stéphane, 2026-11-14: the
 copy is reviewed once, after the six PRs). Collected so far:
 
-- Project page, written here and not on the prototype: the captions of Kasa,
-  Portfolio 3D and Pixmodels (« … sur ordinateur, tablette et mobile. »); the
-  six presentation alt texts; « Autres réalisations »; the « Vidéo » block's
-  « Lire la vidéo : … », « Vid. » and « Regarder sur YouTube ».
+- Project page, written here and not on the prototype: the two presentation
+  alt texts; « Autres réalisations » (shown by no page today: every project is
+  in a series); the « Vidéo » block's « Lire la vidéo : … », « Vid. » and
+  « Regarder sur YouTube »; the logos' alt texts (« Logo de Ledger »…); the
+  role prefix « Chez Web-Atrio · ».
 
 - **Stack « Maîtrise » points rewritten generically on 2026-11-15**
   (`content/mastery-points`, Stéphane's brief: « pour les technos, trouve des
@@ -616,8 +685,9 @@ copy is reviewed once, after the six PRs). Collected so far:
   four AWS points and .NET « Référent technique ». Still for him to approve
   in the content review: the generic Docker, Git and 3D points are inferred
   from the tool and the gallery, not from something he said.
-- Unsourced: « Fontenilles, France » under the portrait (not in user-profile);
-  « Sans école et sans commande » contradicts the Pixmodels commission (2015).
+- « Fontenilles, France » under the portrait is sourced by the 2026 CV
+  (cv-2026-facts). « Sans école et sans commande » replaced by « Sans école,
+  avant le développement. » (`feat/client-references`).
 - French typography outside the stack: no non-breaking spaces before « : »,
   « ? », « ! » (contact title « … Hello World ? », and others).
 

@@ -9,4 +9,4 @@ pages, as used on the approved mockup (2026-11-14).
 
 File names are Simple Icons' slugs, not the registry slugs (`dotnet`,
 `reactivex` for RxJS, `amazonwebservices` for AWS, `nodedotjs` for Node.js,
-`adobephotoshop` for Photoshop).
+`adobephotoshop` for Photoshop, `nextdotjs` for Next.js). React Native uses `react`.

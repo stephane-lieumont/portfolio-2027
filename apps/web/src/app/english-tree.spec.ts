@@ -51,8 +51,9 @@ describe('the English tree', () => {
     expect(cards.map((a) => a.querySelector('.row__title')?.textContent)).toEqual(
       PROJECTS.map((p) => p.title.en),
     );
-    expect(cards.map((a) => a.querySelector('img')?.getAttribute('alt'))).toEqual(
-      PROJECTS.map((p) => p.cover.alt.en),
+    // A client reference's logo is decoration beside its title; a cover is described.
+    expect(cards.map((a) => a.querySelector('img')?.getAttribute('alt') ?? null)).toEqual(
+      PROJECTS.map((p) => p.cover?.alt.en ?? null),
     );
   });
 
@@ -72,7 +73,7 @@ describe('the English tree', () => {
 
   it('sends a project’s video link to its English page, under its English title and role', async () => {
     const { ProjectHeroComponent, PROJECTS } = await english();
-    const project = PROJECTS.find((p) => p.slug.fr !== p.slug.en)!;
+    const project = PROJECTS.find((p) => p.slug.fr === 'linxea')!;
     const fixture = TestBed.createComponent(ProjectHeroComponent);
     fixture.componentRef.setInput('project', {
       ...project,
@@ -88,5 +89,6 @@ describe('the English tree', () => {
     );
     expect(host.querySelector('h1 .visually-hidden')?.textContent).toBe(project.title.en);
     expect(host.querySelector('.eyebrow')?.textContent).toContain(project.role.en);
+    expect(host.querySelector('.eyebrow')?.textContent).toContain('2023 – 2024');
   });
 });

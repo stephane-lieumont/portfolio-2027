@@ -378,6 +378,30 @@
           <context context-type="linenumber">98,99</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="project.googlePlay" datatype="html">
+        <source>Voir sur Google Play</source>
+        <target state="translated">View on Google Play</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/project/utils/project-view/project-view.ts</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="work.at" datatype="html">
+        <source>Chez <x id="series" equiv-text="series"/></source>
+        <target state="translated">At <x id="series" equiv-text="series"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/common/components/dev-work/dev-work.component.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="work.today" datatype="html">
+        <source>aujourd’hui</source>
+        <target state="translated">today</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/common/utils/work-count/work-count.ts</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="project.website" datatype="html">
         <source>Voir le site</source>
         <target state="translated">Visit the site</target>
@@ -395,8 +419,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="project.series" datatype="html">
-        <source>Série · <x id="series" equiv-text="project.series"/></source>
-        <target state="translated">Series · <x id="series" equiv-text="project.series"/></target>
+        <source>Chez <x id="series" equiv-text="project.series"/></source>
+        <target state="translated">At <x id="series" equiv-text="project.series"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/project/utils/project-view/project-view.ts</context>
           <context context-type="linenumber">69</context>

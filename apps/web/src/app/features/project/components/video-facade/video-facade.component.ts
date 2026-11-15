@@ -13,19 +13,22 @@ import {
 import { DomSanitizer } from '@angular/platform-browser';
 import { youtubeEmbedUrl, youtubeVideoId } from '@portfolio/shared-types/video';
 
+import { ClientLogoComponent } from '@common/components/client-logo/client-logo.component';
 import { mediaSrcset, mediaUrl } from '@core/config/media-config/media.config';
-import type { StaticImage } from '@core/data/static-content/static-content';
+import type { StaticImage, StaticLogo } from '@core/data/static-content/static-content';
 
 /**
  * A YouTube video behind its own poster (ADR-0016). Until the visitor presses
  * play, nothing is requested from YouTube or Google: the poster is the
- * project's own visual from the bucket. The press swaps the button for the
- * privacy-enhanced player, already playing, and hands it the focus.
+ * project's own visual from the bucket, or a client's logo. The press swaps
+ * the button for the privacy-enhanced player, already playing, and hands it
+ * the focus.
  */
 @Component({
   selector: 'app-video-facade',
+  imports: [ClientLogoComponent],
   template: `
-    <div class="frame">
+    <div class="frame" [class.frame--logo]="!poster()">
       @if (playing()) {
         <iframe
           #player
@@ -39,17 +42,21 @@ import type { StaticImage } from '@core/data/static-content/static-content';
       } @else {
         <button #play type="button" class="poster" (click)="start()">
           <span class="visually-hidden" i18n="@@video.play">Lire la vidéo : {{ title() }}</span>
-          <img
-            class="poster__img"
-            [src]="mediaUrl(poster().key)"
-            [srcset]="srcset(poster().key, poster().width)"
-            sizes="(min-width: 1352px) 972px, (min-width: 900px) calc(75vw - 42px), calc(100vw - 32px)"
-            alt=""
-            [width]="poster().width"
-            [height]="poster().height"
-            loading="lazy"
-            decoding="async"
-          />
+          @if (poster(); as poster) {
+            <img
+              class="poster__img"
+              [src]="mediaUrl(poster.key)"
+              [srcset]="srcset(poster.key, poster.width)"
+              sizes="(min-width: 1352px) 972px, (min-width: 900px) calc(75vw - 42px), calc(100vw - 32px)"
+              alt=""
+              [width]="poster.width"
+              [height]="poster.height"
+              loading="lazy"
+              decoding="async"
+            />
+          } @else if (logo(); as logo) {
+            <app-client-logo class="poster__logo" [logo]="logo" />
+          }
           <span class="poster__play" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" /></svg>
           </span>
@@ -63,7 +70,10 @@ import type { StaticImage } from '@core/data/static-content/static-content';
 export class VideoFacadeComponent {
   readonly url = input.required<string>();
   readonly title = input.required<string>();
-  readonly poster = input.required<StaticImage>();
+  /** The project's presentation visual; a client reference has none. */
+  readonly poster = input<StaticImage | null>(null);
+  /** A client reference's logo, standing in for the poster. */
+  readonly logo = input<StaticLogo | null>(null);
 
   protected readonly mediaUrl = mediaUrl();
   protected readonly srcset = mediaSrcset();

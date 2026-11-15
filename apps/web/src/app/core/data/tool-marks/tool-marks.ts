@@ -22,6 +22,11 @@ const MARKS: Partial<Record<ToolSlug, string>> = {
   rxjs: simpleIcon('reactivex'),
   dotnet: simpleIcon('dotnet'),
   react: simpleIcon('react'),
+  // React Native has no mark of its own in Simple Icons: it is React's.
+  'react-native': simpleIcon('react'),
+  nextjs: simpleIcon('nextdotjs'),
+  nginx: simpleIcon('nginx'),
+  helm: simpleIcon('helm'),
   docker: simpleIcon('docker'),
   git: simpleIcon('git'),
   aws: simpleIcon('amazonwebservices'),

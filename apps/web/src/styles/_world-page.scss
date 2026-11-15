@@ -168,7 +168,7 @@
     opacity: 0;
   }
 
-  :root.js-motion .row[data-reveal='pending'] .row__img {
+  :root.js-motion .row[data-reveal='pending'] :is(.row__img, .row__logo) {
     clip-path: inset(0 0 0 100%);
   }
 

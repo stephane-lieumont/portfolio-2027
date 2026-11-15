@@ -40,7 +40,7 @@ export function diagonalCut(
 /**
  * - `lines`: its children rise 12px, 60ms apart.
  * - `ruled`: the same, and its hairline draws (the stack head, the mastery panel).
- * - `row`: a project's picture cuts in along the diagonal.
+ * - `row`: a project's picture, or a client's logo, cuts in along the diagonal.
  * - `tile`: a render fades in from a slight zoom.
  */
 export type RevealKind = 'lines' | 'ruled' | 'row' | 'tile';
@@ -133,12 +133,18 @@ export class WorldRevealDirective {
 
   private reveal(element: HTMLElement, view: Window, k: number): void {
     const kind = this.kind();
-    const img = kind === 'tile' || kind === 'row' ? element.querySelector('img') : null;
+    // A client reference's logo is a mask on its plate, drawn as soon as it
+    // is styled: it cuts in like a picture, with nothing to wait for.
+    const img =
+      kind === 'tile' || kind === 'row'
+        ? element.querySelector<HTMLImageElement | HTMLElement>('img, .row__logo')
+        : null;
     if (img) {
       // Never an empty box arriving: the picture plays once it is decoded. The
       // stagger only holds between pictures that were all ready at once.
-      const ready = isPainted(img);
-      void painted(img).then((ok) => {
+      const picture = img instanceof HTMLImageElement ? img : null;
+      const ready = picture ? isPainted(picture) : true;
+      void (picture ? painted(picture) : Promise.resolve(true)).then((ok) => {
         delete element.dataset['reveal'];
         if (!ok || typeof img.animate !== 'function') return;
         if (kind === 'tile') this.revealTile(img, ready ? k * 110 : 0);
@@ -182,7 +188,7 @@ export class WorldRevealDirective {
   }
 
   // The mockup's tile reveal exactly: one animation, fade and settle together.
-  private revealTile(img: HTMLImageElement, delay: number): void {
+  private revealTile(img: HTMLElement, delay: number): void {
     img.animate(
       [
         { opacity: 0, scale: 1.06 },
@@ -192,7 +198,7 @@ export class WorldRevealDirective {
     );
   }
 
-  private revealRow(img: HTMLImageElement, view: Window, delay: number): void {
+  private revealRow(img: HTMLElement, view: Window, delay: number): void {
     const [from, to] = diagonalCut(img.clientHeight, view.innerWidth, view.innerHeight, -1);
     const timing = { delay, fill: 'backwards' } as const;
     img.animate([{ clipPath: from }, { clipPath: to }], {

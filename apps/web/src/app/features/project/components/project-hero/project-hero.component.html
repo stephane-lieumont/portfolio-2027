@@ -40,7 +40,7 @@
   @if (links().length) {
     <div class="ctas">
       @for (link of links(); track link.kind) {
-        @if (link.kind === 'site') {
+        @if (link.kind !== 'video') {
           <a
             appButton
             class="btn enter-line"

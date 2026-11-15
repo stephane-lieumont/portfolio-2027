@@ -35,7 +35,11 @@ describe('heroTitle', () => {
 
 describe('projectLinks', () => {
   it('offers nothing a project does not have', () => {
-    expect(projectLinks(variant({ websiteUrl: undefined, videoUrl: undefined }))).toEqual([]);
+    expect(
+      projectLinks(
+        variant({ websiteUrl: undefined, videoUrl: undefined, googlePlayUrl: undefined }),
+      ),
+    ).toEqual([]);
   });
 
   it('puts the site first, then the video, which stays on the page', () => {
@@ -48,12 +52,30 @@ describe('projectLinks', () => {
       ['Voir la vidéo', '#video'],
     ]);
   });
+
+  it('offers the store page after the video', () => {
+    const store = 'https://play.google.com/store/apps/details?id=com.cir.scancir';
+    const links = projectLinks(
+      variant({
+        websiteUrl: undefined,
+        googlePlayUrl: store,
+        videoUrl: 'https://youtu.be/dQw4w9WgXcQ',
+      }),
+    );
+
+    expect(links.map((l) => [l.kind, l.label, l.href])).toEqual([
+      ['video', 'Voir la vidéo', '#video'],
+      ['store', 'Voir sur Google Play', store],
+    ]);
+  });
 });
 
 describe('closingBand', () => {
   it('ends a project outside a series on others, distinct and never itself', () => {
-    for (const project of PROJECTS.filter((p) => !p.series)) {
-      const band = closingBand(project, PROJECTS);
+    // Every project is in a series today; the rule still holds for the next one.
+    const loose = PROJECTS.map((p) => ({ ...p, series: undefined }));
+    for (const project of loose) {
+      const band = closingBand(project, loose);
       const ids = band.projects.map((p) => p.id);
 
       expect(ids).toHaveLength(OTHERS_COUNT);

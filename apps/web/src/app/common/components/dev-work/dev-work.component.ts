@@ -4,24 +4,45 @@ import { RouterLink } from '@angular/router';
 
 import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
 import { WorldRevealDirective } from '@common/directives/world-reveal/world-reveal.directive';
-import { workCount } from '@common/utils/work-count/work-count';
+import { ClientLogoComponent } from '@common/components/client-logo/client-logo.component';
+import { workCount, workPeriod } from '@common/utils/work-count/work-count';
 import { mediaSrcset, mediaUrl } from '@core/config/media-config/media.config';
 import { PROJECTS, type StaticProject } from '@core/data/static-content/static-content';
 import { toolView } from '@core/data/tool-marks/tool-marks';
-import { InLocalePipe } from '@core/i18n/in-locale.pipe';
+import { InLocalePipe, inLocale } from '@core/i18n/in-locale.pipe';
 import { PATHS } from '@core/i18n/site-locale/site-locale';
 
 /**
+ * The card's second line: the role, behind the employer it was held for when
+ * the title does not already name it (« Chez Web-Atrio · » on a client
+ * mission, not on Web-Atrio's own site nor on Case Tes Potes' products).
+ */
+function roleLine(project: StaticProject): string {
+  const role = inLocale(project.role);
+  const { series } = project;
+  if (!series || inLocale(project.title).startsWith(series)) return role;
+  return `${$localize`:@@work.at:Chez ${series}:series:`} · ${role}`;
+}
+
+/**
  * The developer world's work: a sticky label column, then the projects as
- * numbered plates. Every card says its title, year and tools at rest; hover
- * and focus only bring one forward (spec 01: nothing editorial on hover alone).
+ * numbered plates, a client reference's plate bearing its logo. Every card
+ * says its title, years, role and tools at rest; hover and focus only bring one
+ * forward (spec 01: nothing editorial on hover alone).
  * Cards lead to each project's page. A project page ends on the same band,
  * with its series or a few other projects, the page's own card marked and not
  * a link.
  */
 @Component({
   selector: 'app-dev-work',
-  imports: [NgTemplateOutlet, RouterLink, InLocalePipe, WorldRevealDirective, PlateImageDirective],
+  imports: [
+    NgTemplateOutlet,
+    RouterLink,
+    InLocalePipe,
+    WorldRevealDirective,
+    PlateImageDirective,
+    ClientLogoComponent,
+  ],
   template: `
     <section class="work band" aria-labelledby="work-title">
       <div class="work__head" appWorldReveal="lines">
@@ -61,27 +82,34 @@ import { PATHS } from '@core/i18n/site-locale/site-locale';
     </section>
 
     <ng-template #card let-project let-here="here">
-      <span class="row__frame plate" [style.--plate-tone]="project.cover.averageColor">
-        <img
-          class="row__img"
-          appPlate="wall"
-          [src]="mediaUrl(project.cover.key)"
-          [srcset]="srcset(project.cover.key, project.cover.width)"
-          [sizes]="sizes()"
-          [alt]="project.cover.alt | inLocale"
-          [width]="project.cover.width"
-          [height]="project.cover.height"
-          loading="lazy"
-          decoding="async"
-        />
-        <span class="plate__fallback" aria-hidden="true">
-          <span class="plate__fallback-label" i18n="@@plate.unavailable">Image indisponible</span>
-          <span class="plate__fallback-alt">{{ project.cover.alt | inLocale }}</span>
+      @if (project.logo; as logo) {
+        <span class="row__frame row__frame--logo plate">
+          <app-client-logo class="row__logo" [logo]="logo" />
         </span>
-      </span>
+      } @else if (project.cover; as cover) {
+        <span class="row__frame plate" [style.--plate-tone]="cover.averageColor">
+          <img
+            class="row__img"
+            appPlate="wall"
+            [src]="mediaUrl(cover.key)"
+            [srcset]="srcset(cover.key, cover.width)"
+            [sizes]="sizes()"
+            [alt]="cover.alt | inLocale"
+            [width]="cover.width"
+            [height]="cover.height"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="plate__fallback" aria-hidden="true">
+            <span class="plate__fallback-label" i18n="@@plate.unavailable">Image indisponible</span>
+            <span class="plate__fallback-alt">{{ cover.alt | inLocale }}</span>
+          </span>
+        </span>
+      }
       <span class="row__cap">
         <span class="row__title">{{ project.title | inLocale }}</span>
-        <span class="row__year">{{ project.year }}</span>
+        <span class="row__year">{{ project.period }}</span>
+        <span class="row__role">{{ project.roleLine }}</span>
         <span class="row__tools">
           @for (tool of project.tools; track tool.slug) {
             <span class="tool">
@@ -122,11 +150,12 @@ export class DevWorkComponent {
       ? '(min-width: 1352px) 308px, (min-width: 900px) calc(25vw - 30px), (min-width: 600px) calc(50vw - 28px), calc(100vw - 32px)'
       : '(min-width: 1352px) 474px, (min-width: 900px) calc(37.5vw - 33px), (min-width: 600px) calc(50vw - 28px), calc(100vw - 32px)',
   );
-  protected readonly count = computed(() => workCount(this.projects().map((p) => p.releasedAt)));
+  protected readonly count = computed(() => workCount(this.projects()));
   protected readonly cards = computed(() =>
     this.projects().map((project) => ({
       ...project,
-      year: project.releasedAt.slice(0, 4),
+      period: workPeriod(project),
+      roleLine: roleLine(project),
       tools: project.technologies.map((slug) => toolView(slug)),
     })),
   );

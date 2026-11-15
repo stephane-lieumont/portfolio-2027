@@ -47,6 +47,11 @@ export const TECHNOLOGIES = [
   { slug: 'claude-code', label: 'Claude Code', glyph: null, logo: null },
   { slug: 'typescript', label: 'TypeScript', glyph: '\\e927', logo: null },
   { slug: 'react', label: 'React', glyph: '\\e919', logo: LOGO('react') },
+  // Added 2026-11-15 for the client references (cv-2026-facts): no glyph, no PNG.
+  { slug: 'react-native', label: 'React Native', glyph: null, logo: null },
+  { slug: 'nextjs', label: 'Next.js', glyph: null, logo: null },
+  { slug: 'nginx', label: 'Nginx', glyph: null, logo: null },
+  { slug: 'helm', label: 'Helm', glyph: null, logo: null },
   { slug: 'vue', label: 'Vue.js', glyph: '\\e918', logo: LOGO('vue') },
   { slug: 'flutter', label: 'Flutter', glyph: '\\e917', logo: LOGO('flutter') },
   { slug: 'dart', label: 'Dart', glyph: '\\e915', logo: null },

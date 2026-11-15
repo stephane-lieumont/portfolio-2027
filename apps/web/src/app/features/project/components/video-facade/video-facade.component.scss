@@ -11,6 +11,21 @@
   background: var(--world-ink);
 }
 
+// A client reference's poster: the same plate as the page's opening one,
+// the logo cut out in the ground, raised to leave the play button its centre.
+.frame--logo {
+  container-type: size;
+}
+
+.poster__logo {
+  --logo-y: 30%;
+  color: var(--world-ground);
+}
+
+.frame--logo .poster__play {
+  translate: 0 22cqb;
+}
+
 .player,
 .poster {
   position: absolute;

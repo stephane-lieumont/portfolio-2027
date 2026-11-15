@@ -44,6 +44,15 @@ export const videoUrlSchema = z
   .trim()
   .refine((value) => youtubeVideoId(value) !== null, 'expected an https YouTube video address');
 
+/** « Voir sur Google Play »: an app's own page on the store, over https. */
+export const googlePlayUrlSchema = z
+  .string()
+  .trim()
+  .regex(
+    /^https:\/\/play\.google\.com\/store\/apps\/details\?id=[\w.]+(&\S*)?$/,
+    'expected a Google Play app address',
+  );
+
 const copy = (max: number) => z.string().trim().min(1).max(max);
 
 export const projectSchema = z.object({
@@ -58,13 +67,10 @@ export const projectSchema = z.object({
   context: localized(copy(400)),
   /** In what capacity Stéphane worked, set large beside the mission. */
   role: localized(copy(80)),
-  /** What he did. */
-  mission: localized(copy(600)),
-  /** The concrete deliverables, in order. */
-  missionSteps: z
-    .array(localized(copy(240)))
-    .min(1)
-    .max(10),
+  /** What he did. Absent when the context already says it all, as for a client reference. */
+  mission: localized(copy(600)).nullable(),
+  /** The concrete deliverables, in order. Never invented: empty when none are sourced. */
+  missionSteps: z.array(localized(copy(240))).max(10),
   technos: z.array(z.string()),
   tags: z.array(z.string()),
   /**
@@ -74,13 +80,25 @@ export const projectSchema = z.object({
   series: copy(60).nullable(),
   websiteUrl: websiteUrlSchema.nullable(),
   videoUrl: videoUrlSchema.nullable(),
+  googlePlayUrl: googlePlayUrlSchema.nullable(),
   sourceUrl: z.url().nullable(),
   coverAsset: mediaAssetSchema.nullable(),
-  /** The wide visual the project page opens on, the product staged on white. */
-  presentationAsset: mediaAssetSchema,
-  presentationCaption: localized(copy(160)),
+  /**
+   * The wide visual the project page opens on, the product staged on white.
+   * A client reference has none: no screenshot of a client's product is shown.
+   */
+  presentationAsset: mediaAssetSchema.nullable(),
+  presentationCaption: localized(copy(160)).nullable(),
+  /**
+   * A client's logo, an SVG drawn monochrome in the site's ink: what a client
+   * reference shows instead of a cover and a presentation visual.
+   */
+  logo: mediaAssetSchema.nullable(),
   gallery: z.array(mediaAssetSchema),
-  releasedAt: z.iso.date(),
+  /** Where a period starts, when the work spans more than its release year. */
+  startedAt: z.iso.date().nullable(),
+  /** Drives display order. Null while the work is still going on (« aujourd'hui »), listed first. */
+  releasedAt: z.iso.date().nullable(),
   sortOrder: z.int(),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
@@ -104,13 +122,15 @@ export const createProjectInputSchema = projectSchema
     id: true,
     coverAsset: true,
     presentationAsset: true,
+    logo: true,
     gallery: true,
     createdAt: true,
     updatedAt: true,
   })
   .extend({
     coverAssetId: z.uuid().nullable().default(null),
-    presentationAssetId: z.uuid(),
+    presentationAssetId: z.uuid().nullable().default(null),
+    logoAssetId: z.uuid().nullable().default(null),
     galleryAssetIds: z.array(z.uuid()).default([]),
   });
 export type CreateProjectInput = z.infer<typeof createProjectInputSchema>;

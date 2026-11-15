@@ -5,7 +5,11 @@ import axe from 'axe-core';
 import { describe, expect, it } from 'vitest';
 
 import { MEDIA_BASE_URL } from '@core/config/media-config/media.config';
-import { PROJECTS } from '@core/data/static-content/static-content';
+import {
+  PROJECTS,
+  type StaticImage,
+  type StaticLogo,
+} from '@core/data/static-content/static-content';
 import { VideoFacadeComponent } from './video-facade.component';
 
 describe('youtubeVideoId', () => {
@@ -34,16 +38,20 @@ describe('youtubeVideoId', () => {
   });
 });
 
-const POSTER = PROJECTS[0].presentation;
+const POSTER = PROJECTS.find((p) => p.presentation)!.presentation!;
 
-async function render(url = 'https://youtu.be/dQw4w9WgXcQ') {
+async function render(
+  url = 'https://youtu.be/dQw4w9WgXcQ',
+  poster: { poster: StaticImage | null; logo: StaticLogo | null } = { poster: POSTER, logo: null },
+) {
   await TestBed.configureTestingModule({
     providers: [provideZonelessChangeDetection(), { provide: MEDIA_BASE_URL, useValue: '/medias' }],
   }).compileComponents();
   const fixture = TestBed.createComponent(VideoFacadeComponent);
   fixture.componentRef.setInput('url', url);
   fixture.componentRef.setInput('title', 'Case Tes Potes — application mobile');
-  fixture.componentRef.setInput('poster', POSTER);
+  fixture.componentRef.setInput('poster', poster.poster);
+  fixture.componentRef.setInput('logo', poster.logo);
   fixture.detectChanges();
   document.body.appendChild(fixture.nativeElement);
   return fixture;
@@ -115,6 +123,23 @@ describe('VideoFacadeComponent', () => {
     fixture.componentInstance.focus();
 
     expect(document.activeElement).toBe(host.querySelector('button'));
+    host.remove();
+  });
+
+  // A client reference has no visual of its own: its logo stands in, still
+  // from this site, still behind the same named button.
+  it('stands a client’s logo in for the poster, loading nothing but our own file', async () => {
+    const logo = PROJECTS.find((p) => p.logo)!.logo!;
+    const host = (await render(undefined, { poster: null, logo })).nativeElement as HTMLElement;
+
+    expect(host.querySelector('img')).toBeNull();
+    expect(host.querySelector('iframe')).toBeNull();
+    const mark = host.querySelector('button app-client-logo');
+    expect(mark?.getAttribute('aria-hidden')).toBe('true');
+    expect(mark?.getAttribute('style')).toContain(logo.src);
+    expect(host.querySelector('.frame--logo')).not.toBeNull();
+    const results = await axe.run(host, { resultTypes: ['violations'] });
+    expect(results.violations).toEqual([]);
     host.remove();
   });
 });

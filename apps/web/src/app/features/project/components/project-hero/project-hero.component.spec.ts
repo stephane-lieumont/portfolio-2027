@@ -30,8 +30,9 @@ async function render(project: StaticProject) {
   return fixture;
 }
 
+const linxea = PROJECTS.find((p) => p.slug.fr === 'linxea')!;
 const withVideo: StaticProject = {
-  ...PROJECTS[3],
+  ...linxea,
   videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
 };
 
@@ -44,7 +45,7 @@ describe('ProjectHeroComponent', () => {
     );
 
     // An address of its own, so a new tab or a page without script still lands on it.
-    expect(video?.getAttribute('href')).toBe('/developpeur/kasa-openclassrooms#video');
+    expect(video?.getAttribute('href')).toBe('/developpeur/linxea#video');
     expect(video?.hasAttribute('target')).toBe(false);
     video?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
     expect(fixture.componentInstance.requests).toHaveLength(1);
@@ -64,7 +65,8 @@ describe('ProjectHeroComponent', () => {
   });
 
   it('starts the qualifier once the name has risen, as the world pages do', async () => {
-    const host = (await render(PROJECTS[0])).nativeElement as HTMLElement;
+    const mobile = PROJECTS.find((p) => p.slug.fr === 'case-tes-potes-mobile')!;
+    const host = (await render(mobile)).nativeElement as HTMLElement;
     const header = host.querySelector<HTMLElement>('app-project-hero');
 
     // « Case Tes Potes »: 12 letters, 260 + 12 × 38 + 220.

@@ -1,3 +1,6 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import {
   altTextSchema,
   confirmUploadInputSchema,
@@ -10,11 +13,16 @@ import { describe, expect, it } from 'vitest';
 import { SITE_LOCALES } from '@core/i18n/site-locale/site-locale';
 import { ARTWORKS, PROJECTS, type StaticImage } from './static-content';
 
-const IMAGES: readonly [string, StaticImage][] = [
-  ...PROJECTS.map((p) => [`project ${p.slug.fr}`, p.cover] as [string, StaticImage]),
-  ...PROJECTS.map((p) => [`presentation ${p.slug.fr}`, p.presentation] as [string, StaticImage]),
-  ...ARTWORKS.map((a) => [`artwork ${a.slug.fr}`, a.image] as [string, StaticImage]),
+const IMAGES: readonly (readonly [string, StaticImage])[] = [
+  ...PROJECTS.flatMap((p) => (p.cover ? [[`project ${p.slug.fr}`, p.cover] as const] : [])),
+  ...PROJECTS.flatMap((p) =>
+    p.presentation ? [[`presentation ${p.slug.fr}`, p.presentation] as const] : [],
+  ),
+  ...ARTWORKS.map((a) => [`artwork ${a.slug.fr}`, a.image] as const),
 ];
+
+const REFERENCES = PROJECTS.filter((p) => p.logo);
+const CASE_STUDIES = PROJECTS.filter((p) => !p.logo);
 
 // The images live in MinIO, so nothing here can prove an object exists — that
 // is what `pnpm --filter @portfolio/api media:seed` reports, and it exits
@@ -37,8 +45,11 @@ describe.each(SITE_LOCALES)('alt text in %s', (locale) => {
   // makes a screen reader say the same words twice and describes nothing.
   it('never repeats the title it sits beside', () => {
     const repeats = [
-      ...PROJECTS.map((p) => [p.title, p.cover.alt] as const),
-      ...PROJECTS.map((p) => [p.title, p.presentation.alt] as const),
+      ...PROJECTS.flatMap((p) =>
+        [p.cover, p.presentation, p.logo].flatMap((image) =>
+          image ? [[p.title, image.alt] as const] : [],
+        ),
+      ),
       ...ARTWORKS.map((a) => [a.title, a.image.alt] as const),
     ].filter(([title, alt]) => alt[locale].toLowerCase() === title[locale].toLowerCase());
 
@@ -52,8 +63,8 @@ describe.each(SITE_LOCALES)('alt text in %s', (locale) => {
   });
 
   it('never repeats the caption beside a presentation visual', () => {
-    for (const project of PROJECTS) {
-      expect(project.presentation.alt[locale]).not.toBe(project.presentationCaption[locale]);
+    for (const project of CASE_STUDIES) {
+      expect(project.presentation?.alt[locale]).not.toBe(project.presentationCaption?.[locale]);
     }
   });
 });
@@ -62,8 +73,67 @@ describe('presentation visuals', () => {
   // One file for both trees, named after the French slug: the English slug
   // must not leak into the key, or the English page would show nothing.
   it('are keyed on their own French slug, so no page can show another project', () => {
-    for (const project of PROJECTS) {
-      expect(project.presentation.key).toBe(`projects/${project.slug.fr}-presentation.jpg`);
+    for (const project of CASE_STUDIES) {
+      expect(project.presentation?.key).toBe(`projects/${project.slug.fr}-presentation.jpg`);
+    }
+  });
+});
+
+describe('client references', () => {
+  // A reference shows its client's logo and nothing of the client's product
+  // (Stéphane, 2026-11-15); a case study shows its own screens. Never half of each.
+  it.each(PROJECTS.map((p) => [p.slug.fr, p] as const))(
+    '%s shows a logo or its own visuals, never both, never neither',
+    (_slug, project) => {
+      const visuals = [project.cover, project.presentation, project.presentationCaption];
+      if (project.logo) expect(visuals).toEqual([undefined, undefined, undefined]);
+      else expect(visuals.every(Boolean)).toBe(true);
+    },
+  );
+
+  // The file is the swap point: a logo dropped in under the slug replaces the
+  // placeholder with no code change, so the path must follow the slug.
+  it.each(REFERENCES.map((p) => [p.slug.fr, p] as const))(
+    '%s draws its logo from public/logos/clients, keyed on its French slug',
+    (_slug, project) => {
+      expect(project.logo?.src).toMatch(
+        new RegExp(`^/logos/clients/${project.slug.fr}\\.(svg|png)$`),
+      );
+    },
+  );
+
+  // A mask paints only what the file covers: a logo the app does not ship,
+  // or an SVG carrying a script, would leave an empty plate or worse.
+  it.each(REFERENCES.map((p) => [p.slug.fr, p] as const))(
+    '%s ships its logo file, an inert image',
+    (_slug, project) => {
+      const file = join(process.cwd(), 'public', project.logo!.src);
+      expect(existsSync(file), file).toBe(true);
+      if (file.endsWith('.svg')) expect(readFileSync(file, 'utf8')).not.toMatch(/<script|on\w+=/i);
+    },
+  );
+
+  it('are the Web-Atrio missions, and only they', () => {
+    expect(REFERENCES.map((p) => p.series)).toEqual(REFERENCES.map(() => 'Web-Atrio'));
+  });
+
+  it('never name the Ledger product, in either language', () => {
+    const ledger = JSON.stringify(PROJECTS.find((p) => p.slug.fr === 'ledger'));
+    expect(ledger).not.toMatch(/recover/i);
+  });
+});
+
+describe('periods', () => {
+  // Work still going on reads « 2025 – aujourd’hui »: it must say where it began.
+  it('give work still going on a start', () => {
+    for (const project of PROJECTS.filter((p) => p.releasedAt === null)) {
+      expect(project.startedAt, project.slug.fr).toBeDefined();
+    }
+  });
+
+  it('never end before they start', () => {
+    for (const { startedAt, releasedAt, slug } of PROJECTS) {
+      if (startedAt && releasedAt) expect(startedAt <= releasedAt, slug.fr).toBe(true);
     }
   });
 });
@@ -83,7 +153,9 @@ const projectContent = projectSchema.pick({
   series: true,
   websiteUrl: true,
   videoUrl: true,
+  googlePlayUrl: true,
   presentationCaption: true,
+  startedAt: true,
   releasedAt: true,
 });
 
@@ -92,17 +164,21 @@ describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (_slug
     const result = projectContent.safeParse({
       ...project,
       missionSteps: [...project.missionSteps],
+      mission: project.mission ?? null,
       series: project.series ?? null,
       websiteUrl: project.websiteUrl ?? null,
       videoUrl: project.videoUrl ?? null,
+      googlePlayUrl: project.googlePlayUrl ?? null,
+      presentationCaption: project.presentationCaption ?? null,
+      startedAt: project.startedAt ?? null,
     });
 
     expect(result.error?.issues ?? []).toEqual([]);
   });
 
   it('describes its pictures in both languages', () => {
-    for (const image of [project.cover, project.presentation]) {
-      expect(localizedTextSchema.safeParse(image.alt).success).toBe(true);
+    for (const image of [project.cover, project.presentation, project.logo]) {
+      if (image) expect(localizedTextSchema.safeParse(image.alt).success).toBe(true);
     }
   });
 
@@ -136,6 +212,15 @@ describe('the Project contract', () => {
     }
   });
 
+  it('takes an app’s own Google Play page only', () => {
+    const store = (googlePlayUrl: string) =>
+      projectContent.shape.googlePlayUrl.safeParse(googlePlayUrl).success;
+    expect(store('https://play.google.com/store/apps/details?id=com.cir.scancir&hl=fr')).toBe(true);
+    expect(store('http://play.google.com/store/apps/details?id=com.cir.scancir')).toBe(false);
+    expect(store('https://play.google.com.evil.fr/store/apps/details?id=x')).toBe(false);
+    expect(store('https://apps.apple.com/app/id1')).toBe(false);
+  });
+
   it('takes a YouTube video only', () => {
     expect(field({ websiteUrl: null, videoUrl: 'https://youtu.be/dQw4w9WgXcQ' })).toBe(true);
     expect(field({ websiteUrl: null, videoUrl: 'https://vimeo.com/1' })).toBe(false);
@@ -154,14 +239,13 @@ describe('the Project contract', () => {
   describe.each(['title', 'summary', 'context', 'role', 'mission', 'presentationCaption'] as const)(
     '%s',
     (field) => {
-      const [project] = PROJECTS;
       const accepts = (fr: string, en: string) =>
         projectContent.shape[field].safeParse({ fr, en }).success;
 
       it.each(['', '   '])('is refused blank (%j) in either language', (blank) => {
-        expect(accepts(project[field].fr, project[field].en)).toBe(true);
-        expect(accepts(blank, project[field].en)).toBe(false);
-        expect(accepts(project[field].fr, blank)).toBe(false);
+        expect(accepts('Un texte.', 'A text.')).toBe(true);
+        expect(accepts(blank, 'A text.')).toBe(false);
+        expect(accepts('Un texte.', blank)).toBe(false);
       });
     },
   );

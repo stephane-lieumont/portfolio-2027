@@ -32,7 +32,7 @@ describe('App shell', () => {
         provideZonelessChangeDetection(),
         provideRouter([
           { path: 'developpeur', component: Blank },
-          { path: 'developpeur/:slug', component: Blank, title: 'Kasa' },
+          { path: 'developpeur/:slug', component: Blank, title: 'Linxea' },
           { path: 'graphisme-3d', component: Blank },
           { path: 'contact', component: Blank },
         ]),
@@ -68,7 +68,7 @@ describe('App shell', () => {
     await visit('/developpeur');
     expect(current()).toEqual(['/developpeur=page']);
 
-    await visit('/developpeur/kasa-openclassrooms');
+    await visit('/developpeur/linxea');
     expect(current()).toEqual(['/developpeur=true']);
 
     await visit('/graphisme-3d');
@@ -78,8 +78,8 @@ describe('App shell', () => {
   it('offers the same page in English, as a plain link in English', async () => {
     const language = () => nav().querySelector<HTMLAnchorElement>('a[hreflang]')!;
 
-    await visit('/developpeur/kasa-openclassrooms');
-    expect(language().getAttribute('href')).toBe('/en/developer/kasa-openclassrooms');
+    await visit('/developpeur/linxea');
+    expect(language().getAttribute('href')).toBe('/en/developer/linxea');
     expect(language().getAttribute('lang')).toBe('en');
     expect(language().getAttribute('hreflang')).toBe('en');
     expect(language().getAttribute('aria-label')).toBe('English version');
@@ -150,13 +150,13 @@ describe('App shell', () => {
     // so without this a route change is silent to a screen reader. The title,
     // not a nav label: a project page has none.
     await visit('/developpeur');
-    await visit('/developpeur/kasa-openclassrooms');
+    await visit('/developpeur/linxea');
     await Promise.resolve();
     fixture.detectChanges();
     const live = host.querySelector('[aria-live]')!;
 
     expect(live.getAttribute('aria-atomic')).toBe('true');
-    expect(live.textContent).toBe('Kasa');
+    expect(live.textContent).toBe('Linxea');
     expect(document.activeElement).toBe(host.querySelector('#contenu'));
   });
 
@@ -181,7 +181,7 @@ describe('languageSwitch', () => {
       name: 'Version française',
     });
     expect(languageSwitch('/3d-art/gorgotte', 'en').href).toBe('/graphisme-3d/gorgotte');
-    expect(languageSwitch('/developer/pixmodels', 'en').href).toBe('/developpeur/pixmodels');
+    expect(languageSwitch('/developer/ledger', 'en').href).toBe('/developpeur/ledger');
     expect(languageSwitch('/contact', 'en').href).toBe('/contact');
   });
 
@@ -200,12 +200,6 @@ describe('languageSwitch', () => {
   it('swaps a translated slug for its counterpart, both ways', () => {
     expect(languageSwitch('/graphisme-3d/extraterrestre', 'fr').href).toBe('/en/3d-art/alien');
     expect(languageSwitch('/3d-art/alien', 'en').href).toBe('/graphisme-3d/extraterrestre');
-    expect(languageSwitch('/developpeur/portfolio-3d-2018', 'fr').href).toBe(
-      '/en/developer/3d-portfolio-2018',
-    );
-    expect(languageSwitch('/developer/3d-portfolio-2018', 'en').href).toBe(
-      '/developpeur/portfolio-3d-2018',
-    );
   });
 
   it('opens the other tree on its first page from a 404', () => {

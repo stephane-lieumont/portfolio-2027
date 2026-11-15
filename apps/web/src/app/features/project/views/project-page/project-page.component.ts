@@ -8,6 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 
+import { ClientLogoComponent } from '@common/components/client-logo/client-logo.component';
 import { DevWorkComponent } from '@common/components/dev-work/dev-work.component';
 import {
   BODY_RAMP,
@@ -38,7 +39,9 @@ function projectBySlug(slug: string): StaticProject {
 
 /**
  * A development project's page (« fiche projet »), as on its approved
- * prototype: the hero, the presentation visual cut along the sweep's diagonal,
+ * prototype: the hero, the presentation visual cut along the sweep's diagonal
+ * (a client reference's logo on the same plate: no screenshot of a client's
+ * product is shown),
  * then context, mission and tools, and a band of the series or other work.
  * The summary is not shown: it is the card's line and the meta description.
  */
@@ -53,6 +56,7 @@ function projectBySlug(slug: string): StaticProject {
     PlateLeanDirective,
     WorldRevealDirective,
     VideoFacadeComponent,
+    ClientLogoComponent,
   ],
   templateUrl: './project-page.component.html',
   styleUrl: './project-page.component.scss',

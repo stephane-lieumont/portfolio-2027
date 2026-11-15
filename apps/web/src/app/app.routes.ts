@@ -83,8 +83,6 @@ export const routes: Routes = [
     data: {
       page: 'cgi',
       world: 'cgi',
-      // Without the lead's « sans école et sans commande »: the Pixmodels
-      // commission contradicts it, and it is on the content review list.
       description: $localize`:@@page.cgi.description:J’ai commencé la 3D bien avant le développement. C’est là que j’ai appris à apprendre seul — et à regarder une image jusqu’à voir ce qui ne va pas.`,
     },
     loadComponent: () =>

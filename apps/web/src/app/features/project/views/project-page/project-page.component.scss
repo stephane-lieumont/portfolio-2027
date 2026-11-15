@@ -39,6 +39,13 @@
   clip-path: polygon(var(--lean) 0, 100% 0, 100% 100%, 0 100%);
 }
 
+// A client reference: its logo cut out of the plate in the world's ground,
+// on the same ink plate and lean as a presentation visual.
+.fig__ground--logo {
+  container-type: size;
+  color: var(--world-ground);
+}
+
 // Small screens: the shot is wider than the screen and bleeds off both sides,
 // so the screens in the middle read at a usable size.
 .fig__img {
@@ -88,6 +95,14 @@
     padding: clamp(16px, 3vw, 40px) clamp(16px, 3vw, 48px);
     // Within the plate's padding, so the shot is never cut by the plate's edge.
     --drift: clamp(12px, 2.4vw, 32px);
+  }
+
+  // Starts on the content column, as the blocks below do, and bleeds right.
+  .fig__ground--logo {
+    aspect-ratio: auto;
+    block-size: clamp(320px, 36vw, 560px);
+    padding: 0;
+    margin-left: calc((var(--wrap) - 24px) / 4 + 24px);
   }
 
   .fig__img {

@@ -26,7 +26,10 @@ describe('mediaSrcset', () => {
 });
 
 describe('the images in the static content', () => {
-  const images = [...PROJECTS.map((p) => p.cover), ...ARTWORKS.map((a) => a.image)];
+  const images = [
+    ...PROJECTS.flatMap((p) => (p.cover ? [p.cover] : [])),
+    ...ARTWORKS.map((a) => a.image),
+  ];
 
   it('are bucket keys, never URLs, and each carries its plate tone', () => {
     for (const image of images) {

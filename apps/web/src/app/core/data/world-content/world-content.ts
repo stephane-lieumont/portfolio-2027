@@ -74,8 +74,8 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
       {
         label: { fr: 'Rôle', en: 'Role' },
         value: {
-          fr: 'Lead Tech, référent technique',
-          en: 'Lead Tech, technical point of reference',
+          fr: 'Aujourd’hui — Tech Lead front & back, équipe de 5 à 8',
+          en: 'Today — front & back-end Tech Lead, a team of five to eight',
         },
       },
       {
@@ -103,8 +103,8 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
     lede: {
       lead: { fr: 'Une pratique apprise seule.', en: 'A self-taught practice.' },
       text: {
-        fr: 'Sans école et sans commande, bien avant le développement.',
-        en: 'No school and no commission, long before software development.',
+        fr: 'Sans école, avant le développement.',
+        en: 'No school, before software development.',
       },
     },
     scrub: {
@@ -122,6 +122,10 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
         value: { fr: 'Substance Painter, Photoshop', en: 'Substance Painter, Photoshop' },
       },
       { label: { fr: 'Période', en: 'Period' }, value: { fr: '2014 – 2016', en: '2014 – 2016' } },
+      {
+        label: { fr: 'Distinction', en: 'Recognition' },
+        value: { fr: 'Escart Wild, distingué par TDT3D', en: 'Escart Wild, recognised by TDT3D' },
+      },
     ],
     updatedAt: UPDATED_AT,
   },

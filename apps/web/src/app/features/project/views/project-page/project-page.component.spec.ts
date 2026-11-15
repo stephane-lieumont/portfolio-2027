@@ -51,13 +51,18 @@ describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (slug,
     const text = squash(((await render(slug)).nativeElement as HTMLElement).textContent);
 
     expect(text).toContain(project.context.fr);
-    expect(text).not.toContain(project.summary.fr);
+    // A one-sentence reference's summary is its context: nothing else to show.
+    if (project.summary.fr !== project.context.fr) expect(text).not.toContain(project.summary.fr);
   });
 
-  it('lists the mission and every step and tool, in order', async () => {
+  it('lists the mission and every step and tool, in order, and no empty block', async () => {
     const host = (await render(slug)).nativeElement as HTMLElement;
 
-    expect(squash(host.querySelector('.mission__text')?.textContent)).toBe(project.mission.fr);
+    expect(Boolean(host.querySelector('#mission-title'))).toBe(
+      Boolean(project.mission || project.missionSteps.length),
+    );
+    expect(host.querySelector('.mission__text')?.textContent?.trim()).toBe(project.mission?.fr);
+    expect(Boolean(host.querySelector('.steps'))).toBe(project.missionSteps.length > 0);
     expect(Array.from(host.querySelectorAll('.steps li'), (li) => squash(li.textContent))).toEqual(
       project.missionSteps.map((step) => step.fr),
     );
@@ -91,18 +96,39 @@ describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (slug,
     expect(host.querySelector('iframe')).toBeNull();
   });
 
-  it('opens on its presentation visual, through the media base, with real width candidates', async () => {
+  it('opens on its presentation visual or, for a client, on its named logo and no screenshot', async () => {
     const host = (await render(slug)).nativeElement as HTMLElement;
     const img = host.querySelector<HTMLImageElement>('.fig__img');
+    const logo = host.querySelector('.fig app-client-logo');
 
-    expect(img?.getAttribute('src')).toBe(`/medias/${project.presentation.key}`);
+    if (project.logo) {
+      expect(img).toBeNull();
+      expect(host.querySelector('figcaption')).toBeNull();
+      expect(logo?.getAttribute('role')).toBe('img');
+      expect(logo?.getAttribute('aria-label')).toBe(project.logo.alt.fr);
+      expect(logo?.getAttribute('style')).toContain(project.logo.src);
+      return;
+    }
+    const presentation = project.presentation!;
+    expect(logo).toBeNull();
+    expect(img?.getAttribute('src')).toBe(`/medias/${presentation.key}`);
     expect(img?.getAttribute('srcset')).toContain(
-      `/medias/${project.presentation.key.replace(/\.jpg$/, '-640.webp')} 640w`,
+      `/medias/${presentation.key.replace(/\.jpg$/, '-640.webp')} 640w`,
     );
     expect(img?.getAttribute('fetchpriority')).toBe('high');
     expect(squash(host.querySelector('figcaption')?.textContent)).toBe(
-      `Fig.${project.presentationCaption.fr}`,
+      `Fig.${project.presentationCaption?.fr}`,
     );
+  });
+
+  it('shows « Voir sur Google Play » exactly when the app is on the store, in a new tab', async () => {
+    const host = (await render(slug)).nativeElement as HTMLElement;
+    const store = Array.from(host.querySelectorAll<HTMLAnchorElement>('.ctas a')).find((a) =>
+      a.textContent?.includes('Voir sur Google Play'),
+    );
+
+    expect(store?.getAttribute('href')).toBe(project.googlePlayUrl);
+    if (store) expect(store.getAttribute('target')).toBe('_blank');
   });
 
   it('has no skipped heading level', async () => {
@@ -129,60 +155,72 @@ describe('the closing band', () => {
     const host = (await render('case-tes-potes-landing-page')).nativeElement as HTMLElement;
     const band = host.querySelector('app-dev-work');
 
-    expect(squash(band?.querySelector('h2')?.textContent)).toBe('Série · Case Tes Potes');
-    expect(band?.querySelectorAll('.row')).toHaveLength(3);
+    expect(squash(band?.querySelector('h2')?.textContent)).toBe('Chez Case Tes Potes');
+    expect(band?.querySelectorAll('.row')).toHaveLength(2);
     const current = band?.querySelector('[aria-current="page"]');
     expect(current?.tagName).toBe('DIV');
     expect(current?.textContent).toContain('Case Tes Potes — landing page');
     expect(current?.textContent).toContain('Cette fiche');
     const links = Array.from(band?.querySelectorAll('a') ?? [], (a) => a.getAttribute('href'));
-    expect(links).toEqual([
-      '/developpeur/case-tes-potes-mobile',
-      '/developpeur/case-tes-potes-web-app',
-    ]);
+    expect(links).toEqual(['/developpeur/case-tes-potes-mobile']);
   });
 
-  it('ends a project outside a series on other work, never on itself', async () => {
-    const host = (await render('kasa-openclassrooms')).nativeElement as HTMLElement;
+  it('ends a client mission on the other Web-Atrio missions, read as an employer would', async () => {
+    const host = (await render('ledger')).nativeElement as HTMLElement;
     const band = host.querySelector('app-dev-work');
     const links = Array.from(band?.querySelectorAll('a') ?? [], (a) => a.getAttribute('href'));
 
-    expect(squash(band?.querySelector('h2')?.textContent)).toBe('Autres réalisations');
-    expect(links).toHaveLength(3);
-    expect(links).not.toContain('/developpeur/kasa-openclassrooms');
-    expect(band?.querySelector('[aria-current]')).toBeNull();
+    expect(squash(band?.querySelector('h2')?.textContent)).toBe('Chez Web-Atrio');
+    expect(links).toEqual([
+      '/developpeur/immobilier-ch',
+      '/developpeur/web-atrio',
+      '/developpeur/cir-scancir',
+      '/developpeur/linxea',
+    ]);
+    expect(squash(host.querySelector('.work__count')?.textContent)).toBe(
+      '05 projets · 2022 – aujourd’hui',
+    );
   });
 
-  it('counts what it lists, with its span of years', async () => {
-    const host = (await render('case-tes-potes-mobile')).nativeElement as HTMLElement;
-
-    expect(squash(host.querySelector('.work__count')?.textContent)).toBe(
-      '03 projets · 2021 – 2022',
+  it('shows each client card’s logo as decoration beside its title, never a screenshot', async () => {
+    const band = ((await render('ledger')).nativeElement as HTMLElement).querySelector(
+      'app-dev-work',
     );
+
+    expect(band?.querySelectorAll('img')).toHaveLength(0);
+    for (const logo of Array.from(band?.querySelectorAll('app-client-logo') ?? [])) {
+      expect(logo.getAttribute('aria-hidden')).toBe('true');
+    }
+    expect(band?.querySelectorAll('app-client-logo')).toHaveLength(5);
   });
 });
 
 describe('the hero', () => {
   it('places the project among all of them', async () => {
-    const host = (await render('kasa-openclassrooms')).nativeElement as HTMLElement;
+    const host = (await render('linxea')).nativeElement as HTMLElement;
 
-    expect(squash(host.querySelector('.crumbs__pos')?.textContent)).toBe('Projet 04 / 06');
+    expect(squash(host.querySelector('.crumbs__pos')?.textContent)).toBe('Projet 04 / 07');
     expect(host.querySelector('.back')?.getAttribute('href')).toBe('/developpeur');
   });
 
-  it('names the series and year, then the role', async () => {
-    const host = (await render('case-tes-potes-web-app')).nativeElement as HTMLElement;
+  it('names the series and the period, then the role', async () => {
+    const host = (await render('linxea')).nativeElement as HTMLElement;
     const halves = Array.from(host.querySelectorAll('.eyebrow > span'), (s) =>
       squash(s.textContent),
     );
 
-    expect(halves).toEqual(['Case Tes Potes · 2021', 'Conception et développement']);
+    expect(halves).toEqual([
+      'Web-Atrio · 2023 – 2024',
+      'Référent technique de la squad Web-Atrio — React',
+    ]);
   });
 
-  it('gives a project without a series its year alone', async () => {
-    const host = (await render('pixmodels')).nativeElement as HTMLElement;
+  it('runs a mission still going on to today', async () => {
+    const host = (await render('immobilier-ch')).nativeElement as HTMLElement;
 
-    expect(squash(host.querySelector('.eyebrow > span')?.textContent)).toBe('2015');
+    expect(squash(host.querySelector('.eyebrow > span')?.textContent)).toBe(
+      'Web-Atrio · 2025 – aujourd’hui',
+    );
   });
 
   it('rebuilds the page on a step to another project, so its entrance plays again', async () => {
@@ -190,10 +228,10 @@ describe('the hero', () => {
     const host = fixture.nativeElement as HTMLElement;
     const before = host.querySelector('h1');
 
-    fixture.componentRef.setInput('slug', 'case-tes-potes-web-app');
+    fixture.componentRef.setInput('slug', 'case-tes-potes-landing-page');
     fixture.detectChanges();
 
     expect(host.querySelector('h1')).not.toBe(before);
-    expect(spoken(host.querySelector('h1'))).toBe('Case Tes Potes — web app');
+    expect(spoken(host.querySelector('h1'))).toBe('Case Tes Potes — landing page');
   });
 });

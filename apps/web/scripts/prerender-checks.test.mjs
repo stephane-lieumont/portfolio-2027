@@ -243,7 +243,7 @@ describe('a page in either tree', () => {
     'when the English page is described in French',
     'en/contact',
     english({
-      head: '<meta name="description" content="Une plateforme de location entre particuliers, réalisée dans le cadre de ma formation. L’occasion de poser proprement une architecture React et un typage strict.">',
+      head: '<meta name="description" content="La refonte du parcours d’adhésion en ligne, avec un déploiement automatique en CI/CD.">',
     }),
   );
   caught(
@@ -266,11 +266,11 @@ describe('the links of a page', () => {
   it('pass when every page link names a page of its own tree, in its words', () => {
     const form = `${FORM_EN}${links(
       '/en/3d-art/alien',
-      '/en/developer/3d-portfolio-2018#video',
+      '/en/developer/ledger#video',
       '/en/developer',
       '#contenu',
       '/cv-stephane-lieumont.pdf',
-      '/demo/pixmodels',
+      '/demo/casetespotes-landingpage',
       'https://github.com/stephane-lieumont',
     )}`;
     assert.deepEqual(checkPage('en/contact', english({ form })), []);
@@ -289,9 +289,9 @@ describe('the links of a page', () => {
     english({ form: `${FORM_EN}${links('/en/3d-art/extraterrestre')}` }),
   );
   caught(
-    'when an English card keeps the French slug',
+    'when an English card names a project the site no longer has',
     'en/contact',
-    english({ form: `${FORM_EN}${links('/en/developer/portfolio-3d-2018')}` }),
+    english({ form: `${FORM_EN}${links('/en/developer/pixmodels')}` }),
   );
   caught(
     'when an English page links into the French tree outside the switch',
@@ -313,7 +313,7 @@ describe('the links of a page', () => {
 describe('the French denylists', () => {
   it('hold the content no English page may say, and never an English string', async () => {
     const { FRENCH_CONTENT, FRENCH_WORDS } = await import('./prerender-checks.mjs');
-    assert.ok(FRENCH_CONTENT.includes('Sans école et sans commande, bien avant le développement.'));
+    assert.ok(FRENCH_CONTENT.includes('Sans école, avant le développement.'));
     assert.ok(FRENCH_CONTENT.includes('Légos : les Minions'));
     assert.ok(FRENCH_WORDS.includes('éclairage'));
     // Shared values are English too: a proper name or a tool list is not French.
