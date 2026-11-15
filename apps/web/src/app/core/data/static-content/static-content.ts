@@ -42,6 +42,16 @@ export interface StaticProject extends Pick<
   readonly presentationCaption?: LocalizedText;
   /** A client's logo, in place of the cover and the presentation visual. */
   readonly logo?: StaticLogo;
+  /**
+   * The brand colour (`#rrggbb`) tinting the logo plate's point field and
+   * tone; absent for a black or ink logo, which keeps the ink.
+   */
+  readonly logoTint?: string;
+  /**
+   * A dark plate, for a logo whose light colours vanish on the sand. A trial
+   * (Stéphane, 2026-11-15), front end only until he keeps it.
+   */
+  readonly logoPlate?: 'dark';
 }
 
 /**
@@ -55,11 +65,6 @@ export interface StaticLogo {
   /** The file's intrinsic proportions (its viewBox or pixels): they set its optical size. */
   readonly width: number;
   readonly height: number;
-  /**
-   * The brand colour (`#rrggbb`) tinting the plate's point field and tone;
-   * absent for a black or ink logo, which keeps the ink.
-   */
-  readonly tint?: string;
   /** Names the logo on the project page; the card leaves it to the title beside it. */
   readonly alt: LocalizedText;
 }
@@ -114,11 +119,11 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: { fr: 'immobilier-ch', en: 'immobilier-ch' },
     logo: {
       src: '/logos/clients/immobilier-ch.svg',
-      tint: '#dc1622',
       width: 433.15,
       height: 61.2,
       alt: { fr: 'Logo d’immobilier.ch', en: 'immobilier.ch logo' },
     },
+    logoTint: '#dc1622',
     title: { fr: 'immobilier.ch', en: 'immobilier.ch' },
     summary: {
       fr: 'Des outils de gestion des candidatures pour les agences immobilières. Je mène une équipe de 5 à 8 développeurs, de l’étude de faisabilité à la mise en production, CI/CD et instances AWS comprises.',
@@ -184,11 +189,12 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: { fr: 'web-atrio', en: 'web-atrio' },
     logo: {
       src: '/logos/clients/web-atrio.svg',
-      tint: '#0051ff',
       width: 72.731,
       height: 59.227,
       alt: { fr: 'Logo de Web-Atrio', en: 'Web-Atrio logo' },
     },
+    logoTint: '#0051ff',
+    logoPlate: 'dark',
     title: { fr: 'Web-Atrio', en: 'Web-Atrio' },
     summary: {
       fr: 'La refonte complète du site de Web-Atrio, design et développement, en React.',
@@ -208,7 +214,7 @@ export const PROJECTS: readonly StaticProject[] = [
         en: 'Building it in React.',
       },
     ],
-    technologies: ['react', 'typescript', 'gitlab', 'ci-cd'],
+    technologies: ['react', 'typescript', 'gitlab', 'jira', 'ci-cd'],
     series: 'Web-Atrio',
     websiteUrl: 'https://web-atrio.com/',
     releasedAt: '2024-12-01',
@@ -222,19 +228,19 @@ export const PROJECTS: readonly StaticProject[] = [
     slug: { fr: 'cir-scancir', en: 'cir-scancir' },
     logo: {
       src: '/logos/clients/cir-scancir.png',
-      tint: '#e3201b',
       width: 783,
       height: 414,
       alt: { fr: 'Logo de CIR', en: 'CIR logo' },
     },
+    logoTint: '#e3201b',
     title: { fr: 'CIR — Scancir', en: 'CIR — Scancir' },
     summary: {
-      fr: 'Une application mobile de gestion des commandes pour un distributeur de roulements. Je l’ai menée seul : recueil du besoin, maquettes jusqu’à leur validation, développement et ajustements, puis publication sur l’App Store et Google Play.',
-      en: 'A mobile order-management app for a bearings distributor. I ran it on my own: gathering the needs, mockups through to sign-off, development and adjustments, then release on the App Store and Google Play.',
+      fr: 'Une application mobile de gestion des commandes pour une entreprise de roulements. Je l’ai menée seul : recueil du besoin, maquettes jusqu’à leur validation, développement et ajustements, puis publication sur l’App Store et Google Play.',
+      en: 'A mobile order-management app for a bearings company. I ran it on my own: gathering the needs, mockups through to sign-off, development and adjustments, then release on the App Store and Google Play.',
     },
     context: {
-      fr: 'Une application mobile de gestion des commandes pour un distributeur de roulements.',
-      en: 'A mobile order-management app for a bearings distributor.',
+      fr: 'Une application mobile de gestion des commandes pour une entreprise de roulements.',
+      en: 'A mobile order-management app for a bearings company.',
     },
     mission: {
       fr: 'Je l’ai menée seul : recueil du besoin, maquettes jusqu’à leur validation, développement et ajustements, puis publication sur l’App Store et Google Play.',
@@ -311,6 +317,7 @@ export const PROJECTS: readonly StaticProject[] = [
       'typescript',
       'dotnet',
       'azure-devops',
+      'jira',
       'ci-cd',
       'sonarqube',
       'unit-tests',
@@ -336,16 +343,12 @@ export const PROJECTS: readonly StaticProject[] = [
     },
     title: { fr: 'Ledger', en: 'Ledger' },
     summary: {
-      fr: 'L’application web d’un service grand public, en Next.js, et son intégration dans l’application mobile Ledger, en React Native. Déploiement (Nginx, Docker, Helm) et automatisation des tests de bout en bout.',
-      en: 'The web app of a consumer service, in Next.js, and its integration into the Ledger mobile app, in React Native. Deployment (Nginx, Docker, Helm) and end-to-end test automation.',
+      fr: 'L’application web d’un service grand public, en Next.js, et son intégration dans l’application mobile Ledger, en React Native, tests de bout en bout automatisés.',
+      en: 'The web app of a consumer service, in Next.js, and its integration into the Ledger mobile app, in React Native, with automated end-to-end tests.',
     },
     context: {
       fr: 'L’application web d’un service grand public, en Next.js, et son intégration dans l’application mobile Ledger, en React Native.',
       en: 'The web app of a consumer service, in Next.js, and its integration into the Ledger mobile app, in React Native.',
-    },
-    mission: {
-      fr: 'Déploiement (Nginx, Docker, Helm) et automatisation des tests de bout en bout.',
-      en: 'Deployment (Nginx, Docker, Helm) and end-to-end test automation.',
     },
     missionSteps: [
       {
@@ -361,31 +364,13 @@ export const PROJECTS: readonly StaticProject[] = [
         en: 'Building the screens on the design system.',
       },
       {
-        fr: 'Déployer avec Nginx, Docker et Helm.',
-        en: 'Deploying with Nginx, Docker and Helm.',
-      },
-      {
-        fr: 'Faire évoluer l’architecture du produit.',
-        en: 'Evolving the product’s architecture.',
-      },
-      {
         fr: 'Automatiser les tests de bout en bout.',
         en: 'Automating end-to-end tests.',
       },
     ],
-    technologies: [
-      'nextjs',
-      'react-native',
-      'typescript',
-      'python',
-      'datadog',
-      'segment',
-      'docker',
-      'nginx',
-      'helm',
-      'ci-cd',
-      'unit-tests',
-    ],
+    // Only the open-source stack: the rest of the environment is not shown
+    // (Stéphane, 2026-11-15).
+    technologies: ['nextjs', 'react-native', 'typescript'],
     series: 'Web-Atrio',
     websiteUrl: 'https://www.ledger.com/',
     videoUrl: 'https://www.youtube.com/watch?v=e6Ioxi1UBgI',

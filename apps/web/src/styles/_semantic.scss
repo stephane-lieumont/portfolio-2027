@@ -27,6 +27,7 @@
   // point field and tone take; a logo without a brand colour of its own sets
   // none and keeps the ink.
   --logo-plate: var(--color-sand-100);
+  --logo-plate-dark: var(--color-neutral-800);
   --logo-tint: var(--color-neutral-950);
 
   --text-primary: light-dark(var(--color-neutral-900), var(--color-neutral-50));

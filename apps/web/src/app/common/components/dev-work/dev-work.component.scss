@@ -82,6 +82,12 @@
   container-type: size;
 }
 
+// A logo whose light colours vanish on the sand (Web-Atrio's yellow) stands
+// on a dark plate instead — a trial Stéphane judges on screen.
+.row__frame--logo.logo-plate--dark {
+  --logo-plate: var(--logo-plate-dark);
+}
+
 .row__img,
 .row__logo {
   transition:

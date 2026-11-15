@@ -133,22 +133,19 @@ export class WorldRevealDirective {
 
   private reveal(element: HTMLElement, view: Window, k: number): void {
     const kind = this.kind();
-    // A client reference's logo is a mask on its plate, drawn as soon as it
-    // is styled: it cuts in like a picture, with nothing to wait for.
-    const img =
-      kind === 'tile' || kind === 'row'
-        ? element.querySelector<HTMLImageElement | HTMLElement>('img, .row__logo')
-        : null;
-    if (img) {
+    // The picture to wait for, and what cuts in: a client reference's whole
+    // logo plate (its point field with it), the logo's own <img> decoded first.
+    const img = kind === 'tile' || kind === 'row' ? element.querySelector('img') : null;
+    const target = element.querySelector<HTMLElement>('.row__logo') ?? img;
+    if (img && target) {
       // Never an empty box arriving: the picture plays once it is decoded. The
       // stagger only holds between pictures that were all ready at once.
-      const picture = img instanceof HTMLImageElement ? img : null;
-      const ready = picture ? isPainted(picture) : true;
-      void (picture ? painted(picture) : Promise.resolve(true)).then((ok) => {
+      const ready = isPainted(img);
+      void painted(img).then((ok) => {
         delete element.dataset['reveal'];
-        if (!ok || typeof img.animate !== 'function') return;
-        if (kind === 'tile') this.revealTile(img, ready ? k * 110 : 0);
-        else this.revealRow(img, view, ready ? k * 80 : 0);
+        if (!ok || typeof target.animate !== 'function') return;
+        if (kind === 'tile') this.revealTile(target, ready ? k * 110 : 0);
+        else this.revealRow(target, view, ready ? k * 80 : 0);
       });
       return;
     }

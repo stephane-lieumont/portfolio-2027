@@ -10,7 +10,8 @@
           <div
             class="fig__ground fig__ground--logo plate"
             appPlateLean
-            [style.--logo-tint]="logo.tint"
+            [class.logo-plate--dark]="project.logoPlate === 'dark'"
+            [style.--logo-tint]="project.logoTint"
           >
             <app-client-logo class="fig__logo" [logo]="logo" [label]="logo.alt | inLocale" />
           </div>

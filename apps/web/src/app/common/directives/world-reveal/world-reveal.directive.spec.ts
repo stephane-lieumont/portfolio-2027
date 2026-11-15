@@ -42,6 +42,16 @@ class Ruled {}
 })
 class Row {}
 
+@Component({
+  imports: [WorldRevealDirective],
+  template: `<li class="row" appWorldReveal="row">
+    <span class="row__frame"
+      ><span class="row__logo"><img src="/logos/clients/x.png" alt="" /></span
+    ></span>
+  </li>`,
+})
+class LogoRow {}
+
 describe('WorldRevealDirective', () => {
   const root = document.documentElement;
   let report: ((entries: { target: Element; isIntersecting: boolean }[]) => void) | null;
@@ -234,6 +244,22 @@ describe('WorldRevealDirective, the other kinds', () => {
     await vi.waitFor(() => expect(row.dataset['reveal']).toBeUndefined());
     const keys = animate.mock.calls.map(([f]) => Object.keys((f as Keyframe[])[0]).join());
     expect(keys).toEqual(['clipPath', 'scale']);
+  });
+
+  // A logo card cut in before its logo decoded showed an empty plate, then
+  // the logo popping in: the plate waits for the logo's own <img>.
+  it('cuts a logo plate in only once its logo has decoded, the plate and not the bare image', async () => {
+    setup();
+    const row = await render(LogoRow, '.row');
+    report?.([{ target: row, isIntersecting: true }]);
+    await Promise.resolve();
+    expect(row.dataset['reveal']).toBe('pending');
+    expect(animate).not.toHaveBeenCalled();
+
+    row.querySelector('img')!.dispatchEvent(new Event('load'));
+    await vi.waitFor(() => expect(row.dataset['reveal']).toBeUndefined());
+    const targets = animate.mock.contexts.map((element) => (element as Element).className);
+    expect(targets).toEqual(['row__logo', 'row__logo']);
   });
 
   it('hides nothing under reduced motion', async () => {

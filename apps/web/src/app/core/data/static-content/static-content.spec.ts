@@ -6,7 +6,9 @@ import {
   confirmUploadInputSchema,
   localizedSlugSchema,
   localizedTextSchema,
-  projectSchema,
+  createProjectInputSchema,
+  projectFieldsSchema,
+  visualIssues,
 } from '@portfolio/shared-types';
 import { youtubeVideoId } from '@portfolio/shared-types/video';
 import { describe, expect, it } from 'vitest';
@@ -142,7 +144,7 @@ describe('periods', () => {
 // The fields the API will validate (spec 03): the static content is held to
 // the same contract, so the swap to the API changes the source and not the
 // copy. A video must be an https YouTube address the page can embed.
-const projectContent = projectSchema.pick({
+const projectContent = projectFieldsSchema.pick({
   id: true,
   slug: true,
   title: true,
@@ -156,6 +158,7 @@ const projectContent = projectSchema.pick({
   videoUrl: true,
   googlePlayUrl: true,
   presentationCaption: true,
+  logoTint: true,
   startedAt: true,
   releasedAt: true,
 });
@@ -171,6 +174,7 @@ describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (_slug
       videoUrl: project.videoUrl ?? null,
       googlePlayUrl: project.googlePlayUrl ?? null,
       presentationCaption: project.presentationCaption ?? null,
+      logoTint: project.logoTint ?? null,
       startedAt: project.startedAt ?? null,
     });
 
@@ -195,6 +199,69 @@ describe.each(ARTWORKS.map((a) => [a.slug.fr, a] as const))('artwork %s', (_slug
     expect(localizedSlugSchema.safeParse(artwork.slug).success).toBe(true);
     expect(localizedTextSchema.safeParse(artwork.title).success).toBe(true);
     expect(localizedTextSchema.safeParse(artwork.image.alt).success).toBe(true);
+  });
+});
+
+describe('a project’s opening visual', () => {
+  it.each(PROJECTS.map((p) => [p.slug.fr, p] as const))(
+    '%s passes the contract’s rule: a logo or a presentation, a caption only with a presentation',
+    (_slug, project) => {
+      expect(visualIssues(project)).toEqual([]);
+    },
+  );
+
+  it('refuses neither, both, or a caption without its visual', () => {
+    const caption = { fr: 'Fig.', en: 'Fig.' };
+    expect(visualIssues({ logo: null, presentation: null, presentationCaption: null })).toHaveLength(1);
+    expect(visualIssues({ logo: {}, presentation: {}, presentationCaption: caption })).toHaveLength(1);
+    expect(visualIssues({ logo: {}, presentation: null, presentationCaption: caption })).toEqual([
+      'a caption needs a presentation visual',
+    ]);
+  });
+
+  // The API's create route takes asset ids: the same rule applies to them.
+  it('holds a project created through the API to the same rule', () => {
+    const text = { fr: 'Un texte.', en: 'A text.' };
+    const base = {
+      kind: 'dev',
+      status: 'draft',
+      slug: { fr: 'un-projet', en: 'a-project' },
+      title: text,
+      summary: text,
+      context: text,
+      role: text,
+      mission: null,
+      missionSteps: [],
+      technos: [],
+      tags: [],
+      series: null,
+      websiteUrl: null,
+      videoUrl: null,
+      googlePlayUrl: null,
+      sourceUrl: null,
+      presentationCaption: null,
+      logoTint: null,
+      startedAt: null,
+      releasedAt: null,
+      sortOrder: 0,
+    };
+    const issues = (shape: Record<string, unknown>) =>
+      (createProjectInputSchema.safeParse({ ...base, ...shape }).error?.issues ?? [])
+        .filter((issue) => issue.code === 'custom')
+        .map((issue) => issue.message);
+    const id = '6b7c2a0e-1f3d-4c5a-9e8b-2d4f6a8c0e11';
+    expect(issues({ logoAssetId: id })).toEqual([]);
+    expect(issues({})).toEqual(['expected either a logo or a presentation visual']);
+    expect(issues({ logoAssetId: id, presentationAssetId: id })).toEqual([
+      'expected either a logo or a presentation visual',
+    ]);
+  });
+
+  it('takes a logo tint as #rrggbb only, since it is written into a style', () => {
+    const tint = (value: string) => projectContent.shape.logoTint.safeParse(value).success;
+    expect(tint('#dc1622')).toBe(true);
+    expect(tint('red')).toBe(false);
+    expect(tint('#dc1622; background: url(x)')).toBe(false);
   });
 });
 

@@ -33,11 +33,16 @@ prerender expectations and seed mapping went with them.
   `testflight` and `segment` (name only), `google-analytics`
   (Simple Icons marks; React Native uses React's), `azure`, `azure-devops`
   (no longer in Simple Icons), `ci-cd`, `unit-tests` (« Tests unitaires »,
-  translated in the front end) shown by name only. The Drizzle schema still
-  has `released_at NOT NULL` and no logo column: a migration is due when the
-  API serves projects. Nothing enforces « a logo, or a cover and a
-  presentation » in the schema (Zod 4 refinements block `.pick`/`.omit`);
-  `static-content.spec.ts` does.
+  translated in the front end) shown by name only. `logoTint` (`#rrggbb`,
+  nullable) is in the contract too, so the API keeps the plate's tint. The
+  schema now refuses a project with neither or both of a logo and a
+  presentation visual, and a caption without a presentation
+  (`visualIssues`, applied by `projectSchema` and `createProjectInputSchema`;
+  `projectFieldsSchema` is the unrefined shape that `.pick`/`.omit` build
+  on, since Zod 4 refuses both on a refined object). **Back-office work:**
+  the Drizzle schema needs `logo`, `logo_tint`, `started_at`,
+  `google_play_url` and a nullable `released_at` before the API serves
+  projects.
 - A reference shows its client's logo **in its own colours** (Stéphane,
   reversing the monochrome ink the same day), never a screenshot: an `<img>`
   (`ClientLogoComponent`) on the light presentation plate (`--color-sand-100`,
@@ -99,6 +104,25 @@ prerender expectations and seed mapping went with them.
   (EN draft « From form to light, I build the image down to the last
   reflection. Detail is where it all happens. »). The 3D meta description
   still says « apprendre seul… regarder une image »: to align in the review.
+- After the adversarial review: CIR's context reads « une entreprise de
+  roulements » / « a bearings company » (his words; « distributeur » was not
+  sourced); Jira on Linxea and the Web-Atrio site (Stéphane). « CIR —
+  Scancir » stays. **Ledger shows its open-source stack only** (Stéphane:
+  Next.js, React Native, TypeScript): no deployment tooling, monitoring or
+  analytics in its marks or copy, no « Déploiement (Nginx, Docker, Helm) »,
+  no architecture step; its mission sentence is gone (the steps carry it:
+  Next.js app, React Native integration, design system, end-to-end tests).
+  Python, Datadog, Segment, Helm, Nginx stay in the registry for the back
+  office.
+- **Web-Atrio's plate is a dark trial** (Stéphane asked for a darker plate
+  so the yellow reads; he judges on screen). Measured against the shapes'
+  own colours, no light or mid plate works: a mid neutral that lifts the
+  yellow to 2:1 (neutral 450, 2.03) drops the red to 1.23 and the blue to
+  1.78; anything lighter keeps the yellow under 1.6. On a dark plate all
+  three hold, so the trial is `--logo-plate-dark` (neutral 800, toned 5%
+  toward the blue: rgb 44,45,52): yellow 8.5:1, red 3.4:1, blue 2.4:1, the
+  plate 1.25:1 against the band. Front end only (`logoPlate: 'dark'` in the
+  static content), not in the contract until he keeps it.
 - **Videos are links out** (Stéphane: « pour la vidéo je préfère uniquement
   le bouton »): « Voir la vidéo » opens YouTube in a new tab, like « Voir le
   site » and « Voir sur Google Play » (that order). No « Vidéo » block, no
@@ -132,8 +156,9 @@ prerender expectations and seed mapping went with them.
   `projects/case-tes-potes-web-app.jpg`, `projects/kasa-openclassrooms.jpg`,
   `projects/portfolio-3d-2018.jpg`, `projects/pixmodels.jpg` and their
   `-presentation.jpg`, with their derived `-<width>.webp` variants.
-- Not done: a logo card has no picture to wait for, so its cut-in reveal
-  starts at once; the motion expert has not reviewed it. The 2024 missions'
+- A logo card's cut-in reveal waits for its logo `<img>` to decode, as an
+  image card does (it cut the plate in empty before, the logo popping in
+  later). The 2024 missions'
   months (only years are sourced) are set to keep Stéphane's order. Some
   mission sentences restate a step (immobilier.ch's team, CIR's sequence):
   for the content review. Older notes below about `/developpeur/pixmodels`,
