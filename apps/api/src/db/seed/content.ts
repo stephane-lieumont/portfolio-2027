@@ -138,7 +138,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
       en: 'A mobile order-management app for a bearings company.',
     },
     mission: {
-      fr: 'Je l’ai menée seul : recueil du besoin, maquettes jusqu’à leur validation, développement et ajustements, puis publication sur l’App Store et Google Play.',
+      fr: 'Je l’ai menée seul\u00a0: recueil du besoin, maquettes jusqu’à leur validation, développement et ajustements, puis publication sur l’App Store et Google Play.',
       en: 'I ran it on my own: gathering the requirements, mockups through to sign-off, development and fine-tuning, then release on the App Store and Google Play.',
     },
     missionSteps: [
@@ -207,7 +207,6 @@ export const PROJECTS: readonly ProjectRecord[] = [
       toolId('react'),
       toolId('tailwind'),
       toolId('typescript'),
-      toolId('dotnet'),
       toolId('azure-devops'),
       toolId('jira'),
       toolId('ci-cd'),
@@ -221,7 +220,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
     releasedAt: '2024-06-01',
     role: {
       fr: 'Référent technique de la squad — React',
-      en: 'The squad’s technical lead — React',
+      en: 'Squad technical lead — React',
     },
   },
   {
@@ -230,7 +229,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
     logo: mediaId('/logos/clients/ledger.svg'),
     title: { fr: 'Ledger', en: 'Ledger' },
     summary: {
-      fr: 'J’ai travaillé sur une application web grand public en Next.js et sur son intégration dans l’application mobile Ledger en React Native. Tests e2e automatisés.',
+      fr: 'J’ai travaillé sur une application web grand public en Next.js et son intégration à l’application mobile Ledger en React Native, testées de bout en bout.',
       en: 'I worked on a consumer web app in Next.js and on its integration into the Ledger mobile app in React Native, with automated end-to-end tests.',
     },
     context: {
@@ -288,7 +287,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
       en: 'Case Tes Potes — mobile app',
     },
     summary: {
-      fr: 'Une application de rencontre où ce sont les amis qui présentent. Co-fondateur, j’ai défini la stratégie technique et piloté une équipe de deux développeurs.',
+      fr: 'Une application de rencontre où ce sont les amis qui présentent. Cofondateur, j’ai défini la stratégie technique et piloté une équipe de deux développeurs.',
       en: 'A dating app where your friends do the introducing. As co-founder, I set the technical strategy and led a team of two developers.',
     },
     context: {
@@ -296,7 +295,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
       en: 'A dating app where friends make the introductions for someone single. The journey guides both sides, from browsing profiles to arranging the first date.',
     },
     mission: {
-      fr: 'Co-fondateur et lead developer. J’ai défini la stratégie technique, piloté une équipe de deux développeurs et mené la première version jusqu’au test marché.',
+      fr: 'Cofondateur et lead developer. J’ai défini la stratégie technique, piloté une équipe de deux développeurs et mené la première version jusqu’au test marché.',
       en: 'Co-founder and lead developer. I set the technical strategy, led a team of two developers and took the first version through to market testing.',
     },
     missionSteps: [
@@ -305,7 +304,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
         en: 'Requirements analysis and writing the user stories.',
       },
       {
-        fr: 'Roadmap produit : priorités de développement et jalons de livraison.',
+        fr: 'Roadmap produit\u00a0: priorités de développement et jalons de livraison.',
         en: 'Product roadmap: development priorities and delivery milestones.',
       },
       {
@@ -321,11 +320,23 @@ export const PROJECTS: readonly ProjectRecord[] = [
         en: 'Cross-platform development in Flutter, shipped on Android and iOS.',
       },
       {
+        fr: 'Back-end de l’application en Koa (Node.js) et MongoDB.',
+        en: 'The app’s back end in Koa (Node.js) and MongoDB.',
+      },
+      {
         fr: 'Une application web ouverte par lien d’invitation, pour que les proches complètent le profil sans installer l’application.',
         en: 'A web app opened from an invitation link, so friends can fill in the profile without installing the app.',
       },
     ],
-    technologies: [toolId('flutter'), toolId('dart'), toolId('xd'), toolId('git'), toolId('jira')],
+    technologies: [
+      toolId('flutter'),
+      toolId('dart'),
+      toolId('node'),
+      toolId('mongodb'),
+      toolId('xd'),
+      toolId('git'),
+      toolId('jira'),
+    ],
     series: 'Case Tes Potes',
     startedAt: '2020-01-01',
     releasedAt: '2022-08-30',
@@ -345,8 +356,8 @@ export const PROJECTS: readonly ProjectRecord[] = [
     },
     title: { fr: 'Case Tes Potes — landing page', en: 'Case Tes Potes — landing page' },
     summary: {
-      fr: 'La page d’entrée de la campagne de préinscription. Développée en React, adossée à une API Koa qui alimente la base de contacts et déclenche les envois.',
-      en: 'The landing page for the pre-registration campaign. Built in React, backed by a Koa API that feeds the contact database and triggers the emails.',
+      fr: 'La page d’entrée de la campagne de préinscription. Développée en React, adossée à une API Symfony qui alimente la base de contacts et déclenche les envois.',
+      en: 'The landing page for the pre-registration campaign. Built in React, backed by a Symfony API that feeds the contact database and triggers the emails.',
     },
     context: {
       fr: 'La page d’entrée de la campagne de préinscription à la bêta fermée. Elle collecte les contacts, répond aux questions et sert de vitrine au projet.',
@@ -364,8 +375,8 @@ export const PROJECTS: readonly ProjectRecord[] = [
       { fr: 'Maquette Figma, UX et UI.', en: 'Figma mockup, UX and UI.' },
       { fr: 'Développement de la page en React.', en: 'Building the page in React.' },
       {
-        fr: 'API Koa pour la gestion des contacts et l’intégration au service d’emailing.',
-        en: 'A Koa API to manage contacts and connect to the email service.',
+        fr: 'API Symfony pour la gestion des contacts et l’intégration au service d’emailing.',
+        en: 'A Symfony API to manage contacts and connect to the email service.',
       },
       {
         fr: 'Tests unitaires et d’intégration avec Jest.',
@@ -378,8 +389,7 @@ export const PROJECTS: readonly ProjectRecord[] = [
       toolId('react'),
       toolId('typescript'),
       toolId('sass'),
-      toolId('node'),
-      toolId('mongodb'),
+      toolId('symfony'),
       toolId('docker'),
     ],
     series: 'Case Tes Potes',
@@ -403,7 +413,7 @@ export const ARTWORKS: readonly ArtworkRecord[] = [
   {
     id: '75643113-fe5b-4f36-9880-626c333087be',
     slug: { fr: 'legos-minions', en: 'lego-minions' },
-    title: { fr: 'Lego : les Minions', en: 'Lego Minions' },
+    title: { fr: 'Lego\u00a0: les Minions', en: 'Lego Minions' },
     image: mediaId('cgi/legos-minions.jpg'),
     software: [toolId('3dsmax'), toolId('vray'), toolId('photoshop'), toolId('illustrator')],
     releasedAt: '2016-01-01',
