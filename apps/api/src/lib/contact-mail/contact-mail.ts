@@ -11,6 +11,7 @@ const INK = '#12100f';
 const ORANGE = '#f2a154';
 const MUTED = '#5c5652';
 const SERIF = "'Instrument Serif', Georgia, 'Times New Roman', serif";
+const MONO = "'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace";
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
 
 const ENTITIES: Readonly<Record<string, string>> = {
@@ -72,19 +73,22 @@ export function renderContactMail(message: ContactMessage, sentAt: Date): Contac
 <tr><td align="center" style="padding-top: 24px; padding-right: 16px; padding-bottom: 24px; padding-left: 16px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 600px;">
   <tr>
-    <td style="padding-bottom: 12px; border-bottom: 3px solid ${ORANGE}; font-family: ${SANS}; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; color: ${INK};">Stéphane Lieumont <span style="font-family: ${SERIF}; font-style: italic; font-weight: 400; color: ${MUTED};">portfolio</span></td>
+    <td style="padding-bottom: 14px; font-family: ${MONO}; font-size: 11px; line-height: 16px; letter-spacing: 0.14em; color: ${MUTED};">STÉPHANE LIEUMONT · PORTFOLIO</td>
   </tr>
   <tr>
-    <td style="padding-top: 20px; font-family: ${SANS}; font-size: 15px; line-height: 22px; color: ${INK};"><strong>${escapeHtml(name)}</strong> &lt;${escapeHtml(message.email)}&gt;</td>
+    <td style="padding-bottom: 18px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="32" height="3" bgcolor="${ORANGE}" style="font-size: 1px; line-height: 3px;">&nbsp;</td></tr></table></td>
   </tr>
   <tr>
-    <td style="padding-bottom: 20px; font-family: ${SANS}; font-size: 13px; line-height: 20px; color: ${MUTED};">${escapeHtml(date)}</td>
+    <td style="font-family: ${SANS}; font-size: 30px; line-height: 36px; font-weight: 600; letter-spacing: -0.02em; color: ${INK};">Message de <span style="font-family: ${SERIF}; font-style: italic; font-weight: 400;">${escapeHtml(name)}</span></td>
+  </tr>
+  <tr>
+    <td style="padding-top: 8px; padding-bottom: 28px; font-family: ${SANS}; font-size: 14px; line-height: 20px; color: ${MUTED};"><a href="mailto:${escapeHtml(message.email)}" style="color: ${INK}; text-decoration: underline;">${escapeHtml(message.email)}</a> · ${escapeHtml(date)}</td>
   </tr>
   <tr>
     <td style="padding-top: 4px; padding-left: 16px; border-left: 3px solid ${ORANGE}; font-family: ${SANS}; font-size: 15px; line-height: 24px; color: ${INK};">${paragraphsOf(message.message)}</td>
   </tr>
   <tr>
-    <td style="padding-top: 20px; font-family: ${SANS}; font-size: 12px; line-height: 18px; color: ${MUTED};">Envoyé depuis le formulaire de contact de stephane-lieumont.fr</td>
+    <td style="padding-top: 28px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-top: 12px; border-top: 1px solid #e6e1dc; font-family: ${MONO}; font-size: 11px; line-height: 16px; letter-spacing: 0.08em; color: ${MUTED};">stephane-lieumont.fr — formulaire de contact</td></tr></table></td>
   </tr>
 </table>
 </td></tr>
