@@ -42,6 +42,7 @@
       @for (link of links(); track link.kind) {
         @if (link.kind === 'site') {
           <a
+            appButton
             class="btn enter-line"
             [class.btn--ghost]="!$first"
             [style.--line]="2 + $index"
@@ -53,6 +54,7 @@
           >
         } @else {
           <a
+            appButton
             class="btn enter-line"
             [class.btn--ghost]="!$first"
             [style.--line]="2 + $index"

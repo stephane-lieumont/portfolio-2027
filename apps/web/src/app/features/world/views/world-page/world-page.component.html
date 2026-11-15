@@ -18,9 +18,11 @@
         }
       </dl>
       <div class="ctas">
-        <a class="btn" [routerLink]="contactPath" i18n="@@world.ctaContact">Me contacter</a>
+        <a appButton class="btn" [routerLink]="contactPath" i18n="@@world.ctaContact"
+          >Me contacter</a
+        >
         @if (cv) {
-          <a class="btn btn--ghost" [href]="cv" target="_blank" rel="noopener"
+          <a appButton class="btn btn--ghost" [href]="cv" target="_blank" rel="noopener"
             ><ng-container i18n="@@world.ctaCv">Mon CV</ng-container
             ><span class="visually-hidden" i18n="@@pdfNewTab"> (PDF, nouvel onglet)</span></a
           >

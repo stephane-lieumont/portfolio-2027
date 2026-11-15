@@ -7,6 +7,7 @@ import { PATHS } from '../../../../core/i18n/site-locale';
 import type { StaticProject } from '../../../../core/data/static-content';
 import { introBase } from '../../../../common/utils/hero-letters';
 import { heroTitle, projectLinks } from '../../utils/project-view';
+import { ButtonComponent } from '../../../../shared/components/kit-ui/button/button.component';
 
 /**
  * The project page's hero: the way back and the project's rank, series · year
@@ -17,7 +18,7 @@ import { heroTitle, projectLinks } from '../../utils/project-view';
  */
 @Component({
   selector: 'app-project-hero',
-  imports: [RouterLink, InLocalePipe],
+  imports: [ButtonComponent, RouterLink, InLocalePipe],
   templateUrl: './project-hero.component.html',
   styleUrl: './project-hero.component.scss',
   host: {

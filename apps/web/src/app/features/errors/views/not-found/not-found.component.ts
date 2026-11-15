@@ -10,6 +10,7 @@ import { RouterLink } from '@angular/router';
 
 import { ReducedMotionService } from '../../../../core/services/motion/reduced-motion.service';
 import { NAV } from '../../../../core/data/nav-items';
+import { ButtonComponent } from '../../../../shared/components/kit-ui/button/button.component';
 
 /**
  * The 2022 site's 404, kept at Stéphane's request: Travolta lost, and the
@@ -18,7 +19,7 @@ import { NAV } from '../../../../core/data/nav-items';
  */
 @Component({
   selector: 'app-not-found',
-  imports: [RouterLink],
+  imports: [ButtonComponent, RouterLink],
   template: `
     <article class="not-found">
       <div class="not-found__text">
@@ -27,7 +28,9 @@ import { NAV } from '../../../../core/data/nav-items';
         <p class="not-found__lede" i18n="@@notFound.lede">
           Cette page n’existe pas, ou plus. Le reste du site, lui, est bien là.
         </p>
-        <a class="btn" [routerLink]="back" i18n="@@notFound.back">Retour aux réalisations</a>
+        <a appButton class="btn" [routerLink]="back" i18n="@@notFound.back"
+          >Retour aux réalisations</a
+        >
       </div>
       <figure class="not-found__clip">
         <video
@@ -96,40 +99,8 @@ import { NAV } from '../../../../core/data/nav-items';
       color: var(--world-muted);
     }
 
-    // The world pages' call to action: a link that looks like a button,
-    // because it goes somewhere.
     .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
       margin-top: 8px;
-      padding: 13px 20px;
-      border-radius: 999px;
-      font: 500 14px/1 var(--font-sans);
-      text-decoration: none;
-      color: var(--world-ground);
-      background: var(--world-ink);
-      transition: scale 200ms var(--ease-world);
-    }
-
-    .btn::after {
-      content: '';
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-
-    @media (hover: hover) {
-      .btn:hover {
-        scale: 1.04;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .btn {
-        transition: none;
-      }
     }
 
     .not-found__clip {

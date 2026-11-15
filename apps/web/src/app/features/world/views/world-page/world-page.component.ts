@@ -26,6 +26,7 @@ import { ScrubSentenceComponent } from '../../../../common/components/scrub-sent
 import { introBase } from '../../../../common/utils/hero-letters';
 import { NAME, WorldHeroComponent } from '../../components/world-hero/world-hero.component';
 import { WorldStackComponent } from '../../components/world-stack/world-stack.component';
+import { ButtonComponent } from '../../../../shared/components/kit-ui/button/button.component';
 
 /**
  * How the page arrives:
@@ -46,6 +47,7 @@ const LEAD_LINES = 3;
 @Component({
   selector: 'app-world-page',
   imports: [
+    ButtonComponent,
     RouterLink,
     InLocalePipe,
     WorldHeroComponent,

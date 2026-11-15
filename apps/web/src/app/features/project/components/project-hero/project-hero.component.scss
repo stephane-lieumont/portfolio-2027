@@ -149,42 +149,16 @@
 // 44px tall: the solid button carries the ghost's border too, so both sit on
 // the same line.
 .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
   min-height: 44px;
   padding: 0 20px;
   border: 1px solid var(--world-ink);
-  border-radius: 999px;
-  font: 500 14px/1 var(--font-sans);
-  text-decoration: none;
-  color: var(--world-ground);
-  background: var(--world-ink);
-  transition: scale 200ms var(--ease-world);
-}
-
-.btn::after {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
 }
 
 .btn--ghost {
-  background: none;
-  color: var(--world-ink);
   border-color: var(--world-rule);
 }
 
-@media (hover: hover) {
-  .btn:hover {
-    scale: 1.04;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .btn,
   .back svg {
     transition: none;
   }
