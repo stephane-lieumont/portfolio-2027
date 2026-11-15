@@ -132,15 +132,15 @@ export const PROJECTS: readonly StaticProject[] = [
     title: { fr: 'immobilier.ch', en: 'immobilier.ch' },
     summary: {
       fr: 'Des outils de gestion des candidatures pour agences immobilières. Lead Tech Angular et .NET, j’encadre 5 à 8 développeurs, de la faisabilité à la production.',
-      en: 'Application-management tools for real-estate agencies. As Angular and .NET Lead Tech, I lead five to eight developers, from feasibility to production.',
+      en: 'Applicant-management tools for real-estate agencies. As Angular and .NET Lead Tech, I lead five to eight developers, from feasibility to production.',
     },
     context: {
       fr: 'Des outils de gestion des candidatures pour les agences immobilières.',
-      en: 'Application-management tools for real-estate agencies.',
+      en: 'Applicant-management tools for real-estate agencies.',
     },
     mission: {
       fr: 'Je mène une équipe de 5 à 8 développeurs, de l’étude de faisabilité à la mise en production, CI/CD et instances AWS comprises.',
-      en: 'I lead a team of five to eight developers, from the feasibility study to production, CI/CD and AWS instances included.',
+      en: 'I lead a team of five to eight developers from the feasibility study through to production, CI/CD and AWS instances included.',
     },
     missionSteps: [
       {
@@ -149,15 +149,15 @@ export const PROJECTS: readonly StaticProject[] = [
       },
       {
         fr: 'Étudier la faisabilité des besoins et accompagner le client.',
-        en: 'Assessing the feasibility of each need and supporting the client.',
+        en: 'Assessing the feasibility of each requirement and supporting the client.',
       },
       {
         fr: 'Développer le front et le back, le back structuré en clean architecture.',
-        en: 'Building the front and the back end, the back end structured as a clean architecture.',
+        en: 'Developing the front end and the back end, the back end built on a clean architecture.',
       },
       {
         fr: 'Construire les écrans sur le design system.',
-        en: 'Building the screens on the design system.',
+        en: 'Building the screens from the design system.',
       },
       {
         fr: 'Mettre en place le déploiement continu et gérer les instances AWS.',
@@ -204,7 +204,7 @@ export const PROJECTS: readonly StaticProject[] = [
     title: { fr: 'Web-Atrio', en: 'Web-Atrio' },
     summary: {
       fr: 'La refonte complète du site vitrine de Web-Atrio, en 2024. J’ai conçu le nouveau design puis je l’ai développé en React et TypeScript.',
-      en: 'A complete redesign of the Web-Atrio showcase website, in 2024. I designed the new look, then developed it in React and TypeScript.',
+      en: 'A complete redesign of the Web-Atrio company website, in 2024. I designed the new look, then developed it in React and TypeScript.',
     },
     context: {
       fr: 'La refonte complète du site de Web-Atrio, design et développement, en React.',
@@ -226,7 +226,7 @@ export const PROJECTS: readonly StaticProject[] = [
     releasedAt: '2024-12-01',
     role: {
       fr: 'Refonte du site vitrine, conçu et développé — React',
-      en: 'Showcase website redesign, designed and built — React',
+      en: 'Company website redesign, designed and built — React',
     },
   },
   {
@@ -251,12 +251,12 @@ export const PROJECTS: readonly StaticProject[] = [
     },
     mission: {
       fr: 'Je l’ai menée seul : recueil du besoin, maquettes jusqu’à leur validation, développement et ajustements, puis publication sur l’App Store et Google Play.',
-      en: 'I ran it on my own: gathering the needs, mockups through to sign-off, development and adjustments, then release on the App Store and Google Play.',
+      en: 'I ran it on my own: gathering the requirements, mockups through to sign-off, development and fine-tuning, then release on the App Store and Google Play.',
     },
     missionSteps: [
       {
         fr: 'Recueillir le besoin.',
-        en: 'Gathering the needs.',
+        en: 'Gathering the requirements.',
       },
       {
         fr: 'Concevoir les maquettes sur Figma, jusqu’à leur validation.',
@@ -299,11 +299,11 @@ export const PROJECTS: readonly StaticProject[] = [
     title: { fr: 'Linxea', en: 'Linxea' },
     summary: {
       fr: 'La refonte du parcours d’adhésion en ligne, en React et TypeScript. Référent technique de la squad Web-Atrio, j’ai aussi automatisé le déploiement en CI/CD.',
-      en: 'I rebuilt the online sign-up journey in React and TypeScript. As the Web-Atrio squad’s technical point of reference, I also automated CI/CD deployment.',
+      en: 'I rebuilt the online sign-up journey in React and TypeScript. As the Web-Atrio squad’s technical go-to, I also automated deployment with CI/CD.',
     },
     context: {
       fr: 'La refonte du parcours d’adhésion en ligne, avec un déploiement automatique en CI/CD.',
-      en: 'The redesign of the online sign-up journey, with automatic CI/CD deployment.',
+      en: 'A redesign of the online sign-up journey, with automated CI/CD deployment.',
     },
     missionSteps: [
       {
@@ -312,7 +312,7 @@ export const PROJECTS: readonly StaticProject[] = [
       },
       {
         fr: 'Être le référent technique de la squad.',
-        en: 'Being the squad’s technical point of reference.',
+        en: 'Acting as the squad’s technical go-to.',
       },
       {
         fr: 'Automatiser le déploiement en CI/CD.',
@@ -337,7 +337,7 @@ export const PROJECTS: readonly StaticProject[] = [
     releasedAt: '2024-06-01',
     role: {
       fr: 'Référent technique de la squad — React',
-      en: 'The squad’s technical point of reference — React',
+      en: 'The squad’s technical go-to — React',
     },
   },
   {
@@ -369,7 +369,7 @@ export const PROJECTS: readonly StaticProject[] = [
       },
       {
         fr: 'Construire les écrans sur le design system.',
-        en: 'Building the screens on the design system.',
+        en: 'Building the screens from the design system.',
       },
       {
         fr: 'Automatiser les tests de bout en bout.',
@@ -421,11 +421,11 @@ export const PROJECTS: readonly StaticProject[] = [
     },
     summary: {
       fr: 'Une application de rencontre où ce sont les amis qui présentent. Co-fondateur, j’ai défini la stratégie technique et piloté une équipe de deux développeurs.',
-      en: 'A dating app where friends do the introducing. As co-founder, I set the technical strategy and led a team of two developers through to market testing.',
+      en: 'A dating app where your friends do the introducing. As co-founder, I set the technical strategy and led a team of two developers.',
     },
     context: {
       fr: 'Une application de rencontre où ce sont les amis qui présentent le célibataire. Le parcours accompagne les deux côtés, de la recherche de profils à l’organisation du premier rendez-vous.',
-      en: 'A dating app where friends introduce the single person. The journey supports both sides, from browsing profiles to arranging the first date.',
+      en: 'A dating app where friends make the introductions for someone single. The journey guides both sides, from browsing profiles to arranging the first date.',
     },
     mission: {
       fr: 'Co-fondateur et lead developer. J’ai défini la stratégie technique, piloté une équipe de deux développeurs et mené la première version jusqu’au test marché.',
@@ -434,7 +434,7 @@ export const PROJECTS: readonly StaticProject[] = [
     missionSteps: [
       {
         fr: 'Analyse des besoins et rédaction des user stories.',
-        en: 'Needs analysis and user stories.',
+        en: 'Requirements analysis and writing the user stories.',
       },
       {
         fr: 'Roadmap produit : priorités de développement et jalons de livraison.',
@@ -463,7 +463,7 @@ export const PROJECTS: readonly StaticProject[] = [
     releasedAt: '2022-08-30',
     role: {
       fr: 'Associé, co-fondateur et Lead Developer Frontend',
-      en: 'Partner, co-founder and Lead Frontend Developer',
+      en: 'Partner, co-founder and lead front-end developer',
     },
   },
   {
@@ -495,26 +495,26 @@ export const PROJECTS: readonly StaticProject[] = [
     title: { fr: 'Case Tes Potes — landing page', en: 'Case Tes Potes — landing page' },
     summary: {
       fr: 'La page d’entrée de la campagne de préinscription. Développée en React, adossée à une API Koa qui alimente la base de contacts et déclenche les envois.',
-      en: 'The entry page of the pre-registration campaign. Built in React, backed by a Koa API that feeds the contact database and triggers the mailings.',
+      en: 'The landing page for the pre-registration campaign. Built in React, backed by a Koa API that feeds the contact database and triggers the emails.',
     },
     context: {
       fr: 'La page d’entrée de la campagne de préinscription à la bêta fermée. Elle collecte les contacts, répond aux questions et sert de vitrine au projet.',
-      en: 'The entry page of the pre-registration campaign for the closed beta. It collects contacts, answers questions and showcases the project.',
+      en: 'The landing page for the closed-beta pre-registration campaign. It collects contacts, answers questions and showcases the project.',
     },
     mission: {
       fr: 'Conception et développement, de la maquette à la mise en production, API de collecte comprise.',
-      en: 'Design and development, from mockup to production, the collection API included.',
+      en: 'Design and development, from mockup to production, including the API that collects sign-ups.',
     },
     missionSteps: [
       {
         fr: 'Cadrage des objectifs avec la stratégie marketing.',
-        en: 'Setting the goals with the marketing strategy.',
+        en: 'Defining the goals in line with the marketing strategy.',
       },
       { fr: 'Maquette Figma, UX et UI.', en: 'Figma mockup, UX and UI.' },
       { fr: 'Développement de la page en React.', en: 'Building the page in React.' },
       {
         fr: 'API Koa pour la gestion des contacts et l’intégration au service d’emailing.',
-        en: 'Koa API to manage contacts and connect the emailing service.',
+        en: 'A Koa API to manage contacts and connect to the email service.',
       },
       {
         fr: 'Tests unitaires et d’intégration avec Jest.',
@@ -545,7 +545,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
   {
     id: '75643113-fe5b-4f36-9880-626c333087be',
     slug: { fr: 'legos-minions', en: 'lego-minions' },
-    title: { fr: 'Lego : les Minions', en: 'Lego: the Minions' },
+    title: { fr: 'Lego : les Minions', en: 'Lego Minions' },
     image: {
       key: 'cgi/legos-minions.jpg',
       averageColor: '#33605d',
@@ -615,7 +615,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     image: {
       key: 'cgi/gorgotte.jpg',
       averageColor: '#c5ccc6',
-      alt: { fr: 'Créature monstrueuse sculptée en 3D', en: 'A monstrous creature sculpted in 3D' },
+      alt: { fr: 'Créature monstrueuse sculptée en 3D', en: 'Monstrous creature sculpted in 3D' },
       width: 1280,
       height: 696,
     },
@@ -732,7 +732,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
     image: {
       key: 'cgi/entree.jpg',
       averageColor: '#ada39a',
-      alt: { fr: 'Entrée d’habitation aux murs blancs', en: 'A white-walled entrance hall' },
+      alt: { fr: 'Entrée d’habitation aux murs blancs', en: 'White-walled entrance hall' },
       width: 1280,
       height: 864,
     },
@@ -782,7 +782,7 @@ export const ARTWORKS: readonly StaticArtwork[] = [
       averageColor: '#191817',
       alt: {
         fr: 'Canette Pixmodels, visuel publicitaire',
-        en: 'Pixmodels can, advertising visual',
+        en: 'Pixmodels drinks can, advertising visual',
       },
       width: 1280,
       height: 720,

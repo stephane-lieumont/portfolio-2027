@@ -119,7 +119,7 @@ export const routes: Routes = [
     data: {
       page: 'contact',
       // Without the lead's « par email »: the contact redesign publishes none.
-      description: $localize`:@@page.contact.description:Un projet, une question ou juste un Hello World\u00a0? Je réponds à tout, y compris pour dire non. Écrivez-moi par formulaire ou sur LinkedIn.`,
+      description: $localize`:@@page.contact.description:Un projet, une question ou juste un Hello World\u00a0? Une idée à confronter ou l’envie d’échanger\u00a0: écrivez-moi par formulaire ou sur LinkedIn.`,
     },
     loadComponent: () =>
       import('@features/contact/views/contact/contact.component').then((m) => m.ContactComponent),
