@@ -59,3 +59,12 @@ The constraints the decision had to respect were already in place. Every route i
 ## Note — 2026-11-15: route paths from a table
 
 Built in the first implementation: section paths are not `$localize` strings but one table, `SECTIONS` in `apps/web/src/app/core/i18n/site-paths.ts`, with both languages side by side. Each build carries only its own translations, so a `$localize` path would leave the switcher and the `hreflang` links unable to name the other tree's address. The table is read for the build's locale (`$localize.locale`, inlined per tree) by the route table, and for both locales by the switcher, the `hreflang` links and the prerender check. It is the `{ fr, en }` shape the slugs take in the data model. Interface text is still `$localize`, as decided.
+
+## Note — 2026-11-15: content at the source
+
+Built in the second implementation. `LocalizedText` and `localized(schema)` live in `packages/shared-types/src/localized.ts`; each language is held to the field's own rule and both are required. Two choices the decision above did not spell out:
+
+- **A record is named across the trees by its id, not by a slug.** The switcher and the `hreflang` links read the slug in the tree's language, find the record, and write its slug in the other. A French slug under `/en` is a 404, not a redirect.
+- **`series` stays one string.** It is a proper name and the key that groups projects; translating it would split a series in two.
+
+Accepted downside, measured: each tree's bundle carries both languages of the static content (about 18.6 kB raw, 5.5 kB transfer). Fetching `{ fr, en }` records from the API would only move that weight into the hydration state; it goes away when the public API serves one language per request.

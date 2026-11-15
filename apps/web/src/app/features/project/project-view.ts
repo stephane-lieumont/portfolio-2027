@@ -56,7 +56,7 @@ export function projectLinks(project: StaticProject): ProjectLink[] {
 export interface ClosingBand {
   readonly heading: string;
   readonly projects: readonly StaticProject[];
-  /** The page's own card, when the band shows it. */
+  /** The id of the page's own card, when the band shows it. */
   readonly current: string | null;
 }
 
@@ -76,10 +76,10 @@ export function closingBand(
     return {
       heading: $localize`:@@project.series:Série · ${project.series}:series:`,
       projects: projects.filter((p) => p.series === project.series),
-      current: project.slug,
+      current: project.id,
     };
   }
-  const at = projects.findIndex((p) => p.slug === project.slug);
+  const at = projects.findIndex((p) => p.id === project.id);
   const others = Array.from(
     { length: Math.min(OTHERS_COUNT, projects.length - 1) },
     (_, i) => projects[(at + 1 + i) % projects.length],

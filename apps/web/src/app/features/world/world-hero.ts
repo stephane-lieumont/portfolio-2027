@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import type { WorldKey, WorldPage } from '@portfolio/shared-types';
 
 import { toolView } from '../../core/content/tool-marks';
+import { inLocale } from '../../core/i18n/in-locale';
+import { SITE_LOCALE, type SiteLocale } from '../../core/i18n/site-locale';
 import { NAV } from '../../shell/nav-items';
 
 export const NAME = 'Stéphane Lieumont';
@@ -27,20 +29,25 @@ export interface RoleGlyph extends Glyph {
 
 /**
  * The accent letters of each role word, set in Instrument Serif italic: the A
- * of LEAD, and « 3D » whole (presentation, spec 03). Positions in the word.
+ * of LEAD, and « 3D » whole (presentation, spec 03). Positions in the word,
+ * which differ between « GRAPHISTE 3D » and « 3D ARTIST ».
  */
-const ACCENTS: Readonly<Record<WorldKey, readonly number[]>> = {
-  dev: [2],
-  cgi: [10, 11],
+const ACCENTS: Readonly<Record<WorldKey, Readonly<Record<SiteLocale, readonly number[]>>>> = {
+  dev: { fr: [2], en: [2] },
+  cgi: { fr: [10, 11], en: [0, 1] },
 };
 
-export function roleGlyphs(word: string, world: WorldKey): RoleGlyph[] {
+export function roleGlyphs(
+  word: string,
+  world: WorldKey,
+  locale: SiteLocale = SITE_LOCALE,
+): RoleGlyph[] {
   let step = 0;
   return [...word].map((char, index) => ({
     char,
     index,
     space: char === ' ',
-    italic: ACCENTS[world].includes(index),
+    italic: ACCENTS[world][locale].includes(index),
     step: char === ' ' ? step : step++,
   }));
 }
@@ -74,7 +81,7 @@ export function introBase(name: string): number {
       }
     </h1>
     <p class="word">
-      <span class="visually-hidden">{{ page().roleWord }}</span>
+      <span class="visually-hidden">{{ roleWord() }}</span>
       @for (glyph of role(); track glyph.index) {
         @if (glyph.space) {
           <span class="word__space" aria-hidden="true"></span>
@@ -105,5 +112,6 @@ export class WorldHero {
     const page = this.page();
     return page.eyebrowTools.map((slug) => toolView(slug).label).join(' · ');
   });
-  protected readonly role = computed(() => roleGlyphs(this.page().roleWord, this.page().world));
+  protected readonly roleWord = computed(() => inLocale(this.page().roleWord));
+  protected readonly role = computed(() => roleGlyphs(this.roleWord(), this.page().world));
 }

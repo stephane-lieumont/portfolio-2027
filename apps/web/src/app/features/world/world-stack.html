@@ -61,10 +61,10 @@
           [attr.inert]="i === selected() ? null : ''"
           [attr.aria-hidden]="i === selected() ? null : 'true'"
         >
-          @for (point of entry.points; track point.lead) {
+          @for (point of entry.points; track $index) {
             <li [attr.data-reveal-part]="i === selected() ? '' : null">
               <p>
-                <b>{{ point.lead }}</b> {{ point.text }}
+                <b>{{ point.lead | inLocale }}</b> {{ point.text | inLocale }}
               </p>
             </li>
           }

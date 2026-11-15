@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { SOFTWARE, TECHNOLOGIES } from './registries.js';
 import type { SoftwareSlug, TechnologySlug } from './registries.js';
 
+import { localized } from './localized.js';
 import { mediaAssetSchema } from './media.js';
 import { youtubeVideoId } from './video.js';
 
@@ -16,6 +17,13 @@ export const slugSchema = z
   .min(3)
   .max(120)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'expected a kebab-case slug');
+
+/**
+ * The public address in each tree: English pages read as English
+ * (ADR-0017), so a descriptive slug is translated and a proper name kept.
+ */
+export const localizedSlugSchema = localized(slugSchema);
+export type LocalizedSlug = z.infer<typeof localizedSlugSchema>;
 
 /**
  * Where « Voir le site » leads: a path on this host, which nginx proxies to a
@@ -42,21 +50,27 @@ export const projectSchema = z.object({
   id: z.uuid(),
   kind: projectKindSchema,
   status: projectStatusSchema,
-  slug: slugSchema,
-  title: z.string().min(1).max(160),
+  slug: localizedSlugSchema,
+  title: localized(z.string().trim().max(160)),
   /** For cards and the meta description. The project page does not show it. */
-  summary: z.string().max(320),
+  summary: localized(z.string().trim().max(320)),
   /** What the product was: the page's introduction, coloured word by word. */
-  context: copy(400),
+  context: localized(copy(400)),
   /** In what capacity Stéphane worked, set large beside the mission. */
-  role: copy(80),
+  role: localized(copy(80)),
   /** What he did. */
-  mission: copy(600),
+  mission: localized(copy(600)),
   /** The concrete deliverables, in order. */
-  missionSteps: z.array(copy(240)).min(1).max(10),
+  missionSteps: z
+    .array(localized(copy(240)))
+    .min(1)
+    .max(10),
   technos: z.array(z.string()),
   tags: z.array(z.string()),
-  /** Groups related projects: their pages end on the series rather than on other work. */
+  /**
+   * Groups related projects: their pages end on the series rather than on
+   * other work. A proper name, the same in both languages, and the grouping key.
+   */
   series: copy(60).nullable(),
   websiteUrl: websiteUrlSchema.nullable(),
   videoUrl: videoUrlSchema.nullable(),
@@ -64,7 +78,7 @@ export const projectSchema = z.object({
   coverAsset: mediaAssetSchema.nullable(),
   /** The wide visual the project page opens on, the product staged on white. */
   presentationAsset: mediaAssetSchema,
-  presentationCaption: copy(160),
+  presentationCaption: localized(copy(160)),
   gallery: z.array(mediaAssetSchema),
   releasedAt: z.iso.date(),
   sortOrder: z.int(),

@@ -13,14 +13,16 @@ export const serverRoutes: ServerRoute[] = [
     // once it serves projects, which makes the API a build dependency.
     path: `${SECTIONS.dev[SITE_LOCALE]}/:slug`,
     renderMode: RenderMode.Prerender,
-    getPrerenderParams: async () => PROJECTS.map((project) => ({ slug: project.slug })),
+    getPrerenderParams: async () =>
+      PROJECTS.map((project) => ({ slug: project.slug[SITE_LOCALE] })),
     // An unknown slug is nginx's 404, not a page rendered on the fly.
     fallback: PrerenderFallback.None,
   },
   {
     path: `${SECTIONS.cgi[SITE_LOCALE]}/:slug`,
     renderMode: RenderMode.Prerender,
-    getPrerenderParams: async () => ARTWORKS.map((artwork) => ({ slug: artwork.slug })),
+    getPrerenderParams: async () =>
+      ARTWORKS.map((artwork) => ({ slug: artwork.slug[SITE_LOCALE] })),
     fallback: PrerenderFallback.None,
   },
   {

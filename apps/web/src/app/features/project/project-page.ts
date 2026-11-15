@@ -9,6 +9,8 @@ import {
 } from '@angular/core';
 
 import { toolView } from '../../core/content/tool-marks';
+import { InLocalePipe } from '../../core/i18n/in-locale';
+import { SITE_LOCALE } from '../../core/i18n/site-locale';
 import { mediaSrcset, mediaUrl } from '../../core/media.config';
 import { SmoothScroll } from '../../core/motion/smooth-scroll';
 import { PROJECTS, type StaticProject } from '../../core/static-content';
@@ -25,7 +27,7 @@ import { VideoFacade } from './video-facade';
 const HEADER_CLEARANCE = 96;
 
 function projectBySlug(slug: string): StaticProject {
-  const project = PROJECTS.find((p) => p.slug === slug);
+  const project = PROJECTS.find((p) => p.slug[SITE_LOCALE] === slug);
   // The route only matches known slugs (app.routes.ts, canMatch).
   if (!project) throw new Error(`No project "${slug}"`);
   return project;
@@ -39,7 +41,16 @@ function projectBySlug(slug: string): StaticProject {
  */
 @Component({
   selector: 'app-project-page',
-  imports: [ProjectHero, ScrubSentence, DevWork, PlateImage, PlateLean, WorldReveal, VideoFacade],
+  imports: [
+    InLocalePipe,
+    ProjectHero,
+    ScrubSentence,
+    DevWork,
+    PlateImage,
+    PlateLean,
+    WorldReveal,
+    VideoFacade,
+  ],
   templateUrl: './project-page.html',
   styleUrl: './project-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

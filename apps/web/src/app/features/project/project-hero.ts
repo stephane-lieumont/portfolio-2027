@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { InLocalePipe, inLocale } from '../../core/i18n/in-locale';
 import { PATHS } from '../../core/i18n/site-locale';
 import type { StaticProject } from '../../core/static-content';
 import { introBase } from '../world/world-hero';
@@ -16,7 +17,7 @@ import { heroTitle, projectLinks } from './project-view';
  */
 @Component({
   selector: 'app-project-hero',
-  imports: [RouterLink],
+  imports: [RouterLink, InLocalePipe],
   templateUrl: './project-hero.html',
   styleUrl: './project-hero.scss',
   host: {
@@ -36,13 +37,13 @@ export class ProjectHero {
     const { series, releasedAt } = this.project();
     return [series, releasedAt.slice(0, 4)].filter(Boolean).join(' · ');
   });
-  protected readonly heading = computed(() => heroTitle(this.project().title));
+  protected readonly heading = computed(() => heroTitle(inLocale(this.project().title)));
   protected readonly entranceBase = computed(() => introBase(this.heading().nameText));
   protected readonly links = computed(() => projectLinks(this.project()));
   protected readonly devPath = PATHS.dev;
   // A plain href, so it carries the tree's base (`/en/`) itself.
   protected readonly videoHref = computed(() =>
-    this.location.prepareExternalUrl(`${PATHS.dev}/${this.project().slug}#video`),
+    this.location.prepareExternalUrl(`${PATHS.dev}/${inLocale(this.project().slug)}#video`),
   );
   private readonly location = inject(Location);
 

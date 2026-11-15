@@ -1,13 +1,17 @@
 <section #sectionEl class="contact" aria-labelledby="contact-title" [attr.data-arrival]="arrival">
   @if (portrait; as image) {
-    <app-contact-portrait [image]="image" [caption]="page.portraitCaption" [area]="sectionEl" />
+    <app-contact-portrait
+      [image]="image"
+      [caption]="page.portraitCaption | inLocale"
+      [area]="sectionEl"
+    />
   }
 
   <div class="contact__main">
     <header class="rise" style="--i: 0">
       <p class="mono" i18n="@@contact.eyebrow">Contact</p>
-      <h1 class="contact__title" id="contact-title">{{ page.title }}</h1>
-      <p class="contact__lede">{{ page.lede }}</p>
+      <h1 class="contact__title" id="contact-title">{{ page.title | inLocale }}</h1>
+      <p class="contact__lede">{{ page.lede | inLocale }}</p>
     </header>
 
     <form

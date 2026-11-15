@@ -195,6 +195,19 @@ describe('languageSwitch', () => {
     expect(languageSwitch('/graphisme-3d/beebop', 'fr').href).toBe('/en/3d-art/beebop');
   });
 
+  // Through the record, not the slug: a translated slug leads to its
+  // counterpart, never to the other tree's 404.
+  it('swaps a translated slug for its counterpart, both ways', () => {
+    expect(languageSwitch('/graphisme-3d/extraterrestre', 'fr').href).toBe('/en/3d-art/alien');
+    expect(languageSwitch('/3d-art/alien', 'en').href).toBe('/graphisme-3d/extraterrestre');
+    expect(languageSwitch('/developpeur/portfolio-3d-2018', 'fr').href).toBe(
+      '/en/developer/3d-portfolio-2018',
+    );
+    expect(languageSwitch('/developer/3d-portfolio-2018', 'en').href).toBe(
+      '/developpeur/portfolio-3d-2018',
+    );
+  });
+
   it('opens the other tree on its first page from a 404', () => {
     expect(languageSwitch('/nulle-part', 'fr').href).toBe('/en/developer');
     expect(languageSwitch('/nowhere', 'en').href).toBe('/developpeur');

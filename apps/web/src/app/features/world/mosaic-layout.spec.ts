@@ -36,7 +36,7 @@ describe('mosaicLayout', () => {
     const { tiles } = mosaicLayout(ARTWORKS.length);
     ARTWORKS.forEach((artwork, i) => {
       const share = cropped(artwork.image.width / artwork.image.height, tiles[i].ratio);
-      expect(share, artwork.slug).toBeLessThanOrEqual(1 / 3);
+      expect(share, artwork.slug.fr).toBeLessThanOrEqual(1 / 3);
     });
   });
 

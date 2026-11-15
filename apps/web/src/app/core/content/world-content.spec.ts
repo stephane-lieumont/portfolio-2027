@@ -14,6 +14,7 @@ import {
   WORLD_PAGES,
   WORLD_STACKS,
 } from './world-content';
+import { ARTWORKS, PROJECTS } from '../static-content';
 
 // The static content stands in for the API. If it drifts from the schemas the
 // API will validate against, the swap stops being a change of source and the
@@ -49,7 +50,8 @@ describe('static world content', () => {
   it.each(Object.entries(STATIC_ASSETS))('serves asset %s from public/, root-relative', (_, a) => {
     expect(a.src).toMatch(/^\/[a-z0-9/-]+\.(png|jpe?g|webp|avif)$/);
     expect(a.src.startsWith('/medias/')).toBe(false);
-    expect(a.alt.trim()).not.toBe('');
+    expect(a.alt.fr.trim()).not.toBe('');
+    expect(a.alt.en.trim()).not.toBe('');
   });
 
   // Stéphane's address is never published in the HTML, so harvesters cannot
@@ -79,8 +81,9 @@ describe('world content schemas', () => {
   });
 
   it('takes a role word in capitals, accents included, and nothing else', () => {
-    const role = (roleWord: string) =>
-      worldPageSchema.safeParse({ ...WORLD_PAGES.dev, roleWord }).success;
+    const role = (fr: string, en = 'LEAD TECH') =>
+      worldPageSchema.safeParse({ ...WORLD_PAGES.dev, roleWord: { fr, en } }).success;
+    expect(role('LEAD TECH', 'Lead tech')).toBe(false);
     expect(role('ŒUVRE ÉCRITE')).toBe(true);
     expect(role('Lead tech')).toBe(false);
     expect(role('   ')).toBe(false);
@@ -111,5 +114,59 @@ describe('world content schemas', () => {
       socials: [{ kind: 'github', url: 'javascript:alert(1)' }],
     };
     expect(siteSettingsSchema.safeParse(settings).success).toBe(false);
+  });
+
+  it.each(['', '   '])('refuses a world text left blank (%j) in English', (blank) => {
+    const lede = { ...WORLD_PAGES.dev.lede, text: { fr: WORLD_PAGES.dev.lede.text.fr, en: blank } };
+    expect(worldPageSchema.safeParse({ ...WORLD_PAGES.dev, lede }).success).toBe(false);
+    const title = { fr: CONTACT_PAGE.title.fr, en: blank };
+    expect(contactPageSchema.safeParse({ ...CONTACT_PAGE, title }).success).toBe(false);
+  });
+
+  it('requires fact labels unique in each language, not only in French', () => {
+    const [first, second, ...rest] = WORLD_PAGES.dev.facts;
+    const clash = {
+      ...WORLD_PAGES.dev,
+      facts: [first, { ...second, label: { fr: second.label.fr, en: first.label.en } }, ...rest],
+    };
+    expect(worldPageSchema.safeParse(clash).success).toBe(false);
+  });
+});
+
+/** Every `{ fr, en }` pair in a tree of content, wherever it sits. */
+function localizedPairs(value: unknown): { fr: string; en: string }[] {
+  if (Array.isArray(value)) return value.flatMap(localizedPairs);
+  if (typeof value !== 'object' || value === null) return [];
+  if (
+    'fr' in value &&
+    'en' in value &&
+    typeof value.fr === 'string' &&
+    typeof value.en === 'string'
+  )
+    return [{ fr: value.fr, en: value.en }];
+  return Object.values(value).flatMap(localizedPairs);
+}
+
+const FRENCH_MARKS = /[àâçèéêëîïôûùüÿœæ]|\s[?!:;]/i;
+const withoutNames = (text: string) => text.replace(/Stéphane/g, '');
+
+// The English tree reads `.en` and nothing else: a French sentence pasted
+// into it, or left there as a placeholder, ships as is under hreflang="en".
+describe('the English copy', () => {
+  const pairs = localizedPairs([
+    WORLD_PAGES,
+    WORLD_STACKS,
+    CONTACT_PAGE,
+    STATIC_ASSETS,
+    PROJECTS,
+    ARTWORKS,
+  ]);
+
+  it('covers every visitor-facing field', () => {
+    expect(pairs.length).toBeGreaterThan(200);
+  });
+
+  it('carries no French accent or French spacing before ? ! : ;', () => {
+    expect(pairs.filter(({ en }) => FRENCH_MARKS.test(withoutNames(en)))).toEqual([]);
   });
 });

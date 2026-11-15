@@ -42,6 +42,20 @@ describe('WorldHero', () => {
     expect(italic('cgi')).toEqual(['3', 'D']);
   });
 
+  // The positions are per language: « 3D » ends « GRAPHISTE 3D » and opens
+  // « 3D ARTIST ». Read with the French positions, the English word would
+  // italicise nothing at all.
+  it.each(['fr', 'en'] as const)('finds the same accents in the %s role words', (locale) => {
+    const italic = (world: 'dev' | 'cgi') =>
+      roleGlyphs(WORLD_PAGES[world].roleWord[locale], world, locale)
+        .filter((g) => g.italic)
+        .map((g) => g.char)
+        .join('');
+
+    expect(italic('dev')).toBe('A');
+    expect(italic('cgi')).toBe('3D');
+  });
+
   it('labels the row with its world and the tools in the eyebrow', () => {
     const eyebrow = render('dev').querySelector('.eyebrow')!.textContent;
     expect(eyebrow).toContain('Développement');

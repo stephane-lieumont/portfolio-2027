@@ -98,34 +98,34 @@ describe('ArtMosaic and its viewer', () => {
     host.querySelectorAll<HTMLAnchorElement>('.tile__btn')[2].click();
     await settle();
 
-    expect(TestBed.inject(Location).path()).toBe(`/graphisme-3d/${ARTWORKS[2].slug}`);
+    expect(TestBed.inject(Location).path()).toBe(`/graphisme-3d/${ARTWORKS[2].slug.fr}`);
     expect(dialog.open).toBe(true);
-    expect(status()).toBe(`3 sur ${ARTWORKS.length}. ${ARTWORKS[2].title}, 2015`);
+    expect(status()).toBe(`3 sur ${ARTWORKS.length}. ${ARTWORKS[2].title.fr}, 2015`);
     expect(pause).toHaveBeenCalled();
   });
 
   it('opens on the piece in the address when the page is loaded there', async () => {
-    const { dialog, status } = await at(`/graphisme-3d/${ARTWORKS[5].slug}`);
+    const { dialog, status } = await at(`/graphisme-3d/${ARTWORKS[5].slug.fr}`);
     expect(dialog.open).toBe(true);
-    expect(status()).toContain(ARTWORKS[5].title);
+    expect(status()).toContain(ARTWORKS[5].title.fr);
   });
 
   it('steps with the arrows on the plate and keeps the address on the piece shown', async () => {
-    const { host, status, settle } = await at(`/graphisme-3d/${ARTWORKS[0].slug}`);
+    const { host, status, settle } = await at(`/graphisme-3d/${ARTWORKS[0].slug.fr}`);
     const stage = host.querySelector<HTMLElement>('.show__stage')!;
 
     stage.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
     await settle();
-    expect(status()).toContain(ARTWORKS[1].title);
-    expect(TestBed.inject(Location).path()).toBe(`/graphisme-3d/${ARTWORKS[1].slug}`);
+    expect(status()).toContain(ARTWORKS[1].title.fr);
+    expect(TestBed.inject(Location).path()).toBe(`/graphisme-3d/${ARTWORKS[1].slug.fr}`);
 
     stage.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
     await settle();
-    expect(status()).toContain(ARTWORKS[ARTWORKS.length - 1].title);
+    expect(status()).toContain(ARTWORKS[ARTWORKS.length - 1].title.fr);
   });
 
   it('closes on Escape, back to the wall, focus on the piece’s tile', async () => {
-    const { host, dialog, settle } = await at(`/graphisme-3d/${ARTWORKS[4].slug}`);
+    const { host, dialog, settle } = await at(`/graphisme-3d/${ARTWORKS[4].slug.fr}`);
 
     dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
     await settle();
@@ -137,7 +137,7 @@ describe('ArtMosaic and its viewer', () => {
   });
 
   it('steps by swipe, by the buttons and by the ticks, wrapping at the ends', async () => {
-    const { host, status, settle } = await at(`/graphisme-3d/${ARTWORKS[0].slug}`);
+    const { host, status, settle } = await at(`/graphisme-3d/${ARTWORKS[0].slug.fr}`);
     const stage = host.querySelector<HTMLElement>('.show__stage')!;
     const swipe = (from: number, to: number) => {
       stage.dispatchEvent(Object.assign(new Event('pointerdown'), { clientX: from }));
@@ -146,25 +146,25 @@ describe('ArtMosaic and its viewer', () => {
 
     swipe(300, 290);
     await settle();
-    expect(status()).toContain(ARTWORKS[0].title);
+    expect(status()).toContain(ARTWORKS[0].title.fr);
 
     swipe(300, 100);
     await settle();
-    expect(status()).toContain(ARTWORKS[1].title);
+    expect(status()).toContain(ARTWORKS[1].title.fr);
 
     host.querySelector<HTMLButtonElement>('[aria-label="Rendu précédent"]')!.click();
     await settle();
     host.querySelector<HTMLButtonElement>('[aria-label="Rendu précédent"]')!.click();
     await settle();
-    expect(status()).toContain(ARTWORKS[ARTWORKS.length - 1].title);
+    expect(status()).toContain(ARTWORKS[ARTWORKS.length - 1].title.fr);
 
     host.querySelectorAll<HTMLButtonElement>('.show__tick')[6].click();
     await settle();
-    expect(status()).toContain(ARTWORKS[6].title);
+    expect(status()).toContain(ARTWORKS[6].title.fr);
   });
 
   it('fetches only the piece shown and its two neighbours on opening', async () => {
-    const { host } = await at(`/graphisme-3d/${ARTWORKS[5].slug}`);
+    const { host } = await at(`/graphisme-3d/${ARTWORKS[5].slug.fr}`);
     const slides = Array.from(host.querySelectorAll('.show__slide'));
     expect(slides.map((s, i) => (s.querySelector('img') ? i : -1)).filter((i) => i >= 0)).toEqual([
       4, 5, 6,
@@ -173,14 +173,14 @@ describe('ArtMosaic and its viewer', () => {
   });
 
   it('lets a step’s cut play while the address catches up, instead of restarting the viewer', async () => {
-    const { host, settle } = await at(`/graphisme-3d/${ARTWORKS[0].slug}`);
+    const { host, settle } = await at(`/graphisme-3d/${ARTWORKS[0].slug.fr}`);
     running = [];
     host
       .querySelector('.show__stage')!
       .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
     await settle();
 
-    expect(TestBed.inject(Location).path()).toBe(`/graphisme-3d/${ARTWORKS[1].slug}`);
+    expect(TestBed.inject(Location).path()).toBe(`/graphisme-3d/${ARTWORKS[1].slug.fr}`);
     const entering = host.querySelectorAll('.show__slide')[1];
     const cut = running.filter((a) => a.target === entering || entering.contains(a.target));
     expect(cut.length).toBeGreaterThan(0);
@@ -212,7 +212,7 @@ describe('ArtMosaic and its viewer', () => {
   });
 
   it('follows a native close that skipped Escape: the page scrolls again and the address returns to the wall', async () => {
-    const { dialog, settle } = await at(`/graphisme-3d/${ARTWORKS[2].slug}`);
+    const { dialog, settle } = await at(`/graphisme-3d/${ARTWORKS[2].slug.fr}`);
     dialog.removeAttribute('open');
     dialog.dispatchEvent(new Event('close'));
     await settle();
@@ -222,25 +222,25 @@ describe('ArtMosaic and its viewer', () => {
   });
 
   it('ignores arrows with a modifier, which belong to the browser', async () => {
-    const { host, status, settle } = await at(`/graphisme-3d/${ARTWORKS[0].slug}`);
+    const { host, status, settle } = await at(`/graphisme-3d/${ARTWORKS[0].slug.fr}`);
     host
       .querySelector('.show__stage')!
       .dispatchEvent(
         new KeyboardEvent('keydown', { key: 'ArrowRight', altKey: true, bubbles: true }),
       );
     await settle();
-    expect(status()).toContain(ARTWORKS[0].title);
+    expect(status()).toContain(ARTWORKS[0].title.fr);
   });
 
   it('closes from its button', async () => {
-    const { host, dialog, settle } = await at(`/graphisme-3d/${ARTWORKS[1].slug}`);
+    const { host, dialog, settle } = await at(`/graphisme-3d/${ARTWORKS[1].slug.fr}`);
     host.querySelector<HTMLButtonElement>('[aria-label="Fermer la visionneuse"]')!.click();
     await settle();
     expect(dialog.open).toBe(false);
   });
 
   it('marks the piece shown among the ticks', async () => {
-    const { host } = await at(`/graphisme-3d/${ARTWORKS[3].slug}`);
+    const { host } = await at(`/graphisme-3d/${ARTWORKS[3].slug.fr}`);
     const current = Array.from(host.querySelectorAll('.show__tick')).map((t) =>
       t.getAttribute('aria-current'),
     );

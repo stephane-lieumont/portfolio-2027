@@ -14,9 +14,12 @@ const PAGES: PageRef[] = [
   { page: 'dev' },
   { page: 'cgi' },
   { page: 'contact' },
-  ...PROJECTS.map((p) => ({ page: 'project' as const, slug: p.slug })),
-  ...ARTWORKS.map((a) => ({ page: 'piece' as const, slug: a.slug })),
+  ...PROJECTS.map((p) => ({ page: 'project' as const, id: p.id })),
+  ...ARTWORKS.map((a) => ({ page: 'piece' as const, id: a.id })),
 ];
+
+const projectId = (fr: string) => PROJECTS.find((p) => p.slug.fr === fr)?.id;
+const pieceId = (fr: string) => ARTWORKS.find((a) => a.slug.fr === fr)?.id;
 
 describe('site addresses', () => {
   it('builds in French by default, the source language', () => {
@@ -27,16 +30,32 @@ describe('site addresses', () => {
     expect(pageHref({ page: 'dev' }, 'en')).toBe('/en/developer');
     expect(pageHref({ page: 'cgi' }, 'en')).toBe('/en/3d-art');
     expect(pageHref({ page: 'contact' }, 'en')).toBe('/en/contact');
-    expect(pageHref({ page: 'project', slug: 'kasa-openclassrooms' }, 'en')).toBe(
+    expect(pageHref({ page: 'project', id: projectId('kasa-openclassrooms') }, 'en')).toBe(
       '/en/developer/kasa-openclassrooms',
     );
-    expect(pageHref({ page: 'piece', slug: 'gorgotte' }, 'en')).toBe('/en/3d-art/gorgotte');
+    expect(pageHref({ page: 'piece', id: pieceId('gorgotte') }, 'en')).toBe('/en/3d-art/gorgotte');
+  });
+
+  it('gives a project or a piece its English slug in the English tree', () => {
+    expect(pageHref({ page: 'project', id: projectId('portfolio-3d-2018') }, 'en')).toBe(
+      '/en/developer/3d-portfolio-2018',
+    );
+    expect(pageHref({ page: 'piece', id: pieceId('salon-nuit') }, 'en')).toBe(
+      '/en/3d-art/living-room-night',
+    );
+  });
+
+  it('does not take one tree’s slug for a record in the other', () => {
+    expect(pageAt('/developer/portfolio-3d-2018', 'en')).toEqual({ page: 'not-found' });
+    expect(pageAt('/graphisme-3d/living-room-night', 'fr')).toEqual({ page: 'not-found' });
   });
 
   it('keeps every French address where it was', () => {
     expect(pageHref({ page: 'dev' }, 'fr')).toBe('/developpeur');
     expect(pageHref({ page: 'cgi' }, 'fr')).toBe('/graphisme-3d');
-    expect(pageHref({ page: 'project', slug: 'pixmodels' }, 'fr')).toBe('/developpeur/pixmodels');
+    expect(pageHref({ page: 'project', id: projectId('pixmodels') }, 'fr')).toBe(
+      '/developpeur/pixmodels',
+    );
   });
 
   // The switcher and hreflang go through the page key: reading a path back

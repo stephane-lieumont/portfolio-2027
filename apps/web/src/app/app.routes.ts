@@ -1,5 +1,7 @@
 import { ActivatedRouteSnapshot, Routes } from '@angular/router';
+import type { LocalizedText } from '@portfolio/shared-types';
 
+import { inLocale } from './core/i18n/in-locale';
 import { SECTIONS, SITE_LOCALE } from './core/i18n/site-locale';
 import { ARTWORKS, PROJECTS } from './core/static-content';
 
@@ -16,23 +18,25 @@ const CONTACT = SECTIONS.contact[SITE_LOCALE];
  */
 export function projectSlugExists(segments: readonly { readonly path: string }[]): boolean {
   const slug = segments[1]?.path;
-  return slug !== undefined && PROJECTS.some((p) => p.slug === slug);
+  return slug !== undefined && PROJECTS.some((p) => p.slug[SITE_LOCALE] === slug);
 }
 
 /** Whether the first URL segment, under the 3D world, names a piece we have. */
 export function artworkSlugExists(segments: readonly { readonly path: string }[]): boolean {
   const slug = segments[0]?.path;
-  return slug !== undefined && ARTWORKS.some((a) => a.slug === slug);
+  return slug !== undefined && ARTWORKS.some((a) => a.slug[SITE_LOCALE] === slug);
 }
 
 function artworkOf(route: ActivatedRouteSnapshot) {
-  return ARTWORKS.find((a) => a.slug === route.paramMap.get('slug'));
+  return ARTWORKS.find((a) => a.slug[SITE_LOCALE] === route.paramMap.get('slug'));
 }
 
 // The route only matches known slugs, so the lookup cannot miss here; the
-// empty string keeps the resolvers total rather than asserting.
+// empty text keeps the resolvers total rather than asserting.
+const EMPTY: LocalizedText = { fr: '', en: '' };
+
 function projectOf(route: ActivatedRouteSnapshot) {
-  return PROJECTS.find((p) => p.slug === route.paramMap.get('slug'));
+  return PROJECTS.find((p) => p.slug[SITE_LOCALE] === route.paramMap.get('slug'));
 }
 
 // Descriptions reuse each page's own lead rather than separate marketing copy.
@@ -61,8 +65,10 @@ export const routes: Routes = [
     canMatch: [
       (_route: unknown, segments: readonly { path: string }[]) => projectSlugExists(segments),
     ],
-    title: (route: ActivatedRouteSnapshot) => projectOf(route)?.title ?? '',
-    resolve: { description: (route: ActivatedRouteSnapshot) => projectOf(route)?.summary ?? '' },
+    title: (route: ActivatedRouteSnapshot) => inLocale(projectOf(route)?.title ?? EMPTY),
+    resolve: {
+      description: (route: ActivatedRouteSnapshot) => inLocale(projectOf(route)?.summary ?? EMPTY),
+    },
     loadComponent: () => import('./features/project/project-page').then((m) => m.ProjectPage),
   },
   {
@@ -87,9 +93,10 @@ export const routes: Routes = [
         canMatch: [
           (_route: unknown, segments: readonly { path: string }[]) => artworkSlugExists(segments),
         ],
-        title: (route: ActivatedRouteSnapshot) => artworkOf(route)?.title ?? '',
+        title: (route: ActivatedRouteSnapshot) => inLocale(artworkOf(route)?.title ?? EMPTY),
         resolve: {
-          description: (route: ActivatedRouteSnapshot) => artworkOf(route)?.image.alt ?? '',
+          description: (route: ActivatedRouteSnapshot) =>
+            inLocale(artworkOf(route)?.image.alt ?? EMPTY),
         },
         children: [],
       },
