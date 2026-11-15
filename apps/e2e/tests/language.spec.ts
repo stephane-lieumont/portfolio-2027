@@ -4,6 +4,9 @@ import { appReady, expect, open, test } from '../support/fixtures.ts';
 
 const scrollY = (page: Page) => page.evaluate(() => Math.round(window.scrollY));
 
+// The restored scroll may land a pixel off once rounded (599 for 600 on CI).
+const near = (y: number) => (actual: number) => Math.abs(actual - y) <= 2;
+
 async function scrollTo(page: Page, y: number) {
   await page.evaluate((top) => window.scrollTo({ top, behavior: 'instant' }), y);
   await expect.poll(() => scrollY(page)).toBe(y);
@@ -30,13 +33,13 @@ test('the language switch opens the same world in English, at the same place', a
   await expect(page).toHaveURL('/en/3d-art');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page).toHaveTitle(/^3D art/);
-  await expect.poll(() => scrollY(page)).toBe(600);
+  await expect.poll(async () => near(600)(await scrollY(page))).toBe(true);
   await appReady(page);
 
   await clickInPlace(page.getByRole('link', { name: 'Version française' }));
   await expect(page).toHaveURL('/graphisme-3d');
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-  await expect.poll(() => scrollY(page)).toBe(600);
+  await expect.poll(async () => near(600)(await scrollY(page))).toBe(true);
 });
 
 test('the language switch on a project page leads to its translated address', async ({ page }) => {
@@ -49,7 +52,7 @@ test('the language switch on a project page leads to its translated address', as
   await expect(page).toHaveURL('/en/developer/ledger');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.getByRole('heading', { level: 2, name: 'Tools' })).toBeAttached();
-  await expect.poll(() => scrollY(page)).toBe(400);
+  await expect.poll(async () => near(400)(await scrollY(page))).toBe(true);
 });
 
 test('a piece keeps its own translated slug in the other tree', async ({ page }) => {
