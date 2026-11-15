@@ -1,0 +1,158 @@
+name: deploy
+
+# ADR-0021: a version tag on main deploys to the OVH VPS in four steps. The
+# API image is built and pushed to GHCR, then deployed; the site is then
+# prerendered against that production API, packaged with nginx and deployed.
+# Run by hand with an existing tag, it redeploys that version's images
+# without rebuilding anything: the rollback.
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Version to redeploy (vX.Y.Z), already built
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  API_IMAGE: ghcr.io/stephane-lieumont/portfolio-2027-api
+  SITE_IMAGE: ghcr.io/stephane-lieumont/portfolio-2027-site
+  TAG: ${{ inputs.tag || github.ref_name }}
+  REBUILD: ${{ github.event_name == 'push' }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: The version is a vX.Y.Z tag
+        run: echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+          fetch-depth: 0
+
+      - name: The tag points at a commit of main
+        run: git merge-base --is-ancestor "$(git rev-parse HEAD)" origin/main
+
+      - if: env.REBUILD == 'true'
+        uses: pnpm/action-setup@v4
+
+      - if: env.REBUILD == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - if: env.REBUILD == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - if: env.REBUILD == 'true'
+        run: pnpm verify
+
+  build-api:
+    needs: check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push the API image
+        run: |
+          docker build -f apps/api/Dockerfile -t "$API_IMAGE:$TAG" .
+          docker push "$API_IMAGE:$TAG"
+
+  # Stéphane approves every production deployment (environment `production`,
+  # required reviewer). The SSH secrets live in `production-ssh`, which has no
+  # reviewer, so one approval covers both services.
+  approve:
+    needs: [check, build-api]
+    if: always() && needs.check.result == 'success' && (needs.build-api.result == 'success' || needs.build-api.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - run: echo "Deploying $TAG"
+
+  deploy-api:
+    needs: approve
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production-ssh
+    steps:
+      - name: Deploy the API
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes "deploy@$HOST" "api $TAG"
+
+  build-site:
+    needs: deploy-api
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    env:
+      CONTENT_API_REQUIRED: '1'
+      CONTENT_API_URL: ${{ vars.CONTENT_API_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # ADR-0008: the site is prerendered from the production API, just deployed.
+      - run: pnpm --filter @portfolio/web build
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # Built from this very dist: the CSP hashes match the pages it serves.
+      - name: Build and push the site image
+        run: |
+          docker build -f apps/web/Dockerfile -t "$SITE_IMAGE:$TAG" apps/web
+          docker push "$SITE_IMAGE:$TAG"
+
+  deploy-site:
+    needs: [deploy-api, build-site]
+    if: always() && needs.deploy-api.result == 'success' && (needs.build-site.result == 'success' || needs.build-site.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production-ssh
+    steps:
+      - name: Deploy the site
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes "deploy@$HOST" "site $TAG"
