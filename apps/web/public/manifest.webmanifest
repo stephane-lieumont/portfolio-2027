@@ -1,0 +1,12 @@
+{
+  "name": "Stéphane Lieumont — Lead Tech & graphiste 3D",
+  "short_name": "S. Lieumont",
+  "icons": [
+    { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#12100f",
+  "background_color": "#12100f",
+  "display": "standalone",
+  "start_url": "/"
+}

@@ -19,7 +19,8 @@
     "admin:hash": "tsx src/lib/hash-password.ts",
     "media:seed": "node src/scripts/seed-media.ts",
     "media:derive": "node src/scripts/derive-media.ts",
-    "media:public": "node src/scripts/derive-public-images.ts"
+    "media:public": "node src/scripts/derive-public-images.ts",
+    "media:prune": "node src/scripts/prune-media.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.2",

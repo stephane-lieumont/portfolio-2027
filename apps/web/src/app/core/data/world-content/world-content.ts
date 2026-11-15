@@ -134,7 +134,7 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
       },
       {
         label: { fr: 'Distinction', en: 'Recognition' },
-        value: { fr: 'Escart Wild, distingué par TDT3D', en: 'Escart Wild, singled out by TDT3D' },
+        value: { fr: 'Escart Wild, primé par TDT3D en 2015', en: 'Escart Wild, TDT3D award, 2015' },
       },
     ],
     updatedAt: UPDATED_AT,
