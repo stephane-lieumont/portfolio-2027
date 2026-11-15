@@ -95,6 +95,7 @@ export class ContactComponent {
   private readonly captchaRef = viewChild.required<ElementRef<HTMLElement>>('captchaEl');
   private readonly turnstile = inject(TurnstileService);
   private captcha: Promise<CaptchaWidget> | null = null;
+  private mounted = false;
   protected readonly challenge = signal(false);
 
   constructor() {
@@ -173,10 +174,24 @@ export class ContactComponent {
     });
   }
 
-  /** Mounted once; a widget that failed to load is tried again on the next send. */
+  /**
+   * Mounted once; a widget that failed to load is tried again on the next send.
+   * A widget whose frame has left its box is mounted again: measured on the
+   * page's first load, where the box ends up empty and Cloudflare reports
+   * « Cannot find Widget », failing every send.
+   */
   private captchaWidget(): Promise<CaptchaWidget> {
+    const box = this.captchaRef().nativeElement;
+    if (this.mounted && !box.hasChildNodes()) {
+      this.mounted = false;
+      this.captcha = null;
+    }
     this.captcha ??= this.turnstile
-      .mount(this.captchaRef().nativeElement, (shown) => this.challenge.set(shown))
+      .mount(box, (shown) => this.challenge.set(shown))
+      .then((widget) => {
+        this.mounted = true;
+        return widget;
+      })
       .catch((error: unknown) => {
         this.captcha = null;
         throw error;

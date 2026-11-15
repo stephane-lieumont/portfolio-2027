@@ -72,15 +72,21 @@
       }
     </div>
     <div class="form__row">
+      <!-- aria-disabled, not disabled: a disabled button drops the focus the
+           visitor just put on it. submit() ignores a second send. -->
       <button
         class="form__submit"
         type="submit"
+        [class.form__submit--sending]="state() === 'sending'"
         [attr.aria-busy]="state() === 'sending' ? 'true' : null"
+        [attr.aria-disabled]="state() === 'sending' ? 'true' : null"
         i18n="@@contact.send"
       >
         Envoyer
       </button>
-      <p class="form__status" role="status">{{ status() }}</p>
+      <p class="form__status" [class.form__status--sent]="state() === 'sent'" role="status">
+        {{ status() }}
+      </p>
     </div>
     <!-- Cloudflare draws its challenge here only when it wants the visitor to act;
          until then the box stays out of the grid and adds no gap. -->

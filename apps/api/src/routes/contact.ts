@@ -1,6 +1,8 @@
 import { contactRequestSchema } from '@portfolio/shared-types/contact';
 import type { FastifyInstance } from 'fastify';
 
+import { renderContactMail } from '../lib/contact-mail/contact-mail.ts';
+
 export default async function contactRoutes(app: FastifyInstance): Promise<void> {
   app.post(
     '/api/contact',
@@ -18,8 +20,7 @@ export default async function contactRoutes(app: FastifyInstance): Promise<void>
         }
         await app.mailer.send({
           replyTo: { name: message.name, address: message.email },
-          subject: `Portfolio — message de ${message.name.replace(/\s+/g, ' ')}`,
-          text: `${message.name} <${message.email}>\n\n${message.message}\n`,
+          ...renderContactMail(message, new Date()),
         });
       } catch (error) {
         request.log.error({ err: error }, 'contact: the message could not be relayed');

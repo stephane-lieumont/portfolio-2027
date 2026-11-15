@@ -155,12 +155,51 @@ textarea.form__control {
   cursor: pointer;
   transition: scale 200ms var(--ease-out);
 
+  // The dot becomes the spinner while sending, in the same 12px box, so the
+  // button keeps its width.
   &::after {
     content: '';
-    inline-size: 6px;
-    block-size: 6px;
+    box-sizing: border-box;
+    inline-size: 12px;
+    block-size: 12px;
     border-radius: 50%;
-    background: currentColor;
+    background: radial-gradient(circle, currentColor 3px, transparent 3.5px);
+  }
+}
+
+.form__submit--sending {
+  cursor: progress;
+  opacity: 0.72;
+
+  &::after {
+    border: 2px solid currentColor;
+    border-block-start-color: transparent;
+    background: none;
+    animation: form-spin 700ms linear infinite;
+  }
+}
+
+@keyframes form-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+.form__status--sent {
+  color: var(--world-ink);
+  animation: form-thanks 520ms var(--ease-out) both;
+}
+
+@keyframes form-thanks-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes form-thanks {
+  from {
+    opacity: 0;
+    translate: 0 8px;
   }
 }
 
@@ -211,7 +250,7 @@ textarea.form__control {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .form__submit:hover {
+  .form__submit:not(.form__submit--sending):hover {
     scale: 1.04;
   }
 
@@ -257,6 +296,14 @@ textarea.form__control {
   .form__submit,
   .socials__link {
     transition: none;
+  }
+
+  .form__submit--sending::after {
+    animation-duration: 2.4s;
+  }
+
+  .form__status--sent {
+    animation-name: form-thanks-fade;
   }
 
   .form__submit:hover,

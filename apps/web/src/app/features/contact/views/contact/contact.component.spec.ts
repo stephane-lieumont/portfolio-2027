@@ -191,6 +191,8 @@ describe('Contact — sending', () => {
       captchaToken: 'turnstile-token',
     });
     expect(button(host)?.getAttribute('aria-busy')).toBe('true');
+    expect(button(host)?.getAttribute('aria-disabled')).toBe('true');
+    expect(button(host)?.classList).toContain('form__submit--sending');
     expect(statusOf(host)).toBe('Envoi en cours…');
     // Never disabled: it stays focusable and keeps its boundary.
     expect(button(host)?.hasAttribute('disabled')).toBe(false);
@@ -199,7 +201,10 @@ describe('Contact — sending', () => {
     await fixture.whenStable();
 
     expect(button(host)?.hasAttribute('aria-busy')).toBe(false);
+    expect(button(host)?.hasAttribute('aria-disabled')).toBe(false);
+    expect(button(host)?.classList).not.toContain('form__submit--sending');
     expect(statusOf(host)).toMatch(/^Merci/);
+    expect(host.querySelector('.form__status')?.classList).toContain('form__status--sent');
     expect(field(host, 'message').value).toBe('');
   });
 

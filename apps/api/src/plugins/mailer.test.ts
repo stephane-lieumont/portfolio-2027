@@ -67,6 +67,7 @@ describe('mailer', () => {
       replyTo: { name: 'Ada', address: 'ada@example.org' },
       subject: 'Hello',
       text: 'Body',
+      html: '<p>Body</p>',
     });
 
     assert.deepEqual(sendMail.mock.calls[0]?.arguments, [
@@ -76,6 +77,7 @@ describe('mailer', () => {
         replyTo: { name: 'Ada', address: 'ada@example.org' },
         subject: 'Hello',
         text: 'Body',
+        html: '<p>Body</p>',
       },
     ]);
   });

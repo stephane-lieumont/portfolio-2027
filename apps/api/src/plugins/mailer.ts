@@ -6,6 +6,7 @@ export interface OutgoingMail {
   replyTo: { name: string; address: string };
   subject: string;
   text: string;
+  html: string;
 }
 
 export interface MailTransport {

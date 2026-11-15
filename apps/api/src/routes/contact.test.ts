@@ -86,15 +86,13 @@ describe('POST /api/contact', () => {
     assert.equal(verifications[0]?.get('secret'), SECRET);
     assert.equal(verifications[0]?.get('response'), 'token-from-the-widget');
     assert.equal(verifications[0]?.get('remoteip'), '203.0.113.7');
-    assert.deepEqual(sent, [
-      {
-        from: OWNER,
-        to: OWNER,
-        replyTo: { name: 'Ada Lovelace', address: 'ada@example.org' },
-        subject: 'Portfolio — message de Ada Lovelace',
-        text: 'Ada Lovelace <ada@example.org>\n\nBonjour Stéphane\n',
-      },
-    ]);
+    assert.equal(sent.length, 1);
+    assert.equal(sent[0]?.from, OWNER);
+    assert.equal(sent[0]?.to, OWNER);
+    assert.deepEqual(sent[0]?.replyTo, { name: 'Ada Lovelace', address: 'ada@example.org' });
+    assert.equal(sent[0]?.subject, 'Portfolio — nouveau message de Ada Lovelace');
+    assert.match(sent[0]?.text ?? '', /Bonjour Stéphane/);
+    assert.match(sent[0]?.html ?? '', /Bonjour Stéphane/);
   });
 
   it('keeps a name on one line in the subject', async () => {
@@ -102,7 +100,7 @@ describe('POST /api/contact', () => {
 
     await post(app, { ...message, name: 'Ada\r\nBcc: victim@example.com' });
 
-    assert.equal(sent[0]?.subject, 'Portfolio — message de Ada Bcc: victim@example.com');
+    assert.equal(sent[0]?.subject, 'Portfolio — nouveau message de Ada Bcc: victim@example.com');
   });
 
   it('refuses an incomplete message without asking Cloudflare or sending', async () => {
