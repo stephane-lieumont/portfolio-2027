@@ -53,7 +53,7 @@ export const routes: Routes = [
     data: {
       page: 'dev',
       world: 'dev',
-      description: $localize`:@@page.dev.description:Lead Tech Angular et .NET, j’encadre jusqu’à 8 développeurs et je continue à écrire du code. Avant le développement, quatorze ans dans l’aéronautique.`,
+      description: $localize`:@@page.dev.description:Lead Tech Angular et .NET, j’encadre jusqu’à 8 développeurs. Ledger, Linxea, immobilier.ch\u00a0; avant, quatorze ans dans l’aéronautique.`,
     },
     loadComponent: () =>
       import('@features/world/views/world-page/world-page.component').then(
@@ -86,7 +86,7 @@ export const routes: Routes = [
     data: {
       page: 'cgi',
       world: 'cgi',
-      description: $localize`:@@page.cgi.description:J’ai commencé la 3D bien avant le développement. C’est là que j’ai appris à apprendre seul — et à regarder une image jusqu’à voir ce qui ne va pas.`,
+      description: $localize`:@@page.cgi.description:Rendus 3D réalisés en autodidacte sous 3ds Max, ZBrush et V-Ray, dont Escart Wild, primé par TDT3D en 2015. La 3D m’a appris à apprendre seul.`,
     },
     loadComponent: () =>
       import('@features/world/views/world-page/world-page.component').then(

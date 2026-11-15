@@ -86,15 +86,15 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
         },
       },
       {
-        label: { fr: 'Équipe', en: 'Team' },
+        label: { fr: 'Références', en: 'Clients' },
         value: {
-          fr: 'Jusqu’à 8 développeurs encadrés',
-          en: 'Leading up to eight developers',
+          fr: 'Ledger, Linxea, immobilier.ch',
+          en: 'Ledger, Linxea, immobilier.ch',
         },
       },
       {
         label: { fr: 'Aussi', en: 'Also' },
-        value: { fr: 'React, Docker, CI/CD, Git', en: 'React, Docker, CI/CD, Git' },
+        value: { fr: 'React, AWS, Docker, CI/CD', en: 'React, AWS, Docker, CI/CD' },
       },
       {
         label: { fr: 'Avant', en: 'Before' },
@@ -110,8 +110,8 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
     lede: {
       lead: { fr: 'Une pratique d’autodidacte.', en: 'A self-taught practice.' },
       text: {
-        fr: 'Sans école, avant le développement.',
-        en: 'No formal training, before development.',
+        fr: 'Apprise seul, avant le code.',
+        en: 'Learned alone, before code.',
       },
     },
     scrub: {

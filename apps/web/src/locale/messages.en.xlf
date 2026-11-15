@@ -87,8 +87,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="page.dev.description" datatype="html">
-        <source>Lead Tech Angular et .NET, j’encadre jusqu’à 8 développeurs et je continue à écrire du code. Avant le développement, quatorze ans dans l’aéronautique.</source>
-        <target state="translated">Angular and .NET Lead Tech: I lead teams of up to eight developers and still write code. Before software, fourteen years in the aerospace industry.</target>
+        <source>Lead Tech Angular et .NET, j’encadre jusqu’à 8 développeurs. Ledger, Linxea, immobilier.ch&#160;; avant, quatorze ans dans l’aéronautique.</source>
+        <target state="translated">Angular and .NET Lead Tech, leading up to eight developers. Ledger, Linxea, immobilier.ch; before that, fourteen years in the aerospace industry.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
           <context context-type="linenumber">49</context>
@@ -103,8 +103,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="page.cgi.description" datatype="html">
-        <source>J’ai commencé la 3D bien avant le développement. C’est là que j’ai appris à apprendre seul — et à regarder une image jusqu’à voir ce qui ne va pas.</source>
-        <target state="translated">I took up 3D long before development. That is where I learned to teach myself — and to study an image until I see what is wrong with it.</target>
+        <source>Rendus 3D réalisés en autodidacte sous 3ds Max, ZBrush et V-Ray, dont Escart Wild, primé par TDT3D en 2015. La 3D m’a appris à apprendre seul.</source>
+        <target state="translated">Self-taught 3D renders in 3ds Max, ZBrush and V-Ray, including Escart Wild, a TDT3D award winner in 2015. 3D taught me to teach myself.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
           <context context-type="linenumber">76</context>
@@ -797,8 +797,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="legal.host.who" datatype="html">
-        <source> Le site est hébergé par OVH SAS, 2 rue Kellermann, 59100 Roubaix, France. </source>
-        <target state="translated">The site is hosted by OVH SAS, 2 rue Kellermann, 59100 Roubaix, France.</target>
+        <source> Le site est hébergé par OVH SAS, 2 rue Kellermann, 59100 Roubaix, France. Téléphone&#160;: 1007. </source>
+        <target state="translated">The site is hosted by OVH SAS, 2 rue Kellermann, 59100 Roubaix, France. Phone: 1007 (from France).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
           <context context-type="linenumber">29,33</context>
@@ -837,8 +837,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="legal.data.collected" datatype="html">
-        <source> Le formulaire de contact recueille votre nom, votre adresse email et votre message, dans le seul but de répondre à votre demande. </source>
-        <target state="translated">The contact form collects your name, email address and message, solely to answer your request.</target>
+        <source> Le formulaire de contact recueille votre nom, votre adresse email et votre message, dans le seul but de répondre à votre demande. Ce traitement repose sur l’intérêt légitime à répondre aux demandes reçues (article 6.1.f du RGPD). </source>
+        <target state="translated">The contact form collects your name, email address and message, solely to answer your request. This processing rests on the legitimate interest in answering the requests received (GDPR, article 6(1)(f)).</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
           <context context-type="linenumber">48,51</context>
@@ -957,6 +957,10 @@
       <trans-unit id="legal.credits.trademarks" datatype="html">
         <source>Les marques citées restent la propriété de leurs titulaires.</source>
         <target state="translated">The trademarks named remain the property of their owners.</target>
+      </trans-unit>
+      <trans-unit id="legal.data.logs" datatype="html">
+        <source> Le serveur tient des journaux d’accès techniques (adresse IP, page demandée, date), conservés douze mois au plus pour sa sécurité. </source>
+        <target state="translated">The server keeps technical access logs (IP address, page requested, date) for twelve months at most, for its security.</target>
       </trans-unit>
     </body>
   </file>

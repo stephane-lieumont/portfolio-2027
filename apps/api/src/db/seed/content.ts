@@ -229,8 +229,8 @@ export const PROJECTS: readonly ProjectRecord[] = [
     logo: mediaId('/logos/clients/ledger.svg'),
     title: { fr: 'Ledger', en: 'Ledger' },
     summary: {
-      fr: 'J’ai travaillé sur une application web grand public en Next.js et son intégration à l’application mobile Ledger en React Native, testées de bout en bout.',
-      en: 'I worked on a consumer web app in Next.js and on its integration into the Ledger mobile app in React Native, with automated end-to-end tests.',
+      fr: 'J’ai développé une application web grand public en Next.js et son intégration à l’application mobile Ledger en React Native, testées de bout en bout.',
+      en: 'I built a consumer web app in Next.js and its integration into the Ledger mobile app in React Native, with automated end-to-end tests.',
     },
     context: {
       fr: 'L’application web d’un service grand public, en Next.js, et son intégration dans l’application mobile Ledger, en React Native.',
@@ -295,8 +295,8 @@ export const PROJECTS: readonly ProjectRecord[] = [
       en: 'A dating app where friends make the introductions for someone single. The journey guides both sides, from browsing profiles to arranging the first date.',
     },
     mission: {
-      fr: 'Cofondateur et lead developer. J’ai défini la stratégie technique, piloté une équipe de deux développeurs et mené la première version jusqu’au test marché.',
-      en: 'Co-founder and lead developer. I set the technical strategy, led a team of two developers and took the first version through to market testing.',
+      fr: 'Cofondateur et lead developer. J’ai défini la stratégie technique, piloté une équipe de deux développeurs et mené la première version jusqu’au test marché. J’ai aussi pris part aux choix business et de communication de l’entreprise.',
+      en: 'Co-founder and lead developer. I set the technical strategy, led a team of two developers and took the first version through to market testing. I also had a hand in the company’s business and communication decisions.',
     },
     missionSteps: [
       {
@@ -341,8 +341,8 @@ export const PROJECTS: readonly ProjectRecord[] = [
     startedAt: '2020-01-01',
     releasedAt: '2022-08-30',
     role: {
-      fr: 'Associé, cofondateur et lead développeur front-end',
-      en: 'Partner, co-founder and lead front-end developer',
+      fr: 'Cofondateur — tech, produit et communication',
+      en: 'Co-founder — tech, product and communication',
     },
   },
   {
