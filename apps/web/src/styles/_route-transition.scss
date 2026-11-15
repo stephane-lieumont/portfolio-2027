@@ -123,3 +123,9 @@
 :root[data-vt='none']::view-transition-new(*) {
   animation: none;
 }
+
+// The language switcher is a full navigation to the other tree (ADR-0017):
+// the browser crossfades the two documents instead of cutting to a blank page.
+@view-transition {
+  navigation: auto;
+}

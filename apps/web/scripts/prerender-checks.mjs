@@ -152,9 +152,9 @@ function thirdParty(document) {
   const urls = [
     ...Array.from(document.querySelectorAll('[src]'), (el) => el.getAttribute('src')),
     ...Array.from(document.querySelectorAll('[srcset]'), (el) => el.getAttribute('srcset')),
-    ...Array.from(document.querySelectorAll('link[href]'), (el) => el.getAttribute('href')).filter(
-      // The hreflang alternates name this site's own addresses; nothing loads them.
-      (href) => !href?.startsWith(`${SITE_ORIGIN}/`),
+    // The hreflang alternates name this site's own addresses; nothing loads them.
+    ...Array.from(document.querySelectorAll('link[href]:not([rel="alternate"])'), (el) =>
+      el.getAttribute('href'),
     ),
   ];
   return urls.filter((url) => /(?:^|[\s,])(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(url ?? ''));

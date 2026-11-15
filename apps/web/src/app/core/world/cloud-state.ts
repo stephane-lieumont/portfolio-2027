@@ -177,6 +177,11 @@ export class CloudModel {
     this.sweepAt = this.assembleAt + 1.5;
   }
 
+  /** Stands assembled at once: the same page, reloaded in the other language. */
+  skipAssembly(): void {
+    this.assembleAt = this.clock - ASSEMBLE_SPAN;
+  }
+
   /** Heads for a world's shape; the morph continues from wherever it stands. */
   aim(world: WorldKey): void {
     this.target = world === 'cgi' ? 1 : 0;

@@ -586,3 +586,17 @@ live tokens.
   to see the detail pages first.
 - Nine further renders sit unused in the 2022 repository. The sixteen shown are
   Stéphane's selection, not ours.
+
+**Language switch, after review (2026-11-15).** The switcher shows the flag of
+the language it leads to (UK on French pages, France on English ones; Stéphane),
+named « English version » / « Version française »; 26–45px wide, 34–36px tall,
+no header overflow 320–1440. Switching no longer flashes white or replays the
+page: the world's ground is inlined in the document head, the browser
+crossfades the two documents (`@view-transition { navigation: auto }`), and
+the new page opens at the same scroll position with no entrance and the cloud
+assembled (a `lang-switch` sessionStorage flag; measured: scrollY 700 → 700,
+`lang-switched` stamped). The cookie now also carries `Secure` and is set on
+a middle-click too; an unknown slug's switcher leads to the other tree's first
+page, as its 404 does; the prerender check's cross-origin rule exempts only
+`rel="alternate"`. **Do not deploy `/en` before PR 2**: its content (lede,
+facts, projects, slugs, the role word) is still French under `hreflang="en"`.

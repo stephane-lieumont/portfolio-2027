@@ -59,6 +59,6 @@ describe('site addresses', () => {
   });
 
   it('remembers the choice for a year, site-wide, and nothing else', () => {
-    expect(languageCookie('en')).toBe('lang=en; Max-Age=31536000; Path=/; SameSite=Lax');
+    expect(languageCookie('en')).toBe('lang=en; Max-Age=31536000; Path=/; SameSite=Lax; Secure');
   });
 });

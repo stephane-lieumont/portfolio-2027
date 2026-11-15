@@ -83,13 +83,29 @@ export class App {
     const smooth = inject(SmoothScroll);
     afterNextRender(() => {
       smooth.enable();
+      try {
+        const kept = sessionStorage.getItem('lang-switch');
+        if (kept !== null) {
+          sessionStorage.removeItem('lang-switch');
+          smooth.jumpTo(Number(kept) || 0);
+        }
+      } catch {
+        // Storage off: the page opens at its top.
+      }
       // Not a template binding: event replay cancels a link's default action
       // when it has a bound click. Before hydration the link still goes, only
       // without the cookie.
       const link = this.languageLink().nativeElement;
-      link.addEventListener('click', () => {
+      const remember = () => {
         link.ownerDocument.cookie = languageCookie(this.language().locale);
-      });
+        try {
+          sessionStorage.setItem('lang-switch', String(Math.round(scrollY)));
+        } catch {
+          // Private mode or storage off: the entrance simply plays again.
+        }
+      };
+      link.addEventListener('click', remember);
+      link.addEventListener('auxclick', remember);
     });
   }
 
@@ -98,15 +114,14 @@ export class App {
   }
 }
 
-const LANGUAGE_LINKS: Readonly<Record<SiteLocale, { label: string; name: string }>> = {
-  fr: { label: 'FR', name: 'Version française' },
-  en: { label: 'EN', name: 'English version' },
+const LANGUAGE_LINKS: Readonly<Record<SiteLocale, { name: string }>> = {
+  fr: { name: 'Version française' },
+  en: { name: 'English version' },
 };
 
 export interface LanguageSwitch {
   readonly locale: SiteLocale;
   readonly href: string;
-  readonly label: string;
   /** In the target language, as the link's `lang` says. */
   readonly name: string;
 }

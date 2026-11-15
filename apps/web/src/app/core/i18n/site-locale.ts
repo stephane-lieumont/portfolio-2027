@@ -1,3 +1,4 @@
+import { ARTWORKS, PROJECTS } from '../static-content';
 import { SECTIONS } from './site-paths';
 
 export { SECTIONS, SITE_ORIGIN } from './site-paths';
@@ -67,8 +68,17 @@ export function pageHref(ref: PageRef, locale: SiteLocale): string {
  */
 export function pageAt(path: string, locale: SiteLocale): PageRef {
   const [first, slug] = path.split('/').filter(Boolean);
-  if (first === SECTIONS.dev[locale]) return slug ? { page: 'project', slug } : { page: 'dev' };
-  if (first === SECTIONS.cgi[locale]) return slug ? { page: 'piece', slug } : { page: 'cgi' };
+  // An unknown slug is served the 404, so it is the 404 here too.
+  if (first === SECTIONS.dev[locale]) {
+    if (!slug) return { page: 'dev' };
+    return PROJECTS.some((p) => p.slug === slug)
+      ? { page: 'project', slug }
+      : { page: 'not-found' };
+  }
+  if (first === SECTIONS.cgi[locale]) {
+    if (!slug) return { page: 'cgi' };
+    return ARTWORKS.some((a) => a.slug === slug) ? { page: 'piece', slug } : { page: 'not-found' };
+  }
   if (first === SECTIONS.contact[locale] && !slug) return { page: 'contact' };
   return { page: 'not-found' };
 }
@@ -79,5 +89,5 @@ export function otherLocale(locale: SiteLocale): SiteLocale {
 
 /** The cookie the switcher leaves for nginx's `/` redirect (ADR-0017). */
 export function languageCookie(locale: SiteLocale): string {
-  return `lang=${locale}; Max-Age=31536000; Path=/; SameSite=Lax`;
+  return `lang=${locale}; Max-Age=31536000; Path=/; SameSite=Lax; Secure`;
 }

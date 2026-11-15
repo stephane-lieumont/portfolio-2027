@@ -69,6 +69,15 @@
   text-decoration: none;
 }
 
+.top__flag {
+  display: block;
+  inline-size: 21px;
+  block-size: 14px;
+  // A hairline so the white of either flag holds its edge on any ground.
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--world-ink) 25%, transparent);
+}
+
 .top__link[aria-current] {
   text-decoration: underline;
   text-underline-offset: 4px;
