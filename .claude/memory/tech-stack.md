@@ -31,6 +31,8 @@ Operational summary of the choices. The full reasoning lives in `docs/adr/`.
 
 **The API boot depends on MinIO**: the `storage` plugin checks the bucket exists at startup and creates it if needed. `pnpm infra:up` must come before `pnpm dev:api`.
 
+**MinIO runs from `cgr.dev/chainguard/minio`** (2026-11-15, #44): `minio/minio` is no longer published on Docker Hub nor quay.io. The Chainguard image ships the same `minio` binary and `mc`, so the compose healthcheck (`mc ready local`) and the seed script work unchanged.
+
 **The web build is static prerendering, not SSR.** `outputMode: 'static'` with
 `@angular/ssr` and `@angular/platform-server` used only at build time
 (`main.server.ts`, `app.config.server.ts`, `app.routes.server.ts`). Every

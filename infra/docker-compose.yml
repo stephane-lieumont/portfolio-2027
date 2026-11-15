@@ -2,7 +2,7 @@ name: portfolio-2027
 
 services:
   minio:
-    image: minio/minio:latest
+    image: cgr.dev/chainguard/minio:latest
     command: server /data --console-address ":9001"
     ports:
       - '9000:9000'
