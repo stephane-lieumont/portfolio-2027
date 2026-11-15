@@ -191,10 +191,12 @@ prerender expectations and seed mapping went with them.
   French with no new claim (roles, summaries, steps, « At Web-Atrio »,
   « today », « View on Google Play », « Unit tests », « more tools »,
   « Since — 2010, self-taught », « Team — Up to eight developers led »).
-- **Orphaned in the bucket** (left alone, no longer referenced):
-  `projects/case-tes-potes-web-app.jpg`, `projects/kasa-openclassrooms.jpg`,
-  `projects/portfolio-3d-2018.jpg`, `projects/pixmodels.jpg` and their
-  `-presentation.jpg`, with their derived `-<width>.webp` variants.
+- **Orphaned bucket objects pruned** (#49, 2026-11-15): `pnpm --filter
+@portfolio/api media:prune` lists the objects no media record uses and
+  deletes them with `--apply`. It removed the 40 objects of the dropped
+  projects (Case Tes Potes web app, Kasa, the 2018 portfolio, Pixmodels:
+  covers, presentation visuals and their WebP variants) from the local bucket.
+  Run it once on the production bucket if it was ever seeded with them.
 - A logo card's cut-in reveal waits for its logo `<img>` to decode, as an
   image card does (it cut the plate in empty before, the logo popping in
   later). The 2024 missions'
