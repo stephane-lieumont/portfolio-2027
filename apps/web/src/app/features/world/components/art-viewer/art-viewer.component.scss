@@ -115,8 +115,11 @@
 .show__ticks {
   grid-column: 1 / -1;
   grid-row: 1;
-  display: flex;
-  gap: 6px;
+  display: grid;
+  // Two rows up to 900px: sixteen in one are 17px wide at 390, under the 24px
+  // a target needs (WCAG 2.5.8).
+  grid-template-columns: repeat(var(--tick-columns), 1fr);
+  gap: 0 6px;
   min-width: 0;
 }
 .show__count {
@@ -134,9 +137,8 @@
   color: var(--world-ink);
 }
 .show__tick {
-  flex: 1;
   min-width: 0;
-  height: 44px;
+  height: 24px;
   padding: 0;
   border: 0;
   background: none;
@@ -196,14 +198,6 @@
   stroke: currentColor;
   stroke-width: 1.5;
 }
-.show__status {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
 @media (hover: hover) {
   .show__tick:hover span {
     background: color-mix(in srgb, var(--world-ink) 80%, transparent);
@@ -225,6 +219,12 @@
 @media (min-width: 900px) {
   .show__stage {
     border-radius: 4px;
+  }
+  .show__ticks {
+    grid-template-columns: repeat(var(--ticks), 1fr);
+  }
+  .show__tick {
+    height: 44px;
   }
 }
 // A landscape phone has no height for a caption under the plate: it moves to

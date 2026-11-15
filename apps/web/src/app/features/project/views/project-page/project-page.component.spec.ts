@@ -99,7 +99,7 @@ describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (slug,
     expect(host.querySelector('iframe, #video')).toBeNull();
   });
 
-  it('opens on its presentation visual or, for a client, on its named logo and no screenshot', async () => {
+  it('opens on its presentation visual or, for a client, on its logo and no screenshot', async () => {
     const host = (await render(slug)).nativeElement as HTMLElement;
     const img = host.querySelector<HTMLImageElement>('.fig__img');
     const logo = host.querySelector('.fig app-client-logo');
@@ -109,7 +109,8 @@ describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (slug,
       expect(host.querySelector('figcaption')).toBeNull();
       const mark = logo?.querySelector('img');
       expect(mark?.getAttribute('src')).toBe(project.logo.src);
-      expect(mark?.getAttribute('alt')).toBe(project.logo.alt.fr);
+      // The h1 right above already says the name.
+      expect(mark?.getAttribute('alt')).toBe('');
       return;
     }
     const presentation = project.presentation!;

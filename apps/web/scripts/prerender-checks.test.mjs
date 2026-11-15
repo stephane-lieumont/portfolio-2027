@@ -308,6 +308,19 @@ describe('a page in either tree', () => {
   );
 });
 
+describe('a link to a fragment', () => {
+  const skip = (attributes) => `${FORM}<a href="#contenu"${attributes}>Aller au contenu</a>`;
+
+  it('passes when its click is handled', () => {
+    assert.deepEqual(checkPage('contact', page({ form: skip(' jsaction="click:;"') })), []);
+  });
+
+  it('fails when nothing handles it, since <base href> would send it to the home page', () => {
+    assert.notDeepEqual(checkPage('contact', page({ form: skip('') })), []);
+    assert.notDeepEqual(checkPage('contact', page({ form: skip(' jsaction="mouseenter:;"') })), []);
+  });
+});
+
 describe('the links of a page', () => {
   const links = (...hrefs) => hrefs.map((href) => `<a href="${href}">x</a>`).join('');
 
@@ -316,7 +329,6 @@ describe('the links of a page', () => {
       '/en/3d-art/alien',
       '/en/developer/ledger#video',
       '/en/developer',
-      '#contenu',
       '/cv-stephane-lieumont.pdf',
       '/demo/casetespotes-landingpage',
       'https://github.com/stephane-lieumont',

@@ -1,4 +1,8 @@
-<a class="skip-link" href="#contenu" i18n="@@shell.skipLink">Aller au contenu</a>
+<!-- Handled here: the fragment alone resolves against <base href> to the
+     home page, and a full load lands elsewhere with focus on the body. -->
+<a class="skip-link" href="#contenu" (click)="skipToContent($event)" i18n="@@shell.skipLink"
+  >Aller au contenu</a
+>
 
 <app-motes />
 

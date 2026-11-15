@@ -240,8 +240,9 @@ order:
   apply on iOS; `--header-height` (scroll padding) is 90px, the tallest
   header measured (was 7rem).
 - **Budgets**: the viewer's and the contact page's stylesheets now pass the
-  4 kB component-style warning budget by 305 and 17 bytes (warnings, not
-  errors). Reported, not raised.
+  4 kB component-style warning budget by 329 (305 before audit #39's two-row
+  ticks, its status line moved to the global `.visually-hidden`) and 17 bytes
+  (warnings, not errors). Reported, not raised.
 
 **Image loading indicator (spec 07 §16, motion-expert spec approved
 2026-11-15)** — a picture still loading 400ms after its plate came on screen
@@ -346,7 +347,16 @@ spec. Social dock fixed bottom-right,
 always visible as on the mockup: contact icon to `/contact`, LinkedIn,
 GitHub, ArtStation, CV, no mailto; `scroll-padding-block-end` keeps focus
 clear of it. A direct load leaves focus alone (first Tab is the skip link);
-route changes move focus to `<main>` and announce the page title.
+route changes move focus to `<main>` and announce the page's own title,
+without « — Stéphane Lieumont ». Opening, stepping and closing the 3D viewer
+change the address but not the page: the shell keeps quiet and moves no
+focus, the viewer's own status says « 2 sur 16. Extraterrestre, 2016 » (one
+announcement, measured on the build). The skip link handles its own click:
+a bare `#contenu` resolves against `<base href>` to the home page, and on the
+built site Enter used to reload `/` with focus on BODY (audit #39). Measured
+on the production build, FR and EN, five pages each: no navigation, URL
+unchanged, focus on `main#contenu`, next Tab inside the content. The
+prerender check fails any `href="#…"` link without a click `jsaction`.
 
 **404** — the 2022 site's Travolta and its intercom line, back at Stéphane's
 request (2026-11-15: « ajoute Travolta avec la phrase interphone »): eyebrow
@@ -357,8 +367,16 @@ ground; it ships as alpha video: HEVC `.mov` (254 KB) listed first, which only
 Safari claims and whose alpha it reads, then VP9 `.webm` (369 KB) for Chrome
 and Firefox, and a transparent WebP poster, from `public/images/` like the
 contact portrait. It loops muted, standing on the bottom edge of the screen so the
-clip's cut legs read as the page's edge (Stéphane: no pause button); under
-reduced motion it stays on its poster. Measured in Chrome: the WebM is picked, autoplay starts,
+clip's cut legs read as the page's edge. A pause toggle sits on the clip's
+top-left corner (Stéphane, 2026-11-15, WCAG 2.2.2; the bottom edge is
+Travolta's): 44px round, icon only, named « Mettre en pause » / « Lire
+l’animation » (EN « Pause the animation » / « Play the animation ») after
+what a press does — no `aria-pressed` on top of a changing name, which would
+read as a double negative. Measured at 320×640, 390×844, 844×390 and
+1440×900: clear of the header, the text column and the dock (the dock sits
+bottom right, the toggle on the clip's left); Enter pauses, 2px focus ring.
+Under reduced motion it stays on its poster and the toggle reads « Lire
+l’animation ». Measured in Chrome: the WebM is picked, autoplay starts,
 the 4s clip loops, its bottom within 4px of the viewport's at 1512×771,
 1440×900, 1920×970, 768×1024 and 390×844, title 56px at 1512×771, no horizontal overflow. Safari's
 HEVC path is not verified. The clip is from _Pulp Fiction_: a film's footage
@@ -394,7 +412,9 @@ mockup's unreset 8px body margin. In order:
   jump). After a sweep the role flips once the band has covered (640ms).
 - Point cloud (`</>` → torus, assembly, pointer field on the glyph only,
   accent sweep every 7s, still frame under reduced motion) on the shared frame
-  loop, its state in a root `CloudStore`. The torus has no hover effect: it is
+  loop, which it lets go whenever nothing moves — off screen, or once its
+  still frame is drawn (measured: 0 rAF calls/s under reduced motion on the
+  world, contact and project pages, was ~30; 60/s with motion), its state in a root `CloudStore`. The torus has no hover effect: it is
   grabbed and turned (mouse, pen, a sideways touch; a full stage width is half a
   turn, pitch held between face-on and edge-on) and on release springs back
   onto the live auto-rotation, whose clock runs on during the hold (critically
@@ -425,14 +445,20 @@ mockup's unreset 8px body margin. In order:
   and continuity already holds. Layers as the mockup: stage 20 under the
   header (30) and the dock (50), blurred by their glass; only the sweep lifts
   it.
-- Lede, scrubbed sentence (unlit floor 55%: 5.54:1 dev, 3.33:1 cgi, large
-  text), facts as a `dl`, CTAs « Me contacter » → /contact, « Mon CV » → the PDF.
+- Lede, scrubbed sentence (unlit floor `--scrub-unlit` 55%: 5.54:1 dev,
+  3.33:1 cgi where the text is large; in the 3D world 68%, 4.65:1, wherever
+  the clamp leaves it under 24px — below 924px wide or 650px tall, measured
+  22px at 320, 390 and 844×390 and 22.9px at 1440×620; audit #39), facts as a `dl`, CTAs « Me contacter » → /contact, « Mon CV » → the PDF.
 - Dev work: seven numbered plates (logo or cover, title, period, role, tools
   with marks) to `/developpeur/<slug>`, the project page below. Count derived:
   « 07 projets · 2020 – aujourd'hui » (see « Client references »).
 - 3D work: the full-bleed mosaic, every tile a link to `/graphisme-3d/<slug>`,
   which opens a native `<dialog>` viewer over the wall (16:9 plate, diagonal
-  cut from SWEEP_LEAN, drift and darken, counter, 44px ticks, arrows/Home/End,
+  cut from SWEEP_LEAN, drift and darken, counter, ticks (one row of 44px-high
+  targets from 900px, two rows of 24px below so none is under 24×24 — WCAG
+  2.5.8, measured 30.8×24 at 320, 39.5×24 at 390, 67.8×24 at 844×390,
+  52.9×44 at 1440, never overlapping), the plate a named `role="group"`,
+  arrows/Home/End,
   swipe, Escape, focus back on the tile, Lenis held, plate ↔ tile morph via the
   router's view transition, `viewer` kind). A step's cut plays to its end
   while the address catches up (measured after the review fix: clip-path
@@ -880,8 +906,8 @@ read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository. Locally the renders need
 `pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 593 passing on the web side, 98.2% lines, 88.7% branches, 94.3%
-functions (plus 96 for the prerender check and the SEO files); axe on every page, every project page included. Every route, the
+**Tests** — 606 passing on the web side, 98.2% lines, 89.2% branches, 94.3%
+functions (plus 98 for the prerender check and the SEO files); axe on every page, every project page included. Every route, the
 404, the project guard, the API client, the gallery, contact, the project page,
 its video facade and the YouTube address parser have their own specs; the
 static projects are parsed against the `Project` schema.
@@ -932,7 +958,9 @@ copy is reviewed once, after the six PRs). Collected so far:
 
 - Project page, written here and not on the prototype: the two presentation
   alt texts; « Autres réalisations » (shown by no page today: every project is
-  in a series); the logos' alt texts (« Logo de Ledger »…); the role prefix
+  in a series); the logos' alt texts (« Logo de Ledger »…), no longer
+  rendered (since audit #39 the hero logo and the cards' pictures are
+  `alt=""`: the heading or title beside them already says the name); the role prefix
   « Chez Web-Atrio · »; « +N autres outils »; the mission steps written from
   the CV and Stéphane's messages.
 
@@ -986,11 +1014,10 @@ The stack's marks need SVG logos (ADR-0012); the mockup used Simple Icons
 values ship as they are; each failure below was measured at the worst pixel
 on the production build (1440 and 390), and is to be fixed later.
 
-| Where                                                                          | Measured                                                                         | Requirement                                            |
-| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Copyright spine over the 3D mosaic (it sits above everything, per Stéphane)    | 1.00:1 over a dark render (5.70:1 on bare orange; 5.26:1 worst in the dev world) | 4.5:1                                                  |
-| Inactive stack marks: icon at 50% opacity, 3D world                            | ≈2.9:1 (label stays 5.67:1)                                                      | 3:1 for graphics, if the icon is held to carry meaning |
-| 404 clip loops with no pause control (Stéphane removed the button, 2026-11-15) | plays past 5s, decorative                                                        | WCAG 2.2.2 Pause, Stop, Hide                           |
+| Where                                                                       | Measured                                                                                                                                      | Requirement                                            |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Copyright spine over the 3D mosaic (it sits above everything, per Stéphane) | 1.00:1 over a dark render (5.70:1 on bare orange); dev world 5.26:1 at 1440, 1.02:1 worst pixel at 390 (a few bright pixels passing under it) | 4.5:1                                                  |
+| Inactive stack marks: icon at 50% opacity, 3D world                         | ≈2.9:1 (label stays 5.67:1)                                                                                                                   | 3:1 for graphics, if the icon is held to carry meaning |
 
 ## Decided, not built
 

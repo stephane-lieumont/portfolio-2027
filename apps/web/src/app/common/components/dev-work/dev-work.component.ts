@@ -101,7 +101,7 @@ function roleLine(project: StaticProject): string {
             [src]="mediaUrl(cover.key)"
             [srcset]="srcset(cover.key, cover.width)"
             [sizes]="sizes()"
-            [alt]="cover.alt | inLocale"
+            alt=""
             [width]="cover.width"
             [height]="cover.height"
             loading="lazy"

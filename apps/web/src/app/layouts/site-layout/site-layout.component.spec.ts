@@ -1,8 +1,10 @@
 import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { Router, TitleStrategy, provideRouter } from '@angular/router';
 import axe from 'axe-core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { PageMetadataService } from '@core/services/page-metadata/page-metadata.service';
 
 import { SiteLayoutComponent, languageSwitch } from './site-layout.component';
 
@@ -33,9 +35,19 @@ describe('App shell', () => {
         provideRouter([
           { path: 'developpeur', component: Blank },
           { path: 'developpeur/:slug', component: Blank, title: 'Linxea' },
-          { path: 'graphisme-3d', component: Blank },
-          { path: 'contact', component: Blank },
+          {
+            path: 'graphisme-3d',
+            component: Blank,
+            title: 'Graphisme 3D',
+            data: { page: 'cgi' },
+            children: [
+              { path: '', children: [] },
+              { path: ':slug', title: 'Extraterrestre', data: { page: 'piece' }, children: [] },
+            ],
+          },
+          { path: 'contact', component: Blank, title: 'Contact', data: { page: 'contact' } },
         ]),
+        { provide: TitleStrategy, useClass: PageMetadataService },
       ],
     });
     fixture = TestBed.createComponent(SiteLayoutComponent);
@@ -169,6 +181,52 @@ describe('App shell', () => {
     expect(live.getAttribute('aria-atomic')).toBe('true');
     expect(live.textContent).toBe('Linxea');
     expect(document.activeElement).toBe(host.querySelector('#contenu'));
+  });
+
+  it('announces the page, not the site name every title ends with', async () => {
+    await visit('/developpeur');
+    await visit('/contact');
+    await Promise.resolve();
+    fixture.detectChanges();
+
+    expect(document.title).toBe('Contact — Stéphane Lieumont');
+    expect(host.querySelector('[aria-live]')!.textContent).toBe('Contact');
+  });
+
+  it('leaves the 3D viewer to announce its pieces: opening, stepping and closing stay quiet', async () => {
+    await visit('/developpeur');
+    await visit('/graphisme-3d');
+    await Promise.resolve();
+    fixture.detectChanges();
+    const live = host.querySelector('[aria-live]')!;
+    expect(live.textContent).toBe('Graphisme 3D');
+
+    const main = host.querySelector<HTMLElement>('#contenu')!;
+    main.blur();
+    for (const url of ['/graphisme-3d/extraterrestre', '/graphisme-3d/sputnik', '/graphisme-3d']) {
+      await visit(url);
+      await Promise.resolve();
+      fixture.detectChanges();
+      expect(live.textContent).toBe('Graphisme 3D');
+      expect(document.activeElement).not.toBe(main);
+    }
+
+    await visit('/contact');
+    await Promise.resolve();
+    fixture.detectChanges();
+    expect(live.textContent).toBe('Contact');
+  });
+
+  it('skips to the content of this page, whatever the base href makes of the fragment', async () => {
+    await visit('/developpeur');
+    const skip = host.querySelector<HTMLAnchorElement>('a.skip-link')!;
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true });
+
+    skip.dispatchEvent(click);
+
+    expect(click.defaultPrevented).toBe(true);
+    expect(document.activeElement).toBe(host.querySelector('#contenu'));
+    expect(TestBed.inject(Router).url).toBe('/developpeur');
   });
 
   it('has no detectable accessibility violation', async () => {

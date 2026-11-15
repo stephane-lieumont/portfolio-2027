@@ -503,6 +503,16 @@ export function checkPage(route, html) {
     if (!PAGES[expected.locale].has(path)) fail(`links to ${path}, not a page of this tree`);
   }
 
+  // A bare fragment resolves against <base href>: on any page but the home it
+  // leads to the home page, with a full load. Such a link only works through
+  // the click handler Angular binds, which the server marks as a jsaction.
+  for (const link of document.querySelectorAll('a[href^="#"]')) {
+    if (!/(^|;)click:/.test(link.getAttribute('jsaction') ?? ''))
+      fail(
+        `${link.getAttribute('href')} resolves against <base href>, and nothing handles its click`,
+      );
+  }
+
   // Stéphane's address is never published (ADR-0007, spec 03): the contact
   // form is the way in.
   if (document.querySelector('a[href^="mailto:" i]')) fail('publishes a mailto link');

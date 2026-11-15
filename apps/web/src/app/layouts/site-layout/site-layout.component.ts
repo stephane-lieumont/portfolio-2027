@@ -9,8 +9,15 @@ import {
   viewChild,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { filter, skip } from 'rxjs';
+import {
+  type ActivatedRouteSnapshot,
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterOutlet,
+  TitleStrategy,
+} from '@angular/router';
+import { filter } from 'rxjs';
 
 import { NAV } from '@core/data/nav-items';
 import {
@@ -75,16 +82,24 @@ export class SiteLayoutComponent {
     // announced by the browser, and moving focus would skip the skip link and
     // the navigation for the first Tab.
     const title = inject(Title);
-    this.router.events
-      .pipe(
-        filter((e) => e instanceof NavigationEnd),
-        skip(1),
-      )
-      .subscribe(() => {
-        // The router writes the title right after emitting NavigationEnd.
-        queueMicrotask(() => this.announcement.set(title.getTitle()));
-        this.main().nativeElement.focus({ preventScroll: true });
-      });
+    const titles = inject(TitleStrategy);
+    let page: unknown;
+    let landed = false;
+    this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
+      const snapshot = this.router.routerState.snapshot;
+      const from = page;
+      page = deepest(snapshot.root).data['page'];
+      if (!landed) {
+        landed = true;
+        return;
+      }
+      if (viewerOwns(from, page)) return;
+      // The page's own title, without the site's name every title ends with.
+      const name = titles.buildTitle(snapshot);
+      // The router writes the document title right after emitting NavigationEnd.
+      queueMicrotask(() => this.announcement.set(name ?? title.getTitle()));
+      this.main().nativeElement.focus({ preventScroll: true });
+    });
 
     const smooth = inject(SmoothScrollService);
     afterNextRender(() => {
@@ -115,9 +130,29 @@ export class SiteLayoutComponent {
     });
   }
 
+  protected skipToContent(event: MouseEvent): void {
+    event.preventDefault();
+    this.main().nativeElement.focus();
+  }
+
   protected current(link: string): 'page' | 'true' | null {
     return currentness(this.active.path(), link);
   }
+}
+
+function deepest(route: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
+  return route.firstChild ? deepest(route.firstChild) : route;
+}
+
+/**
+ * Opening, stepping and closing the 3D viewer change the address, not the
+ * page: the viewer announces the piece itself and hands focus back to its
+ * tile, so the shell keeps quiet.
+ */
+function viewerOwns(from: unknown, to: unknown): boolean {
+  return (
+    (from === 'piece' || to === 'piece') && [from, to].every((p) => p === 'piece' || p === 'cgi')
+  );
 }
 
 const LANGUAGE_LINKS: Readonly<Record<SiteLocale, { name: string }>> = {

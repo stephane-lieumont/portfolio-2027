@@ -12,7 +12,7 @@ import {
   FrameLoopService,
 } from '@core/services/motion/frame-loop/frame-loop.service';
 import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
-import { ContactComponent } from './contact.component';
+import { ContactComponent, titleParts } from './contact.component';
 
 interface Setup {
   readonly reduced?: boolean;
@@ -283,6 +283,26 @@ describe('Contact — content', () => {
       rules: { 'color-contrast': { enabled: false } },
     });
     expect(results.violations).toEqual([]);
+  });
+
+  it('marks the English the French title quotes, and reads the same', async () => {
+    const { host } = await render();
+    const title = host.querySelector('h1')!;
+
+    expect(title.textContent).toBe(CONTACT_PAGE.title.fr);
+    expect(
+      Array.from(title.querySelectorAll('[lang]')).map((s) => [
+        s.textContent,
+        s.getAttribute('lang'),
+      ]),
+    ).toEqual([['Hello World', 'en']]);
+  });
+
+  it('leaves an English title, or one quoting nothing, in one run', () => {
+    expect(titleParts(CONTACT_PAGE.title.en, 'en')).toEqual([
+      { text: CONTACT_PAGE.title.en, lang: null },
+    ]);
+    expect(titleParts('Écrivez-moi', 'fr')).toEqual([{ text: 'Écrivez-moi', lang: null }]);
   });
 
   it('keeps the message out of the smooth scroll', async () => {
