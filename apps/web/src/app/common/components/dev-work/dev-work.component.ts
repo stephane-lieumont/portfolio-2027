@@ -12,6 +12,9 @@ import { toolView } from '@core/data/tool-marks/tool-marks';
 import { InLocalePipe, inLocale } from '@core/i18n/in-locale.pipe';
 import { PATHS } from '@core/i18n/site-locale/site-locale';
 
+/** A card names this many tools; its page lists them all. */
+export const CARD_TOOLS = 6;
+
 /**
  * The card's second line: the role, behind the employer it was held for when
  * the title does not already name it (« Chez Web-Atrio · » on a client
@@ -119,6 +122,12 @@ function roleLine(project: StaticProject): string {
               {{ tool.label }}
             </span>
           }
+          @if (project.moreTools) {
+            <span class="tool"
+              >+{{ project.moreTools
+              }}<span class="visually-hidden" i18n="@@work.moreTools"> autres outils</span></span
+            >
+          }
         </span>
         @if (here) {
           <span class="row__here" i18n="@@work.here">Cette fiche</span>
@@ -156,7 +165,8 @@ export class DevWorkComponent {
       ...project,
       period: workPeriod(project),
       roleLine: roleLine(project),
-      tools: project.technologies.map((slug) => toolView(slug)),
+      tools: project.technologies.slice(0, CARD_TOOLS).map((slug) => toolView(slug)),
+      moreTools: Math.max(0, project.technologies.length - CARD_TOOLS),
     })),
   );
 }

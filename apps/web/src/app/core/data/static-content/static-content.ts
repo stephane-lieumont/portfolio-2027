@@ -31,7 +31,7 @@ export interface StaticProject extends Pick<
    * path, never an absolute URL — the demos move with the site (ADR-0005).
    */
   readonly websiteUrl?: string;
-  /** « Voir la vidéo »: a YouTube address, embedded after a click (ADR-0016). */
+  /** « Voir la vidéo »: a YouTube address, opened on YouTube in a new tab. */
   readonly videoUrl?: string;
   /** « Voir sur Google Play ». */
   readonly googlePlayUrl?: string;
@@ -45,10 +45,10 @@ export interface StaticProject extends Pick<
 }
 
 /**
- * A client's logo: an SVG, or a PNG whose alpha is the mark, in
- * `public/logos/clients/`, named after the project's French slug. It is drawn
- * as a CSS mask in the world's ink, so its own colours never show and
- * replacing the file swaps the logo with no code change.
+ * A client's logo: an SVG or a transparent PNG in `public/logos/clients/`,
+ * named after the project's French slug, shown in its own colours on a light
+ * plate (Stéphane, 2026-11-15). Replacing the file swaps the logo with no code
+ * change.
  */
 export interface StaticLogo {
   readonly src: string;
@@ -126,16 +126,51 @@ export const PROJECTS: readonly StaticProject[] = [
       fr: 'Je mène une équipe de 5 à 8 développeurs, de l’étude de faisabilité à la mise en production, CI/CD et instances AWS comprises.',
       en: 'I lead a team of five to eight developers, from the feasibility study to production, CI/CD and AWS instances included.',
     },
-    missionSteps: [],
-    technologies: ['angular', 'dotnet', 'aws'],
+    missionSteps: [
+      {
+        fr: 'Encadrer une équipe de 5 à 8 développeurs, planifier et piloter le projet.',
+        en: 'Leading a team of five to eight developers, planning and running the project.',
+      },
+      {
+        fr: 'Étudier la faisabilité des besoins et accompagner le client.',
+        en: 'Assessing the feasibility of each need and supporting the client.',
+      },
+      {
+        fr: 'Développer le front et le back, le back structuré en clean architecture.',
+        en: 'Building the front and the back end, the back end structured as a clean architecture.',
+      },
+      {
+        fr: 'Construire les écrans sur le design system.',
+        en: 'Building the screens on the design system.',
+      },
+      {
+        fr: 'Mettre en place le déploiement continu et gérer les instances AWS.',
+        en: 'Setting up continuous deployment and managing the AWS instances.',
+      },
+      {
+        fr: 'Maintenir et mettre en production, sur Azure et AWS.',
+        en: 'Maintaining and releasing to production, on Azure and AWS.',
+      },
+    ],
+    technologies: [
+      'angular',
+      'typescript',
+      'dotnet',
+      'python',
+      'aws',
+      'azure',
+      'terraform',
+      'ci-cd',
+      'sonarqube',
+    ],
     series: 'Web-Atrio',
     websiteUrl: 'https://www.immobilier.ch/',
     videoUrl: 'https://www.youtube.com/watch?v=5BKBQRbmZE8',
     startedAt: '2025-01-01',
     releasedAt: null,
     role: {
-      fr: 'Tech Lead front & back — Angular / .NET',
-      en: 'Front & back-end Tech Lead — Angular / .NET',
+      fr: 'Lead Tech front & back — Angular / .NET',
+      en: 'Front & back-end Lead Tech — Angular / .NET',
     },
   },
   {
@@ -156,8 +191,17 @@ export const PROJECTS: readonly StaticProject[] = [
       fr: 'La refonte complète du site de Web-Atrio, design et développement, en React.',
       en: 'A complete redesign of the Web-Atrio website, design and development, in React.',
     },
-    missionSteps: [],
-    technologies: ['react'],
+    missionSteps: [
+      {
+        fr: 'Concevoir le nouveau design.',
+        en: 'Designing the new look.',
+      },
+      {
+        fr: 'Le développer en React.',
+        en: 'Building it in React.',
+      },
+    ],
+    technologies: ['react', 'typescript', 'gitlab', 'ci-cd'],
     series: 'Web-Atrio',
     websiteUrl: 'https://web-atrio.com/',
     releasedAt: '2024-12-01',
@@ -188,8 +232,34 @@ export const PROJECTS: readonly StaticProject[] = [
       fr: 'Je l’ai menée seul : recueil du besoin, maquettes jusqu’à leur validation, développement et ajustements, puis publication sur l’App Store et Google Play.',
       en: 'I ran it on my own: gathering the needs, mockups through to sign-off, development and adjustments, then release on the App Store and Google Play.',
     },
-    missionSteps: [],
-    technologies: ['react-native'],
+    missionSteps: [
+      {
+        fr: 'Recueillir le besoin.',
+        en: 'Gathering the needs.',
+      },
+      {
+        fr: 'Concevoir les maquettes jusqu’à leur validation.',
+        en: 'Designing the mockups through to sign-off.',
+      },
+      {
+        fr: 'Développer en React Native et ajuster.',
+        en: 'Building in React Native and fine-tuning.',
+      },
+      {
+        fr: 'Publier sur l’App Store et Google Play.',
+        en: 'Releasing on the App Store and Google Play.',
+      },
+    ],
+    technologies: [
+      'react-native',
+      'typescript',
+      'redux',
+      'android',
+      'ios',
+      'google-play-console',
+      'testflight',
+      'google-analytics',
+    ],
     series: 'Web-Atrio',
     googlePlayUrl: 'https://play.google.com/store/apps/details?id=com.cir.scancir&hl=fr',
     releasedAt: '2024-09-01',
@@ -213,16 +283,37 @@ export const PROJECTS: readonly StaticProject[] = [
       fr: 'La refonte du parcours d’adhésion en ligne, avec un déploiement automatique en CI/CD.',
       en: 'The redesign of the online sign-up journey, with automatic CI/CD deployment.',
     },
-    missionSteps: [],
-    technologies: ['react'],
+    missionSteps: [
+      {
+        fr: 'Refondre le parcours d’adhésion en React.',
+        en: 'Rebuilding the sign-up journey in React.',
+      },
+      {
+        fr: 'Être le référent technique de la squad.',
+        en: 'Being the squad’s technical point of reference.',
+      },
+      {
+        fr: 'Automatiser le déploiement en CI/CD.',
+        en: 'Automating deployment with CI/CD.',
+      },
+    ],
+    technologies: [
+      'react',
+      'typescript',
+      'dotnet',
+      'azure-devops',
+      'ci-cd',
+      'sonarqube',
+      'unit-tests',
+    ],
     series: 'Web-Atrio',
     websiteUrl: 'https://www.linxea.com/',
     videoUrl: 'https://www.youtube.com/watch?v=d7Em82mCUWY',
     startedAt: '2023-01-01',
     releasedAt: '2024-06-01',
     role: {
-      fr: 'Référent technique de la squad Web-Atrio — React',
-      en: 'Technical point of reference, Web-Atrio squad — React',
+      fr: 'Référent technique de la squad — React',
+      en: 'The squad’s technical point of reference — React',
     },
   },
   {
@@ -247,8 +338,46 @@ export const PROJECTS: readonly StaticProject[] = [
       fr: 'Déploiement (Nginx, Docker, Helm) et automatisation des tests de bout en bout.',
       en: 'Deployment (Nginx, Docker, Helm) and end-to-end test automation.',
     },
-    missionSteps: [],
-    technologies: ['nextjs', 'react-native', 'docker', 'nginx', 'helm', 'dotnet'],
+    missionSteps: [
+      {
+        fr: 'Développer l’application web en Next.js.',
+        en: 'Building the web app in Next.js.',
+      },
+      {
+        fr: 'L’intégrer à l’application mobile en React Native.',
+        en: 'Integrating it into the mobile app in React Native.',
+      },
+      {
+        fr: 'Construire les écrans sur le design system.',
+        en: 'Building the screens on the design system.',
+      },
+      {
+        fr: 'Déployer avec Nginx, Docker et Helm.',
+        en: 'Deploying with Nginx, Docker and Helm.',
+      },
+      {
+        fr: 'Faire évoluer l’architecture du produit.',
+        en: 'Evolving the product’s architecture.',
+      },
+      {
+        fr: 'Automatiser les tests de bout en bout (outillage .NET).',
+        en: 'Automating end-to-end tests (.NET tooling).',
+      },
+    ],
+    technologies: [
+      'nextjs',
+      'react-native',
+      'typescript',
+      'python',
+      'datadog',
+      'segment',
+      'docker',
+      'nginx',
+      'helm',
+      'dotnet',
+      'ci-cd',
+      'unit-tests',
+    ],
     series: 'Web-Atrio',
     websiteUrl: 'https://www.ledger.com/',
     videoUrl: 'https://www.youtube.com/watch?v=e6Ioxi1UBgI',
@@ -415,11 +544,11 @@ export const ARTWORKS: readonly StaticArtwork[] = [
   {
     id: '75643113-fe5b-4f36-9880-626c333087be',
     slug: { fr: 'legos-minions', en: 'lego-minions' },
-    title: { fr: 'Légos : les Minions', en: 'Lego: the Minions' },
+    title: { fr: 'Lego : les Minions', en: 'Lego: the Minions' },
     image: {
       key: 'cgi/legos-minions.jpg',
       averageColor: '#33605d',
-      alt: { fr: 'Les Minions reconstitués en Légos', en: 'The Minions rebuilt in Lego' },
+      alt: { fr: 'Les Minions reconstitués en Lego', en: 'The Minions rebuilt in Lego' },
       width: 1200,
       height: 675,
     },

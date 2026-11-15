@@ -8,6 +8,7 @@ import {
   localizedTextSchema,
   projectSchema,
 } from '@portfolio/shared-types';
+import { youtubeVideoId } from '@portfolio/shared-types/video';
 import { describe, expect, it } from 'vitest';
 
 import { SITE_LOCALES } from '@core/i18n/site-locale/site-locale';
@@ -326,5 +327,33 @@ describe('addresses', () => {
       expect(new Set(slugs).size).toBe(slugs.length);
       for (const slug of slugs) expect(slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
     }
+  });
+});
+
+// « Voir la vidéo » leads to YouTube: the address must be one video there,
+// over https, whatever form Stéphane pastes.
+describe('youtubeVideoId', () => {
+  it.each([
+    ['https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'dQw4w9WgXcQ'],
+    ['https://youtube.com/watch?feature=share&v=dQw4w9WgXcQ&t=42', 'dQw4w9WgXcQ'],
+    ['https://m.youtube.com/watch?v=dQw4w9WgXcQ', 'dQw4w9WgXcQ'],
+    ['https://youtu.be/dQw4w9WgXcQ?t=10', 'dQw4w9WgXcQ'],
+    ['https://www.youtube.com/embed/dQw4w9WgXcQ', 'dQw4w9WgXcQ'],
+    ['https://www.youtube.com/shorts/dQw4w9WgXcQ', 'dQw4w9WgXcQ'],
+  ])('reads %s', (address, id) => {
+    expect(youtubeVideoId(address)).toBe(id);
+  });
+
+  it.each([
+    'http://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    'https://www.youtube.com.evil.example/watch?v=dQw4w9WgXcQ',
+    'https://evil.example/?u=https://youtu.be/dQw4w9WgXcQ',
+    'https://www.youtube.com/playlist?list=PL0123456789',
+    'https://www.youtube.com/watch?v=short',
+    'https://youtu.be/dQw4w9WgXcQ/../x',
+    'https://vimeo.com/123456',
+    'javascript:alert(1)',
+  ])('refuses %s', (address) => {
+    expect(youtubeVideoId(address)).toBeNull();
   });
 });

@@ -58,6 +58,10 @@ describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (slug,
   it('lists the mission and every step and tool, in order, and no empty block', async () => {
     const host = (await render(slug)).nativeElement as HTMLElement;
 
+    // The role is the eyebrow's; the Mission block never says it again.
+    expect(squash(host.querySelector('#mission-title')?.parentElement?.textContent)).not.toContain(
+      project.role.fr,
+    );
     expect(Boolean(host.querySelector('#mission-title'))).toBe(
       Boolean(project.mission || project.missionSteps.length),
     );
@@ -84,16 +88,15 @@ describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (slug,
     }
   });
 
-  it('shows the video and its button exactly when the project has a video', async () => {
+  it('links the video exactly when the project has one, and embeds nothing', async () => {
     const host = (await render(slug)).nativeElement as HTMLElement;
     const button = Array.from(host.querySelectorAll('.ctas a')).find((a) =>
       a.textContent?.includes('Voir la vidéo'),
     );
 
-    expect(Boolean(button)).toBe(Boolean(project.videoUrl));
-    expect(Boolean(host.querySelector('#video app-video-facade'))).toBe(Boolean(project.videoUrl));
-    // Nothing from YouTube in the page before a click, whatever the project.
-    expect(host.querySelector('iframe')).toBeNull();
+    expect(button?.getAttribute('href')).toBe(project.videoUrl);
+    // A link out, never an embed: nothing from YouTube is on the page.
+    expect(host.querySelector('iframe, #video')).toBeNull();
   });
 
   it('opens on its presentation visual or, for a client, on its named logo and no screenshot', async () => {
@@ -104,9 +107,9 @@ describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (slug,
     if (project.logo) {
       expect(img).toBeNull();
       expect(host.querySelector('figcaption')).toBeNull();
-      expect(logo?.getAttribute('role')).toBe('img');
-      expect(logo?.getAttribute('aria-label')).toBe(project.logo.alt.fr);
-      expect(logo?.getAttribute('style')).toContain(project.logo.src);
+      const mark = logo?.querySelector('img');
+      expect(mark?.getAttribute('src')).toBe(project.logo.src);
+      expect(mark?.getAttribute('alt')).toBe(project.logo.alt.fr);
       return;
     }
     const presentation = project.presentation!;
@@ -187,11 +190,13 @@ describe('the closing band', () => {
       'app-dev-work',
     );
 
-    expect(band?.querySelectorAll('img')).toHaveLength(0);
-    for (const logo of Array.from(band?.querySelectorAll('app-client-logo') ?? [])) {
-      expect(logo.getAttribute('aria-hidden')).toBe('true');
+    const logos = Array.from(band?.querySelectorAll('img') ?? []);
+    expect(logos).toHaveLength(5);
+    for (const logo of logos) {
+      expect(logo.closest('app-client-logo')).not.toBeNull();
+      expect(logo.getAttribute('src')).toMatch(/^\/logos\/clients\//);
+      expect(logo.getAttribute('alt')).toBe('');
     }
-    expect(band?.querySelectorAll('app-client-logo')).toHaveLength(5);
   });
 });
 
@@ -209,10 +214,7 @@ describe('the hero', () => {
       squash(s.textContent),
     );
 
-    expect(halves).toEqual([
-      'Web-Atrio · 2023 – 2024',
-      'Référent technique de la squad Web-Atrio — React',
-    ]);
+    expect(halves).toEqual(['Web-Atrio · 2023 – 2024', 'Référent technique de la squad — React']);
   });
 
   it('runs a mission still going on to today', async () => {

@@ -8,16 +8,10 @@ import { ProjectHeroComponent } from './project-hero.component';
 
 @Component({
   imports: [ProjectHeroComponent],
-  template: `<app-project-hero
-    [project]="project()"
-    rank="04"
-    total="06"
-    (videoRequested)="requests.push($event)"
-  />`,
+  template: `<app-project-hero [project]="project()" rank="04" total="07" />`,
 })
 class Host {
   readonly project = signal<StaticProject>(PROJECTS[3]);
-  readonly requests: MouseEvent[] = [];
 }
 
 async function render(project: StaticProject) {
@@ -37,18 +31,17 @@ const withVideo: StaticProject = {
 };
 
 describe('ProjectHeroComponent', () => {
-  it('sends « Voir la vidéo » to the player on this page, and lets the page take it there', async () => {
-    const fixture = await render(withVideo);
-    const host = fixture.nativeElement as HTMLElement;
+  // Stéphane, 2026-11-15: the video plays on YouTube, nothing is embedded.
+  it('sends « Voir la vidéo » to YouTube in a new tab, saying so', async () => {
+    const host = (await render(withVideo)).nativeElement as HTMLElement;
     const video = Array.from(host.querySelectorAll<HTMLAnchorElement>('.ctas a')).find((a) =>
       a.textContent?.includes('Voir la vidéo'),
     );
 
-    // An address of its own, so a new tab or a page without script still lands on it.
-    expect(video?.getAttribute('href')).toBe('/developpeur/linxea#video');
-    expect(video?.hasAttribute('target')).toBe(false);
-    video?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-    expect(fixture.componentInstance.requests).toHaveLength(1);
+    expect(video?.getAttribute('href')).toBe(withVideo.videoUrl);
+    expect(video?.getAttribute('target')).toBe('_blank');
+    expect(video?.getAttribute('rel')).toBe('noopener');
+    expect(video?.textContent).toContain('(nouvel onglet)');
   });
 
   it('draws the site as the solid button and the video as the ghost after it', async () => {
@@ -60,7 +53,7 @@ describe('ProjectHeroComponent', () => {
 
     expect(buttons).toEqual([
       { ghost: false, text: 'Voir le site (nouvel onglet)' },
-      { ghost: true, text: 'Voir la vidéo' },
+      { ghost: true, text: 'Voir la vidéo (nouvel onglet)' },
     ]);
   });
 

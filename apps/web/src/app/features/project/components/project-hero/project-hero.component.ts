@@ -1,5 +1,4 @@
-import { Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { introBase } from '@common/utils/hero-letters';
@@ -32,8 +31,6 @@ export class ProjectHeroComponent {
   readonly project = input.required<StaticProject>();
   readonly rank = input.required<string>();
   readonly total = input.required<string>();
-  /** « Voir la vidéo » pressed: the page brings its player into view. */
-  readonly videoRequested = output<MouseEvent>();
 
   protected readonly eyebrow = computed(() => {
     const project = this.project();
@@ -43,13 +40,4 @@ export class ProjectHeroComponent {
   protected readonly entranceBase = computed(() => introBase(this.heading().nameText));
   protected readonly links = computed(() => projectLinks(this.project()));
   protected readonly devPath = PATHS.dev;
-  // A plain href, so it carries the tree's base (`/en/`) itself.
-  protected readonly videoHref = computed(() =>
-    this.location.prepareExternalUrl(`${PATHS.dev}/${inLocale(this.project().slug)}#video`),
-  );
-  private readonly location = inject(Location);
-
-  protected requestVideo(event: MouseEvent): void {
-    this.videoRequested.emit(event);
-  }
 }

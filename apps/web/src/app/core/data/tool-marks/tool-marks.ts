@@ -27,6 +27,16 @@ const MARKS: Partial<Record<ToolSlug, string>> = {
   nextjs: simpleIcon('nextdotjs'),
   nginx: simpleIcon('nginx'),
   helm: simpleIcon('helm'),
+  gitlab: simpleIcon('gitlab'),
+  sonarqube: simpleIcon('sonarqube'),
+  python: simpleIcon('python'),
+  datadog: simpleIcon('datadog'),
+  terraform: simpleIcon('terraform'),
+  redux: simpleIcon('redux'),
+  android: simpleIcon('android'),
+  ios: simpleIcon('ios'),
+  'google-play-console': simpleIcon('googleplay'),
+  'google-analytics': simpleIcon('googleanalytics'),
   docker: simpleIcon('docker'),
   git: simpleIcon('git'),
   aws: simpleIcon('amazonwebservices'),
@@ -70,7 +80,9 @@ export function toolView(slug: ToolSlug, names: 'registry' | 'stack' = 'registry
   const mark = MARKS[slug];
   return {
     slug,
-    label: (names === 'stack' ? STACK_NAMES[slug] : undefined) ?? entry.label,
+    label:
+      (names === 'stack' ? STACK_NAMES[slug] : undefined) ??
+      (slug === 'unit-tests' ? $localize`:@@tool.unitTests:Tests unitaires` : entry.label),
     mask: mark ? `url('${mark}')` : null,
   };
 }

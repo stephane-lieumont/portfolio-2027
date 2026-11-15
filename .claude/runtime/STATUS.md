@@ -23,62 +23,87 @@ Potes web app is a step of the mobile app's mission; their pages, routes,
 prerender expectations and seed mapping went with them.
 
 - Model (`@portfolio/shared-types`, a contract change the API has not
-  followed yet): `Project` gains `logo` (an SVG asset), `googlePlayUrl`
-  (« Voir sur Google Play », Google Play app pages only) and `startedAt`;
-  `presentationAsset`, `presentationCaption` and `mission` become nullable,
-  `missionSteps` may be empty, `releasedAt` is null for work still going on
-  (listed first, read « aujourd'hui »). Registry: `react-native`, `nextjs`,
-  `nginx`, `helm` (Simple Icons marks; React Native uses React's). The Drizzle
-  schema still has `released_at NOT NULL` and no logo column: a migration is
-  due when the API serves projects. Nothing enforces « a logo, or a cover and
-  a presentation » in the schema (Zod 4 refinements block `.pick`/`.omit`);
+  followed yet): `Project` gains `logo` (an SVG or PNG asset),
+  `googlePlayUrl` (« Voir sur Google Play », Google Play app pages only) and
+  `startedAt`; `presentationAsset`, `presentationCaption` and `mission` become
+  nullable, `missionSteps` may be empty, `releasedAt` is null for work still
+  going on (listed first, read « aujourd'hui »). Registry: `react-native`,
+  `nextjs`, `nginx`, `helm`, `python`, `datadog`, `terraform`, `sonarqube`,
+  `redux`, `android`, `ios`, `google-play-console` (the Google Play mark),
+  `testflight` and `segment` (name only), `google-analytics`
+  (Simple Icons marks; React Native uses React's), `azure`, `azure-devops`
+  (no longer in Simple Icons), `ci-cd`, `unit-tests` (« Tests unitaires »,
+  translated in the front end) shown by name only. The Drizzle schema still
+  has `released_at NOT NULL` and no logo column: a migration is due when the
+  API serves projects. Nothing enforces « a logo, or a cover and a
+  presentation » in the schema (Zod 4 refinements block `.pick`/`.omit`);
   `static-content.spec.ts` does.
-- A reference shows its client's logo, never a screenshot: one ink mask
-  (`ClientLogoComponent`) covering the plate, sized by equal bounding-box
-  area from the file's proportions (`logoWidth`, design-expert spec): card
-  4:3 plate at 6% ink, logo in `--world-ink` (12.8:1); project page, the ink
-  plate with the lean cut, logo in `--world-ground` (16.5:1), from the content
-  column at 900px+, `clamp(320px, 36vw, 560px)` tall; the video facade's
-  poster is the same plate (logo raised, play button below). Card caption:
-  title and period (period under the title below a 360px card), the role
-  (« Chez Web-Atrio · … » on the four client missions), the tools. Pages with
-  one sentence of copy (Web-Atrio, Linxea) show the context and no Mission
-  block. Hero links: site, video, then Google Play. Series « Web-Atrio »
-  groups the five Web-Atrio entries; a series band now reads « Chez
-  Web-Atrio » / « Chez Case Tes Potes » (EN « At … »), not « Série ».
-- Logos, all supplied by Stéphane on 2026-11-15, in
+- A reference shows its client's logo **in its own colours** (Stéphane,
+  reversing the monochrome ink the same day), never a screenshot: an `<img>`
+  (`ClientLogoComponent`) on the light presentation plate (`--color-sand-100`,
+  the same in both worlds), sized by equal bounding-box area from the file's
+  proportions (`logoWidth`, design-expert spec). On the card the plate is the
+  4:3 frame, hover and focus grey the siblings exactly as the Case Tes Potes
+  pictures; on the page it is the lean-cut opening plate, from the content
+  column at 900px+, `clamp(320px, 36vw, 560px)` tall. Card caption: title and
+  period (under the title below a 360px card), the role (« Chez Web-Atrio · »
+  on the four client missions), at most six tool marks then « +N » (the page
+  lists them all). The Mission block no longer restates the role (it is the
+  hero's eyebrow, on every project page); it shows the mission sentence and
+  the steps, written from the CV and Stéphane's messages, absent when neither
+  exists. Series « Web-Atrio » groups the five Web-Atrio entries; a series
+  band reads « Chez Web-Atrio » / « Chez Case Tes Potes » (EN « At … »).
+- Measured on the light plate (#f3eee8), every opaque pixel of each logo at
+  its displayed size, Chrome, 320 and 1440px: Ledger 18.2:1, Linxea (dark
+  ink) 13.4:1 at its lightest, immobilier.ch's grey and red ≥ 4.3:1 (its
+  white Swiss cross, 1.15:1, sits inside the red square and reads as a
+  cut-out), CIR's lightest orange 2.6:1 (under 3:1 on 1% of its pixels, its
+  gradient's highlights). **Web-Atrio's yellow leaf is 1.39:1** (17.5% of the
+  mark): it does not reach 3:1 on the light plate. The mark stays legible by
+  its red and blue shapes, and the company is named beside it in text (card
+  title, page h1), so nothing depends on the yellow; a darker or outlined
+  version from Stéphane would fix it. Logo sizes: immobilier.ch 178px wide on
+  a 320px card, 293px on a 1440px card.
+- **Videos are links out** (Stéphane: « pour la vidéo je préfère uniquement
+  le bouton »): « Voir la vidéo » opens YouTube in a new tab, like « Voir le
+  site » and « Voir sur Google Play » (that order). No « Vidéo » block, no
+  facade, no player, nothing third-party on any page; the facade component
+  and the embed helper are deleted, ADR-0016 carries a dated note.
+- Logos, supplied by Stéphane, in
   `apps/web/public/logos/clients/<French slug>.svg|png` (README there):
-  replacing a file swaps the logo with no code change. Ledger is not in
-  Simple Icons; his file from Ledger's site is used. immobilier.ch's white
-  Swiss cross was merged into its red square as an even-odd hole so it stays
-  cut out in one ink; Linxea's and immobilier.ch's embedded styles removed;
-  CIR is an alpha PNG made from his JPG. Web-Atrio's three shapes stay
-  separate in one ink (checked at 1440px on the page's plate).
-- Measured in Chrome (dev server, 320/390/900/1440): no horizontal overflow
-  on the dev page or any reference page; immobilier.ch logo 178px wide on a
-  320px card, 293px on a 1440px card, 428px on its 1440px page, 121px in the
-  900px three-column band (the smallest); Web-Atrio 178px on its 1440px page;
-  no request to another origin before the play button, the nocookie player
-  after it.
-- Dev facts: « Rôle » reads « Aujourd'hui — Tech Lead front & back, équipe de
-  5 à 8 ». 3D lede: « Sans école, avant le développement. » (« sans
-  commande » gone); a « Distinction » fact: « Escart Wild, distingué par
-  TDT3D », no link. No « 3D à plein temps » claim remains (it lived in the
-  removed projects).
+  replacing a file swaps the logo with no code change (update `width`/
+  `height` if its proportions change). immobilier.ch, Web-Atrio and Ledger
+  are his files unchanged; CIR is a transparent colour PNG made from his JPG.
+  **Awaited: a colour Linxea logo** — his file is the white version,
+  invisible on the light plate, filled here in `--color-neutral-950`.
+- Dev world: hook lede « Angular et .NET. Une rigueur d'ingénieur, un œil de
+  graphiste 3D. »; facts « Rôle — Aujourd'hui — Lead Tech front & back,
+  équipe de 5 à 8 », « Équipe — Jusqu'à 8 développeurs encadrés » (replacing
+  « Stack »). 3D world: lede « Sans école, avant le développement. »
+  (« sans commande » gone); « Depuis — 2010, en autodidacte » (replacing
+  « Période — 2014 – 2016 »); « Distinction — Escart Wild, distingué par
+  TDT3D », no link. « Légos : les Minions » is « Lego : les Minions » (slugs
+  unchanged). No « 3D à plein temps » claim remains.
+- Tool marks per reference are those of his CV and his messages of
+  2026-11-15 (Web-Atrio's GitLab, Linxea's, Ledger's, immobilier.ch's and
+  Scancir's stacks); practices he named (design system, clean architecture,
+  front and back development, continuous deployment) are in the mission
+  steps, not marks. Any further technology awaits his confirmation.
 - **English copy of all of the above is draft for PR 3**, written from the
-  French with no new claim: roles (« Front & back-end Tech Lead », « Technical
-  point of reference, Web-Atrio squad », « Solo, end to end »), summaries,
-  « Application-management tools for real-estate agencies », « At Web-Atrio »,
-  « today », « View on Google Play », « Recognition ».
+  French with no new claim (roles, summaries, steps, « At Web-Atrio »,
+  « today », « View on Google Play », « Unit tests », « more tools »,
+  « Since — 2010, self-taught », « Team — Up to eight developers led »).
 - **Orphaned in the bucket** (left alone, no longer referenced):
   `projects/case-tes-potes-web-app.jpg`, `projects/kasa-openclassrooms.jpg`,
   `projects/portfolio-3d-2018.jpg`, `projects/pixmodels.jpg` and their
   `-presentation.jpg`, with their derived `-<width>.webp` variants.
-- Not done: a reference's logo card has no picture to decode, so its cut-in
-  reveal starts at once; the motion expert has not reviewed it. The 2024
-  missions' months (only years are sourced) are set to keep Stéphane's order.
-  Older notes below about `/developpeur/pixmodels`, `3d-portfolio-2018` or
-  « six plates » describe pages that no longer exist.
+- Not done: a logo card has no picture to wait for, so its cut-in reveal
+  starts at once; the motion expert has not reviewed it. The 2024 missions'
+  months (only years are sourced) are set to keep Stéphane's order. Some
+  mission sentences restate a step (immobilier.ch's team, CIR's sequence):
+  for the content review. Older notes below about `/developpeur/pixmodels`,
+  `3d-portfolio-2018`, « six plates » or the video facade describe what no
+  longer exists.
 
 **App layering (ADR-0018, `refactor/app-architecture`)** — `apps/web/src/app`
 is split into `core/` (services, stores, i18n, config, static data), `shared/`
@@ -363,7 +388,8 @@ and nothing else differs. Same fonts loaded, page heights equal (3016 /
   shown**; it stays the meta description (Stéphane, 2026-11-15).
 - Mission (role set large, mission, numbered steps), Outils (marks as masks,
   name only where no mark exists: Adobe XD, Jira, MongoDB, PHP).
-- Vidéo, when there is one: a facade (ADR-0016) — the presentation visual as
+- (Superseded 2026-11-15, see « Client references »: videos are now a link to
+  YouTube and this block is gone.) Vidéo, when there is one: a facade (ADR-0016) — the presentation visual as
   poster and a real `<button>` « Lire la vidéo : <titre> »; the press swaps in
   the `youtube-nocookie.com` player, playing, focus moved into it. « Voir la
   vidéo » jumps to it and focuses the button. No project has a video yet; with
@@ -666,9 +692,9 @@ copy is reviewed once, after the six PRs). Collected so far:
 
 - Project page, written here and not on the prototype: the two presentation
   alt texts; « Autres réalisations » (shown by no page today: every project is
-  in a series); the « Vidéo » block's « Lire la vidéo : … », « Vid. » and
-  « Regarder sur YouTube »; the logos' alt texts (« Logo de Ledger »…); the
-  role prefix « Chez Web-Atrio · ».
+  in a series); the logos' alt texts (« Logo de Ledger »…); the role prefix
+  « Chez Web-Atrio · »; « +N autres outils »; the mission steps written from
+  the CV and Stéphane's messages.
 
 - **Stack « Maîtrise » points rewritten generically on 2026-11-15**
   (`content/mastery-points`, Stéphane's brief: « pour les technos, trouve des

@@ -3,12 +3,7 @@
 @for (project of [project()]; track project.id) {
   <div class="wrap">
     <article aria-labelledby="fiche-title">
-      <app-project-hero
-        [project]="project"
-        [rank]="rank()"
-        [total]="total"
-        (videoRequested)="toVideo($event)"
-      />
+      <app-project-hero [project]="project" [rank]="rank()" [total]="total" />
 
       @if (project.logo; as logo) {
         <div class="fig">
@@ -53,13 +48,12 @@
         <app-scrub-sentence data-reveal-part [text]="project.context | inLocale" [ramp]="ramp" />
       </section>
 
-      <!-- A reference told in one sentence has its context and no mission:
-           the role is already in the hero, so the block would be empty. -->
+      <!-- The role is the hero's eyebrow, never restated here: the block opens
+           on what was done, and is absent when nothing is sourced. -->
       @if (project.mission || project.missionSteps.length) {
         <section class="block" aria-labelledby="mission-title" appWorldReveal="ruled">
           <div class="block__label" data-reveal-part>
             <h2 id="mission-title" i18n="@@project.mission">Mission</h2>
-            <p class="block__big">{{ project.role | inLocale }}</p>
           </div>
           <div>
             @if (project.mission; as mission) {
@@ -95,34 +89,6 @@
           }
         </ul>
       </section>
-
-      @if (project.videoUrl; as videoUrl) {
-        <section
-          class="block video"
-          id="video"
-          aria-labelledby="video-title"
-          appWorldReveal="ruled"
-        >
-          <h2 class="block__label" id="video-title" data-reveal-part i18n="@@project.video">
-            Vidéo
-          </h2>
-          <div data-reveal-part>
-            <app-video-facade
-              [url]="videoUrl"
-              [title]="project.title | inLocale"
-              [poster]="project.presentation ?? null"
-              [logo]="project.logo ?? null"
-            />
-            <p class="fig__cap">
-              <span i18n="@@project.vid">Vid.</span
-              ><a [href]="videoUrl" target="_blank" rel="noopener"
-                ><ng-container i18n="@@project.watchOnYoutube">Regarder sur YouTube</ng-container
-                ><span class="visually-hidden" i18n="@@newTab"> (nouvel onglet)</span></a
-              >
-            </p>
-          </div>
-        </section>
-      }
     </article>
 
     <app-dev-work

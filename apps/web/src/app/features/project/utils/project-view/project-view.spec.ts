@@ -42,14 +42,14 @@ describe('projectLinks', () => {
     ).toEqual([]);
   });
 
-  it('puts the site first, then the video, which stays on the page', () => {
+  it('puts the site first, then the video, on YouTube', () => {
     const links = projectLinks(
       variant({ websiteUrl: '/demo/x', videoUrl: 'https://youtu.be/dQw4w9WgXcQ' }),
     );
 
     expect(links.map((l) => [l.label, l.href])).toEqual([
       ['Voir le site', '/demo/x'],
-      ['Voir la vidéo', '#video'],
+      ['Voir la vidéo', 'https://youtu.be/dQw4w9WgXcQ'],
     ]);
   });
 
@@ -64,7 +64,7 @@ describe('projectLinks', () => {
     );
 
     expect(links.map((l) => [l.kind, l.label, l.href])).toEqual([
-      ['video', 'Voir la vidéo', '#video'],
+      ['video', 'Voir la vidéo', 'https://youtu.be/dQw4w9WgXcQ'],
       ['store', 'Voir sur Google Play', store],
     ]);
   });

@@ -38,7 +38,7 @@ export const websiteUrlSchema = z
     'expected a root-relative path or an https URL',
   );
 
-/** A YouTube video, embedded on the page after a click (ADR-0016). */
+/** A YouTube video, « Voir la vidéo », opened on YouTube in a new tab (ADR-0016's note). */
 export const videoUrlSchema = z
   .string()
   .trim()

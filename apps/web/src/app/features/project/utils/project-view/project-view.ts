@@ -35,7 +35,11 @@ export interface ProjectLink {
   readonly href: string;
 }
 
-/** The hero's buttons: only what the project has — the site, the video, then the store. */
+/**
+ * The hero's buttons: only what the project has — the site, the video, then
+ * the store — each opening in a new tab. The video plays on YouTube, never on
+ * the page (Stéphane, 2026-11-15; ADR-0016's note).
+ */
 export function projectLinks(project: StaticProject): ProjectLink[] {
   const links: ProjectLink[] = [];
   if (project.websiteUrl)
@@ -48,7 +52,7 @@ export function projectLinks(project: StaticProject): ProjectLink[] {
     links.push({
       kind: 'video',
       label: $localize`:@@project.watchVideo:Voir la vidéo`,
-      href: '#video',
+      href: project.videoUrl,
     });
   if (project.googlePlayUrl)
     links.push({

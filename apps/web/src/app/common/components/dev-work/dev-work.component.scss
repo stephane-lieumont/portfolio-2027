@@ -74,12 +74,12 @@
   border-radius: 4px;
 }
 
-// A client reference: its logo in the world's ink on the plate's default
-// tone, the whole plate its box so the reveal and the hover cover it as they
-// cover a picture.
+// A client reference: its logo in its own colours on the light plate the
+// presentation visuals stand on, in either world; the whole plate is its box,
+// so the reveal and the hover cover it as they cover a picture.
 .row__frame--logo {
+  --plate-tone: var(--color-sand-100);
   container-type: size;
-  color: var(--world-ink);
 }
 
 .row__img,

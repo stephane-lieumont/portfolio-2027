@@ -60,7 +60,7 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
     roleWord: { fr: 'LEAD TECH', en: 'LEAD TECH' },
     eyebrowTools: ['angular', 'dotnet', 'typescript'],
     lede: {
-      lead: { fr: 'Lead Tech, Angular et .NET.', en: 'Lead Tech, Angular and .NET.' },
+      lead: { fr: 'Angular et .NET.', en: 'Angular and .NET.' },
       text: {
         fr: 'Une rigueur d’ingénieur, un œil de graphiste 3D.',
         en: 'An engineer’s rigour, a 3D artist’s eye.',
@@ -74,15 +74,15 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
       {
         label: { fr: 'Rôle', en: 'Role' },
         value: {
-          fr: 'Aujourd’hui — Tech Lead front & back, équipe de 5 à 8',
-          en: 'Today — front & back-end Tech Lead, a team of five to eight',
+          fr: 'Aujourd’hui — Lead Tech front & back, équipe de 5 à 8',
+          en: 'Today — front & back-end Lead Tech, a team of five to eight',
         },
       },
       {
-        label: { fr: 'Stack', en: 'Stack' },
+        label: { fr: 'Équipe', en: 'Team' },
         value: {
-          fr: 'Angular, TypeScript, RxJS/Signals, .NET/C#',
-          en: 'Angular, TypeScript, RxJS/Signals, .NET/C#',
+          fr: 'Jusqu’à 8 développeurs encadrés',
+          en: 'Up to eight developers led',
         },
       },
       {
@@ -121,7 +121,10 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
         label: { fr: 'Texture', en: 'Texturing' },
         value: { fr: 'Substance Painter, Photoshop', en: 'Substance Painter, Photoshop' },
       },
-      { label: { fr: 'Période', en: 'Period' }, value: { fr: '2014 – 2016', en: '2014 – 2016' } },
+      {
+        label: { fr: 'Depuis', en: 'Since' },
+        value: { fr: '2010, en autodidacte', en: '2010, self-taught' },
+      },
       {
         label: { fr: 'Distinction', en: 'Recognition' },
         value: { fr: 'Escart Wild, distingué par TDT3D', en: 'Escart Wild, recognised by TDT3D' },

@@ -39,11 +39,11 @@
   clip-path: polygon(var(--lean) 0, 100% 0, 100% 100%, 0 100%);
 }
 
-// A client reference: its logo cut out of the plate in the world's ground,
-// on the same ink plate and lean as a presentation visual.
+// A client reference: its logo in its own colours on the light plate and
+// lean of a presentation visual, light in either world.
 .fig__ground--logo {
+  --plate-tone: var(--color-sand-100);
   container-type: size;
-  color: var(--world-ground);
 }
 
 // Small screens: the shot is wider than the screen and bleeds off both sides,
@@ -142,18 +142,6 @@ h2.block__label {
   color: var(--world-muted);
 }
 
-.block__big {
-  margin: 10px 0 0;
-  font-size: clamp(26px, 3vw, 40px);
-  font-weight: 600;
-  font-stretch: 75%;
-  font-variation-settings: 'wdth' 75;
-  letter-spacing: -0.01em;
-  line-height: 1;
-  text-transform: uppercase;
-  text-wrap: balance;
-}
-
 .scrub {
   font-size: clamp(26px, 3.4vw, 46px);
   max-width: 24ch;
@@ -227,10 +215,6 @@ h2.block__label {
   -webkit-mask: var(--mask) center / contain no-repeat;
   mask: var(--mask) center / contain no-repeat;
   forced-color-adjust: none;
-}
-
-.video .fig__cap {
-  grid-template-columns: 32px 1fr;
 }
 
 .closing {
