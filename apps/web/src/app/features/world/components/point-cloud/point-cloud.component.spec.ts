@@ -5,9 +5,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { signal } from '@angular/core';
 
-import { FrameLoopService, type FrameCallback } from '@core/services/motion/frame-loop.service';
-import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
-import { CloudModel, CloudStore } from '@core/stores/cloud.store';
+import {
+  FrameLoopService,
+  type FrameCallback,
+} from '@core/services/motion/frame-loop/frame-loop.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
+import { CloudModel, CloudStore } from '@core/stores/cloud/cloud.store';
 import { PointCloudComponent } from './point-cloud.component';
 
 describe('PointCloudComponent across a world switch', () => {

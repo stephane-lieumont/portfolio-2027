@@ -1,5 +1,5 @@
 import { type Glyph, nameWords } from '@common/utils/hero-letters';
-import type { StaticProject } from '@core/data/static-content';
+import type { StaticProject } from '@core/data/static-content/static-content';
 
 export interface QualifierGlyph {
   readonly char: string;

@@ -4,8 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Lenis from 'lenis';
 
-import { FrameLoopService } from './frame-loop.service';
-import { ReducedMotionService } from './reduced-motion.service';
+import { FrameLoopService } from '@core/services/motion/frame-loop/frame-loop.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
 import { SmoothScrollService } from './smooth-scroll.service';
 
 describe('SmoothScrollService', () => {

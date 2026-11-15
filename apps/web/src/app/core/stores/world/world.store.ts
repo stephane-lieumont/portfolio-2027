@@ -4,7 +4,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import type { WorldKey } from '@portfolio/shared-types';
 import { filter } from 'rxjs';
 
-import { SITE_LOCALE, type SiteLocale, pageAt } from '@core/i18n/site-locale';
+import { SITE_LOCALE, type SiteLocale, pageAt } from '@core/i18n/site-locale/site-locale';
 
 /** The path alone: no query, no fragment, no trailing slash except the root's. */
 export function pathOf(url: string): string {

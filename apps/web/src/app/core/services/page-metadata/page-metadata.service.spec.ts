@@ -5,15 +5,15 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { API_BASE_URL } from '@core/config/api.config';
-import { MEDIA_BASE_URL } from '@core/config/media.config';
-import { PROJECTS } from '@core/data/static-content';
-import { pageRef } from '@core/i18n/site-locale';
+import { MEDIA_BASE_URL } from '@core/config/media-config/media.config';
+import { PROJECTS } from '@core/data/static-content/static-content';
+import { pageRef } from '@core/i18n/site-locale/site-locale';
 import { PageMetadataService, alternates } from './page-metadata.service';
 
 // The real route table is what this spec checks the titles against; it
 // belongs to the app's root, which has no alias.
 // eslint-disable-next-line no-restricted-imports
-import { routes } from '../../app.routes';
+import { routes } from '../../../app.routes';
 
 const PAGES = [
   '/developpeur',

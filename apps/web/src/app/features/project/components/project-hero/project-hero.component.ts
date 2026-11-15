@@ -3,10 +3,10 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output } f
 import { RouterLink } from '@angular/router';
 
 import { introBase } from '@common/utils/hero-letters';
-import type { StaticProject } from '@core/data/static-content';
+import type { StaticProject } from '@core/data/static-content/static-content';
 import { InLocalePipe, inLocale } from '@core/i18n/in-locale.pipe';
-import { PATHS } from '@core/i18n/site-locale';
-import { heroTitle, projectLinks } from '@features/project/utils/project-view';
+import { PATHS } from '@core/i18n/site-locale/site-locale';
+import { heroTitle, projectLinks } from '@features/project/utils/project-view/project-view';
 import { ButtonComponent } from '@shared/components/kit-ui/button/button.component';
 
 /**

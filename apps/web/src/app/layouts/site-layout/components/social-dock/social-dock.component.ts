@@ -3,8 +3,8 @@ import { RouterLink } from '@angular/router';
 
 import { ICONS, type Icon } from '@common/constants/icons';
 import { NETWORK_NAMES } from '@common/constants/network-names';
-import { SITE_SETTINGS, STATIC_FILES } from '@core/data/world-content';
-import { PATHS } from '@core/i18n/site-locale';
+import { SITE_SETTINGS, STATIC_FILES } from '@core/data/world-content/world-content';
+import { PATHS } from '@core/i18n/site-locale/site-locale';
 
 export interface DockLink {
   readonly key: string;

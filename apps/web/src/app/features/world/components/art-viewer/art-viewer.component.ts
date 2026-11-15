@@ -19,9 +19,9 @@ import {
   EASE_SETTLE,
   diagonalCut,
 } from '@common/directives/world-reveal/world-reveal.directive';
-import type { ToolView } from '@core/data/tool-marks';
-import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
-import { SmoothScrollService } from '@core/services/motion/smooth-scroll.service';
+import type { ToolView } from '@core/data/tool-marks/tool-marks';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
+import { SmoothScrollService } from '@core/services/motion/smooth-scroll/smooth-scroll.service';
 
 export interface ViewerPiece {
   readonly slug: string;

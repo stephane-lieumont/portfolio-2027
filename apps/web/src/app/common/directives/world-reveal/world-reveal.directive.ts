@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import { isPainted, painted } from '@common/directives/plate-image/plate-image.directive';
-import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
 
 /** The sweep's lean: 20% of the viewport width across the viewport height. */
 export const SWEEP_LEAN = 0.2;

@@ -4,12 +4,12 @@ import { RouterLink } from '@angular/router';
 
 import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
 import { WorldRevealDirective } from '@common/directives/world-reveal/world-reveal.directive';
-import { workCount } from '@common/utils/work-count';
-import { mediaSrcset, mediaUrl } from '@core/config/media.config';
-import { PROJECTS, type StaticProject } from '@core/data/static-content';
-import { toolView } from '@core/data/tool-marks';
+import { workCount } from '@common/utils/work-count/work-count';
+import { mediaSrcset, mediaUrl } from '@core/config/media-config/media.config';
+import { PROJECTS, type StaticProject } from '@core/data/static-content/static-content';
+import { toolView } from '@core/data/tool-marks/tool-marks';
 import { InLocalePipe } from '@core/i18n/in-locale.pipe';
-import { PATHS } from '@core/i18n/site-locale';
+import { PATHS } from '@core/i18n/site-locale/site-locale';
 
 /**
  * The developer world's work: a sticky label column, then the projects as

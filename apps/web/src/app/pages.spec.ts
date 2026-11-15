@@ -8,7 +8,7 @@ import axe from 'axe-core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { API_BASE_URL } from '@core/config/api.config';
-import { MEDIA_BASE_URL } from '@core/config/media.config';
+import { MEDIA_BASE_URL } from '@core/config/media-config/media.config';
 
 import { ContactComponent } from '@features/contact/views/contact/contact.component';
 import { WorldPageComponent } from '@features/world/views/world-page/world-page.component';

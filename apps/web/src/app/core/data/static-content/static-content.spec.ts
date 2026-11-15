@@ -7,7 +7,7 @@ import {
 } from '@portfolio/shared-types';
 import { describe, expect, it } from 'vitest';
 
-import { SITE_LOCALES } from '@core/i18n/site-locale';
+import { SITE_LOCALES } from '@core/i18n/site-locale/site-locale';
 import { ARTWORKS, PROJECTS, type StaticImage } from './static-content';
 
 const IMAGES: readonly [string, StaticImage][] = [

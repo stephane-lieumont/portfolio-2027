@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { ARTWORKS, PROJECTS } from '@core/data/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
 import { MEDIA_BASE_URL, mediaSrcset } from './media.config';
 
 describe('mediaSrcset', () => {

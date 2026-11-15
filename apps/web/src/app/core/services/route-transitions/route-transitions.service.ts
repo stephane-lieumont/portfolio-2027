@@ -3,9 +3,9 @@ import { NavigationStart, Router, ViewTransitionInfo } from '@angular/router';
 import type { WorldKey } from '@portfolio/shared-types';
 import { filter } from 'rxjs';
 
-import { SITE_LOCALE, type SiteLocale, pageAt } from '@core/i18n/site-locale';
-import { SmoothScrollService } from '@core/services/motion/smooth-scroll.service';
-import { WorldStore, pathOf } from '@core/stores/world.store';
+import { SITE_LOCALE, type SiteLocale, pageAt } from '@core/i18n/site-locale/site-locale';
+import { SmoothScrollService } from '@core/services/motion/smooth-scroll/smooth-scroll.service';
+import { WorldStore, pathOf } from '@core/stores/world/world.store';
 
 export interface RouteEnd {
   readonly path: string;

@@ -9,7 +9,7 @@ import {
   input,
 } from '@angular/core';
 
-import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
 
 /** The arrival of a picture: leaves gently, lands softly (traps.md: never y=1 at the start). */
 export const EASE_ARRIVE = 'cubic-bezier(0.45, 0, 0.25, 1)';

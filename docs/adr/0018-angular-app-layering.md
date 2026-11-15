@@ -21,7 +21,7 @@ Five layers under `src/app`, each importing only the layers below it:
 
 The rest of the decision:
 
-- **Angular suffixes stay in file and class names**: `world-page.component.ts`, `contact.service.ts`, `world.store.ts`, `plate-image.directive.ts`, `in-locale.pipe.ts`; `WorldPageComponent`, `ContactService`, `WorldStore`. One folder per component. Selectors are unchanged (`app-…`): `src/styles/` keys rules on them.
+- **Angular suffixes stay in file and class names**: `world-page.component.ts`, `contact.service.ts`, `world.store.ts`, `plate-image.directive.ts`, `in-locale.pipe.ts`; `WorldPageComponent`, `ContactService`, `WorldStore`. Anything made of more than one file (code and its spec, a component's template and styles) gets its own folder named after it — services, stores and helpers included, not only components (Stéphane, 2026-11-15); a lone file may sit flat. Selectors are unchanged (`app-…`): `src/styles/` keys rules on them.
 - **Aliases** `@core/*`, `@shared/*`, `@common/*`, `@features/*`, `@layouts/*` in `tsconfig.json`. An import that leaves its folder uses one; a relative path stays inside a folder.
 - **ESLint enforces the direction** (`no-restricted-imports`, part of `pnpm verify`): one pattern per layer for the aliases it must not use, and, everywhere, a refusal of relative paths that climb (`../`), since a climbing path would reach any layer without naming an alias.
 - **The button is an attribute component on the anchor** (`<a appButton class="btn">`): a call to action that goes somewhere stays a link, with its `routerLink`, `href` and `target`, and no wrapper element. Its styles are `:host` rules at one class of specificity, which a caller's `.btn` rule extends (the project hero's 44px height, the 404's top margin).

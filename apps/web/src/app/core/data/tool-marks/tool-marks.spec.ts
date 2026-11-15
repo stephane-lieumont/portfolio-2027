@@ -5,7 +5,7 @@ import { SOFTWARE, TECHNOLOGIES } from '@portfolio/shared-types/registries';
 import { describe, expect, it } from 'vitest';
 
 import { toolView } from './tool-marks';
-import { WORLD_PAGES, WORLD_STACKS } from './world-content';
+import { WORLD_PAGES, WORLD_STACKS } from '@core/data/world-content/world-content';
 
 const PUBLIC = join(process.cwd(), 'public');
 

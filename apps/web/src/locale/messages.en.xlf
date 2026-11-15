@@ -18,7 +18,7 @@
           <context context-type="linenumber">10,11</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/core/services/page-metadata.service.ts</context>
+          <context context-type="sourcefile">src/app/core/services/page-metadata/page-metadata.service.ts</context>
           <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
@@ -382,7 +382,7 @@
         <source>Voir le site</source>
         <target state="translated">Visit the site</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/utils/project-view.ts</context>
+          <context context-type="sourcefile">src/app/features/project/utils/project-view/project-view.ts</context>
           <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
@@ -390,7 +390,7 @@
         <source>Voir la vidéo</source>
         <target state="translated">Watch the video</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/utils/project-view.ts</context>
+          <context context-type="sourcefile">src/app/features/project/utils/project-view/project-view.ts</context>
           <context context-type="linenumber">44</context>
         </context-group>
       </trans-unit>
@@ -398,7 +398,7 @@
         <source>Série · <x id="series" equiv-text="project.series"/></source>
         <target state="translated">Series · <x id="series" equiv-text="project.series"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/utils/project-view.ts</context>
+          <context context-type="sourcefile">src/app/features/project/utils/project-view/project-view.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
       </trans-unit>
@@ -406,7 +406,7 @@
         <source>Autres réalisations</source>
         <target state="translated">Other work</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/utils/project-view.ts</context>
+          <context context-type="sourcefile">src/app/features/project/utils/project-view/project-view.ts</context>
           <context context-type="linenumber">80</context>
         </context-group>
       </trans-unit>

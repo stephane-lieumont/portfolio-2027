@@ -8,9 +8,9 @@ import {
   STATIC_ASSETS,
   WORLD_PAGES,
   WORLD_STACKS,
-} from '../src/app/core/data/world-content.ts';
+} from '../src/app/core/data/world-content/world-content.ts';
 import { SECTIONS, SITE_ORIGIN } from '../src/app/core/i18n/site-paths.ts';
-import { ARTWORKS, PROJECTS } from '../src/app/core/data/static-content.ts';
+import { ARTWORKS, PROJECTS } from '../src/app/core/data/static-content/static-content.ts';
 
 // Both worlds open on the name, set by the page itself.
 const NAME = 'Stéphane Lieumont';

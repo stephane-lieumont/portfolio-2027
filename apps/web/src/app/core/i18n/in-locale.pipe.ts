@@ -1,7 +1,7 @@
 import { Pipe, type PipeTransform } from '@angular/core';
 import type { Localized } from '@portfolio/shared-types';
 
-import { SITE_LOCALE } from './site-locale';
+import { SITE_LOCALE } from '@core/i18n/site-locale/site-locale';
 
 /**
  * A field in this build's language. Each tree is built with its own locale

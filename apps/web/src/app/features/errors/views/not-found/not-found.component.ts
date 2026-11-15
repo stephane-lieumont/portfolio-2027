@@ -9,7 +9,7 @@ import {
 import { RouterLink } from '@angular/router';
 
 import { NAV } from '@core/data/nav-items';
-import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
 import { ButtonComponent } from '@shared/components/kit-ui/button/button.component';
 
 /**

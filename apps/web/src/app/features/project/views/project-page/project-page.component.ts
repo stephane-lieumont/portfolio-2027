@@ -15,16 +15,16 @@ import {
 } from '@common/components/scrub-sentence/scrub-sentence.component';
 import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
 import { WorldRevealDirective } from '@common/directives/world-reveal/world-reveal.directive';
-import { mediaSrcset, mediaUrl } from '@core/config/media.config';
-import { PROJECTS, type StaticProject } from '@core/data/static-content';
-import { toolView } from '@core/data/tool-marks';
+import { mediaSrcset, mediaUrl } from '@core/config/media-config/media.config';
+import { PROJECTS, type StaticProject } from '@core/data/static-content/static-content';
+import { toolView } from '@core/data/tool-marks/tool-marks';
 import { InLocalePipe } from '@core/i18n/in-locale.pipe';
-import { SITE_LOCALE } from '@core/i18n/site-locale';
-import { SmoothScrollService } from '@core/services/motion/smooth-scroll.service';
+import { SITE_LOCALE } from '@core/i18n/site-locale/site-locale';
+import { SmoothScrollService } from '@core/services/motion/smooth-scroll/smooth-scroll.service';
 import { ProjectHeroComponent } from '@features/project/components/project-hero/project-hero.component';
 import { VideoFacadeComponent } from '@features/project/components/video-facade/video-facade.component';
 import { PlateLeanDirective } from '@features/project/directives/plate-lean/plate-lean.directive';
-import { closingBand } from '@features/project/utils/project-view';
+import { closingBand } from '@features/project/utils/project-view/project-view';
 
 /** Where the sticky header ends: the video lands under it, not behind it. */
 const HEADER_CLEARANCE = 96;

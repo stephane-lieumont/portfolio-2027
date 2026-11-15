@@ -11,7 +11,7 @@ A project is made of **copy** (written), **media** (uploaded to MinIO) and a **d
 
 Read `.claude/runtime/STATUS.md` before following anything below. As of
 2026-09-03 the API is a skeleton with only `/health`, and there is no back
-office: **content lives in `apps/web/src/app/core/data/static-content.ts`** and every
+office: **content lives in `apps/web/src/app/core/data/static-content/static-content.ts`** and every
 addition is a commit. The steps below describe the intended flow; the interim
 one is:
 

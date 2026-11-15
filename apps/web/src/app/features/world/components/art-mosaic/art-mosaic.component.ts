@@ -19,20 +19,20 @@ import { filter, map } from 'rxjs';
 
 import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
 import { WorldRevealDirective } from '@common/directives/world-reveal/world-reveal.directive';
-import { workCount } from '@common/utils/work-count';
-import { mediaSrcset, mediaUrl } from '@core/config/media.config';
-import { ARTWORKS } from '@core/data/static-content';
-import { toolView } from '@core/data/tool-marks';
+import { workCount } from '@common/utils/work-count/work-count';
+import { mediaSrcset, mediaUrl } from '@core/config/media-config/media.config';
+import { ARTWORKS } from '@core/data/static-content/static-content';
+import { toolView } from '@core/data/tool-marks/tool-marks';
 import { inLocale } from '@core/i18n/in-locale.pipe';
-import { PATHS } from '@core/i18n/site-locale';
-import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
-import { RouteTransitionsService } from '@core/services/route-transitions.service';
+import { PATHS } from '@core/i18n/site-locale/site-locale';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
+import { RouteTransitionsService } from '@core/services/route-transitions/route-transitions.service';
 import {
   ArtViewerComponent,
   PLATE,
   type ViewerPiece,
 } from '@features/world/components/art-viewer/art-viewer.component';
-import { mosaicLayout } from './mosaic-layout';
+import { mosaicLayout } from '@features/world/utils/mosaic-layout/mosaic-layout';
 
 export const GALLERY_PATH = PATHS.cgi;
 

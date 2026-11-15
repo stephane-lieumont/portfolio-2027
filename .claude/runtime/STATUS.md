@@ -572,7 +572,7 @@ motes and smooth scrolling. It ships as six PRs:
 1. **ADRs and content model** — merged (#17). ADR-0013 (Lenis), ADR-0014 (worlds
    are routes, the sweep is the route transition), ADR-0015 (mosaic crops
    around a focal point). `world.ts` schemas in shared-types; static content in
-   `apps/web/src/app/core/data/world-content.ts`, parsed against them in a
+   `apps/web/src/app/core/data/world-content/world-content.ts`, parsed against them in a
    spec. Nothing renders it yet.
 2. **Shell** — this PR (`feat/shell-bascule`), see « Works today ». Open:
    - A loader comes later (Stéphane, 2026-11-14).
@@ -666,7 +666,7 @@ Ordered by what hurts most on the day the site goes live.
 | **`pnpm infra:up` is broken**          | `minio/minio` no longer exists on Docker Hub (nor on quay.io), so the compose file cannot pull. `cgr.dev/chainguard/minio` runs the same binary and works with the seed script; switching to it is undecided.                                                                               |
 | **Contact route missing in the API**   | The form posts to `/api/contact` and tells the visitor sending is not available yet. Needs the Fastify route: Zod `contactMessageSchema`, rate limit, relay to a mail service (ADR-0007).                                                                                                   |
 | **API is a skeleton**                  | Only `/health`. No projects, no media, no contact route.                                                                                                                                                                                                                                    |
-| **No back office**                     | Content lives in `apps/web/src/app/core/data/static-content.ts`. Every edit is a commit.                                                                                                                                                                                                    |
+| **No back office**                     | Content lives in `apps/web/src/app/core/data/static-content/static-content.ts`. Every edit is a commit.                                                                                                                                                                                     |
 | **Specs 04 and 05 missing**            | `00-vision.md` references a back-office spec and a content/SEO spec that were never written.                                                                                                                                                                                                |
 
 ## Known accessibility debt — contact page

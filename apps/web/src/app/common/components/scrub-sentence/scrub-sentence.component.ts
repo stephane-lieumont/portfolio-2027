@@ -11,7 +11,7 @@ import {
   input,
 } from '@angular/core';
 
-import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
 
 /**
  * Where a sentence starts and stops lighting, as shares of the viewport's

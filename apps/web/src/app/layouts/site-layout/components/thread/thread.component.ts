@@ -12,9 +12,9 @@ import {
 } from '@angular/core';
 import type { WorldKey } from '@portfolio/shared-types';
 
-import { FrameLoopService } from '@core/services/motion/frame-loop.service';
-import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
-import { WorldStore } from '@core/stores/world.store';
+import { FrameLoopService } from '@core/services/motion/frame-loop/frame-loop.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
+import { WorldStore } from '@core/stores/world/world.store';
 
 const N = 24;
 // Fixed 2 ms substeps: an in-place chain stepped once per frame trails 60% longer at 60 Hz than at 144 Hz.

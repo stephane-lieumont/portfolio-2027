@@ -1,8 +1,8 @@
 import { DOCUMENT, DestroyRef, Injectable, effect, inject, signal } from '@angular/core';
 import type Lenis from 'lenis';
 
-import { FrameLoopService } from './frame-loop.service';
-import { ReducedMotionService } from './reduced-motion.service';
+import { FrameLoopService } from '@core/services/motion/frame-loop/frame-loop.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
 
 /**
  * Wheel smoothing with Lenis, under ADR-0013's rules: it drives the native

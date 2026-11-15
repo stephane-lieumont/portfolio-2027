@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { MEDIA_BASE_URL } from '@core/config/media.config';
-import { ARTWORKS, PROJECTS } from '@core/data/static-content';
-import { WORLD_PAGES } from '@core/data/world-content';
+import { MEDIA_BASE_URL } from '@core/config/media-config/media.config';
+import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
+import { WORLD_PAGES } from '@core/data/world-content/world-content';
 import { WorldPageComponent } from './world-page.component';
 
 function render(world: 'dev' | 'cgi'): HTMLElement {

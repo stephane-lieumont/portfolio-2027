@@ -11,10 +11,10 @@ import {
   viewChild,
 } from '@angular/core';
 
-import type { PublicImage } from '@core/data/world-content';
+import type { PublicImage } from '@core/data/world-content/world-content';
 import { InLocalePipe } from '@core/i18n/in-locale.pipe';
-import { FrameLoopService } from '@core/services/motion/frame-loop.service';
-import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
+import { FrameLoopService } from '@core/services/motion/frame-loop/frame-loop.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
 import {
   FIGURE_TAU,
   FIGURE_TRAVEL,
@@ -24,7 +24,7 @@ import {
   approach,
   depthTarget,
   translateOf,
-} from './portrait-depth';
+} from '@features/contact/utils/portrait-depth/portrait-depth';
 
 const AT_REST: Offset = { x: 0, y: 0 };
 

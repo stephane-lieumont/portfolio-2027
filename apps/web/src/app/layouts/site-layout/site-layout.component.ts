@@ -21,10 +21,10 @@ import {
   otherLocale,
   pageAt,
   pageHref,
-} from '@core/i18n/site-locale';
-import { SmoothScrollService } from '@core/services/motion/smooth-scroll.service';
-import { RouteTransitionsService } from '@core/services/route-transitions.service';
-import { WorldStore, currentness } from '@core/stores/world.store';
+} from '@core/i18n/site-locale/site-locale';
+import { SmoothScrollService } from '@core/services/motion/smooth-scroll/smooth-scroll.service';
+import { RouteTransitionsService } from '@core/services/route-transitions/route-transitions.service';
+import { WorldStore, currentness } from '@core/stores/world/world.store';
 import { MotesComponent } from '@layouts/site-layout/components/motes/motes.component';
 import { SocialDockComponent } from '@layouts/site-layout/components/social-dock/social-dock.component';
 import { ThreadComponent } from '@layouts/site-layout/components/thread/thread.component';

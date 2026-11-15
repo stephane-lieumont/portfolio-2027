@@ -81,3 +81,5 @@ and `layouts/site-layout/` (the root). Aliases `@core`, `@shared`, `@common`,
 `@features`, `@layouts`; ESLint refuses an import against that order and any
 `../` that leaves a folder. Files and classes keep Angular suffixes
 (`world-page.component.ts`, `WorldStore`).
+
+**Folders (ADR-0018):** anything made of more than one file (code + spec, template, styles) lives in its own folder named after it — services, stores and helpers too, e.g. `core/services/contact/contact.service.ts`.

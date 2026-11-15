@@ -13,9 +13,9 @@ import {
 } from '@angular/core';
 import type { WorldKey } from '@portfolio/shared-types';
 
-import { FrameLoopService } from '@core/services/motion/frame-loop.service';
-import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
-import { CloudStore } from '@core/stores/cloud.store';
+import { FrameLoopService } from '@core/services/motion/frame-loop/frame-loop.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
+import { CloudStore } from '@core/stores/cloud/cloud.store';
 
 const GLYPH_W = 240;
 const GLYPH_H = 150;

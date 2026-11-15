@@ -3,9 +3,9 @@ import type { WorldKey, WorldPage } from '@portfolio/shared-types';
 
 import { type Glyph, nameWords } from '@common/utils/hero-letters';
 import { NAV } from '@core/data/nav-items';
-import { toolView } from '@core/data/tool-marks';
+import { toolView } from '@core/data/tool-marks/tool-marks';
 import { inLocale } from '@core/i18n/in-locale.pipe';
-import { SITE_LOCALE, type SiteLocale } from '@core/i18n/site-locale';
+import { SITE_LOCALE, type SiteLocale } from '@core/i18n/site-locale/site-locale';
 
 export const NAME = 'Stéphane Lieumont';
 

@@ -3,8 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { Router, UrlTree, ViewTransitionInfo, provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { SmoothScrollService } from '@core/services/motion/smooth-scroll.service';
-import { WorldStore } from '@core/stores/world.store';
+import { SmoothScrollService } from '@core/services/motion/smooth-scroll/smooth-scroll.service';
+import { WorldStore } from '@core/stores/world/world.store';
 import {
   RouteTransitionsService,
   classifyTransition,

@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import axe from 'axe-core';
 import { describe, expect, it } from 'vitest';
 
-import { SITE_SETTINGS } from '@core/data/world-content';
+import { SITE_SETTINGS } from '@core/data/world-content/world-content';
 import { SocialDockComponent } from './social-dock.component';
 
 describe('SocialDockComponent', () => {

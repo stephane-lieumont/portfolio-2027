@@ -76,7 +76,7 @@ src/app/
 
 - **Pick the layer before coding: shared → common → features.** Generic and domain-free goes in `shared`; domain but used by several features goes in `common`; the rest stays in its feature.
 - **Imports only go down**, enforced by ESLint in `pnpm verify`: `shared` imports no other layer; `common` never imports `features`/`layouts`; `core` imports no UI layer; a feature never imports another feature or the layout. Cross-layer imports use the aliases `@core/* @shared/* @common/* @features/* @layouts/*`; relative imports stay inside a folder (no `../`).
-- **One folder per component, Angular suffixes kept** (Stéphane's choice, against Angular 22's default): `xxx.component.ts|html|scss|spec.ts`, `xxx.service.ts`, `xxx.store.ts`, `xxx.directive.ts`, `xxx.pipe.ts`. Shared state is a plain signal service named `XxxStore` in `core/stores/` — no @ngrx/signals at this size.
+- **Anything made of more than one file gets its own folder, named after it** (Stéphane, 2026-11-15): a component, but also a service, store, pipe, directive, data file or helper that has a spec — `core/services/contact/contact.service.ts` + `.spec.ts`, `core/stores/world/world.store.ts`, `features/world/utils/mosaic-layout/mosaic-layout.ts`. A lone file with no spec may sit flat. **Angular suffixes kept** (Stéphane's choice, against Angular 22's default): `xxx.component.ts|html|scss|spec.ts`, `xxx.service.ts`, `xxx.store.ts`, `xxx.directive.ts`, `xxx.pipe.ts`. Shared state is a plain signal service named `XxxStore` in `core/stores/` — no @ngrx/signals at this size.
 - Domain types still come from `@portfolio/shared-types`, never redeclared. Full reasoning: ADR-0018.
 
 ## Backend — Fastify

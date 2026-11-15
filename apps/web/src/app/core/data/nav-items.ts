@@ -1,4 +1,4 @@
-import { PATHS } from '@core/i18n/site-locale';
+import { PATHS } from '@core/i18n/site-locale/site-locale';
 
 export interface NavItem {
   readonly path: string;

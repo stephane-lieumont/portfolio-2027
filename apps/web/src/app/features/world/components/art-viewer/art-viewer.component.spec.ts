@@ -5,8 +5,8 @@ import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ReducedMotionService } from '@core/services/motion/reduced-motion.service';
-import { SmoothScrollService } from '@core/services/motion/smooth-scroll.service';
+import { ReducedMotionService } from '@core/services/motion/reduced-motion/reduced-motion.service';
+import { SmoothScrollService } from '@core/services/motion/smooth-scroll/smooth-scroll.service';
 import { ArtViewerComponent, type ViewerPiece } from './art-viewer.component';
 
 const pieces: ViewerPiece[] = ['a', 'b', 'c', 'd'].map((slug, i) => ({

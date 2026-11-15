@@ -1,7 +1,7 @@
 import { PrerenderFallback, RenderMode } from '@angular/ssr';
 import { describe, expect, it } from 'vitest';
 
-import { PROJECTS } from '@core/data/static-content';
+import { PROJECTS } from '@core/data/static-content/static-content';
 import { serverRoutes } from './app.routes.server';
 
 function prerenderedWithParams(path: string) {
