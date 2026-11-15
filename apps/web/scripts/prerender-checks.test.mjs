@@ -82,7 +82,7 @@ const english = (overrides = {}) =>
   page({
     lang: 'en',
     h1: 'A project, a question or just a Hello World?',
-    lead: 'I answer everything, even when the answer is no. Through the form or on LinkedIn, as you prefer.',
+    lead: 'I reply to every message, even when the answer is no. Through the form or on LinkedIn, whichever you prefer.',
     form: FORM_EN,
     switcher: '<a href="/contact" hreflang="fr" lang="fr" aria-label="Version française">FR</a>',
     ...overrides,

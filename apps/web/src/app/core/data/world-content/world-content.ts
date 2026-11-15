@@ -75,21 +75,21 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
     },
     scrub: {
       fr: 'J’arbitre les choix techniques, j’encadre et je challenge les équipes. Le code, je continue à l’écrire.',
-      en: 'I make the technical calls, I mentor and challenge the teams. And I still write the code.',
+      en: 'I make the technical calls, I mentor and challenge teams. And I still write code.',
     },
     facts: [
       {
         label: { fr: 'Rôle', en: 'Role' },
         value: {
           fr: 'Aujourd’hui — Lead Tech front & back, équipe de 5 à 8',
-          en: 'Today — front & back-end Lead Tech, a team of five to eight',
+          en: 'Currently — front & back-end Lead Tech, team of five to eight',
         },
       },
       {
         label: { fr: 'Équipe', en: 'Team' },
         value: {
           fr: 'Jusqu’à 8 développeurs encadrés',
-          en: 'Up to eight developers led',
+          en: 'Leading up to eight developers',
         },
       },
       {
@@ -98,7 +98,7 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
       },
       {
         label: { fr: 'Avant', en: 'Before' },
-        value: { fr: 'Quatorze ans dans l’aéronautique', en: 'Fourteen years in aeronautics' },
+        value: { fr: 'Quatorze ans dans l’aéronautique', en: 'Fourteen years in aerospace' },
       },
     ],
     updatedAt: UPDATED_AT,
@@ -111,12 +111,12 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
       lead: { fr: 'Une pratique apprise seule.', en: 'A self-taught practice.' },
       text: {
         fr: 'Sans école, avant le développement.',
-        en: 'No school, before software development.',
+        en: 'No formal training, before development.',
       },
     },
     scrub: {
       fr: 'De la forme à la lumière, je construis l’image jusqu’au moindre reflet. Le détail, c’est là que tout se joue.',
-      en: 'From form to light, I build the image down to the last reflection. Detail is where it all happens.',
+      en: 'From form to light, I build the image down to the last reflection. Detail is where it is won or lost.',
     },
     facts: [
       {
@@ -134,7 +134,7 @@ export const WORLD_PAGES: Readonly<Record<WorldKey, WorldPage>> = {
       },
       {
         label: { fr: 'Distinction', en: 'Recognition' },
-        value: { fr: 'Escart Wild, distingué par TDT3D', en: 'Escart Wild, recognised by TDT3D' },
+        value: { fr: 'Escart Wild, distingué par TDT3D', en: 'Escart Wild, singled out by TDT3D' },
       },
     ],
     updatedAt: UPDATED_AT,
@@ -156,21 +156,21 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             lead: { fr: 'Standalone, zoneless, signals.', en: 'Standalone, zoneless, signals.' },
             text: {
               fr: 'Des applications Angular modernes, sans NgModule ni zone.js, où l’état vit dans des signals et le dérivé dans des computed.',
-              en: 'Modern Angular applications with no NgModule and no zone.js, state held in signals and derived state in computed.',
+              en: 'Modern Angular apps without NgModules or zone.js: state lives in signals, derived state in computed.',
             },
           },
           {
             lead: { fr: 'Un rendu sous contrôle.', en: 'Rendering under control.' },
             text: {
               fr: 'OnPush, @for avec track, @defer : un rendu qui ne travaille que lorsqu’il le faut, et ne charge que ce qui s’affiche.',
-              en: 'OnPush, @for with track, @defer: rendering that only works when it has to, and loads only what is on screen.',
+              en: 'OnPush, @for with track, @defer: rendering that only runs when it needs to, and loads only what is on screen.',
             },
           },
           {
             lead: { fr: 'Une architecture qui se lit.', en: 'An architecture you can read.' },
             text: {
               fr: 'Des couches et des composants clairs dès la première lecture, qui restent maintenables quand le périmètre grandit.',
-              en: 'Layers and components that are clear on first reading, and stay maintainable as the scope grows.',
+              en: 'Layers and components that are clear on first read, and stay maintainable as the scope grows.',
             },
           },
           {
@@ -189,7 +189,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             lead: { fr: 'Strict, sans any.', en: 'Strict, no any.' },
             text: {
               fr: 'Un typage strict qui arrête les erreurs à la compilation, et un as qui fait taire le compilateur traité comme un bug différé.',
-              en: 'Strict typing that stops errors at compile time, and an as that silences the compiler treated as a deferred bug.',
+              en: 'Strict typing that catches errors at compile time, where an as that silences the compiler counts as a deferred bug.',
             },
           },
           {
@@ -222,7 +222,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             lead: { fr: 'Signals pour l’état.', en: 'Signals for state.' },
             text: {
               fr: 'L’état local et dérivé en signals et computed, lisible sans souscription.',
-              en: 'Local and derived state in signals and computed, readable without a subscription.',
+              en: 'Local and derived state in signals and computed, readable without subscribing.',
             },
           },
           {
@@ -252,24 +252,24 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
         tool: 'dotnet',
         points: [
           {
-            lead: { fr: 'Référent technique.', en: 'Technical point of reference.' },
+            lead: { fr: 'Référent technique.', en: 'The technical go-to.' },
             text: {
               fr: 'J’accompagne des développeurs backend .NET et j’arbitre les choix qui touchent le front comme le back.',
-              en: 'I support .NET backend developers and make the calls that affect both front and back end.',
+              en: 'I support .NET back-end developers and make the calls that affect both front end and back end.',
             },
           },
           {
             lead: { fr: 'Des contrats d’API clairs.', en: 'Clear API contracts.' },
             text: {
               fr: 'Endpoints, DTO, codes d’erreur : la frontière front / back se conçoit à deux, avant le code.',
-              en: 'Endpoints, DTOs, error codes: the front / back boundary is designed together, before the code.',
+              en: 'Endpoints, DTOs, error codes: the boundary between front end and back end is designed jointly, before any code.',
             },
           },
           {
             lead: { fr: 'La revue de code.', en: 'Code review.' },
             text: {
               fr: 'Lire et challenger du C#, expliquer un choix, faire monter une équipe.',
-              en: 'Reading and challenging C#, explaining a choice, helping a team grow.',
+              en: 'Reading and challenging C#, explaining a choice, helping a team level up.',
             },
           },
           {
@@ -288,7 +288,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             lead: { fr: 'Composants et hooks.', en: 'Components and hooks.' },
             text: {
               fr: 'Des interfaces React en TypeScript, l’état et les effets portés par des hooks.',
-              en: 'React interfaces in TypeScript, state and effects carried by hooks.',
+              en: 'React UIs in TypeScript, with state and effects handled by hooks.',
             },
           },
           {
@@ -368,7 +368,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             },
           },
           {
-            lead: { fr: 'Une CI qui fait foi.', en: 'CI as the authority.' },
+            lead: { fr: 'Une CI qui fait foi.', en: 'CI has the final say.' },
             text: {
               fr: 'Typecheck, lint, tests et couverture : la fusion attend que tout soit vert.',
               en: 'Typecheck, lint, tests and coverage: the merge waits until everything is green.',
@@ -378,7 +378,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             lead: { fr: 'Un historique qu’on remonte.', en: 'A history you can trace.' },
             text: {
               fr: 'Rebase, cherry-pick, conflits résolus : retrouver quand et pourquoi une ligne a changé.',
-              en: 'Rebase, cherry-pick, conflicts resolved: finding when and why a line changed.',
+              en: 'Rebase, cherry-pick, conflict resolution: finding when and why a line changed.',
             },
           },
         ],
@@ -397,7 +397,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             lead: { fr: 'Secrets Manager.', en: 'Secrets Manager.' },
             text: {
               fr: 'Les clés et identifiants restent hors du code et hors du dépôt, servis à l’exécution.',
-              en: 'Keys and credentials stay out of the code and out of the repository, served at runtime.',
+              en: 'Keys and credentials stay out of the code and out of the repository, supplied at runtime.',
             },
           },
           {
@@ -423,7 +423,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             lead: { fr: 'Orchestrer, pas déléguer.', en: 'Orchestrating, not delegating.' },
             text: {
               fr: 'Des agents spécialisés que je mets en contradiction plutôt qu’en accord.',
-              en: 'Specialised agents I set against each other rather than in agreement.',
+              en: 'Specialised agents I pit against each other instead of letting them agree.',
             },
           },
           {
@@ -441,7 +441,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             },
           },
           {
-            lead: { fr: 'Le dernier mot reste humain.', en: 'The last word stays human.' },
+            lead: { fr: 'Le dernier mot reste humain.', en: 'A human has the last word.' },
             text: {
               fr: 'Chaque affirmation se rattache à une source, et c’est moi qui tranche.',
               en: 'Every claim traces back to a source, and I make the call.',
@@ -462,7 +462,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             lead: { fr: 'La modélisation polygonale.', en: 'Polygon modelling.' },
             text: {
               fr: 'Une scène construite de zéro : volumes, détails, puis mise en place pour le rendu.',
-              en: 'A scene built from nothing: volumes, detail, then set up for rendering.',
+              en: 'A scene built from scratch: volumes, detail, then set up for rendering.',
             },
           },
           {
@@ -483,7 +483,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             lead: { fr: 'L’objet et le produit.', en: 'Objects and products.' },
             text: {
               fr: 'Des objets du quotidien modélisés avec précision, jusqu’au visuel publicitaire.',
-              en: 'Everyday objects modelled precisely, all the way to an advertising visual.',
+              en: 'Everyday objects modelled with precision, all the way to a finished advertising visual.',
             },
           },
         ],
@@ -502,21 +502,21 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             lead: { fr: 'La lumière d’abord.', en: 'Light first.' },
             text: {
               fr: 'Lumière naturelle ou artificielle, de jour comme de nuit : l’éclairage raconte la scène.',
-              en: 'Daylight or artificial light, by day or by night: the lighting tells the scene.',
+              en: 'Daylight or artificial light, by day or by night: the lighting tells the story of the scene.',
             },
           },
           {
             lead: { fr: 'Les matériaux.', en: 'Materials.' },
             text: {
               fr: 'Réflexion, réfraction, rugosité : chaque surface réglée pour réagir juste à la lumière.',
-              en: 'Reflection, refraction, roughness: every surface tuned to respond to light correctly.',
+              en: 'Reflection, refraction, roughness: every surface tuned to react to light just right.',
             },
           },
           {
             lead: { fr: 'Les personnages aussi.', en: 'Characters too.' },
             text: {
               fr: 'Le même réalisme appliqué aux créatures et aux personnages, pas seulement aux décors.',
-              en: 'The same realism applied to creatures and characters, not just to sets.',
+              en: 'The same realism applied to creatures and characters, not just to environments.',
             },
           },
         ],
@@ -546,7 +546,7 @@ export const WORLD_STACKS: Readonly<Record<WorldKey, WorldStack>> = {
             },
           },
           {
-            lead: { fr: 'Le mécanique aussi.', en: 'Mechanical too.' },
+            lead: { fr: 'Le mécanique aussi.', en: 'Hard-surface too.' },
             text: {
               fr: 'Des formes dures et nettes, sculptées puis préparées pour la texture.',
               en: 'Hard, clean forms, sculpted then prepared for texturing.',
@@ -604,7 +604,7 @@ export const CONTACT_PAGE: ContactPage = {
   },
   lede: {
     fr: 'Je réponds à tout, y compris pour dire non. Par formulaire ou sur LinkedIn, au choix.',
-    en: 'I answer everything, even when the answer is no. Through the form or on LinkedIn, as you prefer.',
+    en: 'I reply to every message, even when the answer is no. Through the form or on LinkedIn, whichever you prefer.',
   },
   portraitAssetId: PORTRAIT_ID,
   portraitCaption: { fr: 'Fontenilles, France', en: 'Fontenilles, France' },
