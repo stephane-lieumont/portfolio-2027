@@ -9,9 +9,9 @@ metadata:
 
 ## Demo links go through nginx
 
-`stephane-lieumont.fr` runs behind **nginx**, which **routes the demo links to separately hosted projects**. The `demoUrl` fields are not plain external URLs: they are paths the proxy routes to other applications.
+`stephane-lieumont.fr` runs behind **nginx**, which **routes the demo links to separately hosted projects**. The `websiteUrl` fields (formerly `demoUrl`) that start with `/` are not plain external URLs: they are paths the proxy routes to other applications.
 
-**Why it matters:** publishing a project with a `demoUrl` whose nginx route does not exist sends the visitor to an error, straight from the shop window. The code cannot detect that case — only a check on the infrastructure side can.
+**Why it matters:** publishing a project with a root-relative `websiteUrl` whose nginx route does not exist sends the visitor to an error, straight from the shop window. The code cannot detect that case — only a check on the infrastructure side can.
 
 **How to apply it:** before publishing a project carrying a demo link, verify the route exists on the nginx side. Never reorganize the `/demo/*` paths without checking what points at them.
 

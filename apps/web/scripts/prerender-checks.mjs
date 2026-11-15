@@ -42,7 +42,10 @@ export const EXPECTED = new Map([
       text: ['Je réponds à tout, y compris pour dire non.', 'Nom', 'Email', 'Message', 'Envoyer'],
     },
   ],
-  ...PROJECTS.map((p) => [`developpeur/${p.slug}`, { h1: p.title, text: [p.context, p.mission] }]),
+  ...PROJECTS.map((p) => [
+    `developpeur/${p.slug}`,
+    { h1: p.title, text: [p.context, p.mission, p.presentationCaption, ...p.missionSteps] },
+  ]),
   ['404', { h1: 'Page introuvable', text: ['Erreur 404'], noindex: true }],
 ]);
 
@@ -50,6 +53,28 @@ const HIDING_STYLE =
   /(?:^|;)\s*(?:opacity\s*:\s*0(?:\.0*)?\s*(?:;|$|!)|display\s*:\s*none|visibility\s*:\s*hidden)/i;
 
 const squash = (text) => text.replace(/\s+/g, ' ').trim();
+
+// What a screen reader says for an element: its aria-label, else its text
+// without what is hidden from it. A heading split into letters for its
+// entrance carries the plain words in one of these two ways.
+function spokenText(element) {
+  const label = element.getAttribute('aria-label');
+  if (label) return squash(label);
+  const copy = element.cloneNode(true);
+  for (const hidden of copy.querySelectorAll('[aria-hidden="true"]')) hidden.remove();
+  return squash(copy.textContent ?? '');
+}
+
+// Nothing may load from another origin before the visitor asks for it: the
+// YouTube player comes after a click (ADR-0016), never in the HTML.
+function thirdParty(document) {
+  const urls = [
+    ...Array.from(document.querySelectorAll('[src]'), (el) => el.getAttribute('src')),
+    ...Array.from(document.querySelectorAll('[srcset]'), (el) => el.getAttribute('srcset')),
+    ...Array.from(document.querySelectorAll('link[href]'), (el) => el.getAttribute('href')),
+  ];
+  return urls.filter((url) => /(?:^|[\s,])(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(url ?? ''));
+}
 
 /** Returns what is wrong with one page; empty when it is complete. */
 export function checkPage(route, html) {
@@ -74,7 +99,7 @@ export function checkPage(route, html) {
   if (!title) fail('no <title>');
 
   const h1 = document.querySelector('h1');
-  const heading = h1 ? squash(h1.textContent ?? '') : '';
+  const heading = h1 ? spokenText(h1) : '';
   if (heading !== expected.h1) fail(`<h1> is "${heading}", expected "${expected.h1}"`);
 
   const main = document.querySelector('main');
@@ -97,6 +122,8 @@ export function checkPage(route, html) {
       }
     }
   }
+
+  for (const url of thirdParty(document)) fail(`loads from another origin: ${url}`);
 
   // Stéphane's address is never published (ADR-0007, spec 03): the contact
   // form is the way in.

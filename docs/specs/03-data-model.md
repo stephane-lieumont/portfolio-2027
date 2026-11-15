@@ -20,26 +20,32 @@ In `@portfolio/shared-types` they are two schemas, not a discriminated union —
 
 ## `Project` — development case study
 
-| Field          | Type                   | Notes                                                                        |
-| -------------- | ---------------------- | ---------------------------------------------------------------------------- |
-| `id`           | uuid                   |                                                                              |
-| `slug`         | kebab-case, unique     | **Final once published.** It is the public URL.                              |
-| `title`        | string                 |                                                                              |
-| `summary`      | string                 | One sentence, for cards. Not the first paragraph truncated.                  |
-| `context`      | rich text              | What the product was.                                                        |
-| `mission`      | rich text              | What Stéphane did, and in what capacity.                                     |
-| `missionSteps` | string[]               | Ordered. The concrete deliverables.                                          |
-| `technologies` | tech slug[]            | From the registry below.                                                     |
-| `series`       | string?                | e.g. `"Case Tes Potes"`. Groups related projects visually.                   |
-| `demoUrl`      | url?                   | Proxied by nginx — **verify the route exists before publishing** (ADR-0005). |
-| `sourceUrl`    | url?                   |                                                                              |
-| `coverAsset`   | asset id               | Required.                                                                    |
-| `gallery`      | asset id[]             | Ordered, may be empty.                                                       |
-| `releasedAt`   | date                   | Drives display order.                                                        |
-| `status`       | `draft` \| `published` |                                                                              |
-| `publishedAt`  | timestamp?             | Set when status first becomes `published`.                                   |
+| Field                 | Type                   | Notes                                                                                                                                                                  |
+| --------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | uuid                   |                                                                                                                                                                        |
+| `slug`                | kebab-case, unique     | **Final once published.** It is the public URL.                                                                                                                        |
+| `title`               | string                 |                                                                                                                                                                        |
+| `summary`             | string                 | One sentence, for cards and the meta description. **Not shown on the project page**, which opens on `context` (Stéphane, 2026-11-15).                                  |
+| `context`             | plain text             | What the product was. The page's introduction, coloured word by word on scroll.                                                                                        |
+| `role`                | string                 | In what capacity, ≤ 80. Set large beside the mission, and in the page's eyebrow.                                                                                       |
+| `mission`             | plain text             | What Stéphane did.                                                                                                                                                     |
+| `missionSteps`        | string[]               | Ordered, 1–10. The concrete deliverables.                                                                                                                              |
+| `technologies`        | tech slug[]            | From the registry below.                                                                                                                                               |
+| `series`              | string?                | e.g. `"Case Tes Potes"`. Groups related projects: their pages end on the whole series; any other ends on « Autres réalisations ».                                      |
+| `websiteUrl`          | url?                   | « Voir le site ». A root-relative path to a demo proxied by nginx — **verify the route exists before publishing** (ADR-0005) — or an `https` site. Replaces `demoUrl`. |
+| `videoUrl`            | url?                   | « Voir la vidéo ». An `https` YouTube video address, played on the page after a click (ADR-0016).                                                                      |
+| `presentationAsset`   | asset id               | Required. The wide visual the page opens on, the product staged on white.                                                                                              |
+| `presentationCaption` | string                 | ≤ 160, the « Fig. » line under it.                                                                                                                                     |
+| `sourceUrl`           | url?                   |                                                                                                                                                                        |
+| `coverAsset`          | asset id               | Required.                                                                                                                                                              |
+| `gallery`             | asset id[]             | Ordered, may be empty.                                                                                                                                                 |
+| `releasedAt`          | date                   | Drives display order.                                                                                                                                                  |
+| `status`              | `draft` \| `published` |                                                                                                                                                                        |
+| `publishedAt`         | timestamp?             | Set when status first becomes `published`.                                                                                                                             |
 
 The three-part structure — context, mission, steps — is inherited from the current site, where it is the best-written thing on it (spec 02).
+
+The 2022 site's presentation visuals (about 2.5:1) are kept for now; 2× exports will replace them through the same field.
 
 ---
 

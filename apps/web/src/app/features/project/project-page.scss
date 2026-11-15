@@ -1,0 +1,258 @@
+// The approved project page prototype, value for value, on the world's
+// tokens. Its entrance and scroll reveal are keyed on the document and live in
+// src/styles/_project-page.scss (traps.md). The hero has its own component.
+:host {
+  --wrap: min(1320px, 100vw - 32px);
+  display: block;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px))
+    max(16px, env(safe-area-inset-right, 0px));
+  overflow-x: clip;
+  color: var(--world-ink);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.wrap {
+  max-width: 1320px;
+  margin-inline: auto;
+}
+
+// The presentation shot on a ground of the world's ink, its left edge cut at
+// the sweep's lean. The shots are staged on white: multiplied onto the ink,
+// their white becomes the plate.
+.fig {
+  margin: clamp(32px, 5vw, 64px) 0 0;
+}
+
+.fig__ground {
+  --lean: 24px;
+  --zoom: 1.55;
+  --drift: clamp(6px, 2vw, 12px);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-inline: calc(50% - 50vw);
+  // The plate's tone (src/styles/_plate.scss), so a failed image still
+  // falls back to the neutral plate with its alt text legible.
+  --plate-tone: var(--world-ink);
+  aspect-ratio: 3 / 2;
+  clip-path: polygon(var(--lean) 0, 100% 0, 100% 100%, 0 100%);
+}
+
+// Small screens: the shot is wider than the screen and bleeds off both sides,
+// so the screens in the middle read at a usable size.
+.fig__img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(100% * var(--zoom));
+  max-width: none;
+  height: auto;
+  translate: -50% -50%;
+  mix-blend-mode: multiply;
+}
+
+.fig__cap {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 8px;
+  padding-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--world-muted);
+}
+
+.fig__cap > :last-child {
+  text-wrap: balance;
+}
+
+.fig__cap a {
+  color: var(--world-ink);
+  text-underline-offset: 4px;
+}
+
+@media (min-width: 600px) {
+  .fig__ground {
+    --zoom: 1.2;
+    aspect-ratio: 2 / 1;
+  }
+}
+
+// Wide screens: the plate starts on the column's edge and bleeds out to the
+// right; the shot sits on the column, at its native size or under.
+@media (min-width: 900px) {
+  .fig__ground {
+    margin-left: 0;
+    aspect-ratio: auto;
+    padding: clamp(16px, 3vw, 40px) clamp(16px, 3vw, 48px);
+    // Within the plate's padding, so the shot is never cut by the plate's edge.
+    --drift: clamp(12px, 2.4vw, 32px);
+  }
+
+  .fig__img {
+    position: static;
+    display: block;
+    translate: none;
+    width: min(100%, var(--wrap) - 2 * clamp(16px, 3vw, 48px), 1240px);
+  }
+
+  .fig__cap {
+    grid-template-columns: 1fr 3fr;
+    gap: 24px;
+  }
+}
+
+// A label column, then the content: the world pages' notes and mastery skeleton.
+.block {
+  display: grid;
+  gap: 24px;
+  margin-top: clamp(40px, 6vw, 88px);
+  padding-block: clamp(40px, 6vw, 88px) 0;
+  border-top: 1px solid var(--world-rule);
+}
+
+.fig + .block {
+  margin-top: clamp(48px, 7vw, 104px);
+}
+
+.block__label h2,
+h2.block__label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--world-muted);
+}
+
+.block__big {
+  margin: 10px 0 0;
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 600;
+  font-stretch: 75%;
+  font-variation-settings: 'wdth' 75;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.scrub {
+  font-size: clamp(26px, 3.4vw, 46px);
+  max-width: 24ch;
+}
+
+.mission__text {
+  margin: 0;
+  max-width: 56ch;
+  font-size: clamp(17px, 1.4vw, 19px);
+  color: color-mix(in srgb, var(--world-ink) 82%, var(--world-ground));
+  text-wrap: pretty;
+}
+
+.steps {
+  display: grid;
+  gap: 18px;
+  margin: clamp(28px, 3vw, 40px) 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 8px;
+  max-width: 70ch;
+  padding-top: 14px;
+  border-top: 1px solid var(--world-rule);
+}
+
+.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  padding-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--world-muted);
+}
+
+.steps p {
+  margin: 0;
+  color: color-mix(in srgb, var(--world-ink) 82%, var(--world-ground));
+}
+
+.tools {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tools li {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  border-top: 1px solid var(--world-rule);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.tools__icon {
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  -webkit-mask: var(--mask) center / contain no-repeat;
+  mask: var(--mask) center / contain no-repeat;
+  forced-color-adjust: none;
+}
+
+.video .fig__cap {
+  grid-template-columns: 32px 1fr;
+}
+
+.closing {
+  display: block;
+  margin-top: clamp(64px, 9vw, 136px);
+}
+
+@media (min-width: 600px) {
+  .tools {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .block {
+    grid-template-columns: 1fr 3fr;
+  }
+
+  .block__label {
+    position: sticky;
+    top: 96px;
+    align-self: start;
+  }
+
+  .scrub {
+    max-width: 28ch;
+  }
+
+  .steps {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 40px;
+    row-gap: 22px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .tools {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

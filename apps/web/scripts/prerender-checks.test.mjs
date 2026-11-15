@@ -31,6 +31,26 @@ describe('a prerendered page', () => {
     assert.deepEqual(checkPage('contact', page({ h1 })), []);
   });
 
+  it('reads the heading as spoken, letters split for an entrance included', () => {
+    const h1 =
+      '<span class="visually-hidden">Un projet, une question ou juste un Hello World ?</span>' +
+      '<span aria-hidden="true"><span>U</span><span>n</span> <span>p</span></span>';
+    assert.deepEqual(checkPage('contact', page({ h1 })), []);
+  });
+
+  it('reads a heading named by its aria-label', () => {
+    const html = page({ h1: '<span aria-hidden="true">U n</span>' }).replace(
+      '<h1>',
+      '<h1 aria-label="Un projet, une question ou juste un Hello World ?">',
+    );
+    assert.deepEqual(checkPage('contact', html), []);
+  });
+
+  it('accepts media from this host', () => {
+    const form = `${FORM}<img src="/medias/a.jpg" srcset="/medias/a-640.webp 640w" alt="a">`;
+    assert.deepEqual(checkPage('contact', page({ form })), []);
+  });
+
   it('reads attributes in any order', () => {
     const head = '<meta content="Un projet." name="description">';
     assert.deepEqual(checkPage('contact', page({ head })), []);
@@ -55,6 +75,30 @@ describe('a prerendered page', () => {
     'when a mailto is published',
     'contact',
     page({ form: `${FORM}<a href="MAILTO:x@y.fr">Écrire</a>` }),
+  );
+  caught(
+    'when a video player is in the HTML',
+    'contact',
+    page({ form: `${FORM}<iframe src="https://www.youtube-nocookie.com/embed/x"></iframe>` }),
+  );
+  caught(
+    'when an image comes from another origin, protocol-relative',
+    'contact',
+    page({ form: `${FORM}<img src="//i.ytimg.com/vi/x/hqdefault.jpg" alt="x">` }),
+  );
+  caught(
+    'when a candidate of a srcset comes from another origin',
+    'contact',
+    page({
+      form: `${FORM}<img src="/a.jpg" srcset="/a.webp 1x, https://cdn.x/a.webp 2x" alt="a">`,
+    }),
+  );
+  caught(
+    'when a stylesheet comes from another origin',
+    'contact',
+    page({
+      head: '<meta name="description" content="x"><link rel="stylesheet" href="https://fonts.googleapis.com/css2">',
+    }),
   );
   caught('without hydration state', 'contact', page({ state: '' }));
   caught('without hydration annotations', 'contact', page().replace(' ngh="0"', ''));

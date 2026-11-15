@@ -14,13 +14,29 @@ import {
 import { ReducedMotion } from '../../core/motion/reduced-motion';
 
 /**
+ * Where a sentence starts and stops lighting, as shares of the viewport's
+ * height, and how much of its own height the ramp adds.
+ */
+export interface ScrubRamp {
+  readonly start: number;
+  readonly end: number;
+  readonly height: number;
+}
+
+/**
+ * The world pages' ramp. The mockup started at 85%; the hero now scales with
+ * the viewport's height, the sentence sits higher, and 85% painted it half lit
+ * at load on a laptop. 68% keeps the first paint about a fifth lit and the end
+ * of the ramp where it was.
+ */
+export const HERO_RAMP: ScrubRamp = { start: 0.68, end: 0.35, height: 0.6 };
+
+/** The project page's, as on its prototype: the sentence sits below the fold. */
+export const BODY_RAMP: ScrubRamp = { start: 0.85, end: 0.4, height: 0.5 };
+
+/**
  * How lit each word is, in [0, 1], for a sentence whose top edge sits at
- * `top` with a box `height` tall in a viewport `viewport` tall. The sentence
- * starts lighting when its top reaches 68% of the viewport and is complete a
- * little after it passes 35%. The mockup started at 85%; the hero now scales
- * with the viewport's height, the sentence sits higher, and 85% painted it
- * half lit at load on a laptop. 68% keeps the first paint about a fifth lit
- * and the end of the ramp where it was.
+ * `top` with a box `height` tall in a viewport `viewport` tall.
  */
 export function scrubLevels(
   words: number,
@@ -28,12 +44,13 @@ export function scrubLevels(
   height: number,
   viewport: number,
   reduced: boolean,
+  ramp: ScrubRamp = HERO_RAMP,
 ): number[] {
-  const start = viewport * 0.68;
-  const end = viewport * 0.35;
+  const start = viewport * ramp.start;
+  const end = viewport * ramp.end;
   const progress = reduced
     ? 1
-    : Math.min(1, Math.max(0, (start - top) / (start - end + height * 0.6)));
+    : Math.min(1, Math.max(0, (start - top) / (start - end + height * ramp.height)));
   return Array.from({ length: words }, (_, i) => Math.min(1, Math.max(0, progress * words - i)));
 }
 
@@ -74,6 +91,7 @@ export function scrubLevels(
 })
 export class ScrubSentence {
   readonly text = input.required<string>();
+  readonly ramp = input<ScrubRamp>(HERO_RAMP);
 
   protected readonly words = computed(() => this.text().split(/\s+/));
 
@@ -99,6 +117,7 @@ export class ScrubSentence {
           rect.height,
           view.innerHeight,
           this.motion.reduced(),
+          this.ramp(),
         );
         spans.forEach((span, i) => span.style.setProperty('--lit', levels[i].toFixed(3)));
       };
