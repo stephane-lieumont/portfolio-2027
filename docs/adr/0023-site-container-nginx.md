@@ -17,7 +17,7 @@ Measured on the build of 2026-11-15, the pages run inline script: the two boot s
 
 **The Angular meta-refresh pages at `/index.html` and `/en/index.html` stay**, as the fallback for a server without these rules. nginx's exact-match locations answer `/` and `/en/` before they are read.
 
-**Cache.** Set once at server level from a map on the answered URI, so no location's `add_header` can silently drop the security headers. Hashed bundles (`-[A-Za-z0-9_-]{8}.js|css`): `public, max-age=31536000, immutable`. HTML: `no-cache`. `sitemap.xml`, `robots.txt`: one hour. Everything else — fonts included — `public, max-age=86400`: their names carry no hash, and `icons.woff` changes whenever an icon is added.
+**Cache.** Set once at server level from a map on the answered URI, so no location's `add_header` can silently drop the security headers. Hashed bundles (`-[A-Za-z0-9_-]{8}.js|css`): `public, max-age=31536000, immutable`. Everything else — HTML, `sitemap.xml`, `robots.txt`, fonts, logos, marks — `no-cache`: revalidated on every visit (a 304 when unchanged), so a deployment is never hidden behind a cache (Stéphane, 2026-11-15). Their names carry no hash; `icons.woff` changes whenever an icon is added. The cost is one conditional request per such file per visit.
 
 **CSP, with script hashes, not `'unsafe-inline'`.** The build hashes every executable inline script and inline handler of every page (`apps/web/scripts/write-csp-hashes.mjs`) into `dist/web/nginx/csp-inline-scripts.conf`, which the image includes. The policy:
 

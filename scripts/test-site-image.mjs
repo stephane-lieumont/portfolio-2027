@@ -178,14 +178,14 @@ describe('the headers', () => {
     assert.equal(headers['content-encoding'], 'gzip');
   });
 
-  it('let a file whose name does not change be revalidated daily', async () => {
+  it('revalidate a file whose name does not change on every visit', async () => {
     const { headers } = await get('/fonts/instrument-sans-latin.woff2');
-    assert.equal(headers['cache-control'], 'public, max-age=86400');
+    assert.equal(headers['cache-control'], 'no-cache');
   });
 
-  it('keep the sitemap and robots.txt for an hour', async () => {
+  it('revalidate the sitemap and robots.txt on every visit', async () => {
     for (const path of ['/sitemap.xml', '/robots.txt']) {
-      assert.equal((await get(path)).headers['cache-control'], 'public, max-age=3600', path);
+      assert.equal((await get(path)).headers['cache-control'], 'no-cache', path);
     }
   });
 
