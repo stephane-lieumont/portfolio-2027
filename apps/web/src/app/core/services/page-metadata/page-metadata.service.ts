@@ -26,6 +26,7 @@ const PAGE_KEYS: readonly string[] = [
   'dev',
   'cgi',
   'contact',
+  'legal',
   'project',
   'piece',
   'not-found',

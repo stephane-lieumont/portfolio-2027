@@ -18,7 +18,7 @@ export const SITE_LOCALE: SiteLocale = $localize.locale === 'en' ? 'en' : 'fr';
  * A page as the same thing in both trees: the switcher and the `hreflang`
  * links go from one to the other through it.
  */
-export type PageKey = 'dev' | 'cgi' | 'contact' | 'project' | 'piece' | 'not-found';
+export type PageKey = 'dev' | 'cgi' | 'contact' | 'legal' | 'project' | 'piece' | 'not-found';
 
 /**
  * A project or a piece is named by its record's id, not by a slug: each tree
@@ -34,6 +34,7 @@ export const PATHS = {
   dev: `/${SECTIONS.dev[SITE_LOCALE]}`,
   cgi: `/${SECTIONS.cgi[SITE_LOCALE]}`,
   contact: `/${SECTIONS.contact[SITE_LOCALE]}`,
+  legal: `/${SECTIONS.legal[SITE_LOCALE]}`,
 } as const;
 
 /** The tree's prefix from the site root: nothing for French, `/en` for English. */
@@ -55,6 +56,8 @@ export function pagePath({ page, id }: PageRef, locale: SiteLocale): string {
       return `/${SECTIONS.cgi[locale]}`;
     case 'contact':
       return `/${SECTIONS.contact[locale]}`;
+    case 'legal':
+      return `/${SECTIONS.legal[locale]}`;
     default:
       return `/${SECTIONS.dev[locale]}`;
   }
@@ -77,6 +80,7 @@ export function pageAt(path: string, locale: SiteLocale): PageRef {
   if (first === SECTIONS.cgi[locale])
     return slug ? pageRef('piece', slug, locale) : { page: 'cgi' };
   if (first === SECTIONS.contact[locale] && !slug) return { page: 'contact' };
+  if (first === SECTIONS.legal[locale] && !slug) return { page: 'legal' };
   return { page: 'not-found' };
 }
 

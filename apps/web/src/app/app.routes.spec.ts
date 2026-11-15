@@ -11,7 +11,7 @@ function segmentsOf(path: string): { readonly path: string }[] {
 
 describe('routes', () => {
   it('resolves every section a visitor can reach from the navigation', () => {
-    for (const path of ['developpeur', 'graphisme-3d', 'contact']) {
+    for (const path of ['developpeur', 'graphisme-3d', 'contact', 'mentions-legales']) {
       expect(routes.some((r) => r.path === path)).toBe(true);
     }
   });

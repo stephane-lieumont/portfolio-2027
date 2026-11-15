@@ -611,3 +611,17 @@ describe('a share card', () => {
     assert.notDeepEqual(checkShareCard('og/dev-fr.png', Buffer.from('ffd8ffe0', 'hex')), []);
   });
 });
+
+describe('the legal notice', () => {
+  it('ships in both trees, each switching to the other', () => {
+    assert.equal(EXPECTED.get('mentions-legales')?.switchTo, '/en/legal-notice');
+    assert.equal(EXPECTED.get('en/legal-notice')?.switchTo, '/mentions-legales');
+  });
+
+  // A legal page may be found by search: it is listed like any other page.
+  it('is indexable in both trees', () => {
+    const urls = INDEXABLE.map(({ url }) => url);
+    assert.ok(urls.includes('https://stephane-lieumont.fr/mentions-legales'));
+    assert.ok(urls.includes('https://stephane-lieumont.fr/en/legal-notice'));
+  });
+});

@@ -9,6 +9,7 @@ export const SECTIONS = {
   dev: { fr: 'developpeur', en: 'developer' },
   cgi: { fr: 'graphisme-3d', en: '3d-art' },
   contact: { fr: 'contact', en: 'contact' },
+  legal: { fr: 'mentions-legales', en: 'legal-notice' },
 } as const;
 
 /** Where alternate addresses point: ADR-0008 serves the site without `www`. */

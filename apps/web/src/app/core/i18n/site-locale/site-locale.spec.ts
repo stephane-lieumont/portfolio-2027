@@ -14,6 +14,7 @@ const PAGES: PageRef[] = [
   { page: 'dev' },
   { page: 'cgi' },
   { page: 'contact' },
+  { page: 'legal' },
   ...PROJECTS.map((p) => ({ page: 'project' as const, id: p.id })),
   ...ARTWORKS.map((a) => ({ page: 'piece' as const, id: a.id })),
 ];
@@ -30,6 +31,7 @@ describe('site addresses', () => {
     expect(pageHref({ page: 'dev' }, 'en')).toBe('/en/developer');
     expect(pageHref({ page: 'cgi' }, 'en')).toBe('/en/3d-art');
     expect(pageHref({ page: 'contact' }, 'en')).toBe('/en/contact');
+    expect(pageHref({ page: 'legal' }, 'en')).toBe('/en/legal-notice');
     expect(pageHref({ page: 'project', id: projectId('ledger') }, 'en')).toBe(
       '/en/developer/ledger',
     );
@@ -52,6 +54,7 @@ describe('site addresses', () => {
   it('keeps every French address where it was', () => {
     expect(pageHref({ page: 'dev' }, 'fr')).toBe('/developpeur');
     expect(pageHref({ page: 'cgi' }, 'fr')).toBe('/graphisme-3d');
+    expect(pageHref({ page: 'legal' }, 'fr')).toBe('/mentions-legales');
     expect(pageHref({ page: 'project', id: projectId('case-tes-potes-mobile') }, 'fr')).toBe(
       '/developpeur/case-tes-potes-mobile',
     );

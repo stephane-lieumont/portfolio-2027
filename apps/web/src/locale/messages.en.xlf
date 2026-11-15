@@ -708,6 +708,240 @@
           <context context-type="linenumber">93</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="page.legal.title" datatype="html">
+        <source>Mentions légales</source>
+        <target state="translated">Legal notice</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">130</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="page.legal.description" datatype="html">
+        <source>Mentions légales du site de Stéphane Lieumont : qui l’édite, qui l’héberge, ce que deviennent les messages du formulaire de contact et vos droits.</source>
+        <target state="translated">Legal notice for Stéphane Lieumont’s site: who publishes it, who hosts it, what happens to messages sent through the contact form, and your rights.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">133</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="footer.legal" datatype="html">
+        <source>Mentions légales</source>
+        <target state="translated">Legal notice</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layouts/site-layout/site-layout.component.html</context>
+          <context context-type="linenumber">118,122</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.title" datatype="html">
+        <source>Mentions légales</source>
+        <target state="translated">Legal notice</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.lede" datatype="html">
+        <source> Qui publie ce site, qui l’héberge, et ce qu’il fait de vos données. </source>
+        <target state="translated">Who publishes this site, who hosts it, and what it does with your data.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">5,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.publisher.heading" datatype="html">
+        <source>Éditeur</source>
+        <target state="translated">Publisher</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.publisher.who" datatype="html">
+        <source> Ce site est édité par Stéphane Lieumont, particulier, à titre personnel et sans aucune activité commerciale. </source>
+        <target state="translated">This site is published by Stéphane Lieumont, a private individual, on a personal basis and without any commercial activity.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">12,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.publisher.director" datatype="html">
+        <source>Directeur de la publication : Stéphane Lieumont.</source>
+        <target state="translated">Publication director: Stéphane Lieumont.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">15,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.publisher.private" datatype="html">
+        <source> Éditeur non professionnel, il ne publie ni son adresse postale ni son numéro de téléphone, comme le permet l’article 6, III, 2 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique : son hébergeur les détient. </source>
+        <target state="translated">As a non-professional publisher, he does not publish his postal address or phone number, as article 6, III, 2 of French law no. 2004-575 of 21 June 2004 on confidence in the digital economy allows: his host holds them.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">17,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.publisher.contact" datatype="html">
+        <source> Pour le joindre : <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;contact&quot;&gt;"/>le formulaire de contact<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. </source>
+        <target state="translated">To reach him: <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;contact&quot;&gt;"/>the contact form<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">22,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.host.heading" datatype="html">
+        <source>Hébergement</source>
+        <target state="translated">Hosting</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">27,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.host.who" datatype="html">
+        <source> Le site est hébergé par OVH SAS, 2 rue Kellermann, 59100 Roubaix, France. </source>
+        <target state="translated">The site is hosted by OVH SAS, 2 rue Kellermann, 59100 Roubaix, France.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">29,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.ip.heading" datatype="html">
+        <source>Propriété intellectuelle</source>
+        <target state="translated">Intellectual property</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">34,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.ip.works" datatype="html">
+        <source> Les textes, les rendus 3D et les visuels de ce site sont l’œuvre de Stéphane Lieumont. Toute réutilisation, même partielle, demande son autorisation préalable. </source>
+        <target state="translated">The texts, 3D renders and visuals on this site are the work of Stéphane Lieumont. Any reuse, even in part, requires his prior permission.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">36,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.ip.clients" datatype="html">
+        <source> Les noms et logos des clients appartiennent à leurs titulaires respectifs. Ils figurent ici pour illustrer les missions auxquelles il a participé. </source>
+        <target state="translated">Client names and logos belong to their respective owners. They appear here to illustrate the missions he worked on.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">40,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.data.heading" datatype="html">
+        <source>Données personnelles</source>
+        <target state="translated">Personal data</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">46,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.data.collected" datatype="html">
+        <source> Le formulaire de contact recueille votre nom, votre adresse email et votre message, dans le seul but de répondre à votre demande. </source>
+        <target state="translated">The contact form collects your name, email address and message, solely to answer your request.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">48,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.data.kept" datatype="html">
+        <source> Les messages sont reçus dans la boîte mail de Stéphane Lieumont (Gmail) et conservés trois ans au plus. Il est le responsable de ce traitement. </source>
+        <target state="translated">Messages are received in Stéphane Lieumont’s mailbox (Gmail) and kept for three years at most. He is the controller of this processing.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">52,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.spam.heading" datatype="html">
+        <source>Protection contre le spam</source>
+        <target state="translated">Spam protection</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">58,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.spam.turnstile" datatype="html">
+        <source> Le formulaire est protégé par Cloudflare Turnstile, qui analyse des données techniques transmises par votre navigateur pour distinguer un humain d’un robot. Son script ne se charge que sur la page de contact. Cloudflare décrit ce traitement dans <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://www.cloudflare.com/turnstile-privacy-policy/&quot;
+        &gt;"/>l’avenant de confidentialité de Turnstile<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a
+      &gt;"/>. </source>
+        <target state="translated">The form is protected by Cloudflare Turnstile, which analyses technical data sent by your browser to tell a human from a bot. Its script only loads on the contact page. Cloudflare describes this processing in its <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;https://www.cloudflare.com/turnstile-privacy-policy/&quot;&gt;"/>Turnstile privacy addendum<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">60,67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.cookies.heading" datatype="html">
+        <source>Cookies</source>
+        <target state="translated">Cookies</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">70,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.cookies.lang" datatype="html">
+        <source> Le site ne dépose qu’un cookie, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>lang<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, quand vous changez de langue avec le sélecteur : il retient ce choix pendant un an et ne contient rien d’autre. Strictement fonctionnel, il ne demande pas de consentement. </source>
+        <target state="translated">The site sets a single cookie, <x id="START_TAG_CODE" ctype="x-code" equiv-text="&lt;code&gt;"/>lang<x id="CLOSE_TAG_CODE" ctype="x-code" equiv-text="&lt;/code&gt;"/>, when you change language with the switcher: it remembers that choice for a year and holds nothing else. Being strictly functional, it needs no consent.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">72,75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.cookies.session" datatype="html">
+        <source> Le même geste garde votre position de lecture dans le stockage de session du navigateur, le temps d’afficher la page traduite. </source>
+        <target state="translated">The same click keeps your reading position in the browser’s session storage, just long enough to open the translated page.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">77,80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.cookies.audience" datatype="html">
+        <source>Aucune mesure d’audience à ce jour.</source>
+        <target state="translated">No audience measurement to date.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">80,83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.rights.heading" datatype="html">
+        <source>Vos droits</source>
+        <target state="translated">Your rights</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">84,85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.rights.exercise" datatype="html">
+        <source> Vous pouvez accéder à vos données, les faire rectifier ou effacer en écrivant via le <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;contact&quot;&gt;"/>formulaire de contact<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. Vous pouvez aussi adresser une réclamation à la CNIL, sur <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://www.cnil.fr/&quot;&gt;"/>cnil.fr<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. </source>
+        <target state="translated">You can access your data, or have it corrected or erased, by writing through the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a [routerLink]=&quot;contact&quot;&gt;"/>contact form<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>. You can also lodge a complaint with the CNIL, the French data protection authority, at <x id="START_LINK_1" equiv-text="&lt;a href=&quot;https://www.cnil.fr/&quot;&gt;"/>cnil.fr<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">86,90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.credits.heading" datatype="html">
+        <source>Crédits</source>
+        <target state="translated">Credits</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">93,95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.credits.fonts" datatype="html">
+        <source> Polices Instrument Sans, Instrument Serif et JetBrains Mono, sous licence SIL Open Font License 1.1. </source>
+        <target state="translated">Typefaces Instrument Sans, Instrument Serif and JetBrains Mono, under the SIL Open Font License 1.1.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">96,99</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="legal.credits.icons" datatype="html">
+        <source> Icônes des outils : Simple Icons et gilbarbara/logos (CC0 1.0), Lucide (licence ISC). Les marques restent la propriété de leurs titulaires. </source>
+        <target state="translated">Tool icons: Simple Icons and gilbarbara/logos (CC0 1.0), Lucide (ISC licence). Trademarks remain the property of their owners.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/legal/views/legal-notice/legal-notice.component.html</context>
+          <context context-type="linenumber">100,103</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -108,7 +108,16 @@
   <app-social-dock />
 }
 
-<footer class="copyright">© {{ year }} Stéphane Lieumont</footer>
+<footer class="copyright">
+  <span>© {{ year }} Stéphane Lieumont</span>
+  <a
+    class="copyright__link"
+    [routerLink]="legalPath"
+    [attr.aria-current]="current(legalPath)"
+    i18n="@@footer.legal"
+    >Mentions légales</a
+  >
+</footer>
 
 <app-thread />
 

@@ -214,7 +214,7 @@
 // and the mosaic, and its own view-transition group so the sweep's snapshots
 // do not cover it. Only the viewer's modal dialog sits higher: the top layer
 // wins by spec. Over a render it can fall below AA (STATUS, known debt).
-// Not interactive, so it never takes a click from what is under it.
+// Only its link takes a click: the rest never takes one from what is under it.
 // Physical properties: in vertical-rl the element's own inline axis is vertical.
 .copyright {
   position: fixed;
@@ -232,4 +232,33 @@
   writing-mode: vertical-rl;
   rotate: 180deg;
   text-box: trim-both cap alphabetic;
+}
+
+// As quiet as the copyright it follows, up the same spine; the underline
+// tells it from the notice without colour. Its box is 24px across and as tall
+// as its words (WCAG 2.5.8), widened on the page's side only: the spine sits
+// against the screen's edge, where a centred box and its focus ring would be
+// cut off. Rotated, the block's end is that inner side.
+.copyright__link {
+  display: inline-block;
+  margin-inline-start: var(--space-2);
+  padding-block: 0 8px;
+  min-width: 24px;
+  border-radius: 2px;
+  pointer-events: auto;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.copyright__link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .copyright__link:hover {
+    text-decoration-thickness: 2px;
+  }
 }
