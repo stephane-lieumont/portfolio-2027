@@ -2,7 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it } from 'vitest';
 
-import { ScrubSentence, scrubLevels } from './scrub-sentence';
+import { BODY_RAMP, ScrubSentence, scrubLevels } from './scrub-sentence';
 
 describe('scrubLevels', () => {
   it('leaves every word unlit before the sentence reaches 68% of the viewport', () => {
@@ -21,6 +21,12 @@ describe('scrubLevels', () => {
 
   it('shows the sentence fully lit under reduced motion, wherever it is', () => {
     expect(scrubLevels(3, 2000, 200, 1000, true)).toEqual([1, 1, 1]);
+  });
+
+  it('starts lower on the project page, where the sentence sits below the fold', () => {
+    // At 75% of the viewport: unlit on the world pages' ramp, already lighting on this one.
+    expect(scrubLevels(4, 750, 200, 1000, false)[0]).toBe(0);
+    expect(scrubLevels(4, 750, 200, 1000, false, BODY_RAMP)[0]).toBeGreaterThan(0);
   });
 });
 

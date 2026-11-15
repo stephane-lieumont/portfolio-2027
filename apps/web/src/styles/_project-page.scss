@@ -1,0 +1,74 @@
+// The project page's document-keyed motion (traps.md: rules keyed on <html>
+// live here, never in a component). Values from the approved prototype. The
+// hero's letters and lines play the world pages' entrance (_world-page.scss),
+// on every arrival: the prototype plays it each time a project opens.
+
+@media (prefers-reduced-motion: no-preference) {
+  // The way back is there first.
+  :root.js-motion app-project-page .crumbs > * {
+    animation: world-fade 400ms var(--ease-world) 120ms backwards;
+  }
+
+  :root.js-motion app-project-page .crumbs > :nth-child(2) {
+    animation-delay: 165ms;
+  }
+
+  // The plate opens from its own slanted edge, the leading edge kept parallel
+  // to it: the sweep, at the scale of one picture.
+  :root.js-motion app-project-page .fig__ground {
+    animation: project-plate-cut 1100ms var(--ease-cut) 520ms backwards;
+  }
+
+  :root.js-motion app-project-page .fig__img {
+    animation: project-plate-settle 1700ms var(--ease-settle) 520ms backwards;
+  }
+
+  :root.js-motion app-project-page .fig > .fig__cap {
+    animation: project-cap-rise 520ms var(--ease-world) 1320ms backwards;
+  }
+
+  // Scroll reveal: WorldReveal stamps `data-reveal` on what starts below the
+  // fold. The block's hairline draws, its parts rise.
+  :root.js-motion app-project-page .block[data-reveal] {
+    border-color: transparent;
+    background: linear-gradient(var(--world-rule), var(--world-rule)) no-repeat 0 0 / 0% 1px;
+  }
+
+  :root.js-motion app-project-page .block[data-reveal='pending'] [data-reveal-part] {
+    opacity: 0;
+  }
+}
+
+// The whole title fades, the qualifier with the name; the world pages fade
+// the name alone.
+@media (prefers-reduced-motion: reduce) {
+  :root.js-motion app-project-page .title {
+    animation: world-fade 400ms linear backwards;
+  }
+
+  :root.js-motion app-project-page .entrance--intro .name {
+    animation: none;
+  }
+}
+
+@keyframes project-plate-cut {
+  from {
+    clip-path: polygon(var(--lean) 0, var(--lean) 0, 0 100%, 0 100%);
+  }
+  to {
+    clip-path: polygon(var(--lean) 0, calc(100% + var(--lean)) 0, 100% 100%, 0 100%);
+  }
+}
+
+@keyframes project-plate-settle {
+  from {
+    scale: 1.08;
+  }
+}
+
+@keyframes project-cap-rise {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+}
