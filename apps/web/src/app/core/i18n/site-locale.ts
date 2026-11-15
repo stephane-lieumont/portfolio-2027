@@ -20,9 +20,13 @@ export const SITE_LOCALE: SiteLocale = $localize.locale === 'en' ? 'en' : 'fr';
  */
 export type PageKey = 'dev' | 'cgi' | 'contact' | 'project' | 'piece' | 'not-found';
 
+/**
+ * A project or a piece is named by its record's id, not by a slug: each tree
+ * has its own slug for it (ADR-0017), and the id is what both share.
+ */
 export interface PageRef {
   readonly page: PageKey;
-  readonly slug?: string;
+  readonly id?: string;
 }
 
 /** The sections' paths in this build's tree, as the router sees them. */
@@ -41,12 +45,12 @@ export function treePrefix(locale: SiteLocale): string {
  * A page's path inside a tree, base excluded. The 404 has no counterpart of
  * its own: from it, the other tree opens on its first page.
  */
-export function pagePath({ page, slug }: PageRef, locale: SiteLocale): string {
+export function pagePath({ page, id }: PageRef, locale: SiteLocale): string {
   switch (page) {
     case 'project':
-      return `/${SECTIONS.dev[locale]}/${slug ?? ''}`;
+      return `/${SECTIONS.dev[locale]}/${PROJECTS.find((p) => p.id === id)?.slug[locale] ?? ''}`;
     case 'piece':
-      return `/${SECTIONS.cgi[locale]}/${slug ?? ''}`;
+      return `/${SECTIONS.cgi[locale]}/${ARTWORKS.find((a) => a.id === id)?.slug[locale] ?? ''}`;
     case 'cgi':
       return `/${SECTIONS.cgi[locale]}`;
     case 'contact':
@@ -68,19 +72,24 @@ export function pageHref(ref: PageRef, locale: SiteLocale): string {
  */
 export function pageAt(path: string, locale: SiteLocale): PageRef {
   const [first, slug] = path.split('/').filter(Boolean);
-  // An unknown slug is served the 404, so it is the 404 here too.
-  if (first === SECTIONS.dev[locale]) {
-    if (!slug) return { page: 'dev' };
-    return PROJECTS.some((p) => p.slug === slug)
-      ? { page: 'project', slug }
-      : { page: 'not-found' };
-  }
-  if (first === SECTIONS.cgi[locale]) {
-    if (!slug) return { page: 'cgi' };
-    return ARTWORKS.some((a) => a.slug === slug) ? { page: 'piece', slug } : { page: 'not-found' };
-  }
+  if (first === SECTIONS.dev[locale])
+    return slug ? pageRef('project', slug, locale) : { page: 'dev' };
+  if (first === SECTIONS.cgi[locale])
+    return slug ? pageRef('piece', slug, locale) : { page: 'cgi' };
   if (first === SECTIONS.contact[locale] && !slug) return { page: 'contact' };
   return { page: 'not-found' };
+}
+
+/**
+ * A route's page, its slug read in the tree's language: a project or a piece
+ * becomes its record's id. An unknown slug is served the 404, so it is the 404
+ * here too.
+ */
+export function pageRef(page: PageKey, slug: string | null, locale: SiteLocale): PageRef {
+  const records = page === 'project' ? PROJECTS : page === 'piece' ? ARTWORKS : null;
+  if (!records) return { page };
+  const record = records.find((r) => r.slug[locale] === slug);
+  return record ? { page, id: record.id } : { page: 'not-found' };
 }
 
 export function otherLocale(locale: SiteLocale): SiteLocale {

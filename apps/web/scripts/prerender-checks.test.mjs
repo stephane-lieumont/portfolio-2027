@@ -34,6 +34,8 @@ const page = ({
 const english = (overrides = {}) =>
   page({
     lang: 'en',
+    h1: 'A project, a question or just a Hello World?',
+    lead: 'I answer everything, even when the answer is no. Through the form or on LinkedIn, as you prefer.',
     form: FORM_EN,
     switcher: '<a href="/contact" hreflang="fr" lang="fr" aria-label="Version française">FR</a>',
     ...overrides,
@@ -154,7 +156,7 @@ describe('a prerendered page', () => {
 });
 
 describe('a page in either tree', () => {
-  it('passes in English when complete, its copy still French until PR 2', () => {
+  it('passes in English when complete, its copy in English', () => {
     assert.deepEqual(checkPage('en/contact', english()), []);
   });
 
@@ -219,8 +221,54 @@ describe('a page in either tree', () => {
   );
   caught('when the English form keeps a French label', 'en/contact', english({ form: FORM }));
   caught(
+    'when the English page keeps the French heading',
+    'en/contact',
+    english({ h1: 'Un projet, une question ou juste un Hello World ?' }),
+  );
+  caught(
+    'when French copy sits beside the English, the English heading and lead intact',
+    'en/contact',
+    english({
+      form: `${FORM_EN}<p>Je réponds à tout, y compris pour dire non. Par formulaire ou sur LinkedIn, au choix.</p>`,
+    }),
+  );
+  caught(
+    'when a French alt text reaches the English tree',
+    'en/contact',
+    english({
+      form: `${FORM_EN}<img src="/images/p.png" alt="Stéphane Lieumont, pensif, la main au menton">`,
+    }),
+  );
+  caught(
+    'when the English page is described in French',
+    'en/contact',
+    english({
+      head: '<meta name="description" content="Une plateforme de location entre particuliers, réalisée dans le cadre de ma formation. L’occasion de poser proprement une architecture React et un typage strict.">',
+    }),
+  );
+  caught(
+    'when one French word of the content is left in an English sentence',
+    'en/contact',
+    english({
+      form: `${FORM_EN}<p>The same living room rendered de jour et de nuit, éclairage.</p>`,
+    }),
+  );
+  caught(
     'when a French accessible name reaches the English tree',
     'en/contact',
     english({ form: `${FORM_EN}<a href="/x" aria-label="Télécharger mon CV (PDF)">x</a>` }),
   );
+});
+
+describe('the French denylists', () => {
+  it('hold the content no English page may say, and never an English string', async () => {
+    const { FRENCH_CONTENT, FRENCH_WORDS } = await import('./prerender-checks.mjs');
+    assert.ok(FRENCH_CONTENT.includes('Sans école et sans commande, bien avant le développement.'));
+    assert.ok(FRENCH_CONTENT.includes('Légos : les Minions'));
+    assert.ok(FRENCH_WORDS.includes('éclairage'));
+    // Shared values are English too: a proper name or a tool list is not French.
+    assert.ok(!FRENCH_CONTENT.includes('Escart Wild'));
+    assert.ok(!FRENCH_CONTENT.includes('Angular, TypeScript, RxJS/Signals, .NET/C#'));
+    assert.ok(!FRENCH_WORDS.includes('Stéphane'));
+  });
 });

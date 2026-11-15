@@ -4,10 +4,13 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy } from '@ang
 
 import {
   type PageKey,
+  type PageRef,
+  SITE_LOCALE,
   SITE_LOCALES,
   SITE_ORIGIN,
   type SiteLocale,
   pageHref,
+  pageRef,
 } from './i18n/site-locale';
 
 export const SITE_NAME = 'Stéphane Lieumont';
@@ -29,9 +32,9 @@ const isPageKey = (value: unknown): value is PageKey =>
  * The page's address in every tree, French as the default (ADR-0017). None
  * for the 404, which is not indexed.
  */
-export function alternates(page: PageKey, slug?: string): { hreflang: string; href: string }[] {
-  if (page === 'not-found') return [];
-  const href = (locale: SiteLocale) => `${SITE_ORIGIN}${pageHref({ page, slug }, locale)}`;
+export function alternates(ref: PageRef): { hreflang: string; href: string }[] {
+  if (ref.page === 'not-found') return [];
+  const href = (locale: SiteLocale) => `${SITE_ORIGIN}${pageHref(ref, locale)}`;
   return [
     ...SITE_LOCALES.map((locale) => ({ hreflang: locale, href: href(locale) })),
     { hreflang: 'x-default', href: href('fr') },
@@ -71,7 +74,8 @@ export class PageMetadata extends TitleStrategy {
     const key: unknown = route.data['page'];
     this.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((link) => link.remove());
     if (!isPageKey(key)) return;
-    for (const { hreflang, href } of alternates(key, route.paramMap.get('slug') ?? undefined)) {
+    const ref = pageRef(key, route.paramMap.get('slug'), SITE_LOCALE);
+    for (const { hreflang, href } of alternates(ref)) {
       const link = this.head.ownerDocument.createElement('link');
       link.setAttribute('rel', 'alternate');
       link.setAttribute('hreflang', hreflang);

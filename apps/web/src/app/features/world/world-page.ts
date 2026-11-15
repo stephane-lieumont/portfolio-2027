@@ -16,6 +16,7 @@ import {
   WORLD_PAGES,
   WORLD_STACKS,
 } from '../../core/content/world-content';
+import { LocalizedPipe } from '../../core/i18n/localized';
 import { PATHS } from '../../core/i18n/site-locale';
 import { CloudState } from '../../core/world/cloud-state';
 import { ArtMosaic } from './art-mosaic';
@@ -43,7 +44,16 @@ const LEAD_LINES = 3;
  */
 @Component({
   selector: 'app-world-page',
-  imports: [RouterLink, WorldHero, PointCloud, ScrubSentence, DevWork, ArtMosaic, WorldStack],
+  imports: [
+    RouterLink,
+    LocalizedPipe,
+    WorldHero,
+    PointCloud,
+    ScrubSentence,
+    DevWork,
+    ArtMosaic,
+    WorldStack,
+  ],
   templateUrl: './world-page.html',
   styleUrl: './world-page.scss',
   host: {

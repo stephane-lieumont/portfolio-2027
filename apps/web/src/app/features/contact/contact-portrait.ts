@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 
 import type { PublicImage } from '../../core/content/world-content';
+import { LocalizedPipe } from '../../core/i18n/localized';
 import { FrameLoop } from '../../core/motion/frame-loop';
 import { ReducedMotion } from '../../core/motion/reduced-motion';
 import {
@@ -33,7 +34,7 @@ const AT_REST: Offset = { x: 0, y: 0 };
  */
 @Component({
   selector: 'app-contact-portrait',
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, LocalizedPipe],
   template: `
     <figure>
       <div #portraitEl class="portrait">
@@ -42,7 +43,7 @@ const AT_REST: Offset = { x: 0, y: 0 };
           <img
             class="portrait__img"
             [ngSrc]="image().src"
-            [alt]="image().alt"
+            [alt]="image().alt | localized"
             [width]="image().width"
             [height]="image().height"
             priority

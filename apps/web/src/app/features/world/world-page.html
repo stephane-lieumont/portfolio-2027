@@ -6,14 +6,14 @@
 
     <div class="text">
       <p class="lede enter-line" style="--line: 2">
-        <strong>{{ page().lede.lead }}</strong> {{ page().lede.text }}
+        <strong>{{ page().lede.lead | localized }}</strong> {{ page().lede.text | localized }}
       </p>
-      <app-scrub-sentence [text]="page().scrub" />
+      <app-scrub-sentence [text]="page().scrub | localized" />
       <dl class="facts">
-        @for (fact of page().facts; track fact.label) {
+        @for (fact of page().facts; track $index) {
           <div class="facts__row enter-line" [style.--line]="3 + $index">
-            <dt>{{ fact.label }}</dt>
-            <dd>{{ fact.value }}</dd>
+            <dt>{{ fact.label | localized }}</dt>
+            <dd>{{ fact.value | localized }}</dd>
           </div>
         }
       </dl>

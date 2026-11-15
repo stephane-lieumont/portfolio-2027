@@ -3,16 +3,20 @@
 // quoting and nested markup are the HTML's business, not the check's.
 import { JSDOM } from 'jsdom';
 
-import { CONTACT_PAGE, WORLD_PAGES } from '../src/app/core/content/world-content.ts';
+import {
+  CONTACT_PAGE,
+  STATIC_ASSETS,
+  WORLD_PAGES,
+  WORLD_STACKS,
+} from '../src/app/core/content/world-content.ts';
 import { SECTIONS, SITE_ORIGIN } from '../src/app/core/i18n/site-paths.ts';
 import { ARTWORKS, PROJECTS } from '../src/app/core/static-content.ts';
 
 // Both worlds open on the name, set by the page itself.
 const NAME = 'Stéphane Lieumont';
 
-// The chrome each tree must say in its own words. The project copy and the
-// world pages' content are French in both trees until it is localized at the
-// source (ADR-0017), so only the strings marked for translation are checked.
+// The chrome each tree must say in its own words: the strings marked for
+// translation. The content says its own through `{ fr, en }` (ADR-0017).
 const CHROME = {
   fr: {
     contactForm: ['Nom', 'Email', 'Message', 'Envoyer'],
@@ -50,18 +54,55 @@ export const FRENCH_CHROME = [
   'Lead Tech & graphiste 3D',
 ];
 
+/** Every `{ fr, en }` pair in a tree of content, wherever it sits. */
+function localizedPairs(value) {
+  if (Array.isArray(value)) return value.flatMap(localizedPairs);
+  if (typeof value !== 'object' || value === null) return [];
+  if (typeof value.fr === 'string' && typeof value.en === 'string') return [value];
+  return Object.values(value).flatMap(localizedPairs);
+}
+
+const CONTENT = localizedPairs([
+  WORLD_PAGES,
+  WORLD_STACKS,
+  CONTACT_PAGE,
+  STATIC_ASSETS,
+  PROJECTS,
+  ARTWORKS,
+]);
+
+/**
+ * French content that must not reach the English tree: every French value
+ * that is not also English (a proper name, a tool list), whole.
+ */
+export const FRENCH_CONTENT = CONTENT.filter(
+  ({ fr }) => !CONTENT.some(({ en }) => en.includes(fr)),
+).map(({ fr }) => fr);
+
+/**
+ * Words only the French content uses, accented ones: a stray word, a half
+ * translated sentence, a French alt text, caught even when the whole string
+ * has changed. Names excepted.
+ */
+export const FRENCH_WORDS = [
+  ...new Set(
+    CONTENT.flatMap(({ fr }) => fr.match(/[\p{L}-]*[àâçèéêëîïôûùüÿœæ][\p{L}-]*/giu) ?? []),
+  ),
+].filter((word) => word !== 'Stéphane');
+
 const treePrefix = (locale) => (locale === 'fr' ? '' : `${locale}/`);
 
-/** A page's directory in a tree, from the build's root. */
+/** A page's directory in a tree, from the build's root; a record's slug in that tree's language. */
 export function routeOf({ page, slug }, locale) {
   const section = { project: 'dev', piece: 'cgi', 'not-found': 'dev' }[page] ?? page;
-  const path = page === 'project' || page === 'piece' ? `/${slug}` : '';
+  const path = page === 'project' || page === 'piece' ? `/${slug[locale]}` : '';
   return `${treePrefix(locale)}${SECTIONS[section][locale]}${path}`;
 }
 
 function tree(locale) {
   const other = locale === 'fr' ? 'en' : 'fr';
   const chrome = CHROME[locale];
+  const say = (text) => text[locale];
   const entry = (ref, expected) => [
     ref.page === 'not-found' ? `${treePrefix(locale)}404` : routeOf(ref, locale),
     { locale, ref, switchTo: `/${routeOf(ref, other)}`, ...expected },
@@ -79,10 +120,11 @@ function tree(locale) {
       {
         h1: NAME,
         text: [
-          WORLD_PAGES.dev.lede.lead,
-          WORLD_PAGES.dev.scrub,
+          say(WORLD_PAGES.dev.lede.lead),
+          say(WORLD_PAGES.dev.scrub),
+          ...WORLD_PAGES.dev.facts.map((f) => say(f.value)),
           chrome.worldCta,
-          ...PROJECTS.map((p) => p.title),
+          ...PROJECTS.map((p) => say(p.title)),
         ],
       },
     ),
@@ -91,29 +133,33 @@ function tree(locale) {
       {
         h1: NAME,
         text: [
-          WORLD_PAGES.cgi.lede.lead,
-          WORLD_PAGES.cgi.scrub,
+          say(WORLD_PAGES.cgi.lede.lead),
+          say(WORLD_PAGES.cgi.scrub),
+          ...WORLD_PAGES.cgi.facts.map((f) => say(f.value)),
           chrome.worldCta,
-          ...ARTWORKS.map((a) => a.title),
+          ...ARTWORKS.map((a) => say(a.title)),
         ],
       },
     ),
-    ...ARTWORKS.map((a) => entry({ page: 'piece', slug: a.slug }, { h1: NAME, text: [a.title] })),
+    ...ARTWORKS.map((a) =>
+      entry({ page: 'piece', slug: a.slug }, { h1: NAME, text: [say(a.title)] }),
+    ),
     entry(
       { page: 'contact' },
-      { h1: CONTACT_PAGE.title, text: [CONTACT_PAGE.lede, ...chrome.contactForm] },
+      { h1: say(CONTACT_PAGE.title), text: [say(CONTACT_PAGE.lede), ...chrome.contactForm] },
     ),
     ...PROJECTS.map((p) =>
       entry(
         { page: 'project', slug: p.slug },
         {
-          h1: p.title,
+          h1: say(p.title),
           text: [
-            p.context,
-            p.mission,
-            p.presentationCaption,
+            say(p.context),
+            say(p.role),
+            say(p.mission),
+            say(p.presentationCaption),
             chrome.projectBlock,
-            ...p.missionSteps,
+            ...p.missionSteps.map(say),
           ],
         },
       ),
@@ -209,12 +255,21 @@ export function checkPage(route, html) {
     const said = [
       document.title,
       document.body.textContent ?? '',
-      ...Array.from(document.querySelectorAll('[aria-label], [title]'), (el) =>
-        [el.getAttribute('aria-label'), el.getAttribute('title')].join(' '),
+      ...Array.from(document.querySelectorAll('[aria-label], [title], [alt]'), (el) =>
+        [el.getAttribute('aria-label'), el.getAttribute('title'), el.getAttribute('alt')].join(' '),
       ),
+      document.head.querySelector('meta[name="description"]')?.getAttribute('content') ?? '',
     ].join(' ');
     for (const french of FRENCH_CHROME) {
       if (said.includes(french)) fail(`French interface text in the English tree: "${french}"`);
+    }
+    for (const french of FRENCH_CONTENT) {
+      if (said.includes(french))
+        fail(`French content in the English tree: "${french.slice(0, 50)}"`);
+    }
+    const words = new Set(said.match(/[\p{L}-]+/gu) ?? []);
+    for (const word of FRENCH_WORDS) {
+      if (words.has(word)) fail(`French word in the English tree: "${word}"`);
     }
   }
 

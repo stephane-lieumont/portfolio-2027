@@ -1,8 +1,9 @@
 # Status
 
 Last updated 2026-11-15. Describes `main` (shell, world pages, contact, the
-pointer's « fil », the project page and the 404) with `feat/i18n-setup` (the
-bilingual site's first PR, ADR-0017) on top.
+pointer's « fil », the project page, the 404 and the bilingual site's first
+PR, ADR-0017) with `feat/i18n-content` (its second PR, the content in both
+languages) on top.
 
 ## Works today
 
@@ -342,11 +343,8 @@ i18n:extract` writes `src/locale/messages.xlf` (not committed) to diff against
   page chrome, 404, image fallbacks. **The English is a draft** written here
   from the French, no new claim: to be rewritten by the communication expert
   in PR 3 and approved in the final content review.
-- **Still French in the English tree, on purpose until PR 2**: everything in
-  `world-content.ts` and `static-content.ts` (hero ledes, facts, stack points,
-  contact title and lede, portrait alt and caption, project and piece titles,
-  copy and alt texts), and the slugs of projects and pieces
-  (`/en/developer/kasa-openclassrooms`). PR 2 makes them `{ fr, en }`.
+- The content of `world-content.ts` and `static-content.ts` is in both
+  languages since PR 2 (below).
 - Section paths come from one table, `SECTIONS` in
   `core/i18n/site-paths.ts`, read for the build's locale (`$localize.locale`,
   inlined per tree) and for both by the switcher, the `hreflang` links and the
@@ -380,8 +378,8 @@ rel="alternate" hreflang="fr|en|x-default">` with absolute addresses on
   « 3D art » / « Development »; no prerendered node removed on hydration, no
   console error. Dev servers, both trees: « Angular hydrated … 0 component(s)
   were skipped » on six pages each, same component and node counts in both.
-- Initial bundle 418.97 kB raw / 118.2 kB transfer per tree (`withI18nSupport`
-  costs about 2.6 kB raw); under the 500 kB warning.
+- Initial bundle 418.97 kB raw / 118.2 kB transfer per tree at PR 1
+  (`withI18nSupport` costs about 2.6 kB raw); see PR 2 for today's.
 - Not done here: nginx itself (ADR-0005 amended with the `/` redirect on the
   `lang` cookie then `Accept-Language`, 302 and `Vary`, and per-tree
   `try_files` / `error_page`; outside the repository). Not verified: Safari,
@@ -395,6 +393,68 @@ rel="alternate" hreflang="fr|en|x-default">` with absolute addresses on
   an agent; to amend by Stéphane (ADR-0017 asks for it with this PR). Specs
   00/01/02/03/06 and `content-guidelines.md` are amended. The
   `communication-expert` agent's brief still says French only.
+
+**Bilingual, PR 2 of 3 (ADR-0017, `feat/i18n-content`)** — the content in
+both languages, at the source.
+
+- shared-types: `LocalizedText` `{ fr, en }` and `localized(schema)`
+  (`src/localized.ts`), each language held to the field's own rule, both
+  required. Applied to every visitor-facing text field: `WorldPage` (role
+  word, lede, scrub, facts — labels unique in each language), `WorldStack`
+  points, `ContactPage` (title, lede, portrait caption), `Project` (title,
+  summary, context, role, mission, mission steps, presentation caption),
+  `MediaAsset.alt`. Slugs are `LocalizedSlug`. `series` stays one string: a
+  proper name and the grouping key. `SiteSettings` has no text. Spec 03
+  amended. **Contract change not yet carried to the API**: its Drizzle schema
+  (provisional, spec 03) still has one `title`, `slug` and `alt` column.
+- Static content migrated, ids added to projects and pieces (uuid, as the
+  schema has them). **The English is a draft** written from the French, no
+  new claim, to be rewritten by the communication expert in PR 3: every
+  `en` value in `world-content.ts` (role word « 3D ARTIST », ledes, scrubs,
+  facts, the 52 stack points, contact title and lede, portrait alt) and in
+  `static-content.ts` (six projects' titles, summaries, contexts, roles,
+  missions, steps, captions and alt texts; sixteen pieces' titles and alt
+  texts).
+- English slugs: kept where they are a proper name or already English
+  (`case-tes-potes-mobile`, `-landing-page`, `-web-app`,
+  `kasa-openclassrooms`, `pixmodels`, `escart-wild`, `beebop`, `gorgotte`,
+  `caricature`), translated otherwise (`3d-portfolio-2018`, `lego-minions`,
+  `alien`, `building`, `living-room-night`, `bedroom`, `living-room-day`,
+  `modern-house`, `entrance-hall`, `exterior`, `light-bulb`,
+  `marketing-visual`, `tomatoes`). Bucket keys stay on the French slug: one
+  file per picture for both trees.
+- Pages read `text[SITE_LOCALE]` through `localized()` and the `localized`
+  pipe (`core/i18n/localized.ts`). Route guards, resolvers (title,
+  description), prerender params, links, the mosaic's hrefs and the project
+  hero's `#video` link use the tree's slug. A `PageRef` names a project or a
+  piece by its record id: the switcher and the `hreflang` links go slug →
+  record → the other tree's slug. A French slug under `/en` is a 404. The
+  role word's italic accents are per language (« 3D » ends « GRAPHISTE 3D »,
+  opens « 3D ARTIST »).
+- The prerender check asserts every English page renders the `.en` values
+  (ledes, scrubs, fact values, titles, contexts, roles, missions, steps,
+  captions, contact title and lede), and that no French content reaches the
+  English tree: every French value that is not also English, whole, and every
+  accented word of the French content, in the text, `alt`, `aria-label`,
+  `title` and the meta description.
+- Measured on the production build served statically (port 4211, the
+  ADR-0005 stand-in): all 52 pages of both trees 200 with the right `lang`,
+  h1, switcher target and `hreflang` slugs; the four unknown addresses tried
+  (one a French slug under `/en`, one an English slug under the root) 404
+  with their tree's page; English `main` text, `alt`, `aria-label` and
+  `title` dumped and grepped: no French word. Switcher round trips by click,
+  cookie set each way: `/en/developer/3d-portfolio-2018` ↔
+  `/developpeur/portfolio-3d-2018`, `/graphisme-3d/extraterrestre` ↔
+  `/en/3d-art/alien`, `/en/3d-art/living-room-night` ↔
+  `/graphisme-3d/salon-nuit`. In-app: an English tile opens
+  `/en/3d-art/alien` (« 2 of 16. Alien, 2016 », switcher to
+  `/graphisme-3d/extraterrestre`); an English card opens
+  `/en/developer/3d-portfolio-2018`. No prerendered node removed on
+  hydration, no console error, tab visible.
+- Initial bundle 437.58 kB raw / 123.71 kB transfer per tree, up from
+  418.97 / 118.2: each tree ships both languages of the static content
+  (about 18.6 kB raw, 5.5 kB transfer). Under the 500 kB warning. Goes away
+  when the content comes from the API.
 
 **Prerendering (ADR-0008)** — `outputMode: 'static'`: the build writes one
 complete HTML file per route under `dist/web/browser` — `/` (a redirect to
@@ -440,8 +500,8 @@ read-for-anyone, write-for-nobody; verified with an anonymous PUT returning 403.
 The CV PDF is served from the repository. Locally the renders need
 `pnpm infra:up`: without MinIO, `/medias` answers 502 and every picture breaks.
 
-**Tests** — 471 passing on the web side, 97.8% lines, 87.8% branches, 93.5%
-functions (plus 41 for the prerender check); axe on every page, every project page included. Every route, the
+**Tests** — 509 passing on the web side, 97.6% lines, 87.8% branches, 93.4%
+functions (plus 47 for the prerender check); axe on every page, every project page included. Every route, the
 404, the project guard, the API client, the gallery, contact, the project page,
 its video facade and the YouTube address parser have their own specs; the
 static projects are parsed against the `Project` schema.
@@ -544,12 +604,11 @@ on the production build (1440 and 390), and is to be fixed later.
 
 ## Decided, not built
 
-- **Bilingual FR/EN (ADR-0017), PRs 2 and 3.** PR 1 (infrastructure and
-  interface strings) is in « Works today ». PR 2: `LocalizedText` `{ fr, en }`
-  in shared-types for every text field and slug, the static content migrated,
-  the pages reading their build's locale. PR 3: the English copy rewritten by
-  the communication expert and reviewed. The nginx redirect and per-tree 404
-  (ADR-0005, amended) are to apply on the server.
+- **Bilingual FR/EN (ADR-0017), PR 3.** PRs 1 (infrastructure and
+  interface strings) and 2 (content `{ fr, en }`) are in « Works today ».
+  PR 3: the English copy — interface strings and content, all draft today —
+  rewritten by the communication expert and reviewed. The nginx redirect and
+  per-tree 404 (ADR-0005, amended) are to apply on the server.
 
 ## Missing
 
@@ -606,5 +665,5 @@ empty cloud; one frame (16ms) at the old page's capture is still lighter,
 with a ghost in the header — not explained yet). The cookie now also carries `Secure` and is set on
 a middle-click too; an unknown slug's switcher leads to the other tree's first
 page, as its 404 does; the prerender check's cross-origin rule exempts only
-`rel="alternate"`. **Do not deploy `/en` before PR 2**: its content (lede,
-facts, projects, slugs, the role word) is still French under `hreflang="en"`.
+`rel="alternate"`. **English copy is draft pending PR 3**: interface strings
+and content alike (see « Bilingual, PR 2 »).

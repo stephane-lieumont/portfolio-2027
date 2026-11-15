@@ -2,7 +2,9 @@
 
 Settled with Stéphane on 2026-08-31. The provisional schema written to prove the architecture (`packages/shared-types/src/project.ts`, `apps/api/src/db/schema.ts`) is superseded by this document.
 
-Visitor-facing copy stored in these entities is written in **French and English** (ADR-0017): each text field becomes `{ fr, en }`, both required to publish. Until that migration lands, the fields below are French.
+Visitor-facing copy stored in these entities is written in **French and English** (ADR-0017). Every text field below marked _localized_ is a `LocalizedText`, `{ fr: string; en: string }` (`packages/shared-types/src/localized.ts`), each language held to the field's own rule (length, required, pattern) and **both required**: a record ships in both trees or in neither, so an English page never falls back to French. The page reads the field for its build's locale and never translates at runtime. Slugs are `LocalizedSlug`, `{ fr, en }`, each kebab-case.
+
+A record is named across the two trees by its `id`, never by a slug: the language switch and the `hreflang` links go from a slug to its record, then to the record's slug in the other language.
 
 ---
 
@@ -20,28 +22,28 @@ In `@portfolio/shared-types` they are two schemas, not a discriminated union —
 
 ## `Project` — development case study
 
-| Field                 | Type                   | Notes                                                                                                                                                                  |
-| --------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | uuid                   |                                                                                                                                                                        |
-| `slug`                | kebab-case, unique     | **Final once published.** It is the public URL.                                                                                                                        |
-| `title`               | string                 |                                                                                                                                                                        |
-| `summary`             | string                 | One sentence, for cards and the meta description. **Not shown on the project page**, which opens on `context` (Stéphane, 2026-11-15).                                  |
-| `context`             | plain text             | What the product was. The page's introduction, coloured word by word on scroll.                                                                                        |
-| `role`                | string                 | In what capacity, ≤ 80. Set large beside the mission, and in the page's eyebrow.                                                                                       |
-| `mission`             | plain text             | What Stéphane did.                                                                                                                                                     |
-| `missionSteps`        | string[]               | Ordered, 1–10. The concrete deliverables.                                                                                                                              |
-| `technologies`        | tech slug[]            | From the registry below.                                                                                                                                               |
-| `series`              | string?                | e.g. `"Case Tes Potes"`. Groups related projects: their pages end on the whole series; any other ends on « Autres réalisations ».                                      |
-| `websiteUrl`          | url?                   | « Voir le site ». A root-relative path to a demo proxied by nginx — **verify the route exists before publishing** (ADR-0005) — or an `https` site. Replaces `demoUrl`. |
-| `videoUrl`            | url?                   | « Voir la vidéo ». An `https` YouTube video address, played on the page after a click (ADR-0016).                                                                      |
-| `presentationAsset`   | asset id               | Required. The wide visual the page opens on, the product staged on white.                                                                                              |
-| `presentationCaption` | string                 | ≤ 160, the « Fig. » line under it.                                                                                                                                     |
-| `sourceUrl`           | url?                   |                                                                                                                                                                        |
-| `coverAsset`          | asset id               | Required.                                                                                                                                                              |
-| `gallery`             | asset id[]             | Ordered, may be empty.                                                                                                                                                 |
-| `releasedAt`          | date                   | Drives display order.                                                                                                                                                  |
-| `status`              | `draft` \| `published` |                                                                                                                                                                        |
-| `publishedAt`         | timestamp?             | Set when status first becomes `published`.                                                                                                                             |
+| Field                 | Type                    | Notes                                                                                                                                                                     |
+| --------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | uuid                    |                                                                                                                                                                           |
+| `slug`                | `{ fr, en }` kebab-case | Unique per language. **Final once published.** It is the public URL in each tree. A descriptive slug is translated, a proper name kept.                                   |
+| `title`               | localized               |                                                                                                                                                                           |
+| `summary`             | localized               | One sentence, for cards and the meta description. **Not shown on the project page**, which opens on `context` (Stéphane, 2026-11-15).                                     |
+| `context`             | localized plain text    | What the product was. The page's introduction, coloured word by word on scroll.                                                                                           |
+| `role`                | localized               | In what capacity, ≤ 80. Set large beside the mission, and in the page's eyebrow.                                                                                          |
+| `mission`             | localized plain text    | What Stéphane did.                                                                                                                                                        |
+| `missionSteps`        | localized[]             | Ordered, 1–10. The concrete deliverables, each in both languages so the steps stay aligned.                                                                               |
+| `technologies`        | tech slug[]             | From the registry below.                                                                                                                                                  |
+| `series`              | string?                 | e.g. `"Case Tes Potes"`. A proper name, the same in both languages, and the grouping key. Their pages end on the whole series; any other ends on « Autres réalisations ». |
+| `websiteUrl`          | url?                    | « Voir le site ». A root-relative path to a demo proxied by nginx — **verify the route exists before publishing** (ADR-0005) — or an `https` site. Replaces `demoUrl`.    |
+| `videoUrl`            | url?                    | « Voir la vidéo ». An `https` YouTube video address, played on the page after a click (ADR-0016).                                                                         |
+| `presentationAsset`   | asset id                | Required. The wide visual the page opens on, the product staged on white.                                                                                                 |
+| `presentationCaption` | localized               | ≤ 160, the « Fig. » line under it.                                                                                                                                        |
+| `sourceUrl`           | url?                    |                                                                                                                                                                           |
+| `coverAsset`          | asset id                | Required.                                                                                                                                                                 |
+| `gallery`             | asset id[]              | Ordered, may be empty.                                                                                                                                                    |
+| `releasedAt`          | date                    | Drives display order.                                                                                                                                                     |
+| `status`              | `draft` \| `published`  |                                                                                                                                                                           |
+| `publishedAt`         | timestamp?              | Set when status first becomes `published`.                                                                                                                                |
 
 The three-part structure — context, mission, steps — is inherited from the current site, where it is the best-written thing on it (spec 02).
 
@@ -51,18 +53,18 @@ The 2022 site's presentation visuals (about 2.5:1) are kept for now; 2× exports
 
 ## `Artwork` — 3D piece
 
-| Field         | Type                   | Notes                                                                   |
-| ------------- | ---------------------- | ----------------------------------------------------------------------- |
-| `id`          | uuid                   |                                                                         |
-| `slug`        | kebab-case, unique     | Every piece has its own URL, so it can be shared and indexed (spec 01). |
-| `title`       | string                 |                                                                         |
-| `description` | string?                | Short. Optional — most pieces need none.                                |
-| `software`    | software slug[]        | Required, at least one. Separate vocabulary from `technologies`.        |
-| `views`       | view[]                 | Ordered, **at least one**. See below.                                   |
-| `featured`    | boolean                | Doubles the tile in the mosaic.                                         |
-| `releasedAt`  | date                   |                                                                         |
-| `status`      | `draft` \| `published` |                                                                         |
-| `publishedAt` | timestamp?             |                                                                         |
+| Field         | Type                    | Notes                                                                                |
+| ------------- | ----------------------- | ------------------------------------------------------------------------------------ |
+| `id`          | uuid                    |                                                                                      |
+| `slug`        | `{ fr, en }` kebab-case | Every piece has its own URL in each tree, so it can be shared and indexed (spec 01). |
+| `title`       | localized               |                                                                                      |
+| `description` | localized?              | Short. Optional — most pieces need none.                                             |
+| `software`    | software slug[]         | Required, at least one. Separate vocabulary from `technologies`.                     |
+| `views`       | view[]                  | Ordered, **at least one**. See below.                                                |
+| `featured`    | boolean                 | Doubles the tile in the mosaic.                                                      |
+| `releasedAt`  | date                    |                                                                                      |
+| `status`      | `draft` \| `published`  |                                                                                      |
+| `publishedAt` | timestamp?              |                                                                                      |
 
 ### Views
 
@@ -76,7 +78,7 @@ view: { assetId, label?, position, focal? }
 
 `focal` is `{ x, y }` in `[0, 1]`, centre by default: where the mosaic crops the view around (ADR-0015). The viewer always shows the whole render.
 
-`label` is optional French text — `"Wireframe"`, `"Clay"`, `"Render final"`, `"Vue de nuit"`. Empty for a plain alternate angle.
+`label` is optional localized text — `"Wireframe"`, `"Clay"`, `{ fr: "Vue de nuit", en: "Night view" }`. Absent for a plain alternate angle.
 
 **The first view is the cover.** It is what the mosaic shows. There is no separate `coverAssetId`: a second source of truth would let the cover and the gallery disagree, and reordering in the back office makes the change visible immediately rather than silently. Accepted trade-off — reordering views changes the cover, which is predictable but has to be shown clearly in the admin UI.
 
@@ -112,22 +114,22 @@ All text is plain text, never markup. A bold lead is its own field.
 
 ### `WorldPage` — one per world (`dev`, `cgi`)
 
-| Field          | Type                         | Notes                                                                     |
-| -------------- | ---------------------------- | ------------------------------------------------------------------------- |
-| `world`        | `dev` \| `cgi`               | Discriminator.                                                            |
-| `roleWord`     | 2–16 capitals, digits, space | Flips under the name at display size: « LEAD TECH », « GRAPHISTE 3D ».    |
-| `eyebrowTools` | slug[], 1–4                  | From `technologies` for `dev`, from `software` for `cgi` — never crossed. |
-| `lede`         | `{ lead, text }`             | `lead` ≤ 80, set in bold; `text` ≤ 200.                                   |
-| `scrub`        | string, 20–220, ≤ 35 words   | The sentence coloured word by word on scroll.                             |
-| `facts`        | `{ label, value }[]`, 3–6    | Labels unique, ≤ 24; values ≤ 80.                                         |
+| Field          | Type                                    | Notes                                                                                  |
+| -------------- | --------------------------------------- | -------------------------------------------------------------------------------------- |
+| `world`        | `dev` \| `cgi`                          | Discriminator.                                                                         |
+| `roleWord`     | localized, 2–16 capitals, digits, space | Flips under the name at display size: « LEAD TECH », « GRAPHISTE 3D » / « 3D ARTIST ». |
+| `eyebrowTools` | slug[], 1–4                             | From `technologies` for `dev`, from `software` for `cgi` — never crossed.              |
+| `lede`         | `{ lead, text }`, localized             | `lead` ≤ 80, set in bold; `text` ≤ 200.                                                |
+| `scrub`        | localized, 20–220, ≤ 35 words           | The sentence coloured word by word on scroll.                                          |
+| `facts`        | `{ label, value }[]`, 3–6, localized    | Labels unique in each language, ≤ 24; values ≤ 80.                                     |
 
 ### `WorldStack` — one per world
 
-`entries`: 3–10 `{ tool, points }`, one entry per tool, `tool` from the world's own registry. `points`: 2–6 `{ lead ≤ 60, text ≤ 220 }`, rendered as the numbered « Maîtrise » panel.
+`entries`: 3–10 `{ tool, points }`, one entry per tool, `tool` from the world's own registry. `points`: 2–6 `{ lead ≤ 60, text ≤ 220 }`, both localized, rendered as the numbered « Maîtrise » panel.
 
 ### `ContactPage` — singleton
 
-`title` ≤ 120, `lede` ≤ 280, `portraitAssetId` (a cut-out with a transparent background, it stands on the diagonal plate), `portraitCaption` ≤ 60.
+`title` ≤ 120, `lede` ≤ 280, `portraitAssetId` (a cut-out with a transparent background, it stands on the diagonal plate), `portraitCaption` ≤ 60; the three texts localized.
 
 ### `SiteSettings` — singleton
 
@@ -175,13 +177,13 @@ The back office derives three states from them:
 
 On a portfolio the same render never legitimately appears in two projects, and this single constraint removes the whole question of what deleting a media item means. `MediaAsset` therefore carries an owner reference rather than living in a many-to-many join.
 
-`MediaAsset` keeps the fields ADR-0012 requires: object key, `alt` (required, non-empty, real text and never a repeat of the title), intrinsic width and height, byte size, content type, dominant colour, and a processing state.
+`MediaAsset` keeps the fields ADR-0012 requires: object key, `alt` (localized; required, non-empty, real text and never a repeat of the title, in each language), intrinsic width and height, byte size, content type, dominant colour, and a processing state. One file serves both trees.
 
 ---
 
 ## Constraints inherited
 
-- The `slug` is the public URL and is **final** once published (spec 01).
+- The `slug` is the public URL in each tree and is **final** once published (spec 01), in both languages.
 - Media store an **object key, never an absolute URL** (ADR-0003).
 - Any schema change goes through `@portfolio/shared-types` first, then the Drizzle schema, then a generated migration (`add-project` skill).
 

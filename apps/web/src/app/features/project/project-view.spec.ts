@@ -54,11 +54,11 @@ describe('closingBand', () => {
   it('ends a project outside a series on others, distinct and never itself', () => {
     for (const project of PROJECTS.filter((p) => !p.series)) {
       const band = closingBand(project, PROJECTS);
-      const slugs = band.projects.map((p) => p.slug);
+      const ids = band.projects.map((p) => p.id);
 
-      expect(slugs).toHaveLength(OTHERS_COUNT);
-      expect(new Set(slugs).size).toBe(slugs.length);
-      expect(slugs).not.toContain(project.slug);
+      expect(ids).toHaveLength(OTHERS_COUNT);
+      expect(new Set(ids).size).toBe(ids.length);
+      expect(ids).not.toContain(project.id);
       expect(band.current).toBeNull();
     }
   });

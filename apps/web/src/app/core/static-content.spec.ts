@@ -1,12 +1,13 @@
-import { projectSchema } from '@portfolio/shared-types';
+import { localizedSlugSchema, localizedTextSchema, projectSchema } from '@portfolio/shared-types';
 import { describe, expect, it } from 'vitest';
 
+import { SITE_LOCALES } from './i18n/site-locale';
 import { ARTWORKS, PROJECTS, type StaticImage } from './static-content';
 
 const IMAGES: readonly [string, StaticImage][] = [
-  ...PROJECTS.map((p) => [`project ${p.slug}`, p.cover] as [string, StaticImage]),
-  ...PROJECTS.map((p) => [`presentation ${p.slug}`, p.presentation] as [string, StaticImage]),
-  ...ARTWORKS.map((a) => [`artwork ${a.slug}`, a.image] as [string, StaticImage]),
+  ...PROJECTS.map((p) => [`project ${p.slug.fr}`, p.cover] as [string, StaticImage]),
+  ...PROJECTS.map((p) => [`presentation ${p.slug.fr}`, p.presentation] as [string, StaticImage]),
+  ...ARTWORKS.map((a) => [`artwork ${a.slug.fr}`, a.image] as [string, StaticImage]),
 ];
 
 // The images live in MinIO, so nothing here can prove an object exists — that
@@ -25,7 +26,7 @@ describe.each(IMAGES)('%s image', (_name, image) => {
   });
 });
 
-describe('alt text', () => {
+describe.each(SITE_LOCALES)('alt text in %s', (locale) => {
   // The 2022 data used the title as its own alt text, typos included, which
   // makes a screen reader say the same words twice and describes nothing.
   it('never repeats the title it sits beside', () => {
@@ -33,28 +34,30 @@ describe('alt text', () => {
       ...PROJECTS.map((p) => [p.title, p.cover.alt] as const),
       ...PROJECTS.map((p) => [p.title, p.presentation.alt] as const),
       ...ARTWORKS.map((a) => [a.title, a.image.alt] as const),
-    ].filter(([title, alt]) => alt.toLowerCase() === title.toLowerCase());
+    ].filter(([title, alt]) => alt[locale].toLowerCase() === title[locale].toLowerCase());
 
     expect(repeats).toEqual([]);
   });
 
   it('is never empty', () => {
     for (const [, image] of IMAGES) {
-      expect(image.alt.trim().length).toBeGreaterThan(0);
+      expect(image.alt[locale].trim().length).toBeGreaterThan(0);
+    }
+  });
+
+  it('never repeats the caption beside a presentation visual', () => {
+    for (const project of PROJECTS) {
+      expect(project.presentation.alt[locale]).not.toBe(project.presentationCaption[locale]);
     }
   });
 });
 
 describe('presentation visuals', () => {
-  it('sit beside a caption they never repeat', () => {
+  // One file for both trees, named after the French slug: the English slug
+  // must not leak into the key, or the English page would show nothing.
+  it('are keyed on their own French slug, so no page can show another project', () => {
     for (const project of PROJECTS) {
-      expect(project.presentation.alt).not.toBe(project.presentationCaption);
-    }
-  });
-
-  it('are keyed on their own slug, so no page can show another project', () => {
-    for (const project of PROJECTS) {
-      expect(project.presentation.key).toBe(`projects/${project.slug}-presentation.jpg`);
+      expect(project.presentation.key).toBe(`projects/${project.slug.fr}-presentation.jpg`);
     }
   });
 });
@@ -63,6 +66,7 @@ describe('presentation visuals', () => {
 // the same contract, so the swap to the API changes the source and not the
 // copy. A video must be an https YouTube address the page can embed.
 const projectContent = projectSchema.pick({
+  id: true,
   slug: true,
   title: true,
   summary: true,
@@ -77,8 +81,8 @@ const projectContent = projectSchema.pick({
   releasedAt: true,
 });
 
-describe.each(PROJECTS.map((p) => [p.slug, p] as const))('project %s', (_slug, project) => {
-  it('meets the Project contract', () => {
+describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (_slug, project) => {
+  it('meets the Project contract, in both languages', () => {
     const result = projectContent.safeParse({
       ...project,
       missionSteps: [...project.missionSteps],
@@ -90,10 +94,24 @@ describe.each(PROJECTS.map((p) => [p.slug, p] as const))('project %s', (_slug, p
     expect(result.error?.issues ?? []).toEqual([]);
   });
 
+  it('describes its pictures in both languages', () => {
+    for (const image of [project.cover, project.presentation]) {
+      expect(localizedTextSchema.safeParse(image.alt).success).toBe(true);
+    }
+  });
+
   it('links its demo root-relative, so it moves with the site (ADR-0005)', () => {
     if (project.websiteUrl?.startsWith('/')) {
       expect(project.websiteUrl).toMatch(/^\/demo\/[a-z0-9-]+$/);
     }
+  });
+});
+
+describe.each(ARTWORKS.map((a) => [a.slug.fr, a] as const))('artwork %s', (_slug, artwork) => {
+  it('has a slug, a title and an alt text in both languages', () => {
+    expect(localizedSlugSchema.safeParse(artwork.slug).success).toBe(true);
+    expect(localizedTextSchema.safeParse(artwork.title).success).toBe(true);
+    expect(localizedTextSchema.safeParse(artwork.image.alt).success).toBe(true);
   });
 });
 
@@ -116,6 +134,25 @@ describe('the Project contract', () => {
     expect(field({ websiteUrl: null, videoUrl: 'https://youtu.be/dQw4w9WgXcQ' })).toBe(true);
     expect(field({ websiteUrl: null, videoUrl: 'https://vimeo.com/1' })).toBe(false);
   });
+
+  // A record ships in both trees or in neither (ADR-0017): an English page
+  // must never fall back to the French copy.
+  it('refuses a project whose English is missing or blank', () => {
+    const [project] = PROJECTS;
+    const title = (shape: unknown) => projectContent.shape.title.safeParse(shape).success;
+    expect(title(project.title)).toBe(true);
+    expect(title({ fr: project.title.fr })).toBe(false);
+    expect(title({ fr: project.title.fr, en: '' })).toBe(false);
+  });
+
+  it('holds each language to the slug rule', () => {
+    expect(
+      localizedSlugSchema.safeParse({ fr: 'salon-nuit', en: 'living-room-night' }).success,
+    ).toBe(true);
+    expect(localizedSlugSchema.safeParse({ fr: 'salon-nuit', en: 'Living room' }).success).toBe(
+      false,
+    );
+  });
 });
 
 describe('ordering', () => {
@@ -132,13 +169,19 @@ describe('ordering', () => {
   });
 });
 
-describe('slugs', () => {
-  it('are unique and kebab-case', () => {
-    const slugs = [...PROJECTS.map((p) => p.slug), ...ARTWORKS.map((a) => a.slug)];
+describe('addresses', () => {
+  // The switcher and the hreflang links go from one tree to the other through
+  // the record's id.
+  it('give every record its own id', () => {
+    const ids = [...PROJECTS.map((p) => p.id), ...ARTWORKS.map((a) => a.id)];
+    expect(new Set(ids).size).toBe(ids.length);
+  });
 
-    expect(new Set(slugs).size).toBe(slugs.length);
-    for (const slug of slugs) {
-      expect(slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+  it.each(SITE_LOCALES)('are unique and kebab-case within the %s tree', (locale) => {
+    for (const records of [PROJECTS, ARTWORKS]) {
+      const slugs = records.map((r) => r.slug[locale]);
+      expect(new Set(slugs).size).toBe(slugs.length);
+      for (const slug of slugs) expect(slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
     }
   });
 });

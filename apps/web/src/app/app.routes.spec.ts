@@ -55,7 +55,7 @@ describe('the project detail guard', () => {
 
   it('matches every real project', () => {
     for (const project of PROJECTS) {
-      expect(match(`developpeur/${project.slug}`)).toBe(true);
+      expect(match(`developpeur/${project.slug.fr}`)).toBe(true);
     }
   });
 
@@ -67,7 +67,7 @@ describe('the project detail guard', () => {
   });
 
   it('does not match a slug that merely contains a real one', () => {
-    const real = PROJECTS[0].slug;
+    const real = PROJECTS[0].slug.fr;
 
     expect(match(`developpeur/${real}-copie`)).toBe(false);
     expect(match(`developpeur/prefixe-${real}`)).toBe(false);
@@ -83,18 +83,19 @@ describe('a 3D piece’s address', () => {
   const piece = gallery.children!.find((r) => r.path === ':slug')!;
 
   it('matches every published piece, and only those, so an unknown one reaches the 404', () => {
-    for (const artwork of ARTWORKS) expect(artworkSlugExists([{ path: artwork.slug }])).toBe(true);
+    for (const artwork of ARTWORKS)
+      expect(artworkSlugExists([{ path: artwork.slug.fr }])).toBe(true);
     expect(artworkSlugExists([{ path: 'nope' }])).toBe(false);
     expect(artworkSlugExists([])).toBe(false);
   });
 
   it('titles the page after the piece and describes it by its alt text', () => {
     const snapshot = {
-      paramMap: convertToParamMap({ slug: ARTWORKS[2].slug }),
+      paramMap: convertToParamMap({ slug: ARTWORKS[2].slug.fr }),
     } as ActivatedRouteSnapshot;
     const title = piece.title as (route: ActivatedRouteSnapshot) => string;
     const description = piece.resolve!['description'] as (route: ActivatedRouteSnapshot) => string;
-    expect(title(snapshot)).toBe(ARTWORKS[2].title);
-    expect(description(snapshot)).toBe(ARTWORKS[2].image.alt);
+    expect(title(snapshot)).toBe(ARTWORKS[2].title.fr);
+    expect(description(snapshot)).toBe(ARTWORKS[2].image.alt.fr);
   });
 });

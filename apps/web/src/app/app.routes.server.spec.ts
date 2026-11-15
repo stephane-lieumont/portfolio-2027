@@ -23,7 +23,7 @@ describe('server routes', () => {
   it('prerenders a page for every project', async () => {
     const route = prerenderedWithParams('developpeur/:slug');
 
-    expect(await route.getPrerenderParams()).toEqual(PROJECTS.map((p) => ({ slug: p.slug })));
+    expect(await route.getPrerenderParams()).toEqual(PROJECTS.map((p) => ({ slug: p.slug.fr })));
     expect(route.fallback).toBe(PrerenderFallback.None);
   });
 

@@ -20,6 +20,7 @@ import { filter, map } from 'rxjs';
 import { mediaSrcset, mediaUrl } from '../../core/media.config';
 import { ReducedMotion } from '../../core/motion/reduced-motion';
 import { toolView } from '../../core/content/tool-marks';
+import { localized } from '../../core/i18n/localized';
 import { PATHS } from '../../core/i18n/site-locale';
 import { RouteTransitions } from '../../core/route-transitions';
 import { ARTWORKS } from '../../core/static-content';
@@ -93,27 +94,31 @@ export class ArtMosaic {
   constructor() {
     const media = mediaUrl();
     const srcset = mediaSrcset();
-    this.pieces = ARTWORKS.map((artwork, i) => ({
-      slug: artwork.slug,
-      title: artwork.title,
-      year: artwork.releasedAt.slice(0, 4),
-      alt: artwork.image.alt,
-      src: media(artwork.image.key),
-      srcset: srcset(artwork.image.key, artwork.image.width),
-      tone: artwork.image.averageColor,
-      width: artwork.image.width,
-      height: artwork.image.height,
-      tools: artwork.software.map((slug) => toolView(slug)),
-      // A plain href, so it carries the tree's base (`/en/`) itself.
-      href: this.location.prepareExternalUrl(`${GALLERY_PATH}/${artwork.slug}`),
-      label: $localize`:@@mosaic.tileLabel:${artwork.title}:title: (${artwork.releasedAt.slice(0, 4)}:year:), agrandir`,
-      focus: `${(artwork.focal?.x ?? 0.5) * 100}% ${(artwork.focal?.y ?? 0.5) * 100}%`,
-      ...this.layout.tiles[i],
-      sizes: tileSizes(this.layout.tiles[i]),
-      // On a phone a full-width band takes its render's own ratio, held
-      // between 4:3 and 16:9: the near-square Immeuble lost 33% in a 16:9 band.
-      phoneRatio: Math.min(16 / 9, Math.max(4 / 3, artwork.image.width / artwork.image.height)),
-    }));
+    this.pieces = ARTWORKS.map((artwork, i) => {
+      const slug = localized(artwork.slug);
+      const title = localized(artwork.title);
+      return {
+        slug,
+        title,
+        year: artwork.releasedAt.slice(0, 4),
+        alt: localized(artwork.image.alt),
+        src: media(artwork.image.key),
+        srcset: srcset(artwork.image.key, artwork.image.width),
+        tone: artwork.image.averageColor,
+        width: artwork.image.width,
+        height: artwork.image.height,
+        tools: artwork.software.map((slug) => toolView(slug)),
+        // A plain href, so it carries the tree's base (`/en/`) itself.
+        href: this.location.prepareExternalUrl(`${GALLERY_PATH}/${slug}`),
+        label: $localize`:@@mosaic.tileLabel:${title}:title: (${artwork.releasedAt.slice(0, 4)}:year:), agrandir`,
+        focus: `${(artwork.focal?.x ?? 0.5) * 100}% ${(artwork.focal?.y ?? 0.5) * 100}%`,
+        ...this.layout.tiles[i],
+        sizes: tileSizes(this.layout.tiles[i]),
+        // On a phone a full-width band takes its render's own ratio, held
+        // between 4:3 and 16:9: the near-square Immeuble lost 33% in a 16:9 band.
+        phoneRatio: Math.min(16 / 9, Math.max(4 / 3, artwork.image.width / artwork.image.height)),
+      };
+    });
 
     const platform = inject(PLATFORM_ID);
     if (isPlatformBrowser(platform)) {

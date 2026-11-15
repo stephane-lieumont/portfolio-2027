@@ -52,7 +52,7 @@ describe('WorldStack', () => {
     const panel = host.querySelector('[role="tabpanel"]')!;
     expect(panel.getAttribute('aria-labelledby')).toBe(tabs()[0].id);
     expect(tabs().every((t) => t.getAttribute('aria-controls') === panel.id)).toBe(true);
-    expect(points()).toEqual(WORLD_STACKS.dev.entries[0].points.map((p) => p.lead));
+    expect(points()).toEqual(WORLD_STACKS.dev.entries[0].points.map((p) => p.lead.fr));
   });
 
   it('switches the panel to the tool clicked, and the new points arrive in order', async () => {
@@ -62,7 +62,7 @@ describe('WorldStack', () => {
 
     expect(selected()).toEqual(WORLD_STACKS.dev.entries.map((_, i) => String(i === 2)));
     expect(host.querySelector('.mastery__name.is-current')?.textContent).toBe('RxJS / Signals');
-    expect(points()).toEqual(WORLD_STACKS.dev.entries[2].points.map((p) => p.lead));
+    expect(points()).toEqual(WORLD_STACKS.dev.entries[2].points.map((p) => p.lead.fr));
     expect(animate).toHaveBeenCalledTimes(1 + WORLD_STACKS.dev.entries[2].points.length);
   });
 

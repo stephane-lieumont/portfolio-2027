@@ -7,14 +7,15 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { routes } from '../app.routes';
 import { API_BASE_URL } from './api.config';
 import { MEDIA_BASE_URL } from './media.config';
-import { PageMetadata } from './page-metadata';
+import { pageRef } from './i18n/site-locale';
+import { PageMetadata, alternates } from './page-metadata';
 import { PROJECTS } from './static-content';
 
 const PAGES = [
   '/developpeur',
   '/graphisme-3d',
   '/contact',
-  ...PROJECTS.map((p) => `/developpeur/${p.slug}`),
+  ...PROJECTS.map((p) => `/developpeur/${p.slug.fr}`),
 ];
 
 const description = () =>
@@ -66,10 +67,10 @@ describe('page metadata', () => {
 
   it('names a project page after the project and describes it with its summary', async () => {
     const [project] = PROJECTS;
-    await harness.navigateByUrl(`/developpeur/${project.slug}`);
+    await harness.navigateByUrl(`/developpeur/${project.slug.fr}`);
 
-    expect(document.title).toBe(`${project.title} — Stéphane Lieumont`);
-    expect(description()).toBe(project.summary);
+    expect(document.title).toBe(`${project.title.fr} — Stéphane Lieumont`);
+    expect(description()).toBe(project.summary.fr);
   });
 
   it('names the same page in both trees, French as the default', async () => {
@@ -79,6 +80,21 @@ describe('page metadata', () => {
       'fr https://stephane-lieumont.fr/developpeur/pixmodels',
       'en https://stephane-lieumont.fr/en/developer/pixmodels',
       'x-default https://stephane-lieumont.fr/developpeur/pixmodels',
+    ]);
+
+    // A translated slug: each tree's address carries its own.
+    await harness.navigateByUrl('/developpeur/portfolio-3d-2018');
+    expect(alternateLinks()).toEqual([
+      'fr https://stephane-lieumont.fr/developpeur/portfolio-3d-2018',
+      'en https://stephane-lieumont.fr/en/developer/3d-portfolio-2018',
+      'x-default https://stephane-lieumont.fr/developpeur/portfolio-3d-2018',
+    ]);
+
+    // A piece opens the viewer, which jsdom cannot animate: read its links directly.
+    expect(alternates(pageRef('piece', 'salon-nuit', 'fr'))).toEqual([
+      { hreflang: 'fr', href: 'https://stephane-lieumont.fr/graphisme-3d/salon-nuit' },
+      { hreflang: 'en', href: 'https://stephane-lieumont.fr/en/3d-art/living-room-night' },
+      { hreflang: 'x-default', href: 'https://stephane-lieumont.fr/graphisme-3d/salon-nuit' },
     ]);
 
     await harness.navigateByUrl('/contact');

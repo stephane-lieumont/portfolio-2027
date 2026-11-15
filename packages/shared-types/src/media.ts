@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { localized } from './localized.js';
+
 export const mediaKindSchema = z.enum(['image', 'video']);
 export type MediaKind = z.infer<typeof mediaKindSchema>;
 
@@ -9,7 +11,7 @@ export const mediaAssetSchema = z.object({
   /** Object key in the MinIO bucket, never an absolute URL: the origin can change. */
   objectKey: z.string().min(1),
   url: z.url(),
-  alt: z.string().max(200),
+  alt: localized(z.string().max(200)),
   width: z.int().positive().nullable(),
   height: z.int().positive().nullable(),
   byteSize: z.int().positive(),
@@ -36,7 +38,7 @@ export type UploadTicket = z.infer<typeof uploadTicketSchema>;
 
 export const confirmUploadInputSchema = z.object({
   assetId: z.uuid(),
-  alt: z.string().max(200).default(''),
+  alt: localized(z.string().max(200)).default({ fr: '', en: '' }),
   width: z.int().positive().nullable().default(null),
   height: z.int().positive().nullable().default(null),
 });

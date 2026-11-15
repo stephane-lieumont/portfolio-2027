@@ -266,14 +266,14 @@ describe('Contact — content', () => {
 
     expect(img?.getAttribute('alt')).toBe('Stéphane Lieumont, pensif, la main au menton');
     expect(img?.getAttribute('src')).toBe('/images/portrait-stephane-pensif.png');
-    expect(img?.getAttribute('alt')).not.toContain(CONTACT_PAGE.portraitCaption);
+    expect(img?.getAttribute('alt')).not.toContain(CONTACT_PAGE.portraitCaption.fr);
   });
 
   it('has one h1, the page title, and no detectable accessibility violation', async () => {
     const { host } = await render();
 
     expect(Array.from(host.querySelectorAll('h1')).map((h) => h.textContent?.trim())).toEqual([
-      CONTACT_PAGE.title,
+      CONTACT_PAGE.title.fr,
     ]);
     const results = await axe.run(host, {
       resultTypes: ['violations'],

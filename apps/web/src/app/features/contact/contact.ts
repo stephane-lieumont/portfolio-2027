@@ -18,6 +18,7 @@ import {
 } from '@angular/forms';
 
 import { ContactApi, contactFailureOf } from '../../core/contact.api';
+import { LocalizedPipe } from '../../core/i18n/localized';
 import {
   CONTACT_PAGE,
   SITE_SETTINGS,
@@ -56,7 +57,7 @@ const NO_ERRORS: Readonly<Record<Field, string>> = { name: '', email: '', messag
 
 @Component({
   selector: 'app-contact',
-  imports: [ReactiveFormsModule, ContactPortrait],
+  imports: [ReactiveFormsModule, LocalizedPipe, ContactPortrait],
   templateUrl: './contact.html',
   styleUrl: './contact.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

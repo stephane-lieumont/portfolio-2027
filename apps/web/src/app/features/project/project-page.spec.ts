@@ -38,28 +38,28 @@ const spoken = (element: Element | null) => squash(element ? visibleToReaders(el
 
 // Every project, not a sample: the copy is hand-written per entry, and a
 // missing field would only ever show on the one page nobody opened.
-describe.each(PROJECTS.map((p) => [p.slug, p] as const))('project %s', (slug, project) => {
+describe.each(PROJECTS.map((p) => [p.slug.fr, p] as const))('project %s', (slug, project) => {
   it('is titled once, read as its plain title despite the letters split for the entrance', async () => {
     const host = (await render(slug)).nativeElement as HTMLElement;
     const h1s = host.querySelectorAll('h1');
 
     expect(h1s).toHaveLength(1);
-    expect(spoken(h1s[0])).toBe(project.title);
+    expect(spoken(h1s[0])).toBe(project.title.fr);
   });
 
   it('opens on the context and never repeats the summary, which is the meta description', async () => {
     const text = squash(((await render(slug)).nativeElement as HTMLElement).textContent);
 
-    expect(text).toContain(project.context);
-    expect(text).not.toContain(project.summary);
+    expect(text).toContain(project.context.fr);
+    expect(text).not.toContain(project.summary.fr);
   });
 
   it('lists the mission and every step and tool, in order', async () => {
     const host = (await render(slug)).nativeElement as HTMLElement;
 
-    expect(squash(host.querySelector('.mission__text')?.textContent)).toBe(project.mission);
+    expect(squash(host.querySelector('.mission__text')?.textContent)).toBe(project.mission.fr);
     expect(Array.from(host.querySelectorAll('.steps li'), (li) => squash(li.textContent))).toEqual(
-      project.missionSteps,
+      project.missionSteps.map((step) => step.fr),
     );
     expect(host.querySelectorAll('.tools li')).toHaveLength(project.technologies.length);
   });
@@ -101,7 +101,7 @@ describe.each(PROJECTS.map((p) => [p.slug, p] as const))('project %s', (slug, pr
     );
     expect(img?.getAttribute('fetchpriority')).toBe('high');
     expect(squash(host.querySelector('figcaption')?.textContent)).toBe(
-      `Fig.${project.presentationCaption}`,
+      `Fig.${project.presentationCaption.fr}`,
     );
   });
 

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { LOCALES, localized } from './localized.js';
 import { softwareSlugSchema, technologySlugSchema } from './project.js';
 
 /**
@@ -8,8 +9,10 @@ import { softwareSlugSchema, technologySlugSchema } from './project.js';
  * presentation (the name, the switch labels, the cloud glyph, colours, section
  * headings, form labels) stays in the app and out of these schemas.
  *
- * Every text field is plain text, never markup. Order is array order: facts,
- * tools and points have no date to sort on, and their order is the argument.
+ * Every text field is plain text, never markup, written in each of the site's
+ * languages (ADR-0017) and held to the same rule in each. Order is array
+ * order: facts, tools and points have no date to sort on, and their order is
+ * the argument.
  */
 
 export const worldKeySchema = z.enum(['dev', 'cgi']);
@@ -22,16 +25,22 @@ const uniqueBy =
   (items: readonly T[]) =>
     new Set(items.map(key)).size === items.length;
 
+/** Unique in every language: two facts may not share a label in either tree. */
+const uniqueInEachLocale =
+  <T>(key: (item: T) => { readonly fr: string; readonly en: string }) =>
+  (items: readonly T[]) =>
+    LOCALES.every((locale) => uniqueBy((item: T) => key(item)[locale])(items));
+
 export const factSchema = z.object({
-  label: text(1, 24),
-  value: text(1, 80),
+  label: localized(text(1, 24)),
+  value: localized(text(1, 80)),
 });
 export type Fact = z.infer<typeof factSchema>;
 
 export const ledeSchema = z.object({
   /** Set in bold before the rest of the line. */
-  lead: text(1, 80),
-  text: text(1, 200),
+  lead: localized(text(1, 80)),
+  text: localized(text(1, 200)),
 });
 export type Lede = z.infer<typeof ledeSchema>;
 
@@ -40,24 +49,26 @@ const worldPageFields = {
    * The word that flips under the name, set in capitals — « LEAD TECH »,
    * « GRAPHISTE 3D ». Short, because it is set at display size on one line.
    */
-  roleWord: z
-    .string()
-    .trim()
-    .min(2)
-    .max(16)
-    .regex(
-      /^[A-ZÀ-ÖØ-ÝŒŸ0-9]+( [A-ZÀ-ÖØ-ÝŒŸ0-9]+)*$/,
-      'expected capitals or digits, single spaces between words',
-    ),
+  roleWord: localized(
+    z
+      .string()
+      .trim()
+      .min(2)
+      .max(16)
+      .regex(
+        /^[A-ZÀ-ÖØ-ÝŒŸ0-9]+( [A-ZÀ-ÖØ-ÝŒŸ0-9]+)*$/,
+        'expected capitals or digits, single spaces between words',
+      ),
+  ),
   lede: ledeSchema,
   /** The large sentence coloured word by word on scroll. */
-  scrub: text(20, 220).refine((s) => s.split(/\s+/).length <= 35, 'at most 35 words'),
+  scrub: localized(text(20, 220).refine((s) => s.split(/\s+/).length <= 35, 'at most 35 words')),
   facts: z
     .array(factSchema)
     .min(3)
     .max(6)
     .refine(
-      uniqueBy((f: Fact) => f.label),
+      uniqueInEachLocale((f: Fact) => f.label),
       'fact labels must be unique',
     ),
   updatedAt: z.iso.datetime(),
@@ -90,8 +101,8 @@ export const worldPageSchema = z.discriminatedUnion('world', [
 export type WorldPage = z.infer<typeof worldPageSchema>;
 
 export const masteryPointSchema = z.object({
-  lead: text(1, 60),
-  text: text(1, 220),
+  lead: localized(text(1, 60)),
+  text: localized(text(1, 220)),
 });
 export type MasteryPoint = z.infer<typeof masteryPointSchema>;
 
@@ -122,11 +133,11 @@ export const worldStackSchema = z.discriminatedUnion('world', [
 export type WorldStack = z.infer<typeof worldStackSchema>;
 
 export const contactPageSchema = z.object({
-  title: text(1, 120),
-  lede: text(1, 280),
+  title: localized(text(1, 120)),
+  lede: localized(text(1, 280)),
   /** A cut-out with a transparent background: it stands on the diagonal plate. */
   portraitAssetId: z.uuid(),
-  portraitCaption: text(1, 60),
+  portraitCaption: localized(text(1, 60)),
   updatedAt: z.iso.datetime(),
 });
 export type ContactPage = z.infer<typeof contactPageSchema>;

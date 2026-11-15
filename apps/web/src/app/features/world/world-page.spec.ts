@@ -30,13 +30,13 @@ describe('WorldPage', () => {
     const rows = Array.from(render('dev').querySelectorAll('.facts > div'));
     expect(
       rows.map((r) => [r.querySelector('dt')?.textContent, r.querySelector('dd')?.textContent]),
-    ).toEqual(WORLD_PAGES.dev.facts.map((f) => [f.label, f.value]));
+    ).toEqual(WORLD_PAGES.dev.facts.map((f) => [f.label.fr, f.value.fr]));
   });
 
   it('sets the lede’s lead in bold before the rest of the line', () => {
     const lede = render('cgi').querySelector('.lede')!;
-    expect(lede.querySelector('strong')?.textContent).toBe(WORLD_PAGES.cgi.lede.lead);
-    expect(lede.textContent).toContain(WORLD_PAGES.cgi.lede.text);
+    expect(lede.querySelector('strong')?.textContent).toBe(WORLD_PAGES.cgi.lede.lead.fr);
+    expect(lede.textContent).toContain(WORLD_PAGES.cgi.lede.text.fr);
   });
 
   it('offers contact and the CV, the CV as a root-relative file opening in a new tab', () => {
@@ -64,16 +64,16 @@ describe('WorldPage', () => {
   it('shows every project as a card leading to its page', () => {
     const links = Array.from(render('dev').querySelectorAll('.row__link'));
     expect(links.map((a) => a.getAttribute('href'))).toEqual(
-      PROJECTS.map((p) => `/developpeur/${p.slug}`),
+      PROJECTS.map((p) => `/developpeur/${p.slug.fr}`),
     );
   });
 
   it('gives every 3D piece a tile linking to its own address', () => {
     const tiles = Array.from(render('cgi').querySelectorAll('.tile__btn'));
     expect(tiles.map((a) => a.getAttribute('href'))).toEqual(
-      ARTWORKS.map((a) => `/graphisme-3d/${a.slug}`),
+      ARTWORKS.map((a) => `/graphisme-3d/${a.slug.fr}`),
     );
-    expect(tiles[0].getAttribute('aria-label')).toBe(`${ARTWORKS[0].title} (2016), agrandir`);
+    expect(tiles[0].getAttribute('aria-label')).toBe(`${ARTWORKS[0].title.fr} (2016), agrandir`);
   });
 
   it('plays the full intro on the page the site was loaded on', () => {
