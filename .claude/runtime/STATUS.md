@@ -595,11 +595,15 @@ colours, the light ink for the white (the dev ink on the dark ground, neutral
 of the ink around it,
 named « English version » / « Version française »; 26–45px wide, 34–36px tall,
 no header overflow 320–1440. Switching no longer flashes white or replays the
-page: the world's ground is inlined in the document head, the browser
-crossfades the two documents (`@view-transition { navigation: auto }`), and
+page: the world's ground is inlined in the document head, a typed
+cross-document view transition (`lang-switch`) holds the old page until the
+new one has painted and started (200ms, one step, no crossfade, no
+plus-lighter), and
 the new page opens at the same scroll position with no entrance and the cloud
 assembled (a `lang-switch` sessionStorage flag; measured: scrollY 700 → 700,
-`lang-switched` stamped). The cookie now also carries `Secure` and is set on
+`lang-switched` stamped). Filmed headless at 60fps: no white frame, no
+empty cloud; one frame (16ms) at the old page's capture is still lighter,
+with a ghost in the header — not explained yet). The cookie now also carries `Secure` and is set on
 a middle-click too; an unknown slug's switcher leads to the other tree's first
 page, as its 404 does; the prerender check's cross-origin rule exempts only
 `rel="alternate"`. **Do not deploy `/en` before PR 2**: its content (lede,

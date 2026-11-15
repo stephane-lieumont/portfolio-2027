@@ -124,8 +124,39 @@
   animation: none;
 }
 
-// The language switcher is a full navigation to the other tree (ADR-0017):
-// the browser crossfades the two documents instead of cutting to a blank page.
+// The language switcher is a full navigation to the other tree (ADR-0017).
+// The browser holds the old page until the new one has painted (no white
+// frame), then swaps them in one step: a crossfade superimposed two headers
+// whose words have different widths, which read as a glitch.
 @view-transition {
   navigation: auto;
+  types: lang-switch;
+}
+
+// The new page is prerendered: for a few frames it shows its state before
+// script (an empty cloud, an unlit sentence). It stays hidden under the old
+// one until it has started, then appears in a single step.
+:root:active-view-transition-type(lang-switch)::view-transition-group(*),
+:root:active-view-transition-type(lang-switch)::view-transition-old(*) {
+  animation: none;
+}
+
+// The default pairing adds the two snapshots (plus-lighter) for a frame,
+// which lightened the page and ghosted the header.
+:root:active-view-transition-type(lang-switch)::view-transition-old(*),
+:root:active-view-transition-type(lang-switch)::view-transition-new(*) {
+  mix-blend-mode: normal;
+}
+
+:root:active-view-transition-type(lang-switch)::view-transition-new(*) {
+  animation: lang-switch-reveal 200ms step-end both;
+}
+
+@keyframes lang-switch-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
