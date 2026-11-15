@@ -1,9 +1,9 @@
 import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 import type { LocalizedText } from '@portfolio/shared-types';
 
-import { inLocale } from './core/i18n/in-locale';
+import { inLocale } from './core/i18n/in-locale.pipe';
 import { SECTIONS, SITE_LOCALE } from './core/i18n/site-locale';
-import { ARTWORKS, PROJECTS } from './core/static-content';
+import { ARTWORKS, PROJECTS } from './core/data/static-content';
 
 const DEV = SECTIONS.dev[SITE_LOCALE];
 const CGI = SECTIONS.cgi[SITE_LOCALE];
@@ -52,7 +52,10 @@ export const routes: Routes = [
       world: 'dev',
       description: $localize`:@@page.dev.description:J’arbitre les choix techniques, j’encadre, et j’écris du code tous les jours. Quatorze ans dans l’aéronautique avant de basculer vers le développement : c’est de là que vient ma façon de travailler.`,
     },
-    loadComponent: () => import('./features/world/world-page').then((m) => m.WorldPage),
+    loadComponent: () =>
+      import('./features/world/views/world-page/world-page.component').then(
+        (m) => m.WorldPageComponent,
+      ),
   },
   // Only known slugs match. An unknown one falls through to the 404 below
   // rather than rendering an empty project page, which keeps the dead-link
@@ -69,7 +72,10 @@ export const routes: Routes = [
     resolve: {
       description: (route: ActivatedRouteSnapshot) => inLocale(projectOf(route)?.summary ?? EMPTY),
     },
-    loadComponent: () => import('./features/project/project-page').then((m) => m.ProjectPage),
+    loadComponent: () =>
+      import('./features/project/views/project-page/project-page.component').then(
+        (m) => m.ProjectPageComponent,
+      ),
   },
   {
     path: CGI,
@@ -81,7 +87,10 @@ export const routes: Routes = [
       // commission contradicts it, and it is on the content review list.
       description: $localize`:@@page.cgi.description:J’ai commencé la 3D bien avant le développement. C’est là que j’ai appris à apprendre seul — et à regarder une image jusqu’à voir ce qui ne va pas.`,
     },
-    loadComponent: () => import('./features/world/world-page').then((m) => m.WorldPage),
+    loadComponent: () =>
+      import('./features/world/views/world-page/world-page.component').then(
+        (m) => m.WorldPageComponent,
+      ),
     // Each piece has its own address (spec 01), which opens the viewer over the
     // wall. Children without a component: the page stays the same instance
     // while the viewer opens, steps and closes.
@@ -110,7 +119,8 @@ export const routes: Routes = [
       // Without the lead's « par email »: the contact redesign publishes none.
       description: $localize`:@@page.contact.description:Un projet, une question ou juste un Hello World ? Je réponds à tout, y compris pour dire non.`,
     },
-    loadComponent: () => import('./features/contact/contact').then((m) => m.Contact),
+    loadComponent: () =>
+      import('./features/contact/views/contact/contact.component').then((m) => m.ContactComponent),
   },
   // A real page rather than a redirect home. Redirecting hides dead links
   // instead of reporting them, and it is what the current site does — every
@@ -121,6 +131,9 @@ export const routes: Routes = [
     path: '**',
     title: $localize`:@@page.notFound.title:Erreur 404`,
     data: { page: 'not-found', noindex: true },
-    loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFound),
+    loadComponent: () =>
+      import('./features/errors/views/not-found/not-found.component').then(
+        (m) => m.NotFoundComponent,
+      ),
   },
 ];

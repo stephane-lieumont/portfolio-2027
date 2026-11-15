@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ARTWORKS, PROJECTS } from '../static-content';
+import { ARTWORKS, PROJECTS } from '../data/static-content';
 import {
   type PageRef,
   SITE_LOCALE,

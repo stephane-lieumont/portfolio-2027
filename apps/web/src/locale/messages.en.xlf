@@ -6,7 +6,7 @@
         <source>Aller au contenu</source>
         <target state="translated">Skip to content</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/app.html</context>
+          <context context-type="sourcefile">src/app/layouts/site-layout/site-layout.component.html</context>
           <context context-type="linenumber">1,5</context>
         </context-group>
       </trans-unit>
@@ -14,11 +14,11 @@
         <source>Lead Tech &amp; graphiste 3D</source>
         <target state="translated">Lead Tech &amp; 3D artist</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/app.html</context>
+          <context context-type="sourcefile">src/app/layouts/site-layout/site-layout.component.html</context>
           <context context-type="linenumber">10,11</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/core/page-metadata.ts</context>
+          <context context-type="sourcefile">src/app/core/services/page-metadata.service.ts</context>
           <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
@@ -26,7 +26,7 @@
         <source>Navigation principale</source>
         <target state="translated">Main navigation</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/app.html</context>
+          <context context-type="sourcefile">src/app/layouts/site-layout/site-layout.component.html</context>
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
@@ -90,7 +90,7 @@
         <source>Contact</source>
         <target state="translated">Contact</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.html</context>
           <context context-type="linenumber">8,9</context>
         </context-group>
       </trans-unit>
@@ -98,7 +98,7 @@
         <source>Nom</source>
         <target state="translated">Name</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.html</context>
           <context context-type="linenumber">23,25</context>
         </context-group>
       </trans-unit>
@@ -106,7 +106,7 @@
         <source>Email</source>
         <target state="translated">Email</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.html</context>
           <context context-type="linenumber">40,42</context>
         </context-group>
       </trans-unit>
@@ -114,7 +114,7 @@
         <source>Message</source>
         <target state="translated">Message</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.html</context>
           <context context-type="linenumber">57,59</context>
         </context-group>
       </trans-unit>
@@ -122,7 +122,7 @@
         <source> Envoyer </source>
         <target state="translated">Send</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.html</context>
           <context context-type="linenumber">80,81</context>
         </context-group>
       </trans-unit>
@@ -130,7 +130,7 @@
         <source>Me retrouver</source>
         <target state="translated">Find me elsewhere</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.html</context>
           <context context-type="linenumber">90,91</context>
         </context-group>
       </trans-unit>
@@ -138,11 +138,11 @@
         <source>Télécharger mon CV (PDF)</source>
         <target state="translated">Download my CV (PDF)</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.html</context>
           <context context-type="linenumber">115,116</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shell/social-dock.ts</context>
+          <context context-type="sourcefile">src/app/layouts/site-layout/components/social-dock/social-dock.component.ts</context>
           <context context-type="linenumber">69,70</context>
         </context-group>
       </trans-unit>
@@ -150,7 +150,7 @@
         <source>Indiquez votre nom.</source>
         <target state="translated">Please enter your name.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
@@ -158,7 +158,7 @@
         <source>Indiquez votre email pour que je puisse répondre.</source>
         <target state="translated">Please enter your email so I can reply.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">38</context>
         </context-group>
       </trans-unit>
@@ -166,7 +166,7 @@
         <source>Écrivez quelques mots avant d’envoyer.</source>
         <target state="translated">Write a few words before sending.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">39</context>
         </context-group>
       </trans-unit>
@@ -174,7 +174,7 @@
         <source>Cette adresse email ne semble pas complète, par exemple nom@domaine.fr.</source>
         <target state="translated">This email address looks incomplete, for example name@domain.com.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
@@ -182,7 +182,7 @@
         <source>Envoi en cours…</source>
         <target state="translated">Sending…</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">45</context>
         </context-group>
       </trans-unit>
@@ -190,7 +190,7 @@
         <source>Merci, votre message est parti. Je vous réponds au plus vite.</source>
         <target state="translated">Thank you, your message is on its way. I will reply as soon as I can.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
@@ -198,7 +198,7 @@
         <source>L’envoi par formulaire n’est pas encore en service. En attendant, écrivez-moi sur LinkedIn.</source>
         <target state="translated">Sending through the form is not available yet. In the meantime, write to me on LinkedIn.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
@@ -206,7 +206,7 @@
         <source>Le message n’est pas parti. Réessayez dans un instant, ou écrivez-moi sur LinkedIn.</source>
         <target state="translated">The message was not sent. Try again in a moment, or write to me on LinkedIn.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">48</context>
         </context-group>
       </trans-unit>
@@ -214,7 +214,7 @@
         <source><x id="network" equiv-text="NETWORK_NAMES[social.kind]"/> (nouvel onglet)</source>
         <target state="translated"><x id="network" equiv-text="NETWORK_NAMES[social.kind]"/> (new tab)</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">76</context>
         </context-group>
       </trans-unit>
@@ -222,7 +222,7 @@
         <source>Erreur 404 · page introuvable</source>
         <target state="translated">Error 404 · page not found</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/not-found/not-found.ts</context>
+          <context context-type="sourcefile">src/app/features/errors/views/not-found/not-found.component.ts</context>
           <context context-type="linenumber">25,26</context>
         </context-group>
       </trans-unit>
@@ -230,7 +230,7 @@
         <source>Mais où est l’interphone ?</source>
         <target state="translated">Where is the intercom?</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/not-found/not-found.ts</context>
+          <context context-type="sourcefile">src/app/features/errors/views/not-found/not-found.component.ts</context>
           <context context-type="linenumber">26,27</context>
         </context-group>
       </trans-unit>
@@ -238,7 +238,7 @@
         <source> Cette page n’existe pas, ou plus. Le reste du site, lui, est bien là. </source>
         <target state="translated">This page does not exist, or no longer does. The rest of the site is still here.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/not-found/not-found.ts</context>
+          <context context-type="sourcefile">src/app/features/errors/views/not-found/not-found.component.ts</context>
           <context context-type="linenumber">28,30</context>
         </context-group>
       </trans-unit>
@@ -246,7 +246,7 @@
         <source>Retour aux réalisations</source>
         <target state="translated">Back to the work</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/not-found/not-found.ts</context>
+          <context context-type="sourcefile">src/app/features/errors/views/not-found/not-found.component.ts</context>
           <context context-type="linenumber">30,32</context>
         </context-group>
       </trans-unit>
@@ -254,7 +254,7 @@
         <source>John Travolta, perdu, regarde autour de lui.</source>
         <target state="translated">John Travolta, lost, looking around.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/not-found/not-found.ts</context>
+          <context context-type="sourcefile">src/app/features/errors/views/not-found/not-found.component.ts</context>
           <context context-type="linenumber">42,43</context>
         </context-group>
       </trans-unit>
@@ -262,7 +262,7 @@
         <source>Fil d’Ariane</source>
         <target state="translated">Breadcrumb</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-hero.html</context>
+          <context context-type="sourcefile">src/app/features/project/components/project-hero/project-hero.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
       </trans-unit>
@@ -270,15 +270,15 @@
         <source>Réalisations</source>
         <target state="translated">Work</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-hero.html</context>
+          <context context-type="sourcefile">src/app/features/project/components/project-hero/project-hero.component.html</context>
           <context context-type="linenumber">5,7</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-mosaic.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-mosaic/art-mosaic.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/dev-work.ts</context>
+          <context context-type="sourcefile">src/app/common/components/dev-work/dev-work.component.ts</context>
           <context context-type="linenumber">107</context>
         </context-group>
       </trans-unit>
@@ -286,7 +286,7 @@
         <source>Projet </source>
         <target state="translated">Project </target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-hero.html</context>
+          <context context-type="sourcefile">src/app/features/project/components/project-hero/project-hero.component.html</context>
           <context context-type="linenumber">8,9</context>
         </context-group>
       </trans-unit>
@@ -294,11 +294,11 @@
         <source> (nouvel onglet)</source>
         <target state="translated"> (new tab)</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-hero.html</context>
+          <context context-type="sourcefile">src/app/features/project/components/project-hero/project-hero.component.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-page.html</context>
+          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
           <context context-type="linenumber">99,100</context>
         </context-group>
       </trans-unit>
@@ -306,19 +306,19 @@
         <source>Image indisponible</source>
         <target state="translated">Image unavailable</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-page.html</context>
+          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
           <context context-type="linenumber">28,29</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-mosaic.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-mosaic/art-mosaic.component.html</context>
           <context context-type="linenumber">41,42</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-viewer.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.html</context>
           <context context-type="linenumber">54,56</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/dev-work.ts</context>
+          <context context-type="sourcefile">src/app/common/components/dev-work/dev-work.component.ts</context>
           <context context-type="linenumber">77,78</context>
         </context-group>
       </trans-unit>
@@ -326,7 +326,7 @@
         <source>Fig.</source>
         <target state="translated">Fig.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-page.html</context>
+          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
           <context context-type="linenumber">33</context>
         </context-group>
       </trans-unit>
@@ -334,7 +334,7 @@
         <source> Contexte </source>
         <target state="translated">Context</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-page.html</context>
+          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
           <context context-type="linenumber">39,41</context>
         </context-group>
       </trans-unit>
@@ -342,7 +342,7 @@
         <source>Mission</source>
         <target state="translated">Mission</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-page.html</context>
+          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
           <context context-type="linenumber">46,47</context>
         </context-group>
       </trans-unit>
@@ -350,7 +350,7 @@
         <source> Outils </source>
         <target state="translated">Tools</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-page.html</context>
+          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
           <context context-type="linenumber">63,65</context>
         </context-group>
       </trans-unit>
@@ -358,7 +358,7 @@
         <source> Vidéo </source>
         <target state="translated">Video</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-page.html</context>
+          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
           <context context-type="linenumber">87,89</context>
         </context-group>
       </trans-unit>
@@ -366,7 +366,7 @@
         <source>Vid.</source>
         <target state="translated">Vid.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-page.html</context>
+          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
           <context context-type="linenumber">96,97</context>
         </context-group>
       </trans-unit>
@@ -374,7 +374,7 @@
         <source>Regarder sur YouTube</source>
         <target state="translated">Watch on YouTube</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-page.html</context>
+          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
           <context context-type="linenumber">98,99</context>
         </context-group>
       </trans-unit>
@@ -382,7 +382,7 @@
         <source>Voir le site</source>
         <target state="translated">Visit the site</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-view.ts</context>
+          <context context-type="sourcefile">src/app/features/project/utils/project-view.ts</context>
           <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
@@ -390,7 +390,7 @@
         <source>Voir la vidéo</source>
         <target state="translated">Watch the video</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-view.ts</context>
+          <context context-type="sourcefile">src/app/features/project/utils/project-view.ts</context>
           <context context-type="linenumber">44</context>
         </context-group>
       </trans-unit>
@@ -398,7 +398,7 @@
         <source>Série · <x id="series" equiv-text="project.series"/></source>
         <target state="translated">Series · <x id="series" equiv-text="project.series"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-view.ts</context>
+          <context context-type="sourcefile">src/app/features/project/utils/project-view.ts</context>
           <context context-type="linenumber">69</context>
         </context-group>
       </trans-unit>
@@ -406,7 +406,7 @@
         <source>Autres réalisations</source>
         <target state="translated">Other work</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/project-view.ts</context>
+          <context context-type="sourcefile">src/app/features/project/utils/project-view.ts</context>
           <context context-type="linenumber">80</context>
         </context-group>
       </trans-unit>
@@ -414,7 +414,7 @@
         <source>Lire la vidéo : <x id="INTERPOLATION" equiv-text="{{ title() }}"/></source>
         <target state="translated">Play the video: <x id="INTERPOLATION" equiv-text="{{ title() }}"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/video-facade.ts</context>
+          <context context-type="sourcefile">src/app/features/project/components/video-facade/video-facade.component.ts</context>
           <context context-type="linenumber">41,42</context>
         </context-group>
       </trans-unit>
@@ -422,7 +422,7 @@
         <source>Vidéo : <x id="title" equiv-text="this.title()"/></source>
         <target state="translated">Video: <x id="title" equiv-text="this.title()"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/video-facade.ts</context>
+          <context context-type="sourcefile">src/app/features/project/components/video-facade/video-facade.component.ts</context>
           <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
@@ -430,11 +430,11 @@
         <source><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ count.count }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> projets · <x id="INTERPOLATION_1" equiv-text="{{ count.span }}"/></source>
         <target state="translated"><x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="INTERPOLATION" equiv-text="{{ count.count }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> projects · <x id="INTERPOLATION_1" equiv-text="{{ count.span }}"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-mosaic.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-mosaic/art-mosaic.component.html</context>
           <context context-type="linenumber">6,7</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/dev-work.ts</context>
+          <context context-type="sourcefile">src/app/common/components/dev-work/dev-work.component.ts</context>
           <context context-type="linenumber">30,31</context>
         </context-group>
       </trans-unit>
@@ -442,7 +442,7 @@
         <source><x id="title" equiv-text="artwork.title"/> (<x id="year" equiv-text="artwork.releasedAt.slice(0, 4)"/>), agrandir</source>
         <target state="translated"><x id="title" equiv-text="artwork.title"/> (<x id="year" equiv-text="artwork.releasedAt.slice(0, 4)"/>), enlarge</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-mosaic.ts</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-mosaic/art-mosaic.component.ts</context>
           <context context-type="linenumber">109</context>
         </context-group>
       </trans-unit>
@@ -450,7 +450,7 @@
         <source>Visionneuse des rendus 3D</source>
         <target state="translated">3D render viewer</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-viewer.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.html</context>
           <context context-type="linenumber">5,6</context>
         </context-group>
       </trans-unit>
@@ -458,7 +458,7 @@
         <source>Fermer la visionneuse</source>
         <target state="translated">Close the viewer</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-viewer.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.html</context>
           <context context-type="linenumber">13,14</context>
         </context-group>
       </trans-unit>
@@ -466,7 +466,7 @@
         <source>carrousel</source>
         <target state="translated">carousel</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-viewer.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.html</context>
           <context context-type="linenumber">22,23</context>
         </context-group>
       </trans-unit>
@@ -474,7 +474,7 @@
         <source>Rendus 3D</source>
         <target state="translated">3D renders</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-viewer.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.html</context>
           <context context-type="linenumber">24,25</context>
         </context-group>
       </trans-unit>
@@ -482,7 +482,7 @@
         <source>Rendu affiché. Flèches gauche et droite pour changer de rendu.</source>
         <target state="translated">Render shown. Left and right arrows to change render.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-viewer.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.html</context>
           <context context-type="linenumber">31,32</context>
         </context-group>
       </trans-unit>
@@ -490,7 +490,7 @@
         <source>Rendu précédent</source>
         <target state="translated">Previous render</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-viewer.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.html</context>
           <context context-type="linenumber">96,97</context>
         </context-group>
       </trans-unit>
@@ -498,7 +498,7 @@
         <source>Rendu suivant</source>
         <target state="translated">Next render</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-viewer.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.html</context>
           <context context-type="linenumber">105,106</context>
         </context-group>
       </trans-unit>
@@ -506,7 +506,7 @@
         <source>Rendu <x id="position" equiv-text="index + 1"/> : <x id="title" equiv-text="title"/></source>
         <target state="translated">Render <x id="position" equiv-text="index + 1"/>: <x id="title" equiv-text="title"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-viewer.ts</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.ts</context>
           <context context-type="linenumber">226</context>
         </context-group>
       </trans-unit>
@@ -514,7 +514,7 @@
         <source><x id="position" equiv-text="to + 1"/> sur <x id="count" equiv-text="count"/>. <x id="title" equiv-text="piece.title"/>, <x id="year" equiv-text="piece.year"/></source>
         <target state="translated"><x id="position" equiv-text="to + 1"/> of <x id="count" equiv-text="count"/>. <x id="title" equiv-text="piece.title"/>, <x id="year" equiv-text="piece.year"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/art-viewer.ts</context>
+          <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.ts</context>
           <context context-type="linenumber">235</context>
         </context-group>
       </trans-unit>
@@ -522,7 +522,7 @@
         <source>Cette fiche</source>
         <target state="translated">This page</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/dev-work.ts</context>
+          <context context-type="sourcefile">src/app/common/components/dev-work/dev-work.component.ts</context>
           <context context-type="linenumber">95,97</context>
         </context-group>
       </trans-unit>
@@ -530,7 +530,7 @@
         <source>Me contacter</source>
         <target state="translated">Contact me</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/world-page.html</context>
+          <context context-type="sourcefile">src/app/features/world/views/world-page/world-page.component.html</context>
           <context context-type="linenumber">21,23</context>
         </context-group>
       </trans-unit>
@@ -538,7 +538,7 @@
         <source>Mon CV</source>
         <target state="translated">My CV</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/world-page.html</context>
+          <context context-type="sourcefile">src/app/features/world/views/world-page/world-page.component.html</context>
           <context context-type="linenumber">24,25</context>
         </context-group>
       </trans-unit>
@@ -546,7 +546,7 @@
         <source> (PDF, nouvel onglet)</source>
         <target state="translated"> (PDF, new tab)</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/world-page.html</context>
+          <context context-type="sourcefile">src/app/features/world/views/world-page/world-page.component.html</context>
           <context context-type="linenumber">25,27</context>
         </context-group>
       </trans-unit>
@@ -554,7 +554,7 @@
         <source>Stack</source>
         <target state="translated">Stack</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/world-stack.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/world-stack/world-stack.component.html</context>
           <context context-type="linenumber">3,4</context>
         </context-group>
       </trans-unit>
@@ -562,7 +562,7 @@
         <source>Outils</source>
         <target state="translated">Tools</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/world-stack.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/world-stack/world-stack.component.html</context>
           <context context-type="linenumber">8</context>
         </context-group>
       </trans-unit>
@@ -570,7 +570,7 @@
         <source>Maîtrise</source>
         <target state="translated">Expertise</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/world-stack.html</context>
+          <context context-type="sourcefile">src/app/features/world/components/world-stack/world-stack.component.html</context>
           <context context-type="linenumber">43,44</context>
         </context-group>
       </trans-unit>
@@ -578,7 +578,7 @@
         <source>Ce avec quoi je travaille</source>
         <target state="translated">What I work with</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/world-stack.ts</context>
+          <context context-type="sourcefile">src/app/features/world/components/world-stack/world-stack.component.ts</context>
           <context context-type="linenumber">22</context>
         </context-group>
       </trans-unit>
@@ -586,7 +586,7 @@
         <source>Mes logiciels</source>
         <target state="translated">My software</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/world/world-stack.ts</context>
+          <context context-type="sourcefile">src/app/features/world/components/world-stack/world-stack.component.ts</context>
           <context context-type="linenumber">23</context>
         </context-group>
       </trans-unit>
@@ -594,7 +594,7 @@
         <source>Développement</source>
         <target state="translated">Development</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shell/nav-items.ts</context>
+          <context context-type="sourcefile">src/app/core/data/nav-items.ts</context>
           <context context-type="linenumber">10</context>
         </context-group>
       </trans-unit>
@@ -602,7 +602,7 @@
         <source>Graphisme 3D</source>
         <target state="translated">3D art</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shell/nav-items.ts</context>
+          <context context-type="sourcefile">src/app/core/data/nav-items.ts</context>
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
@@ -610,7 +610,7 @@
         <source>Contact</source>
         <target state="translated">Contact</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shell/nav-items.ts</context>
+          <context context-type="sourcefile">src/app/core/data/nav-items.ts</context>
           <context context-type="linenumber">12</context>
         </context-group>
       </trans-unit>
@@ -618,7 +618,7 @@
         <source>Réseaux et contact</source>
         <target state="translated">Networks and contact</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shell/social-dock.ts</context>
+          <context context-type="sourcefile">src/app/layouts/site-layout/components/social-dock/social-dock.component.ts</context>
           <context context-type="linenumber">34</context>
         </context-group>
       </trans-unit>
@@ -626,7 +626,7 @@
         <source>Me contacter</source>
         <target state="translated">Contact me</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shell/social-dock.ts</context>
+          <context context-type="sourcefile">src/app/layouts/site-layout/components/social-dock/social-dock.component.ts</context>
           <context context-type="linenumber">40,41</context>
         </context-group>
       </trans-unit>
@@ -634,7 +634,7 @@
         <source>Profil <x id="network" equiv-text="NETWORK_NAMES[social.kind]"/> de Stéphane Lieumont (nouvel onglet)</source>
         <target state="translated">Stéphane Lieumont on <x id="network" equiv-text="NETWORK_NAMES[social.kind]"/> (new tab)</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/shell/social-dock.ts</context>
+          <context context-type="sourcefile">src/app/layouts/site-layout/components/social-dock/social-dock.component.ts</context>
           <context context-type="linenumber">93</context>
         </context-group>
       </trans-unit>

@@ -1,4 +1,4 @@
-import { ARTWORKS, PROJECTS } from '../static-content';
+import { ARTWORKS, PROJECTS } from '../data/static-content';
 import { SECTIONS } from './site-paths';
 
 export { SECTIONS, SITE_ORIGIN } from './site-paths';

@@ -18,10 +18,10 @@ import {
   withViewTransitions,
 } from '@angular/router';
 
-import { API_BASE_URL } from './core/api.config';
-import { MEDIA_BASE_URL } from './core/media.config';
-import { PageMetadata } from './core/page-metadata';
-import { RouteTransitions } from './core/route-transitions';
+import { API_BASE_URL } from './core/config/api.config';
+import { MEDIA_BASE_URL } from './core/config/media.config';
+import { PageMetadataService } from './core/services/page-metadata.service';
+import { RouteTransitionsService } from './core/services/route-transitions.service';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -32,11 +32,11 @@ export const appConfig: ApplicationConfig = {
       routes,
       withComponentInputBinding(),
       // A new navigation lands at the top, back and forward restore where the
-      // visitor was. RouteTransitions moves the jump under the transition.
+      // visitor was. RouteTransitionsService moves the jump under the transition.
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
       withViewTransitions({
         skipInitialTransition: true,
-        onViewTransitionCreated: (info) => inject(RouteTransitions).onCreated(info),
+        onViewTransitionCreated: (info) => inject(RouteTransitionsService).onCreated(info),
       }),
     ),
     // Hydration keeps the prerendered DOM instead of rebuilding it at boot, so
@@ -44,7 +44,7 @@ export const appConfig: ApplicationConfig = {
     // replayed when Angular arrives late. Event replay keeps a click made
     // before then.
     provideClientHydration(withEventReplay(), withI18nSupport()),
-    { provide: TitleStrategy, useClass: PageMetadata },
+    { provide: TitleStrategy, useClass: PageMetadataService },
     provideHttpClient(withFetch()),
     { provide: API_BASE_URL, useValue: '/api' },
     { provide: MEDIA_BASE_URL, useValue: '/medias' },
