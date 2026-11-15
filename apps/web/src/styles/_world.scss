@@ -197,19 +197,21 @@ html.lenis body {
   overflow: hidden;
 }
 
-// The 3D world's header and dock float over renders: a dark smoked glass with
-// white ink, not the orange ground (Stéphane, 2026-11-15). Over a blurred white
-// render, white keeps 4.97:1 on the header's 60% (small text, WCAG 1.4.3) and
-// 3.56:1 on the dock's 50% (icons, WCAG 1.4.11), and the muted role neutral 100
-// keeps 4.56:1, so the role line drops the halo it needs on the orange glass.
-:root[data-world='cgi'] :is(.top, .dock) {
-  --world-ink: var(--color-neutral-0);
-  --world-ground: var(--color-neutral-950);
-  --world-muted: var(--color-neutral-100);
+// In the 3D world the header is the mockup's orange, barely translucent: every
+// smoke over the renders was either too dark or failed AA where a white render
+// passes under it (Stéphane, 2026-11-15). At 85% over a black render the ink
+// keeps 6.58:1, and the role line, on its own 72% halo, about 5.4:1. The dock floats over the renders as a
+// smoked glass with white marks: 3.56:1 over a blurred white render for its
+// icons (WCAG 1.4.11).
+:root[data-world='cgi'] .top {
+  background: color-mix(in srgb, var(--world-ground) 85%, transparent);
 }
 
-:root[data-world='cgi'] .top {
-  background: color-mix(in srgb, var(--color-neutral-950) 60%, transparent);
+// The role line takes the header's ink, in medium weight, instead of its rust
+// on a glass halo: 6.58:1 even over a black render (Stéphane, 2026-11-15).
+:root[data-world='cgi'] .top__who {
+  color: var(--world-ink);
+  font-weight: 500;
 }
 
 :root[data-world='cgi'] .top__who-text {
@@ -217,17 +219,27 @@ html.lenis body {
 }
 
 :root[data-world='cgi'] .dock {
+  --world-ink: var(--color-neutral-0);
+  --world-ground: var(--color-neutral-950);
   background: color-mix(in srgb, var(--color-neutral-950) 50%, transparent);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  :root[data-world='cgi'] :is(.top, .dock) {
+  :root[data-world='cgi'] .top {
+    background: var(--world-ground);
+  }
+
+  :root[data-world='cgi'] .dock {
     background: var(--color-neutral-950);
   }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  :root[data-world='cgi'] :is(.top, .dock) {
+  :root[data-world='cgi'] .top {
+    background: var(--world-ground);
+  }
+
+  :root[data-world='cgi'] .dock {
     background: var(--color-neutral-950);
   }
 }
