@@ -214,6 +214,18 @@
   :root[data-vt^='sweep'][data-vt-cloud]::view-transition-new(world-cloud) {
     animation: none;
   }
+
+  // The stage spans the text column, so its height differs between the two
+  // worlds (551px and 604px at 1440×967). By default the images sit at the top
+  // of the morphing group: the new cloud, drawn at its own box's centre, jumped
+  // 26px at the click (Stéphane, 2026-11-15). Centred unscaled, it starts where
+  // the old one stood and travels with the group.
+  :root[data-vt^='sweep'][data-vt-cloud]::view-transition-old(world-cloud),
+  :root[data-vt^='sweep'][data-vt-cloud]::view-transition-new(world-cloud) {
+    block-size: 100%;
+    object-fit: none;
+    object-position: center;
+  }
 }
 
 // ---------------------------------------------------------------------------
