@@ -23,6 +23,24 @@
     animation: project-plate-settle 1700ms var(--ease-settle) 520ms backwards;
   }
 
+  // The picture drifts against the scroll inside its plate. The settle owns
+  // `scale`, the drift owns `transform`, and `translate` stays the layout's
+  // centring, so none of them overrides another. The timeline
+  // is named on the plate: `view()` on the image would bind to the plate
+  // itself, a scroll container through its `overflow: hidden`, and never move.
+  @supports (animation-timeline: view()) {
+    :root.js-motion app-project-page .fig__ground {
+      view-timeline: --plate block;
+    }
+
+    :root.js-motion app-project-page .fig__img {
+      animation:
+        project-plate-settle 1700ms var(--ease-settle) 520ms backwards,
+        project-plate-drift linear both;
+      animation-timeline: auto, --plate;
+    }
+  }
+
   :root.js-motion app-project-page .fig > .fig__cap {
     animation: project-cap-rise 520ms var(--ease-world) 1320ms backwards;
   }
@@ -63,6 +81,15 @@
 @keyframes project-plate-settle {
   from {
     scale: 1.08;
+  }
+}
+
+@keyframes project-plate-drift {
+  from {
+    transform: translateY(calc(-1 * var(--drift)));
+  }
+  to {
+    transform: translateY(var(--drift));
   }
 }
 

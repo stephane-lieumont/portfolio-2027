@@ -27,6 +27,7 @@
 .fig__ground {
   --lean: 24px;
   --zoom: 1.55;
+  --drift: clamp(6px, 2vw, 12px);
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -85,6 +86,8 @@
     margin-left: 0;
     aspect-ratio: auto;
     padding: clamp(16px, 3vw, 40px) clamp(16px, 3vw, 48px);
+    // Within the plate's padding, so the shot is never cut by the plate's edge.
+    --drift: clamp(12px, 2.4vw, 32px);
   }
 
   .fig__img {

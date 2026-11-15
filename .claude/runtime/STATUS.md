@@ -284,6 +284,13 @@ Deviations, each on purpose:
 - The title keeps the prototype's 104px cap. The world pages' hero was scaled
   down after the prototype was drawn (#23, « too big on a 14-inch laptop »);
   whether the project page follows is Stéphane's call.
+- The presentation visual drifts against the scroll inside its plate
+  (Stéphane, 2026-11-15), a CSS scroll-driven animation on a view timeline
+  named on the plate (`view()` on the image would bind to the plate, a scroll
+  container through `overflow: hidden`). Drift ±12px below 900px, ±32px above,
+  measured within the plate's room on four projects: at most 6px of the
+  shot's drop shadow is cut at 768. Off under reduced motion and where scroll
+  timelines are unsupported (Firefox today).
 
 The interim detail page, its `Reveal` directive, `TechChip` and their
 stylesheets (`_page.scss`, `_reveal.scss`) are removed: nothing else used them.
