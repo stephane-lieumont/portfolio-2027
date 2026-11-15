@@ -11,7 +11,7 @@
     "start": "node scripts/content.mjs --seed && ng serve",
     "dev:en": "node scripts/content.mjs --seed && ng serve --configuration development-en",
     "i18n:extract": "node scripts/content.mjs --seed && ng extract-i18n",
-    "build": "node scripts/content.mjs && ng build && node scripts/write-seo-files.mjs && node scripts/check-prerender.mjs",
+    "build": "node scripts/content.mjs && ng build && node scripts/write-seo-files.mjs && node scripts/write-csp-hashes.mjs && node scripts/check-prerender.mjs",
     "og:images": "node scripts/og-images.mjs",
     "watch": "node scripts/content.mjs --seed && ng build --watch --configuration development",
     "test": "node scripts/content.mjs --seed && ng test && node --test \"scripts/*.test.mjs\"",
