@@ -27,7 +27,7 @@ import { NAV } from '../../shell/nav-items';
         <p class="not-found__lede">
           Cette page n’existe pas, ou plus. Le reste du site, lui, est bien là.
         </p>
-        <a class="not-found__back" [routerLink]="back">Retour aux réalisations</a>
+        <a class="btn" [routerLink]="back">Retour aux réalisations</a>
       </div>
       <figure class="not-found__clip">
         <video
@@ -95,12 +95,40 @@ import { NAV } from '../../shell/nav-items';
       color: var(--world-muted);
     }
 
-    .not-found__back {
+    // The world pages' call to action: a link that looks like a button,
+    // because it goes somewhere.
+    .btn {
       display: inline-flex;
       align-items: center;
-      min-block-size: 2.75rem;
-      color: var(--world-ink);
-      text-underline-offset: 4px;
+      gap: 10px;
+      margin-top: 8px;
+      padding: 13px 20px;
+      border-radius: 999px;
+      font: 500 14px/1 var(--font-sans);
+      text-decoration: none;
+      color: var(--world-ground);
+      background: var(--world-ink);
+      transition: scale 200ms var(--ease-world);
+    }
+
+    .btn::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    @media (hover: hover) {
+      .btn:hover {
+        scale: 1.04;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn {
+        transition: none;
+      }
     }
 
     .not-found__clip {
