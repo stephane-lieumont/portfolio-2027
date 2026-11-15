@@ -300,6 +300,35 @@ no code changed: esbuild split the shared chunk differently (`main` 52 →
 exported between chunks grew by about 1.5 kB; the button costs about 1.1 kB.
 Under the 500 kB warning; not investigated further.
 
+**Startup loader (`feat/startup-loader`, issue #47)** — the approved
+prototype's variant A (Stéphane's 2022 Pac-Man disc, 500ms bites, dots
+swallowed, « CHARGEMENT » / « LOADING » wave, wide-open mouth and a 520ms
+diagonal exit). Markup prerendered at the top of `app-root` (label via
+`$localize`, `@@boot.label`), styles and run inline in `index.html`, so it
+paints before the bundle; `role="status"` with the word for screen readers,
+the drawing `aria-hidden`, nothing focusable. A real loader: the head script
+stamps `:root[data-boot]` — `wait` from the head, `on` only if the app has not
+dispatched `app-ready` (StartupService: stable after hydration, fonts ready)
+350ms after the HTML is parsed (the HTML is never cached, so its own transfer
+does not count), then `out` at the end of the bite under way (one bite
+minimum), `clear` 180ms into the slide, removed at its end. Entrances are held
+by `animation-play-state: paused` on everything in `app-root` while `wait`,
+`on` or `out` (`src/styles/_boot.scss`); the point cloud's assembly waits for
+the `boot-release` event. Any key, click, wheel or touch while it shows fades
+it in 125ms; it leaves after 8s whatever happens (CSS failsafe at 9s). Reduced
+motion: a still mouth, then a 300ms fade. No script: never shown. Measured on
+the production build (gzip, Chrome headless, Slow 4G 562.5ms / 1.26 Mbps,
+1440×900, 50ms samples): cold `/developpeur` — first paint 764ms, loader up at
+~1078ms, bites playing (32 jaw angles sampled), app ready 3102ms, exit 3578ms,
+hero's first letter uncovered at ~3950ms with its animation at ~200ms (still
+in its 260ms delay), loader gone 4080ms; cold `/en/developer` the same
+(ready 3062ms); warm revisit FR and EN — 0 loader frames, entrance held
+~50ms (FCP 668ms → released 723ms). **Accepted downside:** on a cold load the
+prerendered page shows for ~300ms (first paint → loader) before the loader
+covers it, the price of a threshold instead of a storage flag. The Pac-Man
+silhouette is a Bandai Namco mark: a small risk Stéphane accepted (he used it
+in 2022). EN label « Loading » to review with the copy.
+
 **Design system** — primitive and semantic tokens, `light-dark()`, typography
 scale, base reset. Contrast measured against the worst pixel a blended texture
 can produce, not against the flat surface.
@@ -969,7 +998,7 @@ motes and smooth scrolling. It ships as six PRs:
    `apps/web/src/app/core/data/world-content/world-content.ts`, parsed against them in a
    spec. Nothing renders it yet.
 2. **Shell** — this PR (`feat/shell-bascule`), see « Works today ». Open:
-   - A loader comes later (Stéphane, 2026-11-14).
+   - The loader came with issue #47 (`feat/startup-loader`), see « Works today ».
    - No legal notice link for now: Stéphane decided on 2026-11-14 to publish
      none at this stage. In France a professional site normally needs one
      (LCEN); revisit before going live.

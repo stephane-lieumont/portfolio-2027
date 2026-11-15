@@ -111,6 +111,392 @@
         });
       });
     </script>
+
+    <!-- The startup loader (issue #47, the approved prototype's variant A). Its
+         markup is prerendered at the top of app-root, its run is the script
+         below. Hidden unless that script shows it, so it never blocks a page
+         without script. Rules keyed on <html> can sit here: this sheet is
+         global, not a component's. -->
+    <style>
+      .boot {
+        --boot-ground: #12100f;
+        --boot-jaw: #f2a154;
+        --boot-dot: #968d84;
+        --boot-lean: atan2(-20vw, 100vh);
+        --boot-period: 500ms;
+        --boot-sweep: 520ms;
+        --ease-enter: cubic-bezier(0.33, 0.7, 0.35, 1);
+        --ease-exit: cubic-bezier(0.6, 0, 0.85, 0.4);
+        --ease-state: cubic-bezier(0.4, 0.15, 0.3, 1);
+        --ease-sweep: cubic-bezier(0.65, 0, 0.35, 1);
+
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        display: none;
+        place-items: center;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      :root:is(
+          [data-boot='wait'],
+          [data-boot='on'],
+          [data-boot='out'],
+          [data-boot='clear'],
+          [data-boot='skip']
+        )
+        .boot {
+        display: grid;
+      }
+
+      /* While it decides, the loader is only its ground, the page's own colour:
+         nothing of the page shows before the app, cached or not (Stéphane,
+         2026-11-15), and a warm load sees no loader, just its ground. */
+      :root[data-boot='wait'] .boot > :not(.boot__ground) {
+        visibility: hidden;
+      }
+
+      /* Failsafe, independent of the script's timers: a real duration, never
+         0s (traps.md, « A zero-duration animation… »). */
+      :root:is([data-boot='wait'], [data-boot='on']) .boot {
+        animation: boot-retire 400ms linear 9s forwards;
+      }
+
+      :root[data-world='cgi'] .boot {
+        --boot-ground: #f2a154;
+        --boot-jaw: #12100f;
+        --boot-dot: #5c280b;
+      }
+
+      /* The ground is the wipe's band: skewed to the site's diagonal, wide
+         enough that the skew never exposes a corner, leaving by translation. */
+      .boot__ground {
+        position: absolute;
+        inset: 0 -12vw;
+        background: var(--boot-ground);
+        transform: skewX(var(--boot-lean));
+        pointer-events: auto;
+      }
+
+      .boot__mark {
+        position: relative;
+        display: grid;
+        justify-items: start;
+        gap: 14px;
+      }
+
+      .boot__mouth {
+        position: relative;
+        inline-size: 200px;
+        block-size: 64px;
+      }
+
+      /* Stéphane's 2022 chomper: a disc in the world's accent, its two halves
+         hinged at the centre. Elements rotating, so it runs on the compositor
+         while the bundle parses. */
+      .boot__jaw {
+        position: absolute;
+        z-index: 1;
+        inset-inline-start: 10px;
+        inline-size: 48px;
+        block-size: 24px;
+        background: var(--boot-jaw);
+        rotate: var(--open);
+      }
+
+      .boot__jaw--top {
+        --open: -32deg;
+        --wide: -52deg;
+        inset-block-start: 8px;
+        border-radius: 24px 24px 0 0;
+        transform-origin: 50% 100%;
+      }
+
+      .boot__jaw--bottom {
+        --open: 32deg;
+        --wide: 52deg;
+        inset-block-start: 32px;
+        border-radius: 0 0 24px 24px;
+        transform-origin: 50% 0;
+      }
+
+      /* The lane starts inside the shut jaws, so a dot crossing its edge is
+         swallowed rather than passing through the mouth. */
+      .boot__lane {
+        position: absolute;
+        inset-inline-start: 30px;
+        inset-block-start: 29px;
+        inline-size: 170px;
+        block-size: 6px;
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(to right, #000 70%, transparent);
+        mask-image: linear-gradient(to right, #000 70%, transparent);
+      }
+
+      /* One dot period per bite: a dot reaches the lane edge as the jaws shut. */
+      .boot__dots {
+        block-size: 100%;
+        inline-size: calc(100% + 20px);
+        background: radial-gradient(
+            circle closest-side,
+            var(--boot-dot) 70%,
+            transparent 100%
+          ) -5.83px
+          0 / 20px 6px repeat-x;
+      }
+
+      .boot__label {
+        margin: 0;
+        padding-inline-start: 12px;
+        font:
+          500 11px/1 ui-monospace,
+          'SF Mono',
+          Menlo,
+          Consolas,
+          monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--boot-dot);
+      }
+
+      .boot__label span {
+        display: inline-block;
+      }
+
+      .boot__say {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+
+      /* Its arrival once the grace is over: it slides in along its lane and
+         grows to size, biting from the first frame (Stéphane, 2026-11-15). */
+      :root[data-boot='on'] .boot__mark {
+        animation: boot-arrive 440ms var(--ease-enter) both;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        :root[data-boot='on'] .boot__mark {
+          animation: boot-arrive-fade 200ms linear both;
+        }
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        :root[data-boot='on'] .boot__jaw {
+          animation: boot-bite var(--boot-period) linear infinite;
+        }
+
+        :root:is([data-boot='on'], [data-boot='out'], [data-boot='clear']) .boot__dots {
+          animation: boot-conveyor var(--boot-period) linear infinite;
+        }
+
+        :root:is([data-boot='on'], [data-boot='out'], [data-boot='clear']) .boot__label span {
+          animation: boot-wave 1000ms var(--ease-state) calc(80ms * var(--i)) infinite both;
+        }
+
+        /* The mouth opens wide and the ground leaves on the site's diagonal. */
+        :root:is([data-boot='out'], [data-boot='clear']) .boot__jaw {
+          animation: boot-wide 125ms var(--ease-enter) forwards;
+        }
+
+        :root:is([data-boot='out'], [data-boot='clear']) :is(.boot__ground, .boot__mark) {
+          animation: boot-slide var(--boot-sweep) var(--ease-sweep) forwards;
+        }
+      }
+
+      /* Reduced motion: the mouth stands still, then the whole fades. */
+      @media (prefers-reduced-motion: reduce) {
+        :root:is([data-boot='out'], [data-boot='clear']) .boot {
+          animation: boot-fade-out 300ms linear forwards;
+        }
+      }
+
+      :root[data-boot='skip'] .boot {
+        animation: boot-fade-out 125ms var(--ease-enter) forwards;
+      }
+
+      /* A bite: snaps shut on the accelerating curve (90ms, arriving at full
+         speed), holds one frame, reopens on the decelerating one (160ms). */
+      @keyframes boot-bite {
+        0% {
+          rotate: var(--open);
+          animation-timing-function: var(--ease-exit);
+        }
+        33.3% {
+          rotate: 0deg;
+        }
+        40% {
+          rotate: 0deg;
+          animation-timing-function: var(--ease-enter);
+        }
+        100% {
+          rotate: var(--open);
+        }
+      }
+
+      @keyframes boot-arrive {
+        from {
+          opacity: 0;
+          transform: translateX(-32px) scale(0.85);
+        }
+      }
+
+      @keyframes boot-arrive-fade {
+        from {
+          opacity: 0;
+        }
+      }
+
+      @keyframes boot-wide {
+        to {
+          rotate: var(--wide);
+        }
+      }
+
+      @keyframes boot-conveyor {
+        to {
+          translate: -20px 0;
+        }
+      }
+
+      @keyframes boot-slide {
+        to {
+          translate: -123vw 0;
+        }
+      }
+
+      /* The 2022 wave: each letter lifts in turn, round and round. */
+      @keyframes boot-wave {
+        0%,
+        40%,
+        100% {
+          translate: 0 0;
+        }
+        20% {
+          translate: 0 -4px;
+        }
+      }
+
+      @keyframes boot-fade-out {
+        to {
+          opacity: 0;
+          visibility: hidden;
+        }
+      }
+
+      @keyframes boot-retire {
+        to {
+          opacity: 0;
+          visibility: hidden;
+        }
+      }
+    </style>
+
+    <!-- The startup loader's run (issue #47). It covers the page only while
+         the app is still loading after a short grace, so a warm cache never
+         sees it. Meanwhile the entrance is held (src/styles/_boot.scss) and
+         starts as the loader leaves. The app dispatches `app-ready` once
+         hydrated with its fonts in (StartupService). -->
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var GRACE = 350;
+        var BITE = 500;
+        var GIVE_UP = 8000;
+        // Into the slide, when the band starts uncovering the hero's column:
+        // the name's first letter then rises in the open, not under the band.
+        var HANDOVER = 180;
+        var INPUTS = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
+        var reduced = !!window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var state = 'wait';
+        var shownAt = 0;
+
+        function stamp(next) {
+          state = next;
+          if (next) root.setAttribute('data-boot', next);
+          else root.removeAttribute('data-boot');
+        }
+        function release() {
+          document.dispatchEvent(new Event('boot-release'));
+        }
+        function listen(on) {
+          INPUTS.forEach(function (type) {
+            if (on) addEventListener(type, skip, { capture: true, passive: true });
+            else removeEventListener(type, skip, true);
+          });
+        }
+        function retire(after) {
+          listen(false);
+          setTimeout(function () {
+            stamp('');
+          }, after);
+        }
+        function show() {
+          if (state !== 'wait' || document.visibilityState !== 'visible') return;
+          shownAt = performance.now();
+          stamp('on');
+          listen(true);
+        }
+        // Leaves at the end of the bite under way, at least one whole bite
+        // after showing, so the loader never flashes.
+        function leave() {
+          clearTimeout(showing);
+          clearTimeout(givingUp);
+          if (state === 'wait') {
+            stamp('');
+            release();
+            return;
+          }
+          if (state !== 'on') return;
+          state = 'leaving';
+          var jaw = document.querySelector('.boot__jaw');
+          var bite = jaw && jaw.getAnimations ? jaw.getAnimations()[0] : null;
+          var into = bite ? Number(bite.currentTime) : performance.now() - shownAt;
+          var rest = Math.max(BITE, Math.ceil(into / BITE) * BITE) - into;
+          setTimeout(function () {
+            if (state !== 'leaving') return;
+            stamp('out');
+            retire(reduced ? 300 : 520);
+            setTimeout(
+              function () {
+                if (state === 'out') stamp('clear');
+                release();
+              },
+              reduced ? 0 : HANDOVER,
+            );
+          }, rest);
+        }
+        // A key, a click or a scroll means the visitor wants the page: it is
+        // prerendered, so it is there to read.
+        function skip() {
+          if (state !== 'on' && state !== 'leaving') return;
+          clearTimeout(givingUp);
+          stamp('skip');
+          release();
+          retire(125);
+        }
+
+        // The grace runs from the end of parsing: the HTML is never cached, so
+        // on a slow line it streams for a while even when everything the app
+        // needs is in the cache, and that wait is not the loader's to cover.
+        var showing;
+        function arm() {
+          showing = setTimeout(show, GRACE);
+        }
+        stamp('wait');
+        if (document.readyState === 'loading') {
+          document.addEventListener('readystatechange', arm, { once: true });
+        } else {
+          arm();
+        }
+        var givingUp = setTimeout(leave, GIVE_UP);
+        document.addEventListener('app-ready', leave, { once: true });
+      })();
+    </script>
   </head>
   <body>
     <app-root></app-root>

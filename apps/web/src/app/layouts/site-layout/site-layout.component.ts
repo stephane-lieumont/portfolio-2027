@@ -51,6 +51,10 @@ export class SiteLayoutComponent {
 
   protected readonly nav = NAV;
 
+  /** The startup loader's word, one letter per span for its wave. */
+  protected readonly bootLabel = $localize`:@@boot.label:Chargement`;
+  protected readonly bootLetters = Array.from(this.bootLabel);
+
   // The contact page carries the same networks in its own content; the dock
   // would only repeat them (Stéphane, 2026-11-15).
   protected readonly showDock = computed(() => this.active.path() !== PATHS.contact);
