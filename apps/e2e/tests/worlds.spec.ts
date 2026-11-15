@@ -49,3 +49,10 @@ test('a direct load leaves focus to the browser, skip link first', async ({ page
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Aller au contenu' })).toBeFocused();
 });
+
+test('the role line in the header leads to the developer world', async ({ page }) => {
+  await open(page, '/graphisme-3d');
+  await page.getByRole('link', { name: 'Lead Tech & graphiste 3D' }).click();
+  await expect(page).toHaveURL('/developpeur');
+  await expect(page.locator('html')).toHaveAttribute('data-world', 'dev');
+});
