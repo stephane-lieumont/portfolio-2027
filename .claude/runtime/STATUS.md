@@ -168,8 +168,8 @@ mockup's unreset 8px body margin. In order:
 
 Deviations from the mockup, each on purpose:
 
-- No bottom padding under the 3D wall (mockup 120px): the stack's own top
-  padding is the only space below it, 88px at 1512 (Stéphane, 2026-11-15:
+- Only the tiles' 2px seam under the 3D wall (mockup 120px), then the stack's
+  own top padding, 88px at 1512 (Stéphane, 2026-11-15:
   « l'espace en bas de la section ne semble pas nécessaire »). The viewer's
   host no longer opens an empty grid row (it added a 56px gap).
 - Hero type smaller than the mockup's (name capped at 80px instead of 104px,
