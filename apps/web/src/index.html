@@ -448,14 +448,33 @@
         function arm() {
           showing = setTimeout(show, GRACE);
         }
+        // A first visit has nothing in its cache: the loader covers it from the
+        // first paint, or the page shows for the grace before it (Stéphane,
+        // 2026-11-15). A returning visitor keeps the grace; after a deploy
+        // their cache is stale and the glimpse comes back, once.
+        var known = false;
+        try {
+          known = localStorage.getItem('boot-known') !== null;
+        } catch (e) {}
         stamp('wait');
-        if (document.readyState === 'loading') {
+        if (!known) {
+          show();
+        } else if (document.readyState === 'loading') {
           document.addEventListener('readystatechange', arm, { once: true });
         } else {
           arm();
         }
         var givingUp = setTimeout(leave, GIVE_UP);
-        document.addEventListener('app-ready', leave, { once: true });
+        document.addEventListener(
+          'app-ready',
+          function () {
+            try {
+              localStorage.setItem('boot-known', '');
+            } catch (e) {}
+            leave();
+          },
+          { once: true },
+        );
       })();
     </script>
   </head>

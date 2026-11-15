@@ -9,7 +9,7 @@ import { JSDOM } from 'jsdom';
 const INDEX = readFileSync(new URL('../src/index.html', import.meta.url), 'utf8');
 const BODY = '<app-root><div class="boot"><div class="boot__jaw"></div></div></app-root>';
 
-function loading({ visible = true, reduced = false } = {}) {
+function loading({ visible = true, reduced = false, known = true } = {}) {
   let now = 0;
   let next = 1;
   const timers = new Map();
@@ -17,6 +17,7 @@ function loading({ visible = true, reduced = false } = {}) {
     url: 'https://example.test/developpeur',
     runScripts: 'dangerously',
     beforeParse(window) {
+      if (known) window.localStorage.setItem('boot-known', '');
       window.setTimeout = (run, delay = 0) => {
         timers.set(next, { at: now + delay, run });
         return next++;
@@ -45,6 +46,7 @@ function loading({ visible = true, reduced = false } = {}) {
   };
   return {
     state: () => document.documentElement.getAttribute('data-boot'),
+    remembered: () => dom.window.localStorage.getItem('boot-known') !== null,
     ready: () => document.dispatchEvent(new Event('app-ready')),
     press: () => dom.window.dispatchEvent(new Event('keydown')),
     releases,
@@ -160,5 +162,28 @@ describe('the startup loader’s head script', () => {
     boot.ready();
     assert.equal(boot.state(), null);
     assert.equal(boot.releases.length, 1);
+  });
+});
+
+describe('the startup loader on a first visit', () => {
+  it('covers the page from the first paint, without the grace', async () => {
+    const boot = loading({ known: false });
+    assert.equal(boot.state(), 'on');
+    await boot.parsed();
+    assert.equal(boot.state(), 'on');
+  });
+
+  it('remembers the visitor once the app is ready, for the grace next time', async () => {
+    const boot = loading({ known: false });
+    await boot.parsed();
+    assert.equal(boot.remembered(), false);
+    boot.ready();
+    assert.equal(boot.remembered(), true);
+  });
+
+  it('stays hidden in a background tab, as on a return', async () => {
+    const boot = loading({ known: false, visible: false });
+    await boot.parsed();
+    assert.equal(boot.state(), 'wait');
   });
 });
