@@ -17,7 +17,8 @@ can produce, not against the flat surface.
 maquette », « on ne garde rien de l'ancien projet », « l'idée est une refonte
 complète, elle doit correspondre à la maquette de l'artefact ». The old home
 split and its entrance, the Pac-Man loader, the burger menu, the footer, the
-closing portrait bands and the Travolta 404 are removed. What remains of the
+closing portrait bands and the old 404 page are removed (its Travolta came
+back on 2026-11-15, see below). What remains of the
 old site — the developer, gallery, contact and project pages — is interim and
 is replaced by PRs 3–6.
 
@@ -61,8 +62,26 @@ spec. Social dock fixed bottom-right,
 always visible as on the mockup: contact icon to `/contact`, LinkedIn,
 GitHub, ArtStation, CV, no mailto; `scroll-padding-block-end` keeps focus
 clear of it. A direct load leaves focus alone (first Tab is the skip link);
-route changes move focus to `<main>` and announce the page title. Interim
-404: mono eyebrow « Erreur 404 », a heading, one link to `/developpeur`.
+route changes move focus to `<main>` and announce the page title.
+
+**404** — the 2022 site's Travolta and its intercom line, back at Stéphane's
+request (2026-11-15: « ajoute Travolta avec la phrase interphone »): eyebrow
+« Erreur 404 · page introuvable », heading « Mais où est l’interphone ? », a
+lede, one link to `/developpeur`, and the clip beside it from 900px, on the
+world's own ground (dark or orange). The 2022 GIF (1.8 MB) had a transparent
+ground; it ships as alpha video: HEVC `.mov` (254 KB) listed first, which only
+Safari claims and whose alpha it reads, then VP9 `.webm` (369 KB) for Chrome
+and Firefox, and a transparent WebP poster, from `public/images/` like the
+contact portrait. It loops muted, standing on the bottom edge of the screen so the
+clip's cut legs read as the page's edge (Stéphane: no pause button); under
+reduced motion it stays on its poster. Measured in Chrome: the WebM is picked, autoplay starts,
+the 4s clip loops, its bottom within 4px of the viewport's at 1512×771,
+1440×900, 1920×970, 768×1024 and 390×844, title 56px at 1512×771, no horizontal overflow. Safari's
+HEVC path is not verified. The clip is from _Pulp Fiction_: a film's footage
+and an actor's likeness on a professional site, a small rights risk Stéphane
+accepted. The interim page surface the 3D world kept under every non-world
+page (for the old contact page) is gone: contact and the 404 stand on the
+orange ground.
 
 **World pages (« Bascule », this branch)** — `/developpeur` and
 `/graphisme-3d` are one component (`features/world/`), iso with the mockup in
@@ -297,12 +316,13 @@ motes and smooth scrolling. It ships as six PRs:
    `apps/web/src/app/core/content/world-content.ts`, parsed against them in a
    spec. Nothing renders it yet.
 2. **Shell** — this PR (`feat/shell-bascule`), see « Works today ». Open:
-   - A loader and a designed 404 come later (Stéphane, 2026-11-14).
+   - A loader comes later (Stéphane, 2026-11-14).
    - No legal notice link for now: Stéphane decided on 2026-11-14 to publish
      none at this stage. In France a professional site normally needs one
      (LCEN); revisit before going live.
-   - Copy to review: the 404 heading « Page introuvable » and link « Retour à
-     l’accueil » are labels written for the interim page.
+   - Copy to review: the 404's lede « Cette page n’existe pas, ou plus… », its
+     link « Retour aux réalisations » and the clip's description were written
+     here; the heading adapts the 2022 line « Where is the intercom ? ».
    - Not verified: Safari and Firefox (headless Chrome only), a real phone,
      a touch device (Lenis is wheel-only by design), frame timings under load.
      3–5. World pages, work, viewer, stack: this branch (`feat/world-pages`), see
@@ -345,13 +365,14 @@ The stack's marks need SVG logos (ADR-0012); the mockup used Simple Icons
 values ship as they are; each failure below was measured at the worst pixel
 on the production build (1440 and 390), and is to be fixed later.
 
-| Where                                                                       | Measured                                                                         | Requirement                                            |
-| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Header role line, muted on 72% glass, dev world, over a light cover         | 2.35:1 (5.82:1 on bare glass)                                                    | 4.5:1                                                  |
-| Same, 3D world, over a dark render                                          | 3.13:1 at 1440, 3.31:1 at 390 (5.63:1 bare)                                      | 4.5:1                                                  |
-| Header links 32–36px tall (mockup)                                          | under 44px                                                                       | ADR-0010 target 44px (WCAG 2.5.8 minimum 24px is met)  |
-| Copyright spine over the 3D mosaic (it sits above everything, per Stéphane) | 1.00:1 over a dark render (5.70:1 on bare orange; 5.26:1 worst in the dev world) | 4.5:1                                                  |
-| Inactive stack marks: icon at 50% opacity, 3D world                         | ≈2.9:1 (label stays 5.67:1)                                                      | 3:1 for graphics, if the icon is held to carry meaning |
+| Where                                                                          | Measured                                                                         | Requirement                                            |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Header role line, muted on 72% glass, dev world, over a light cover            | 2.35:1 (5.82:1 on bare glass)                                                    | 4.5:1                                                  |
+| Same, 3D world, over a dark render                                             | 3.13:1 at 1440, 3.31:1 at 390 (5.63:1 bare)                                      | 4.5:1                                                  |
+| Header links 32–36px tall (mockup)                                             | under 44px                                                                       | ADR-0010 target 44px (WCAG 2.5.8 minimum 24px is met)  |
+| Copyright spine over the 3D mosaic (it sits above everything, per Stéphane)    | 1.00:1 over a dark render (5.70:1 on bare orange; 5.26:1 worst in the dev world) | 4.5:1                                                  |
+| Inactive stack marks: icon at 50% opacity, 3D world                            | ≈2.9:1 (label stays 5.67:1)                                                      | 3:1 for graphics, if the icon is held to carry meaning |
+| 404 clip loops with no pause control (Stéphane removed the button, 2026-11-15) | plays past 5s, decorative                                                        | WCAG 2.2.2 Pause, Stop, Hide                           |
 
 ## Missing
 
