@@ -23,15 +23,16 @@
   color-scheme: dark;
   overscroll-behavior: contain;
   opacity: 0;
-  transition:
-    opacity 320ms var(--ease-world),
-    display 320ms allow-discrete,
-    overlay 320ms allow-discrete;
 }
+// Fades in only. Closing is the route's view transition, which captures the
+// page under the dialog as the new state: a dialog still fading out there
+// keeps its opaque backdrop in the top layer past the crossfade, and the
+// orange page then lands in a single frame.
 .lb[open] {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   opacity: 1;
+  transition: opacity 320ms var(--ease-world);
 }
 @starting-style {
   .lb[open] {

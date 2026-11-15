@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -97,5 +100,20 @@ describe('ArtViewer stepping', () => {
       (s) => !!s.querySelector('img'),
     );
     expect(loaded).toEqual([true, true, false, true]);
+  });
+
+  // The route's view transition captures the page under the dialog as its new
+  // state. A dialog that fades out there keeps its opaque backdrop in the top
+  // layer past the crossfade, and the 3D world's orange ground lands in one
+  // frame after it.
+  // jsdom applies no component stylesheet, so this reads the rules themselves.
+  it('fades in when it opens but leaves at once when it closes', () => {
+    const css = readFileSync(join(process.cwd(), 'src/app/features/world/art-viewer.scss'), 'utf8');
+    const rule = (selector: string) =>
+      new RegExp(`^${selector.replace(/[.[\]]/g, '\\$&')} \\{([^}]*)\\}`, 'm').exec(css)?.[1] ?? '';
+
+    expect(rule('.lb[open]')).toMatch(/transition:\s*opacity/);
+    expect(rule('.lb')).not.toContain('transition');
+    expect(rule('.lb::backdrop')).not.toContain('transition');
   });
 });

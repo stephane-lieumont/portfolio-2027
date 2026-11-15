@@ -141,7 +141,11 @@ mockup's unreset 8px body margin. In order:
   `cancel` also restores scrolling and the address. A direct load of a piece's URL
   renders the wall with the viewer open on it and a preload in the head (16
   prerendered pages, own title and description). Steps inside the viewer
-  replace the URL; Back closes it.
+  replace the URL; Back closes it. The dialog fades in but closes at once:
+  its 320ms exit fade kept the dark backdrop in the top layer past the
+  250ms crossfade, so closing went dark → black → orange in one frame
+  (measured, close button, Escape, Back, after a step, reduced motion);
+  now the crossfade alone carries dark to orange, with no relapse.
 - Stack: marks as a tab list (`role=tab`, `aria-selected`, roving tabindex,
   arrows/Home/End; the panel a `tabpanel`; Simple Icons masks; the 3D tools' PNGs),
   bubble once in view (on a wrapper: the dim of inactive icons no longer
