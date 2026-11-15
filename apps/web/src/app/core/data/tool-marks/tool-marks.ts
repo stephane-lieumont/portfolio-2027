@@ -58,6 +58,7 @@ const MARKS: Partial<Record<ToolSlug, string>> = {
   webpack: simpleIcon('webpack'),
   javascript: simpleIcon('javascript'),
   sass: simpleIcon('sass'),
+  tailwind: simpleIcon('tailwindcss'),
   photoshop: simpleIcon('adobephotoshop'),
   '3dsmax': '/logos/3dsmax.png',
   vray: '/logos/vray.png',

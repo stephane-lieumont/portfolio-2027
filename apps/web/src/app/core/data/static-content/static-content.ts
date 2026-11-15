@@ -307,6 +307,7 @@ export const PROJECTS: readonly StaticProject[] = [
     ],
     technologies: [
       'react',
+      'tailwind',
       'typescript',
       'dotnet',
       'azure-devops',

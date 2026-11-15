@@ -77,6 +77,8 @@ export const TECHNOLOGIES = [
   { slug: 'dart', label: 'Dart', glyph: '\\e915', logo: null },
   { slug: 'node', label: 'Node.js', glyph: '\\e925', logo: LOGO('node') },
   { slug: 'sass', label: 'Sass', glyph: '\\e924', logo: LOGO('sass') },
+
+  { slug: 'tailwind', label: 'Tailwind CSS', glyph: null, logo: null },
   { slug: 'webpack', label: 'Webpack', glyph: '\\e91a', logo: LOGO('webpack') },
   { slug: 'javascript', label: 'JavaScript', glyph: '\\e91c', logo: null },
   { slug: 'html', label: 'HTML', glyph: '\\eae4', logo: null },
