@@ -46,6 +46,12 @@ describe('App shell', () => {
             ],
           },
           { path: 'contact', component: Blank, title: 'Contact', data: { page: 'contact' } },
+          {
+            path: 'mentions-legales',
+            component: Blank,
+            title: 'Mentions légales',
+            data: { page: 'legal' },
+          },
         ]),
         { provide: TitleStrategy, useClass: PageMetadataService },
       ],
@@ -141,11 +147,32 @@ describe('App shell', () => {
   });
 
   // The old footer is gone; the only contentinfo landmark is the copyright spine.
-  it('ends on the page, its only footer the copyright', async () => {
+  it('ends on the page, its only footer the copyright and the legal notice', async () => {
     await visit('/contact');
     const footers = host.querySelectorAll('footer');
     expect(footers).toHaveLength(1);
-    expect(footers[0].textContent?.trim()).toMatch(/^© \d{4} Stéphane Lieumont$/);
+    expect(footers[0].querySelector('span')?.textContent).toMatch(/^© \d{4} Stéphane Lieumont$/);
+    expect(Array.from(footers[0].querySelectorAll('a'), (a) => a.textContent)).toEqual([
+      'Mentions légales',
+    ]);
+  });
+
+  it('reaches the legal notice from every page, marked current on it', async () => {
+    const link = () => host.querySelector('footer a');
+
+    await visit('/developpeur');
+    expect(link()?.getAttribute('href')).toBe('/mentions-legales');
+    expect(link()?.hasAttribute('aria-current')).toBe(false);
+    await visit('/mentions-legales');
+    expect(link()?.getAttribute('aria-current')).toBe('page');
+  });
+
+  it('idles the world switch on the legal notice, as on contact', async () => {
+    await visit('/graphisme-3d');
+    await visit('/mentions-legales');
+    expect(host.querySelector('.switch')?.classList.contains('switch--idle')).toBe(true);
+    expect(languageSwitch('/mentions-legales', 'fr').href).toBe('/en/legal-notice');
+    expect(languageSwitch('/legal-notice', 'en').href).toBe('/mentions-legales');
   });
 
   // A notice frozen at the build year would go stale every January.
@@ -156,7 +183,7 @@ describe('App shell', () => {
     later.detectChanges();
     vi.useRealTimers();
 
-    expect(later.nativeElement.querySelector('.copyright')?.textContent?.trim()).toBe(
+    expect(later.nativeElement.querySelector('.copyright span')?.textContent?.trim()).toBe(
       '© 2031 Stéphane Lieumont',
     );
   });

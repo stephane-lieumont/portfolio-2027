@@ -9,9 +9,32 @@ and `fix/responsive-audit` (the responsive audit's fixes and the image loading
 indicator), and `feat/seo` (canonical, Open Graph, JSON-LD, sitemap, robots),
 and `feat/api-read` (the read-only content API the site is built from,
 ADR-0022, issue #40), and `feat/e2e-playwright` (end-to-end tests, ADR-0024,
-issue #45).
+issue #45), and `feat/legal-notice` (the legal notice, issue #51).
 
 ## Works today
+
+**Legal notice (`feat/legal-notice`, issue #51, Stéphane's facts of
+2026-11-15)** — `/mentions-legales` and `/en/legal-notice`
+(`features/legal/views/legal-notice/`), a page off the worlds like contact
+(the switch idles, the dock stays), indexable, in the sitemap, prerendered in
+both trees (58 routes). Sections: Éditeur (private individual, no commercial
+activity, publication director, no postal address or phone under LCEN art. 6
+III-2, contact through the form), Hébergement (OVH SAS, Roubaix), Propriété
+intellectuelle, Données personnelles (name, email, message; Gmail; three years
+at most), Protection contre le spam (Turnstile, Cloudflare's addendum linked),
+Cookies (`lang`, one year, read from `languageCookie` by the spec; the
+session-storage scroll kept across a language switch; no audience measurement
+to date — #83 will need consent and a new paragraph), Vos droits (via the
+form, CNIL), Crédits (fonts OFL 1.1, Simple Icons and gilbarbara/logos CC0,
+Lucide ISC). A link « Mentions légales » / « Legal notice » rides the copyright
+spine: 24px across, padded on the page's side only so its focus ring is not
+cut by the screen edge, underlined, `aria-current` on the page; measured 5.8:1
+on the dev ground, 5.7:1 on the orange, no horizontal scroll at 320px. e2e:
+axe on both pages, Tab reaches the footer link with a solid outline and a
+24px box, the language switch leads to `/en/legal-notice`. Not sourced, left
+out: OVH's phone number (LCEN art. 6 III-1 asks for the host's), the legal
+basis of the contact processing (GDPR art. 13), server access logs, and the
+licence of `fonts/icons.woff` and the PNG tool logos carried over from 2022.
 
 **Site image (`feat/site-nginx`, ADR-0023, issue #43)** — `apps/web/Dockerfile`
 copies `dist/web/browser` into `nginxinc/nginx-unprivileged:1.30.6-alpine3.24`
@@ -1032,7 +1055,7 @@ the prerendered build with its route check. Node from `.nvmrc`, pnpm from
 `packageManager`, frozen lockfile.
 
 **End-to-end tests (`feat/e2e-playwright`, ADR-0024, issue #45)** —
-`apps/e2e`, Playwright 1.65.0, Chromium only. `pnpm test:e2e` runs 32 tests
+`apps/e2e`, Playwright 1.65.0, Chromium only. `pnpm test:e2e` runs 39 tests
 headless against `apps/web/dist/web/browser` (run `pnpm build:site` first; the
 server says so if the build is missing), served by
 `apps/e2e/support/static-server.ts` with nginx's `try_files` and per-tree 404.
@@ -1043,7 +1066,7 @@ with the scroll kept, the 3D viewer from the wall (keyboard, Escape, focus back
 on the tile, URL per piece), a project page (title, tools, external links'
 `target`/`rel`), the contact form in FR and EN (validation and focus, sending
 with `aria-busy`/`aria-disabled`, sent with its icon, captcha refused, server
-error), the 404 in each tree with its status, a 320px phone, axe on eight pages
+error), the 404 in each tree with its status, a 320px phone, the legal notice (footer link by keyboard, language switch), axe on ten pages
 (serious and critical: none today). About 7s locally once built.
 `.github/workflows/e2e.yml` runs it on pull requests and `main`, beside
 `verify.yml`; report, traces and screenshots uploaded on failure. Not yet
@@ -1064,9 +1087,7 @@ motes and smooth scrolling. It ships as six PRs:
    spec. Nothing renders it yet.
 2. **Shell** — this PR (`feat/shell-bascule`), see « Works today ». Open:
    - The loader came with issue #47 (`feat/startup-loader`), see « Works today ».
-   - No legal notice link for now: Stéphane decided on 2026-11-14 to publish
-     none at this stage. In France a professional site normally needs one
-     (LCEN); revisit before going live.
+   - The legal notice came with issue #51 (`feat/legal-notice`), see « Works today ».
    - Copy to review: the 404's lede « Cette page n’existe pas, ou plus… », its
      link « Retour aux réalisations » and the clip's description were written
      here; the heading adapts the 2022 line « Where is the intercom ? ».

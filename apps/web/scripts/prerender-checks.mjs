@@ -27,12 +27,20 @@ const CHROME = {
     worldCta: 'Me contacter',
     projectBlock: 'Contexte',
     notFound: { h1: 'Mais où est l’interphone ?', text: ['Erreur 404'] },
+    legal: {
+      h1: 'Mentions légales',
+      text: ['Hébergement', 'OVH SAS, 2 rue Kellermann, 59100 Roubaix, France', 'Vos droits'],
+    },
   },
   en: {
     contactForm: ['Name', 'Email', 'Message', 'Send'],
     worldCta: 'Contact me',
     projectBlock: 'Context',
     notFound: { h1: 'Where is the intercom?', text: ['Error 404'] },
+    legal: {
+      h1: 'Legal notice',
+      text: ['Hosting', 'OVH SAS, 2 rue Kellermann, 59100 Roubaix, France', 'Your rights'],
+    },
   },
 };
 
@@ -60,6 +68,8 @@ export const FRENCH_CHROME = [
   'Envoyer',
   'Erreur 404',
   'Lead Tech & graphiste 3D',
+  'Mentions légales',
+  'Données personnelles',
 ];
 
 /** Every `{ fr, en }` pair in a tree of content, wherever it sits. */
@@ -174,6 +184,7 @@ function tree(locale) {
         },
       ),
     ),
+    entry({ page: 'legal' }, chrome.legal),
     entry({ page: 'not-found' }, { ...chrome.notFound, noindex: true }),
   ];
 }

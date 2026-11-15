@@ -1,0 +1,94 @@
+// The contact page's frame and type, one reading column: a page that is read,
+// not browsed.
+:host {
+  display: block;
+  padding-inline: calc(8px + max(16px, env(safe-area-inset-left, 0px)))
+    calc(8px + max(16px, env(safe-area-inset-right, 0px)));
+  color: var(--world-ink);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.legal {
+  max-inline-size: 68ch;
+  margin-inline: auto;
+  padding-block: clamp(32px, 6vw, 88px) max(clamp(48px, 8vw, 120px), var(--dock-clearance));
+}
+
+.legal__title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(2rem, 1rem + 3.2vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.legal__lede {
+  margin: 16px 0 0;
+  color: color-mix(in srgb, var(--world-ink) 82%, var(--world-ground));
+  font-size: 17px;
+}
+
+.legal__section {
+  margin-block-start: clamp(32px, 4vw, 48px);
+  padding-block-start: clamp(24px, 3vw, 32px);
+  border-block-start: 1px solid var(--world-rule);
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+p,
+address,
+ul {
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+p + p,
+p + address {
+  margin-block-start: 12px;
+}
+
+address {
+  font-style: normal;
+}
+
+ul {
+  display: grid;
+  gap: 8px;
+  padding-inline-start: 1.25em;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+// Underlined: in running text a link must not rely on colour alone.
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  border-radius: 2px;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--world-ink);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+}

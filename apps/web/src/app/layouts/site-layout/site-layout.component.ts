@@ -51,6 +51,7 @@ export class SiteLayoutComponent {
   private readonly languageLink = viewChild.required<ElementRef<HTMLAnchorElement>>('languageLink');
 
   protected readonly nav = NAV;
+  protected readonly legalPath = PATHS.legal;
 
   /** The startup loader's word, one letter per span for its wave. */
   protected readonly bootLabel = $localize`:@@boot.label:Chargement`;

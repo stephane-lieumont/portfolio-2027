@@ -9,6 +9,7 @@ import { pieceDescription } from '@core/services/page-metadata/page-metadata.ser
 const DEV = SECTIONS.dev[SITE_LOCALE];
 const CGI = SECTIONS.cgi[SITE_LOCALE];
 const CONTACT = SECTIONS.contact[SITE_LOCALE];
+const LEGAL = SECTIONS.legal[SITE_LOCALE];
 
 /**
  * Whether the second URL segment names a project we actually have.
@@ -123,6 +124,18 @@ export const routes: Routes = [
     },
     loadComponent: () =>
       import('@features/contact/views/contact/contact.component').then((m) => m.ContactComponent),
+  },
+  {
+    path: LEGAL,
+    title: $localize`:@@page.legal.title:Mentions légales`,
+    data: {
+      page: 'legal',
+      description: $localize`:@@page.legal.description:Mentions légales du site de Stéphane Lieumont\u00a0: qui l’édite, qui l’héberge, ce que deviennent les messages du formulaire de contact et vos droits.`,
+    },
+    loadComponent: () =>
+      import('@features/legal/views/legal-notice/legal-notice.component').then(
+        (m) => m.LegalNoticeComponent,
+      ),
   },
   // A real page rather than a redirect home. Redirecting hides dead links
   // instead of reporting them, and it is what the current site does — every
