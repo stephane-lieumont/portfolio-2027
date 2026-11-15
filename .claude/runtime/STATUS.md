@@ -68,7 +68,7 @@ route changes move focus to `<main>` and announce the page title.
 **404** — the 2022 site's Travolta and its intercom line, back at Stéphane's
 request (2026-11-15: « ajoute Travolta avec la phrase interphone »): eyebrow
 « Erreur 404 · page introuvable », heading « Mais où est l’interphone ? », a
-lede, one link to `/developpeur`, and the clip beside it from 900px, on the
+lede, one link to `/developpeur` styled as the world pages' pill button, and the clip beside it from 900px, on the
 world's own ground (dark or orange). The 2022 GIF (1.8 MB) had a transparent
 ground; it ships as alpha video: HEVC `.mov` (254 KB) listed first, which only
 Safari claims and whose alpha it reads, then VP9 `.webm` (369 KB) for Chrome
