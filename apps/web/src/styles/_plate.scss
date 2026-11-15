@@ -9,11 +9,12 @@
   background-color: var(--plate-tone, color-mix(in srgb, var(--world-ink) 6%, transparent));
 }
 
-.plate:is([data-plate='loading'], [data-plate='error']) img {
+.plate[data-plate='loading']:not([data-plate-loaded]) img,
+.plate[data-plate='error'] img {
   opacity: 0;
 }
 
-.plate[data-plate='error'] {
+.plate:is([data-plate='error'], [data-plate-failed]) {
   background-color: color-mix(in srgb, var(--world-ink) 6%, transparent);
 }
 
@@ -93,7 +94,7 @@
   display: none;
 }
 
-.plate[data-plate='error'] .plate__fallback {
+.plate:is([data-plate='error'], [data-plate-failed]) .plate__fallback {
   position: absolute;
   inset: 0;
   display: grid;
@@ -122,6 +123,125 @@
   .plate__fallback-alt {
     -webkit-line-clamp: 5;
     line-clamp: 5;
+  }
+}
+
+// The 3D wall before the app: the head script in index.html stamps a plate
+// `data-plate-seen` while on screen and `data-plate-loaded` (`fade` unless it
+// came from a cache) or `data-plate-failed` once its picture is settled, so
+// the wait and the arrival run on a slow line long before PlateImage boots.
+// PlateImage leaves both to these rules where they run.
+:root.js-motion .tile.plate:not([data-plate-loaded]) .tile__img {
+  opacity: 0;
+}
+
+:root.js-motion .tile.plate[data-plate-seen]::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 1;
+  inline-size: 60%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.14) 40%,
+    rgb(255 255 255 / 0.14) 50%,
+    rgb(0 0 0 / 0.08) 50%,
+    rgb(0 0 0 / 0.08) 62%,
+    transparent
+  );
+  opacity: 0;
+  transform: translateX(-140%) skewX(var(--plate-skew, 0rad));
+  pointer-events: none;
+}
+
+@keyframes plate-sweep {
+  0% {
+    transform: translateX(-140%) skewX(var(--plate-skew, 0rad));
+    animation-timing-function: var(--ease-state);
+  }
+
+  67%,
+  100% {
+    transform: translateX(206.67%) skewX(var(--plate-skew, 0rad));
+  }
+}
+
+@keyframes plate-wait-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes plate-wait-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes plate-arrive {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes plate-settle {
+  from {
+    scale: 1.025;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root.js-motion
+    .tile.plate[data-plate-seen]:not([data-plate-loaded], [data-plate-failed])::after {
+    animation:
+      plate-sweep 2100ms linear 400ms infinite,
+      plate-wait-in var(--motion-enter) var(--ease-enter) 400ms both;
+  }
+
+  // Settled: the band stops where it is and fades from whatever it showed,
+  // nothing if it had not appeared yet. A transition would not do: removing
+  // an animation starts none from its value.
+  :root.js-motion .tile.plate[data-plate-seen]:is([data-plate-loaded], [data-plate-failed])::after {
+    animation:
+      plate-sweep 2100ms linear 400ms infinite paused,
+      plate-wait-in var(--motion-enter) var(--ease-enter) 400ms both paused,
+      plate-wait-out var(--motion-exit) var(--ease-exit) forwards;
+  }
+
+  :root.js-motion .tile.plate[data-plate-loaded='fade']:not([data-reveal='pending']) .tile__img {
+    animation:
+      plate-arrive var(--duration-510) cubic-bezier(0.45, 0, 0.25, 1),
+      plate-settle var(--duration-510) var(--ease-enter);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root.js-motion
+    .tile.plate[data-plate-seen]:not([data-plate-loaded], [data-plate-failed])
+    .plate__wait {
+    position: absolute;
+    inset-block-start: 16px;
+    inset-inline-start: 16px;
+    z-index: 1;
+    display: block;
+    padding: 4px 8px;
+    background: var(--world-ground);
+    color: var(--world-ink);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    animation: plate-wait-in 10ms linear 400ms both;
+  }
+
+  :root.js-motion .tile.plate[data-plate-loaded='fade'] .tile__img {
+    animation: plate-arrive 200ms linear;
   }
 }
 

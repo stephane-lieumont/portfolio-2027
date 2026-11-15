@@ -54,6 +54,62 @@
         document.documentElement.setAttribute('data-motes-tile', '');
       };
       tile.src = '/textures/motes.svg';
+
+      // A plate learns its picture has come before the app does: on a slow
+      // line the prerendered pictures land seconds ahead of the bundle
+      // (src/styles/_plate.scss). Load and error do not bubble; the capture
+      // phase sees every one, cached ones included. A picture that took no
+      // time (a cache) arrives without a fade.
+      var seer = null;
+      function plateOf(img) {
+        return img.tagName === 'IMG' ? img.closest('.plate') : null;
+      }
+      document.addEventListener(
+        'load',
+        function (event) {
+          var img = event.target;
+          var plate = plateOf(img);
+          if (!plate || plate.hasAttribute('data-plate-loaded')) return;
+          var entry = performance.getEntriesByName(img.currentSrc)[0];
+          var slow = entry && entry.responseEnd - entry.startTime > 100;
+          plate.setAttribute('data-plate-loaded', slow ? 'fade' : '');
+          if (seer) seer.unobserve(plate);
+        },
+        true,
+      );
+      document.addEventListener(
+        'error',
+        function (event) {
+          var img = event.target;
+          var plate = plateOf(img);
+          if (!plate) return;
+          // A failed derivative is retried as the original; browsers never do it alone.
+          if (img.hasAttribute('srcset')) {
+            img.removeAttribute('srcset');
+            img.removeAttribute('sizes');
+            return;
+          }
+          plate.setAttribute('data-plate-failed', '');
+          if (seer) seer.unobserve(plate);
+        },
+        true,
+      );
+      // Only a plate on screen says it is waiting; the band leans like the sweep.
+      document.documentElement.style.setProperty(
+        '--plate-skew',
+        -Math.atan((0.2 * innerWidth) / innerHeight) + 'rad',
+      );
+      document.addEventListener('readystatechange', function () {
+        if (document.readyState !== 'interactive' || !window.IntersectionObserver) return;
+        seer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            entry.target.toggleAttribute('data-plate-seen', entry.isIntersecting);
+          });
+        });
+        document.querySelectorAll('.plate').forEach(function (plate) {
+          if (!plate.matches('[data-plate-loaded], [data-plate-failed]')) seer.observe(plate);
+        });
+      });
     </script>
   </head>
   <body>
