@@ -70,7 +70,7 @@ const page = ({
   html = '',
   main = '',
   h1 = 'Un projet, une question ou juste un Hello World ?',
-  lead = 'Je réponds à tout, y compris pour dire non. Par formulaire ou sur LinkedIn, au choix.',
+  lead = 'Une idée à confronter, un retour d’expérience ou simplement l’envie d’échanger\u00a0: écrivez-moi ici ou sur LinkedIn.',
   form = FORM,
   switcher = '<a href="/en/contact" hreflang="en" lang="en" aria-label="English version">EN</a>',
   state = '<script id="ng-state" type="application/json">{}</script>',
@@ -82,7 +82,7 @@ const english = (overrides = {}) =>
   page({
     lang: 'en',
     h1: 'A project, a question or just a Hello World?',
-    lead: 'I answer everything, even when the answer is no. Through the form or on LinkedIn, as you prefer.',
+    lead: 'An idea to challenge, experience to compare or just a chat: write to me here or on LinkedIn.',
     form: FORM_EN,
     switcher: '<a href="/contact" hreflang="fr" lang="fr" aria-label="Version française">FR</a>',
     ...overrides,
@@ -277,7 +277,7 @@ describe('a page in either tree', () => {
     'when French copy sits beside the English, the English heading and lead intact',
     'en/contact',
     english({
-      form: `${FORM_EN}<p>Je réponds à tout, y compris pour dire non. Par formulaire ou sur LinkedIn, au choix.</p>`,
+      form: `${FORM_EN}<p>Une idée à confronter, un retour d’expérience ou simplement l’envie d’échanger\u00a0: écrivez-moi ici ou sur LinkedIn.</p>`,
     }),
   );
   caught(

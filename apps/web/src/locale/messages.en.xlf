@@ -88,7 +88,7 @@
       </trans-unit>
       <trans-unit id="page.dev.description" datatype="html">
         <source>Lead Tech Angular et .NET, j’encadre jusqu’à 8 développeurs et je continue à écrire du code. Avant le développement, quatorze ans dans l’aéronautique.</source>
-        <target state="translated">Angular and .NET Lead Tech: I lead up to eight developers and still write code myself. Before software, fourteen years in aeronautics.</target>
+        <target state="translated">Angular and .NET Lead Tech: I lead teams of up to eight developers and still write code. Before software, fourteen years in the aerospace industry.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
           <context context-type="linenumber">49</context>
@@ -104,7 +104,7 @@
       </trans-unit>
       <trans-unit id="page.cgi.description" datatype="html">
         <source>J’ai commencé la 3D bien avant le développement. C’est là que j’ai appris à apprendre seul — et à regarder une image jusqu’à voir ce qui ne va pas.</source>
-        <target state="translated">I started 3D long before development. That is where I learned to teach myself — and to look at an image until I see what is wrong with it.</target>
+        <target state="translated">I took up 3D long before development. That is where I learned to teach myself — and to study an image until I see what is wrong with it.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
           <context context-type="linenumber">76</context>
@@ -119,8 +119,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="page.contact.description" datatype="html">
-        <source>Un projet, une question ou juste un Hello World&#160;? Je réponds à tout, y compris pour dire non. Écrivez-moi par formulaire ou sur LinkedIn.</source>
-        <target state="translated">A project, a question or just a Hello World? I answer every message, even if it is to say no. Get in touch through the form or on LinkedIn.</target>
+        <source>Un projet, une question ou juste un Hello World&#160;? Une idée à confronter ou l’envie d’échanger&#160;: écrivez-moi par formulaire ou sur LinkedIn.</source>
+        <target state="translated">A project, a question or just a Hello World? An idea to challenge or a chat to start: write to me through the form or on LinkedIn.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
           <context context-type="linenumber">104</context>
@@ -212,7 +212,7 @@
       </trans-unit>
       <trans-unit id="contact.missing.message" datatype="html">
         <source>Écrivez quelques mots avant d’envoyer.</source>
-        <target state="translated">Write a few words before sending.</target>
+        <target state="translated">Please write a few words before sending.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -220,7 +220,7 @@
       </trans-unit>
       <trans-unit id="contact.malformedEmail" datatype="html">
         <source>Cette adresse email ne semble pas complète, par exemple nom@domaine.fr.</source>
-        <target state="translated">This email address looks incomplete, for example name@domain.com.</target>
+        <target state="translated">This email address looks incomplete; try something like name@domain.com.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">41</context>
@@ -236,7 +236,7 @@
       </trans-unit>
       <trans-unit id="contact.status.sent" datatype="html">
         <source>Merci, votre message est parti. Je vous réponds au plus vite.</source>
-        <target state="translated">Thank you, your message is on its way. I will reply as soon as I can.</target>
+        <target state="translated">Thanks, your message is on its way. I will get back to you as soon as I can.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">46</context>
@@ -244,7 +244,7 @@
       </trans-unit>
       <trans-unit id="contact.status.unavailable" datatype="html">
         <source>L’envoi par formulaire n’est pas encore en service. En attendant, écrivez-moi sur LinkedIn.</source>
-        <target state="translated">Sending through the form is not available yet. In the meantime, write to me on LinkedIn.</target>
+        <target state="translated">The contact form is not live yet. In the meantime, message me on LinkedIn.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">47</context>
@@ -252,7 +252,7 @@
       </trans-unit>
       <trans-unit id="contact.status.rejected" datatype="html">
         <source>Le message n’est pas parti. Réessayez dans un instant, ou écrivez-moi sur LinkedIn.</source>
-        <target state="translated">The message was not sent. Try again in a moment, or write to me on LinkedIn.</target>
+        <target state="translated">Your message was not sent. Try again in a moment, or message me on LinkedIn.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/views/contact/contact.component.ts</context>
           <context context-type="linenumber">48</context>
@@ -284,7 +284,7 @@
       </trans-unit>
       <trans-unit id="notFound.lede" datatype="html">
         <source> Cette page n’existe pas, ou plus. Le reste du site, lui, est bien là. </source>
-        <target state="translated">This page does not exist, or no longer does. The rest of the site is still here.</target>
+        <target state="translated">This page does not exist, or no longer does. The rest of the site is right where it was.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/errors/views/not-found/not-found.component.ts</context>
           <context context-type="linenumber">28,30</context>
@@ -292,7 +292,7 @@
       </trans-unit>
       <trans-unit id="notFound.back" datatype="html">
         <source>Retour aux réalisations</source>
-        <target state="translated">Back to the work</target>
+        <target state="translated">Back to my work</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/errors/views/not-found/not-found.component.ts</context>
           <context context-type="linenumber">30,32</context>
@@ -458,7 +458,7 @@
       </trans-unit>
       <trans-unit id="work.today" datatype="html">
         <source>aujourd’hui</source>
-        <target state="translated">today</target>
+        <target state="translated">present</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/common/utils/work-count/work-count.ts</context>
           <context context-type="linenumber">9</context>
@@ -550,7 +550,7 @@
       </trans-unit>
       <trans-unit id="viewer.stage" datatype="html">
         <source>Rendu affiché. Flèches gauche et droite pour changer de rendu.</source>
-        <target state="translated">Render shown. Left and right arrows to change render.</target>
+        <target state="translated">Current render. Use the left and right arrow keys to switch renders.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/world/components/art-viewer/art-viewer.component.html</context>
           <context context-type="linenumber">31,32</context>
@@ -654,7 +654,7 @@
       </trans-unit>
       <trans-unit id="stack.subtitle.cgi" datatype="html">
         <source>Mes logiciels</source>
-        <target state="translated">My software</target>
+        <target state="translated">The software I use</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/world/components/world-stack/world-stack.component.ts</context>
           <context context-type="linenumber">23</context>
@@ -686,7 +686,7 @@
       </trans-unit>
       <trans-unit id="dock.label" datatype="html">
         <source>Réseaux et contact</source>
-        <target state="translated">Networks and contact</target>
+        <target state="translated">Social links and contact</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layouts/site-layout/components/social-dock/social-dock.component.ts</context>
           <context context-type="linenumber">34</context>
