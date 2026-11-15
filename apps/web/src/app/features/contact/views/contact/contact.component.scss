@@ -135,8 +135,12 @@ textarea.form__control {
   font-weight: 600;
   color: var(--form-danger);
 
+  // Decoration: the empty alternative keeps the arrow out of the field's
+  // accessible description (measured: « ↳ Indiquez votre nom. »). The first
+  // declaration stands where the alternative syntax is not understood.
   &::before {
     content: '↳ ';
+    content: '↳ ' / '';
   }
 }
 
