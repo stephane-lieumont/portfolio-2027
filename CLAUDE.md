@@ -59,7 +59,7 @@ Code must be **simple and readable on first pass**. Someone opening a file shoul
 
 ## Frontend — Angular 22
 
-Standalone, **zoneless**, signals. Full detail in the `angular-expert` agent — consult it before writing Angular code.
+Standalone, **zoneless**, signals. The full conventions are in `.claude/agents/angular-expert.md` — read that file before writing Angular code; no need to spawn the agent for it.
 
 Non-negotiable: no `NgModule`; `OnPush` everywhere; `input()`/`output()`/`computed()` over decorators; `@if`/`@for` (with `track`) over structural directives; domain types imported from `@portfolio/shared-types` and never redeclared.
 
@@ -125,26 +125,31 @@ A local, reversible choice does not deserve an ADR: the value of the collection 
 
 ## Agents and orchestration
 
-Four dedicated experts in `.claude/agents/`:
+**Do the work directly by default.** A subagent starts from zero: it re-reads the project and re-measures what is already known, which turns a fix of a few minutes into 10–20 (Stéphane, 2026-11-15, twice: « selon les tâches il est plus efficace d'agir directement », « ça me semble lent comme approche »). Their files in `.claude/agents/` are reference material — read the relevant one instead of spawning it.
 
-| Agent                  | When                                                     |
+Spawn a subagent **only when it is necessary**:
+
+- **A contradiction pass on a significant deliverable** (a new feature, a redesign, an audit, an ADR): an agent that did not write it, briefed to attack it. A reviewer told to "check" agrees; a reviewer told to "find what is wrong here" finds it. Scale it to the change — a bug fix, a CSS tweak or a copy edit does not need one.
+- **Genuinely parallel, independent work** that would otherwise block the main thread.
+- **Visitor-facing copy of some length** (a bio, a project description, a page's copy), which the `communication-expert` writes. A word or a label you fix directly, following `content-guidelines.md`.
+
+Never delegate a bug fix, a measurement, a merge, or anything a handful of tool calls can do. When an agent reports, stop it, kill any server it started and remove its worktree.
+
+| Reference file         | Holds                                                    |
 | ---------------------- | -------------------------------------------------------- |
 | `angular-expert`       | frontend code, component architecture, performance, a11y |
 | `design-expert`        | tokens, visual hierarchy, art direction                  |
-| `communication-expert` | any visitor-facing text, copy, SEO                       |
+| `communication-expert` | visitor-facing text, copy, SEO                           |
 | `motion-design-expert` | animation, transitions, `prefers-reduced-motion`         |
 
 Skills: `add-project` to publish work, `new-adr` to record a decision, `verify-visual` to measure a visual change instead of reading it.
 
-**Work as an orchestrator, not as a lone author.** Consult the relevant experts throughout — not once at the start — and **set them against each other when one drifts**. This is a standing instruction from Stéphane, and it exists because a specialist left alone optimizes for its own axis and quietly propagates whatever premise it was handed.
+The reasoning behind the old orchestration rule still holds, whoever does the work:
 
-Concretely:
-
-- **Any significant deliverable gets a contradiction pass** by an agent that did not write it, briefed to attack it. A reviewer told to "check" agrees; a reviewer told to "find what is wrong here" finds it.
 - **Cross the axes deliberately.** Design proposes a hover reveal → accessibility kills it. Motion proposes a cascade → performance measures it on real renders. Copy proposes a claim → check it against `user-profile.md`, never invent.
 - **Every claim traces back to a source**: the audit, an ADR, or something Stéphane said. An assertion no one can source is a drift, whoever wrote it.
-- **A premise repeated is not a premise verified.** Agents inherit context and restate it with confidence. Check the foundational claims against reality — the "dark theme" premise survived three documents before a screenshot disproved it.
-- **Arbitrate, do not average.** When two experts disagree, decide and record why. A compromise that satisfies both usually serves neither.
+- **A premise repeated is not a premise verified.** Check the foundational claims against reality — the "dark theme" premise survived three documents before a screenshot disproved it.
+- **Arbitrate, do not average.** When two options conflict, decide and record why. A compromise that satisfies both usually serves neither.
 
 ## Git and pull requests
 

@@ -1,6 +1,6 @@
 ---
 name: design-expert
-description: Design and art direction expert for the portfolio. Use to define or evolve tokens (color, typography, spacing, radii, elevation), judge an interface proposal, settle a visual hierarchy question, or check contrast and legibility. Invoke before writing any structural SCSS.
+description: Design and art direction reviewer. Spawn only to define or rework tokens, judge a new interface proposal, or attack a significant visual deliverable — not for a CSS tweak or a bug fix, which the main session does directly after reading this file.
 tools: Read, Edit, Write, Glob, Grep
 ---
 
