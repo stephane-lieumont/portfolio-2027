@@ -16,7 +16,7 @@ describe('pathOf', () => {
 describe('worldOfPath', () => {
   it('reads the world from the section', () => {
     expect(worldOfPath('/developpeur', 'cgi')).toBe('dev');
-    expect(worldOfPath('/developpeur/kasa-openclassrooms', 'cgi')).toBe('dev');
+    expect(worldOfPath('/developpeur/linxea', 'cgi')).toBe('dev');
     expect(worldOfPath('/graphisme-3d', 'dev')).toBe('cgi');
     expect(worldOfPath('/graphisme-3d/gorgotte', 'dev')).toBe('cgi');
   });
@@ -36,7 +36,7 @@ describe('worldOfPath', () => {
   });
 
   it('reads the English tree’s sections in English', () => {
-    expect(worldOfPath('/developer/kasa-openclassrooms', 'cgi', 'en')).toBe('dev');
+    expect(worldOfPath('/developer/linxea', 'cgi', 'en')).toBe('dev');
     expect(worldOfPath('/3d-art', 'dev', 'en')).toBe('cgi');
     expect(worldOfPath('/contact', 'cgi', 'en')).toBe('cgi');
     expect(worldOfPath('/developpeur', 'cgi', 'en')).toBe('cgi');

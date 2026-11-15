@@ -354,28 +354,44 @@
           <context context-type="linenumber">63,65</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="project.video" datatype="html">
-        <source> Vidéo </source>
-        <target state="translated">Video</target>
+      <trans-unit id="project.googlePlay" datatype="html">
+        <source>Voir sur Google Play</source>
+        <target state="translated">View on Google Play</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
-          <context context-type="linenumber">87,89</context>
+          <context context-type="sourcefile">src/app/features/project/utils/project-view/project-view.ts</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="project.vid" datatype="html">
-        <source>Vid.</source>
-        <target state="translated">Vid.</target>
+      <trans-unit id="work.at" datatype="html">
+        <source>Chez <x id="series" equiv-text="series"/></source>
+        <target state="translated">At <x id="series" equiv-text="series"/></target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
-          <context context-type="linenumber">96,97</context>
+          <context context-type="sourcefile">src/app/common/components/dev-work/dev-work.component.ts</context>
+          <context context-type="linenumber">24</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="project.watchOnYoutube" datatype="html">
-        <source>Regarder sur YouTube</source>
-        <target state="translated">Watch on YouTube</target>
+      <trans-unit id="tool.unitTests" datatype="html">
+        <source>Tests unitaires</source>
+        <target state="translated">Unit tests</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/views/project-page/project-page.component.html</context>
-          <context context-type="linenumber">98,99</context>
+          <context context-type="sourcefile">src/app/core/data/tool-marks/tool-marks.ts</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="work.moreTools" datatype="html">
+        <source> autres outils</source>
+        <target state="translated"> more tools</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/common/components/dev-work/dev-work.component.ts</context>
+          <context context-type="linenumber">132</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="work.today" datatype="html">
+        <source>aujourd’hui</source>
+        <target state="translated">today</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/common/utils/work-count/work-count.ts</context>
+          <context context-type="linenumber">9</context>
         </context-group>
       </trans-unit>
       <trans-unit id="project.website" datatype="html">
@@ -395,8 +411,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="project.series" datatype="html">
-        <source>Série · <x id="series" equiv-text="project.series"/></source>
-        <target state="translated">Series · <x id="series" equiv-text="project.series"/></target>
+        <source>Chez <x id="series" equiv-text="project.series"/></source>
+        <target state="translated">At <x id="series" equiv-text="project.series"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/project/utils/project-view/project-view.ts</context>
           <context context-type="linenumber">69</context>
@@ -408,22 +424,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/project/utils/project-view/project-view.ts</context>
           <context context-type="linenumber">80</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="video.play" datatype="html">
-        <source>Lire la vidéo : <x id="INTERPOLATION" equiv-text="{{ title() }}"/></source>
-        <target state="translated">Play the video: <x id="INTERPOLATION" equiv-text="{{ title() }}"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/components/video-facade/video-facade.component.ts</context>
-          <context context-type="linenumber">41,42</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="video.player" datatype="html">
-        <source>Vidéo : <x id="title" equiv-text="this.title()"/></source>
-        <target state="translated">Video: <x id="title" equiv-text="this.title()"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/project/components/video-facade/video-facade.component.ts</context>
-          <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
       <trans-unit id="work.count" datatype="html">

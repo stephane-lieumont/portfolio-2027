@@ -51,8 +51,9 @@ describe('the English tree', () => {
     expect(cards.map((a) => a.querySelector('.row__title')?.textContent)).toEqual(
       PROJECTS.map((p) => p.title.en),
     );
+    // A client reference's logo is decoration beside its title; a cover is described.
     expect(cards.map((a) => a.querySelector('img')?.getAttribute('alt'))).toEqual(
-      PROJECTS.map((p) => p.cover.alt.en),
+      PROJECTS.map((p) => p.cover?.alt.en ?? ''),
     );
   });
 
@@ -70,23 +71,19 @@ describe('the English tree', () => {
     });
   });
 
-  it('sends a project’s video link to its English page, under its English title and role', async () => {
+  it('sets a project’s hero in English: title, role, and the back link to the English list', async () => {
     const { ProjectHeroComponent, PROJECTS } = await english();
-    const project = PROJECTS.find((p) => p.slug.fr !== p.slug.en)!;
+    const project = PROJECTS.find((p) => p.slug.fr === 'linxea')!;
     const fixture = TestBed.createComponent(ProjectHeroComponent);
-    fixture.componentRef.setInput('project', {
-      ...project,
-      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    });
-    fixture.componentRef.setInput('rank', '05');
-    fixture.componentRef.setInput('total', '06');
+    fixture.componentRef.setInput('project', project);
+    fixture.componentRef.setInput('rank', '04');
+    fixture.componentRef.setInput('total', '07');
     fixture.detectChanges();
     const host = fixture.nativeElement as HTMLElement;
 
-    expect(host.querySelector('a[href*="#video"]')?.getAttribute('href')).toBe(
-      `/developer/${project.slug.en}#video`,
-    );
+    expect(host.querySelector('.back')?.getAttribute('href')).toBe('/developer');
     expect(host.querySelector('h1 .visually-hidden')?.textContent).toBe(project.title.en);
     expect(host.querySelector('.eyebrow')?.textContent).toContain(project.role.en);
+    expect(host.querySelector('.eyebrow')?.textContent).toContain('2023 – 2024');
   });
 });

@@ -70,7 +70,7 @@ export class ArtMosaicComponent {
   private readonly viewer = viewChild.required(ArtViewerComponent);
   private readonly wall = viewChild.required<ElementRef<HTMLElement>>('wall');
 
-  protected readonly count = workCount(ARTWORKS.map((a) => a.releasedAt));
+  protected readonly count = workCount(ARTWORKS);
   private readonly layout = mosaicLayout(ARTWORKS.length);
   protected readonly rows = this.layout.rows;
   protected readonly pieces: readonly (ViewerPiece & {

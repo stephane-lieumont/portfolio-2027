@@ -78,22 +78,15 @@ describe('page metadata', () => {
   });
 
   it('names the same page in both trees, French as the default', async () => {
-    await harness.navigateByUrl('/developpeur/pixmodels');
+    await harness.navigateByUrl('/developpeur/ledger');
 
     expect(alternateLinks()).toEqual([
-      'fr https://stephane-lieumont.fr/developpeur/pixmodels',
-      'en https://stephane-lieumont.fr/en/developer/pixmodels',
-      'x-default https://stephane-lieumont.fr/developpeur/pixmodels',
+      'fr https://stephane-lieumont.fr/developpeur/ledger',
+      'en https://stephane-lieumont.fr/en/developer/ledger',
+      'x-default https://stephane-lieumont.fr/developpeur/ledger',
     ]);
 
     // A translated slug: each tree's address carries its own.
-    await harness.navigateByUrl('/developpeur/portfolio-3d-2018');
-    expect(alternateLinks()).toEqual([
-      'fr https://stephane-lieumont.fr/developpeur/portfolio-3d-2018',
-      'en https://stephane-lieumont.fr/en/developer/3d-portfolio-2018',
-      'x-default https://stephane-lieumont.fr/developpeur/portfolio-3d-2018',
-    ]);
-
     // A piece opens the viewer, which jsdom cannot animate: read its links directly.
     expect(alternates(pageRef('piece', 'salon-nuit', 'fr'))).toEqual([
       { hreflang: 'fr', href: 'https://stephane-lieumont.fr/graphisme-3d/salon-nuit' },

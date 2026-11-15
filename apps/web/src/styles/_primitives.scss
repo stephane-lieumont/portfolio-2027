@@ -111,6 +111,10 @@
   --ease-signature: cubic-bezier(0, 0.43, 0.16, 1); // inherited from the 2022 site
   --ease-linear: linear;
 
+  // How far a logo plate's point field spreads from the logo on hover and
+  // focus, stacked on the card's 1.03 (motion-expert spec, 2026-11-15).
+  --zoom-spread: 1.06;
+
   --motion-rise: 1rem;
   --motion-rise-tight: 0.5rem;
   --motion-lift: 2px;
@@ -199,6 +203,7 @@
     --motion-lift: 0px;
     --motion-press: 0px;
     --motion-nudge: 0px;
+    --zoom-spread: 1;
 
     // Cascades collapse: the group arrives as a group.
     --stagger-list: 0ms;

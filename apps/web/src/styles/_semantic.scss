@@ -23,6 +23,13 @@
   --surface-inset: light-dark(var(--color-neutral-200), var(--color-neutral-700));
   --surface-field: light-dark(var(--color-neutral-0), var(--color-neutral-900));
 
+  // A client reference's logo plate, in both worlds, and the brand tint its
+  // point field and tone take; a logo without a brand colour of its own sets
+  // none and keeps the ink.
+  --logo-plate: var(--color-sand-100);
+  --logo-plate-dark: var(--color-neutral-800);
+  --logo-tint: var(--color-neutral-950);
+
   --text-primary: light-dark(var(--color-neutral-900), var(--color-neutral-50));
   --text-secondary: light-dark(var(--color-neutral-600), var(--color-neutral-300));
   --text-accent: light-dark(var(--color-orange-700), var(--color-orange-400));

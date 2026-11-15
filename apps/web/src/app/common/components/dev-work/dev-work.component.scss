@@ -55,6 +55,7 @@
 }
 
 .row__link {
+  container-type: inline-size;
   display: grid;
   gap: 12px;
   color: inherit;
@@ -73,14 +74,68 @@
   border-radius: 4px;
 }
 
+// A client reference: its logo in its own colours on the light logo plate,
+// tinted by its brand, in either world; the whole plate is its box,
+// so the reveal and the hover cover it as they cover a picture.
+.row__frame--logo {
+  --plate-tone: color-mix(in srgb, var(--logo-tint) 5%, var(--logo-plate));
+  container-type: size;
+}
+
+// A logo whose light colours vanish on the sand (Web-Atrio's yellow) stands
+// on a dark plate instead — a trial Stéphane judges on screen.
+.row__frame--logo.logo-plate--dark {
+  --logo-plate: var(--logo-plate-dark);
+}
+
+.row__img,
+.row__logo {
+  transition:
+    scale 900ms var(--ease-world),
+    filter 400ms var(--ease-world);
+}
+
 .row__img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition:
-    scale 900ms var(--ease-world),
-    filter 400ms var(--ease-world);
+}
+
+// The logo plate's point field spreads from the logo on hover and focus
+// (ClientLogoComponent scales it by these two properties, composited).
+.row__link:focus-visible .row__logo {
+  --logo-spread: var(--zoom-spread);
+  --logo-spread-duration: var(--duration-510);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.row__link:hover .row__logo {
+    --logo-spread: var(--zoom-spread);
+    --logo-spread-duration: var(--duration-510);
+  }
+}
+
+// The role, between the title and the tools: what Stéphane was there, read
+// before the stack.
+.row__role {
+  grid-column: 2 / -1;
+  font-size: 15px;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--world-ink) 82%, var(--world-ground));
+  text-wrap: pretty;
+}
+
+.row__year {
+  white-space: nowrap;
+}
+
+// A narrow card: « 2025 – aujourd’hui » no longer fits beside the title, so
+// the period drops under it rather than squeezing it.
+@container (max-width: 359px) {
+  .row__year {
+    grid-column: 2 / -1;
+  }
 }
 
 // Focus gets the hover treatment; hover itself only where a real pointer can
@@ -92,7 +147,7 @@
 .row__link:focus-visible .row__tools {
   color: var(--world-ink);
 }
-.rows:has(a.row__link:focus-visible) a.row__link:not(:focus-visible) .row__img {
+.rows:has(a.row__link:focus-visible) a.row__link:not(:focus-visible) :is(.row__img, .row__logo) {
   filter: grayscale(1) opacity(0.6);
 }
 
@@ -104,19 +159,19 @@
   a.row__link:hover .row__tools {
     color: var(--world-ink);
   }
-  .rows:has(a.row__link:hover) a.row__link:not(:hover) .row__img {
+  .rows:has(a.row__link:hover) a.row__link:not(:hover) :is(.row__img, .row__logo) {
     filter: grayscale(1) opacity(0.6);
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .row__link:focus-visible .row__img {
+  .row__link:focus-visible :is(.row__img, .row__logo) {
     scale: 1.03;
   }
 }
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  a.row__link:hover .row__img {
+  a.row__link:hover :is(.row__img, .row__logo) {
     scale: 1.03;
   }
 }
@@ -127,7 +182,7 @@
   scale: 1 1;
 }
 
-.row.is-current .row__img {
+.row.is-current :is(.row__img, .row__logo) {
   filter: grayscale(1) opacity(0.45);
 }
 
@@ -152,7 +207,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .row__img {
+  .row__img,
+  .row__logo {
     transition: none;
   }
 }

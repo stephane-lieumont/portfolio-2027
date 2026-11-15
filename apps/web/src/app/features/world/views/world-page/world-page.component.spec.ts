@@ -50,12 +50,9 @@ describe('WorldPage', () => {
   });
 
   it('counts the work it shows, with the span of years, in each world', () => {
-    const years = (iso: readonly string[]) => iso.map((d) => Number(d.slice(0, 4)));
+    // From the earliest start to today, while immobilier.ch is still going on.
     const dev = render('dev').querySelector('.work__count')!.textContent?.trim();
-    const devYears = years(PROJECTS.map((p) => p.releasedAt));
-    expect(dev).toBe(
-      `${String(PROJECTS.length).padStart(2, '0')} projets · ${Math.min(...devYears)} – ${Math.max(...devYears)}`,
-    );
+    expect(dev).toBe(`${String(PROJECTS.length).padStart(2, '0')} projets · 2020 – aujourd’hui`);
     TestBed.resetTestingModule();
     const cgi = render('cgi').querySelector('.work__count')!.textContent;
     expect(cgi).toContain(`${ARTWORKS.length} projets · 2014 – 2016`);

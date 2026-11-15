@@ -30,12 +30,16 @@ export function heroTitle(title: string): HeroTitle {
 }
 
 export interface ProjectLink {
-  readonly kind: 'site' | 'video';
+  readonly kind: 'site' | 'store' | 'video';
   readonly label: string;
   readonly href: string;
 }
 
-/** The hero's buttons: only what the project has, the site first. */
+/**
+ * The hero's buttons: only what the project has — the site, the video, then
+ * the store — each opening in a new tab. The video plays on YouTube, never on
+ * the page (Stéphane, 2026-11-15; ADR-0016's note).
+ */
 export function projectLinks(project: StaticProject): ProjectLink[] {
   const links: ProjectLink[] = [];
   if (project.websiteUrl)
@@ -48,7 +52,13 @@ export function projectLinks(project: StaticProject): ProjectLink[] {
     links.push({
       kind: 'video',
       label: $localize`:@@project.watchVideo:Voir la vidéo`,
-      href: '#video',
+      href: project.videoUrl,
+    });
+  if (project.googlePlayUrl)
+    links.push({
+      kind: 'store',
+      label: $localize`:@@project.googlePlay:Voir sur Google Play`,
+      href: project.googlePlayUrl,
     });
   return links;
 }
@@ -74,7 +84,7 @@ export function closingBand(
 ): ClosingBand {
   if (project.series) {
     return {
-      heading: $localize`:@@project.series:Série · ${project.series}:series:`,
+      heading: $localize`:@@project.series:Chez ${project.series}:series:`,
       projects: projects.filter((p) => p.series === project.series),
       current: project.id,
     };

@@ -40,9 +40,11 @@
   }
 }
 
+// The words' clip reaches 0.3em below the line for the descenders (g, p), so
+// the letters start low enough to stay hidden until they rise.
 @keyframes world-name-rise {
   from {
-    transform: translateY(115%) rotate(7deg);
+    transform: translateY(150%) rotate(7deg);
   }
 }
 
@@ -168,7 +170,7 @@
     opacity: 0;
   }
 
-  :root.js-motion .row[data-reveal='pending'] .row__img {
+  :root.js-motion .row[data-reveal='pending'] :is(.row__img, .row__logo) {
     clip-path: inset(0 0 0 100%);
   }
 

@@ -3,37 +3,48 @@
 @for (project of [project()]; track project.id) {
   <div class="wrap">
     <article aria-labelledby="fiche-title">
-      <app-project-hero
-        [project]="project"
-        [rank]="rank()"
-        [total]="total"
-        (videoRequested)="toVideo($event)"
-      />
+      <app-project-hero [project]="project" [rank]="rank()" [total]="total" />
 
-      <figure class="fig">
-        <div class="fig__ground plate" appPlateLean>
-          <img
-            class="fig__img"
-            appPlate="wall"
-            [src]="mediaUrl(project.presentation.key)"
-            [srcset]="srcset(project.presentation.key, project.presentation.width)"
-            [sizes]="presentationSizes"
-            [alt]="project.presentation.alt | inLocale"
-            [width]="project.presentation.width"
-            [height]="project.presentation.height"
-            fetchpriority="high"
-            decoding="async"
-          />
-          <span class="plate__fallback" aria-hidden="true">
-            <span class="plate__fallback-label" i18n="@@plate.unavailable">Image indisponible</span>
-            <span class="plate__fallback-alt">{{ project.presentation.alt | inLocale }}</span>
-          </span>
+      @if (project.logo; as logo) {
+        <div class="fig">
+          <div
+            class="fig__ground fig__ground--logo plate"
+            appPlateLean
+            [class.logo-plate--dark]="project.logoPlate === 'dark'"
+            [style.--logo-tint]="project.logoTint"
+          >
+            <app-client-logo class="fig__logo" [logo]="logo" [label]="logo.alt | inLocale" />
+          </div>
         </div>
-        <figcaption class="fig__cap">
-          <span i18n="@@project.fig">Fig.</span
-          ><span>{{ project.presentationCaption | inLocale }}</span>
-        </figcaption>
-      </figure>
+      } @else if (project.presentation; as presentation) {
+        <figure class="fig">
+          <div class="fig__ground plate" appPlateLean>
+            <img
+              class="fig__img"
+              appPlate="wall"
+              [src]="mediaUrl(presentation.key)"
+              [srcset]="srcset(presentation.key, presentation.width)"
+              [sizes]="presentationSizes"
+              [alt]="presentation.alt | inLocale"
+              [width]="presentation.width"
+              [height]="presentation.height"
+              fetchpriority="high"
+              decoding="async"
+            />
+            <span class="plate__fallback" aria-hidden="true">
+              <span class="plate__fallback-label" i18n="@@plate.unavailable"
+                >Image indisponible</span
+              >
+              <span class="plate__fallback-alt">{{ presentation.alt | inLocale }}</span>
+            </span>
+          </div>
+          @if (project.presentationCaption; as caption) {
+            <figcaption class="fig__cap">
+              <span i18n="@@project.fig">Fig.</span><span>{{ caption | inLocale }}</span>
+            </figcaption>
+          }
+        </figure>
+      }
 
       <section class="block" aria-labelledby="ctx-title" appWorldReveal="ruled">
         <h2 class="block__label" id="ctx-title" data-reveal-part i18n="@@project.context">
@@ -42,22 +53,29 @@
         <app-scrub-sentence data-reveal-part [text]="project.context | inLocale" [ramp]="ramp" />
       </section>
 
-      <section class="block" aria-labelledby="mission-title" appWorldReveal="ruled">
-        <div class="block__label" data-reveal-part>
-          <h2 id="mission-title" i18n="@@project.mission">Mission</h2>
-          <p class="block__big">{{ project.role | inLocale }}</p>
-        </div>
-        <div>
-          <p class="mission__text" data-reveal-part>{{ project.mission | inLocale }}</p>
-          <ol class="steps">
-            @for (step of project.missionSteps; track $index) {
-              <li data-reveal-part>
-                <p>{{ step | inLocale }}</p>
-              </li>
+      <!-- The role is the hero's eyebrow, never restated here: the block opens
+           on what was done, and is absent when nothing is sourced. -->
+      @if (project.mission || project.missionSteps.length) {
+        <section class="block" aria-labelledby="mission-title" appWorldReveal="ruled">
+          <div class="block__label" data-reveal-part>
+            <h2 id="mission-title" i18n="@@project.mission">Mission</h2>
+          </div>
+          <div>
+            @if (project.mission; as mission) {
+              <p class="mission__text" data-reveal-part>{{ mission | inLocale }}</p>
             }
-          </ol>
-        </div>
-      </section>
+            @if (project.missionSteps.length) {
+              <ol class="steps">
+                @for (step of project.missionSteps; track $index) {
+                  <li data-reveal-part>
+                    <p>{{ step | inLocale }}</p>
+                  </li>
+                }
+              </ol>
+            }
+          </div>
+        </section>
+      }
 
       <section class="block" aria-labelledby="tools-title" appWorldReveal="ruled">
         <h2 class="block__label" id="tools-title" data-reveal-part i18n="@@project.tools">
@@ -76,33 +94,6 @@
           }
         </ul>
       </section>
-
-      @if (project.videoUrl; as videoUrl) {
-        <section
-          class="block video"
-          id="video"
-          aria-labelledby="video-title"
-          appWorldReveal="ruled"
-        >
-          <h2 class="block__label" id="video-title" data-reveal-part i18n="@@project.video">
-            Vidéo
-          </h2>
-          <div data-reveal-part>
-            <app-video-facade
-              [url]="videoUrl"
-              [title]="project.title | inLocale"
-              [poster]="project.presentation"
-            />
-            <p class="fig__cap">
-              <span i18n="@@project.vid">Vid.</span
-              ><a [href]="videoUrl" target="_blank" rel="noopener"
-                ><ng-container i18n="@@project.watchOnYoutube">Regarder sur YouTube</ng-container
-                ><span class="visually-hidden" i18n="@@newTab"> (nouvel onglet)</span></a
-              >
-            </p>
-          </div>
-        </section>
-      }
     </article>
 
     <app-dev-work

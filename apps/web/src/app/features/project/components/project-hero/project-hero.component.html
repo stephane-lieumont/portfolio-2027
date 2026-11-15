@@ -40,29 +40,16 @@
   @if (links().length) {
     <div class="ctas">
       @for (link of links(); track link.kind) {
-        @if (link.kind === 'site') {
-          <a
-            appButton
-            class="btn enter-line"
-            [class.btn--ghost]="!$first"
-            [style.--line]="2 + $index"
-            [href]="link.href"
-            target="_blank"
-            rel="noopener"
-            >{{ link.label
-            }}<span class="visually-hidden" i18n="@@newTab"> (nouvel onglet)</span></a
-          >
-        } @else {
-          <a
-            appButton
-            class="btn enter-line"
-            [class.btn--ghost]="!$first"
-            [style.--line]="2 + $index"
-            [href]="videoHref()"
-            (click)="requestVideo($event)"
-            >{{ link.label }}</a
-          >
-        }
+        <a
+          appButton
+          class="btn enter-line"
+          [class.btn--ghost]="!$first"
+          [style.--line]="2 + $index"
+          [href]="link.href"
+          target="_blank"
+          rel="noopener"
+          >{{ link.label }}<span class="visually-hidden" i18n="@@newTab"> (nouvel onglet)</span></a
+        >
       }
     </div>
   }

@@ -41,12 +41,12 @@
   text-wrap: balance;
 }
 
-// Clipped below the baseline box only: the accent on É and the descender room
+// Clipped 0.3em below the line box: the accent on É and the descenders (g, p)
 // stay visible while the letters rise out of the line.
 .name__word {
   display: inline-block;
   white-space: nowrap;
-  clip-path: inset(-0.5em -0.3em 0 -0.3em);
+  clip-path: inset(-0.5em -0.3em -0.3em -0.3em);
 }
 
 .name__char {

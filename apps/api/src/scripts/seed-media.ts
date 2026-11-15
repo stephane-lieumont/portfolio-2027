@@ -52,13 +52,12 @@ const CGI: Record<string, string> = {
   'portfolio/22-1-Extraterrestre-2016.jpg': 'cgi/extraterrestre.jpg',
 };
 
+// Only the projects the site shows. The objects of those it dropped (the
+// Case Tes Potes web app, Kasa, the 2018 portfolio, Pixmodels) stay in the
+// bucket, unreferenced, until someone deletes them (STATUS).
 const PROJECTS: Record<string, string> = {
   'projects/case-tes-potes-mobile-2022.jpg': 'projects/case-tes-potes-mobile.jpg',
   'projects/case-tes-potes-landingpage-2022.jpg': 'projects/case-tes-potes-landing-page.jpg',
-  'projects/case-tes-potes-webapp-2021.jpg': 'projects/case-tes-potes-web-app.jpg',
-  'projects/oc-kasa-fromation-2021.jpg': 'projects/kasa-openclassrooms.jpg',
-  'projects/portfolio-3d-2018.jpg': 'projects/portfolio-3d-2018.jpg',
-  'projects/pixmodels-2016-service-comminucation.jpg': 'projects/pixmodels.jpg',
   // The wide presentation visual that opened each 2022 project page (about 2.5:1,
   // the product's screens staged on white). The redesigned project page leads
   // with it; the 4:3 cover stays the card image.
@@ -66,12 +65,6 @@ const PROJECTS: Record<string, string> = {
     'projects/case-tes-potes-mobile-presentation.jpg',
   'projects/case-tes-potes-landingpage-2022_project.jpg':
     'projects/case-tes-potes-landing-page-presentation.jpg',
-  'projects/case-tes-potes-webapp-2021_project.jpg':
-    'projects/case-tes-potes-web-app-presentation.jpg',
-  'projects/oc-kasa-fromation-2021_project.jpg': 'projects/kasa-openclassrooms-presentation.jpg',
-  'projects/portfolio-3d-2018_project.jpg': 'projects/portfolio-3d-2018-presentation.jpg',
-  'projects/pixmodels-2016-service-comminucation_project.jpg':
-    'projects/pixmodels-presentation.jpg',
 };
 
 /**

@@ -1,6 +1,6 @@
 /**
- * YouTube addresses, parsed the same way by the API's validation and by the
- * page that embeds them (ADR-0016). Free of Zod, like the registries, so the
+ * YouTube addresses, parsed by the `Project` schema so « Voir la vidéo » always
+ * leads to one video (ADR-0016 and its 2026-11-15 note). Free of Zod, like the registries, so the
  * browser can import it without pulling the validator into its bundle.
  */
 
@@ -18,8 +18,7 @@ const ADDRESSES = [
 
 /**
  * The video's id, from an `https` watch, short or embed address; null for
- * anything else, including a playlist or a channel, which cannot be embedded
- * as one video.
+ * anything else, including a playlist or a channel, which is not one video.
  */
 export function youtubeVideoId(address: string): string | null {
   for (const pattern of ADDRESSES) {
@@ -27,12 +26,4 @@ export function youtubeVideoId(address: string): string | null {
     if (match) return match[1];
   }
   return null;
-}
-
-/**
- * The privacy-enhanced player, started by the click that asked for it. Nothing
- * from YouTube loads before that click: the page shows its own poster.
- */
-export function youtubeEmbedUrl(id: string): string {
-  return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
 }

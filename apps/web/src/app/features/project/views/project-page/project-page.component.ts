@@ -1,13 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DOCUMENT,
-  computed,
-  inject,
-  input,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
+import { ClientLogoComponent } from '@common/components/client-logo/client-logo.component';
 import { DevWorkComponent } from '@common/components/dev-work/dev-work.component';
 import {
   BODY_RAMP,
@@ -20,14 +13,9 @@ import { PROJECTS, type StaticProject } from '@core/data/static-content/static-c
 import { toolView } from '@core/data/tool-marks/tool-marks';
 import { InLocalePipe } from '@core/i18n/in-locale.pipe';
 import { SITE_LOCALE } from '@core/i18n/site-locale/site-locale';
-import { SmoothScrollService } from '@core/services/motion/smooth-scroll/smooth-scroll.service';
 import { ProjectHeroComponent } from '@features/project/components/project-hero/project-hero.component';
-import { VideoFacadeComponent } from '@features/project/components/video-facade/video-facade.component';
 import { PlateLeanDirective } from '@features/project/directives/plate-lean/plate-lean.directive';
 import { closingBand } from '@features/project/utils/project-view/project-view';
-
-/** Where the sticky header ends: the video lands under it, not behind it. */
-const HEADER_CLEARANCE = 96;
 
 function projectBySlug(slug: string): StaticProject {
   const project = PROJECTS.find((p) => p.slug[SITE_LOCALE] === slug);
@@ -38,7 +26,9 @@ function projectBySlug(slug: string): StaticProject {
 
 /**
  * A development project's page (« fiche projet »), as on its approved
- * prototype: the hero, the presentation visual cut along the sweep's diagonal,
+ * prototype: the hero, the presentation visual cut along the sweep's diagonal
+ * (a client reference's logo on the same plate: no screenshot of a client's
+ * product is shown),
  * then context, mission and tools, and a band of the series or other work.
  * The summary is not shown: it is the card's line and the meta description.
  */
@@ -52,7 +42,7 @@ function projectBySlug(slug: string): StaticProject {
     PlateImageDirective,
     PlateLeanDirective,
     WorldRevealDirective,
-    VideoFacadeComponent,
+    ClientLogoComponent,
   ],
   templateUrl: './project-page.component.html',
   styleUrl: './project-page.component.scss',
@@ -79,18 +69,4 @@ export class ProjectPageComponent {
   // column less the plate's padding, at most 1224px.
   protected readonly presentationSizes =
     '(min-width: 1600px) 1224px, (min-width: 1352px) calc(1320px - 6vw), (min-width: 900px) calc(94vw - 32px), (min-width: 600px) 120vw, 155vw';
-
-  private readonly document = inject(DOCUMENT);
-  private readonly smooth = inject(SmoothScrollService);
-  private readonly video = viewChild(VideoFacadeComponent);
-
-  /** « Voir la vidéo »: to the player's poster, focus on its play button. */
-  protected toVideo(event: MouseEvent): void {
-    const target = this.document.getElementById('video');
-    const view = this.document.defaultView;
-    if (!target || !view || event.metaKey || event.ctrlKey || event.shiftKey) return;
-    event.preventDefault();
-    this.smooth.jumpTo(target.getBoundingClientRect().top + view.scrollY - HEADER_CLEARANCE);
-    this.video()?.focus();
-  }
 }

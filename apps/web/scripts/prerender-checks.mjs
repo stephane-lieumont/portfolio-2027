@@ -43,6 +43,10 @@ export const FRENCH_CHROME = [
   'nouvel onglet',
   'Cette fiche',
   'Autres réalisations',
+  'Voir sur Google Play',
+  'Tests unitaires',
+  'autres outils',
+  'aujourd’hui',
   'Réalisations',
   'Maîtrise',
   'Ce avec quoi je travaille',
@@ -153,11 +157,12 @@ function tree(locale) {
         { page: 'project', slug: p.slug },
         {
           h1: say(p.title),
+          // A client reference has no mission or caption when its copy is
+          // one sentence: the page shows what the record has, nothing blank.
           text: [
             say(p.context),
             say(p.role),
-            say(p.mission),
-            say(p.presentationCaption),
+            ...[p.mission, p.presentationCaption].filter(Boolean).map(say),
             chrome.projectBlock,
             ...p.missionSteps.map(say),
           ],
@@ -218,7 +223,7 @@ function spokenText(element) {
 }
 
 // Nothing may load from another origin before the visitor asks for it: the
-// YouTube player comes after a click (ADR-0016), never in the HTML.
+// videos open on YouTube, never embedded in the page (ADR-0016's note).
 function thirdParty(document) {
   const urls = [
     ...Array.from(document.querySelectorAll('[src]'), (el) => el.getAttribute('src')),

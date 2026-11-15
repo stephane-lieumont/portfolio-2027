@@ -66,13 +66,12 @@ Images are no longer squeezed into a 250px box: the container adopts the media's
 
 **Structure** — as on the prototype Stéphane approved on 2026-11-15 (« top », its closing contact block removed):
 
-1. **Hero** — back to « Réalisations », the project's rank among all of them, series · year and role, the title split into its name and a condensed qualifier, then « Voir le site » and « Voir la vidéo », each only when the project has one.
-2. **Presentation visual** — on a light plate cut along the sweep's diagonal, with its « Fig. » caption.
+1. **Hero** — back to « Réalisations », the project's rank among all of them, series · period and role, the title split into its name and a condensed qualifier, then « Voir le site », « Voir la vidéo » and « Voir sur Google Play », each only when the project has one, each opening in a new tab: the video plays on YouTube, nothing is embedded (Stéphane, 2026-11-15).
+2. **Presentation visual** — on a light plate cut along the sweep's diagonal, with its « Fig. » caption; for a client reference, its logo in colour on the same plate.
 3. **Contexte** — what the product was, coloured word by word on scroll. The summary is not repeated: it is the meta description.
-4. **Mission** — the role, the mission, the numbered steps.
+4. **Mission** — the mission, the numbered steps (the role is the hero's eyebrow, not repeated); absent when neither is sourced.
 5. **Outils** — the technologies, as a list.
-6. **Vidéo**, when there is one — a poster and a play button; YouTube loads only after the press (ADR-0016).
-7. **The series band** — every project of the series, this one marked « Cette fiche »; outside a series, « Autres réalisations »: the three projects that follow it.
+6. **The series band** — every project of the series, this one marked « Cette fiche »; outside a series, « Autres réalisations »: the three projects that follow it.
 
 **What changes.** The page stops being a dead end. The demo link is served by the nginx proxy (ADR-0005): **verify the route exists before publishing**, or the visitor lands on an error straight from the shop window.
 

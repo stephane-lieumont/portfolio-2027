@@ -19,7 +19,7 @@
     animation: project-plate-cut 1100ms var(--ease-cut) 520ms backwards;
   }
 
-  :root.js-motion app-project-page .fig__img {
+  :root.js-motion app-project-page :is(.fig__img, .fig__logo) {
     animation: project-plate-settle 1700ms var(--ease-settle) 520ms backwards;
   }
 
@@ -33,7 +33,7 @@
       view-timeline: --plate block;
     }
 
-    :root.js-motion app-project-page .fig__img {
+    :root.js-motion app-project-page :is(.fig__img, .fig__logo) {
       animation:
         project-plate-settle 1700ms var(--ease-settle) 520ms backwards,
         project-plate-drift linear both;

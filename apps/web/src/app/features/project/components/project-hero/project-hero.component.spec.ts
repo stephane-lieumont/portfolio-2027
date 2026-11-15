@@ -8,16 +8,10 @@ import { ProjectHeroComponent } from './project-hero.component';
 
 @Component({
   imports: [ProjectHeroComponent],
-  template: `<app-project-hero
-    [project]="project()"
-    rank="04"
-    total="06"
-    (videoRequested)="requests.push($event)"
-  />`,
+  template: `<app-project-hero [project]="project()" rank="04" total="07" />`,
 })
 class Host {
   readonly project = signal<StaticProject>(PROJECTS[3]);
-  readonly requests: MouseEvent[] = [];
 }
 
 async function render(project: StaticProject) {
@@ -30,24 +24,24 @@ async function render(project: StaticProject) {
   return fixture;
 }
 
+const linxea = PROJECTS.find((p) => p.slug.fr === 'linxea')!;
 const withVideo: StaticProject = {
-  ...PROJECTS[3],
+  ...linxea,
   videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
 };
 
 describe('ProjectHeroComponent', () => {
-  it('sends « Voir la vidéo » to the player on this page, and lets the page take it there', async () => {
-    const fixture = await render(withVideo);
-    const host = fixture.nativeElement as HTMLElement;
+  // Stéphane, 2026-11-15: the video plays on YouTube, nothing is embedded.
+  it('sends « Voir la vidéo » to YouTube in a new tab, saying so', async () => {
+    const host = (await render(withVideo)).nativeElement as HTMLElement;
     const video = Array.from(host.querySelectorAll<HTMLAnchorElement>('.ctas a')).find((a) =>
       a.textContent?.includes('Voir la vidéo'),
     );
 
-    // An address of its own, so a new tab or a page without script still lands on it.
-    expect(video?.getAttribute('href')).toBe('/developpeur/kasa-openclassrooms#video');
-    expect(video?.hasAttribute('target')).toBe(false);
-    video?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-    expect(fixture.componentInstance.requests).toHaveLength(1);
+    expect(video?.getAttribute('href')).toBe(withVideo.videoUrl);
+    expect(video?.getAttribute('target')).toBe('_blank');
+    expect(video?.getAttribute('rel')).toBe('noopener');
+    expect(video?.textContent).toContain('(nouvel onglet)');
   });
 
   it('draws the site as the solid button and the video as the ghost after it', async () => {
@@ -59,12 +53,13 @@ describe('ProjectHeroComponent', () => {
 
     expect(buttons).toEqual([
       { ghost: false, text: 'Voir le site (nouvel onglet)' },
-      { ghost: true, text: 'Voir la vidéo' },
+      { ghost: true, text: 'Voir la vidéo (nouvel onglet)' },
     ]);
   });
 
   it('starts the qualifier once the name has risen, as the world pages do', async () => {
-    const host = (await render(PROJECTS[0])).nativeElement as HTMLElement;
+    const mobile = PROJECTS.find((p) => p.slug.fr === 'case-tes-potes-mobile')!;
+    const host = (await render(mobile)).nativeElement as HTMLElement;
     const header = host.querySelector<HTMLElement>('app-project-hero');
 
     // « Case Tes Potes »: 12 letters, 260 + 12 × 38 + 220.

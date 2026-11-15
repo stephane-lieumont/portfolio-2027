@@ -47,11 +47,38 @@ export const TECHNOLOGIES = [
   { slug: 'claude-code', label: 'Claude Code', glyph: null, logo: null },
   { slug: 'typescript', label: 'TypeScript', glyph: '\\e927', logo: null },
   { slug: 'react', label: 'React', glyph: '\\e919', logo: LOGO('react') },
+  // Added 2026-11-15 for the client references (cv-2026-facts): no glyph, no PNG.
+  { slug: 'react-native', label: 'React Native', glyph: null, logo: null },
+  { slug: 'nextjs', label: 'Next.js', glyph: null, logo: null },
+  { slug: 'nginx', label: 'Nginx', glyph: null, logo: null },
+  { slug: 'helm', label: 'Helm', glyph: null, logo: null },
+  // Added 2026-11-15 (cv-2026-facts, Stéphane's message on Web-Atrio's GitLab).
+  { slug: 'azure', label: 'Azure', glyph: null, logo: null },
+  { slug: 'ci-cd', label: 'CI/CD', glyph: null, logo: null },
+  // Linxea's stack, from Stéphane (2026-11-15). « unit-tests » is a practice,
+  // not a product: its label is translated by the front end (tool-marks.ts).
+  { slug: 'azure-devops', label: 'Azure DevOps', glyph: null, logo: null },
+  { slug: 'sonarqube', label: 'SonarQube', glyph: null, logo: null },
+  { slug: 'unit-tests', label: 'Unit tests', glyph: null, logo: null },
+  // Ledger's environment, from Stéphane (2026-11-15).
+  { slug: 'python', label: 'Python', glyph: null, logo: null },
+  { slug: 'datadog', label: 'Datadog', glyph: null, logo: null },
+  { slug: 'terraform', label: 'Terraform', glyph: null, logo: null },
+  // CIR — Scancir's stack, from Stéphane (2026-11-15).
+  { slug: 'redux', label: 'Redux', glyph: null, logo: null },
+  { slug: 'android', label: 'Android', glyph: null, logo: null },
+  { slug: 'ios', label: 'iOS', glyph: null, logo: null },
+  { slug: 'google-play-console', label: 'Google Play Console', glyph: null, logo: null },
+  { slug: 'testflight', label: 'TestFlight', glyph: null, logo: null },
+  { slug: 'google-analytics', label: 'Google Analytics', glyph: null, logo: null },
+  { slug: 'segment', label: 'Segment', glyph: null, logo: null },
   { slug: 'vue', label: 'Vue.js', glyph: '\\e918', logo: LOGO('vue') },
   { slug: 'flutter', label: 'Flutter', glyph: '\\e917', logo: LOGO('flutter') },
   { slug: 'dart', label: 'Dart', glyph: '\\e915', logo: null },
   { slug: 'node', label: 'Node.js', glyph: '\\e925', logo: LOGO('node') },
   { slug: 'sass', label: 'Sass', glyph: '\\e924', logo: LOGO('sass') },
+
+  { slug: 'tailwind', label: 'Tailwind CSS', glyph: null, logo: null },
   { slug: 'webpack', label: 'Webpack', glyph: '\\e91a', logo: LOGO('webpack') },
   { slug: 'javascript', label: 'JavaScript', glyph: '\\e91c', logo: null },
   { slug: 'html', label: 'HTML', glyph: '\\eae4', logo: null },

@@ -2,6 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-11-15
+- **Superseded in practice**: 2026-11-15 — the video is a link out, not an embed (see the note at the end)
 
 ## Context
 
@@ -41,3 +42,9 @@ Accepted downsides:
 **A facade library (`lite-youtube-embed` and the like)** — solves the same problem as a web component. Rejected under ADR-0007: the component is under a hundred lines here, the libraries fetch the YouTube thumbnail before the click, which is the request this decision exists to avoid, and they bring their own styles to override.
 
 **Self-hosting the videos in MinIO** — no third party at all. Rejected for now: it needs encoding, a streaming-friendly delivery and our own player controls, for a handful of videos that already live on Stéphane's channel. ADR-0012 already keeps video transcoding out of the API.
+
+## Note — 2026-11-15: a link out, not an embed
+
+Later the same day, reviewing the reference pages, Stéphane reversed the « plays on the page » requirement: « pour la vidéo je préfère uniquement le bouton ». « Voir la vidéo » is now a plain link to the video on YouTube, opening in a new tab and saying so, like the other external links in the hero. The page embeds nothing: no facade, no poster, no player, no « Vidéo » block. The facade component and the embed address helper are deleted.
+
+The reasoning above still holds for any future embed: nothing from YouTube in the HTML, a click before any third-party request, the `nocookie` origin, the `frame-src` rule if a CSP is ever written. The link is the alternative this ADR first rejected, now chosen by Stéphane; what it costs is the one this ADR named — the visitor leaves the site to watch. What it gains: no third-party request on the page at all, no consent question, and the YouTube player's accessibility is no longer ours to vouch for. The `videoUrl` validation stays: the link must lead to one `https` YouTube video.

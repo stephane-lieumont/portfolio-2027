@@ -30,31 +30,30 @@ describe('site addresses', () => {
     expect(pageHref({ page: 'dev' }, 'en')).toBe('/en/developer');
     expect(pageHref({ page: 'cgi' }, 'en')).toBe('/en/3d-art');
     expect(pageHref({ page: 'contact' }, 'en')).toBe('/en/contact');
-    expect(pageHref({ page: 'project', id: projectId('kasa-openclassrooms') }, 'en')).toBe(
-      '/en/developer/kasa-openclassrooms',
+    expect(pageHref({ page: 'project', id: projectId('ledger') }, 'en')).toBe(
+      '/en/developer/ledger',
     );
     expect(pageHref({ page: 'piece', id: pieceId('gorgotte') }, 'en')).toBe('/en/3d-art/gorgotte');
   });
 
-  it('gives a project or a piece its English slug in the English tree', () => {
-    expect(pageHref({ page: 'project', id: projectId('portfolio-3d-2018') }, 'en')).toBe(
-      '/en/developer/3d-portfolio-2018',
-    );
+  // Every project's slug is a proper name today, the same in both trees; the
+  // pieces carry the translated ones.
+  it('gives a piece its English slug in the English tree', () => {
     expect(pageHref({ page: 'piece', id: pieceId('salon-nuit') }, 'en')).toBe(
       '/en/3d-art/living-room-night',
     );
   });
 
   it('does not take one tree’s slug for a record in the other', () => {
-    expect(pageAt('/developer/portfolio-3d-2018', 'en')).toEqual({ page: 'not-found' });
+    expect(pageAt('/3d-art/salon-nuit', 'en')).toEqual({ page: 'not-found' });
     expect(pageAt('/graphisme-3d/living-room-night', 'fr')).toEqual({ page: 'not-found' });
   });
 
   it('keeps every French address where it was', () => {
     expect(pageHref({ page: 'dev' }, 'fr')).toBe('/developpeur');
     expect(pageHref({ page: 'cgi' }, 'fr')).toBe('/graphisme-3d');
-    expect(pageHref({ page: 'project', id: projectId('pixmodels') }, 'fr')).toBe(
-      '/developpeur/pixmodels',
+    expect(pageHref({ page: 'project', id: projectId('case-tes-potes-mobile') }, 'fr')).toBe(
+      '/developpeur/case-tes-potes-mobile',
     );
   });
 
