@@ -1,0 +1,83 @@
+// The mockup's page skeleton and text column, value for value. No ground of
+// its own: the world's ground is painted by <html>, so the motes show through
+// (_world.scss), and the bands paint over them.
+:host {
+  display: block;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px))
+    max(16px, env(safe-area-inset-right, 0px));
+  overflow-x: clip;
+  color: var(--world-ink);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.wrap {
+  max-width: 1320px;
+  margin-inline: auto;
+}
+
+.body {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+  padding-block: clamp(16px, min(3vw, 3svh), 32px) clamp(48px, 8vw, 120px);
+}
+
+.text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 4vw, 48px);
+}
+
+.lede {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(15px, 1.2vw, 17px);
+  color: var(--world-muted);
+}
+
+.lede strong {
+  color: var(--world-ink);
+  font-weight: 500;
+}
+
+.facts {
+  margin: 0;
+  border-top: 1px solid var(--world-rule);
+}
+
+.facts__row {
+  display: grid;
+  grid-template-columns: minmax(96px, 0.8fr) 2fr;
+  gap: 16px;
+  padding-block: 14px;
+  border-bottom: 1px solid var(--world-rule);
+}
+
+.facts dt {
+  padding-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--world-muted);
+}
+
+.facts dd {
+  margin: 0;
+  text-align: right;
+  text-wrap: balance;
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (min-width: 900px) {
+  .body {
+    grid-template-columns: 5fr 6fr;
+    align-items: start;
+  }
+}

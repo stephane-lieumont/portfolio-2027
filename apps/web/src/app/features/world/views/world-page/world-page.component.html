@@ -1,0 +1,41 @@
+<div class="wrap">
+  <app-world-hero [page]="page()" />
+
+  <section class="body">
+    <app-point-cloud [world]="world()" />
+
+    <div class="text">
+      <p class="lede enter-line" style="--line: 2">
+        <strong>{{ page().lede.lead | inLocale }}</strong> {{ page().lede.text | inLocale }}
+      </p>
+      <app-scrub-sentence [text]="page().scrub | inLocale" />
+      <dl class="facts">
+        @for (fact of page().facts; track $index) {
+          <div class="facts__row enter-line" [style.--line]="3 + $index">
+            <dt>{{ fact.label | inLocale }}</dt>
+            <dd>{{ fact.value | inLocale }}</dd>
+          </div>
+        }
+      </dl>
+      <div class="ctas">
+        <a appButton class="btn" [routerLink]="contactPath" i18n="@@world.ctaContact"
+          >Me contacter</a
+        >
+        @if (cv) {
+          <a appButton class="btn btn--ghost" [href]="cv" target="_blank" rel="noopener"
+            ><ng-container i18n="@@world.ctaCv">Mon CV</ng-container
+            ><span class="visually-hidden" i18n="@@pdfNewTab"> (PDF, nouvel onglet)</span></a
+          >
+        }
+      </div>
+    </div>
+  </section>
+
+  @if (world() === 'dev') {
+    <app-dev-work [lineStart]="workStart()" />
+  } @else {
+    <app-art-mosaic [lineStart]="workStart()" />
+  }
+
+  <app-world-stack [stack]="stack()" />
+</div>

@@ -1,8 +1,8 @@
 import { PrerenderFallback, RenderMode } from '@angular/ssr';
 import { describe, expect, it } from 'vitest';
 
+import { PROJECTS } from '@core/data/static-content/static-content';
 import { serverRoutes } from './app.routes.server';
-import { PROJECTS } from './core/static-content';
 
 function prerenderedWithParams(path: string) {
   const route = serverRoutes.find((r) => r.path === path);

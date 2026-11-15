@@ -1,7 +1,7 @@
 import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
 
-import { SECTIONS, SITE_LOCALE } from './core/i18n/site-locale';
-import { ARTWORKS, PROJECTS } from './core/static-content';
+import { ARTWORKS, PROJECTS } from '@core/data/static-content/static-content';
+import { SECTIONS, SITE_LOCALE } from '@core/i18n/site-locale/site-locale';
 
 /**
  * Every route is prerendered at build time and nothing is rendered on demand:

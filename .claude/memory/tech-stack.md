@@ -73,3 +73,13 @@ English under `/en` with English slugs. Strings are marked `i18n` / `$localize`
 with `@@` ids; a missing English translation fails the build. Dynamic copy is
 `{ fr, en }` in shared-types, never translated at runtime. Only `/` redirects
 (nginx, `lang` cookie then `Accept-Language`).
+
+**The web app is layered (ADR-0018).** `src/app` holds `core/` (services,
+stores, i18n, config, static data), `shared/` (generic UI, no domain),
+`common/` (domain pieces several features use), `features/<name>/{views,components}`
+and `layouts/site-layout/` (the root). Aliases `@core`, `@shared`, `@common`,
+`@features`, `@layouts`; ESLint refuses an import against that order and any
+`../` that leaves a folder. Files and classes keep Angular suffixes
+(`world-page.component.ts`, `WorldStore`).
+
+**Folders (ADR-0018):** anything made of more than one file (code + spec, template, styles) lives in its own folder named after it — services, stores and helpers too, e.g. `core/services/contact/contact.service.ts`.

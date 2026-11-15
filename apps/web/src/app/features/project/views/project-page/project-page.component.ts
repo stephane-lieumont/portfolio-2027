@@ -1,0 +1,96 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DOCUMENT,
+  computed,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
+
+import { DevWorkComponent } from '@common/components/dev-work/dev-work.component';
+import {
+  BODY_RAMP,
+  ScrubSentenceComponent,
+} from '@common/components/scrub-sentence/scrub-sentence.component';
+import { PlateImageDirective } from '@common/directives/plate-image/plate-image.directive';
+import { WorldRevealDirective } from '@common/directives/world-reveal/world-reveal.directive';
+import { mediaSrcset, mediaUrl } from '@core/config/media-config/media.config';
+import { PROJECTS, type StaticProject } from '@core/data/static-content/static-content';
+import { toolView } from '@core/data/tool-marks/tool-marks';
+import { InLocalePipe } from '@core/i18n/in-locale.pipe';
+import { SITE_LOCALE } from '@core/i18n/site-locale/site-locale';
+import { SmoothScrollService } from '@core/services/motion/smooth-scroll/smooth-scroll.service';
+import { ProjectHeroComponent } from '@features/project/components/project-hero/project-hero.component';
+import { VideoFacadeComponent } from '@features/project/components/video-facade/video-facade.component';
+import { PlateLeanDirective } from '@features/project/directives/plate-lean/plate-lean.directive';
+import { closingBand } from '@features/project/utils/project-view/project-view';
+
+/** Where the sticky header ends: the video lands under it, not behind it. */
+const HEADER_CLEARANCE = 96;
+
+function projectBySlug(slug: string): StaticProject {
+  const project = PROJECTS.find((p) => p.slug[SITE_LOCALE] === slug);
+  // The route only matches known slugs (app.routes.ts, canMatch).
+  if (!project) throw new Error(`No project "${slug}"`);
+  return project;
+}
+
+/**
+ * A development project's page (« fiche projet »), as on its approved
+ * prototype: the hero, the presentation visual cut along the sweep's diagonal,
+ * then context, mission and tools, and a band of the series or other work.
+ * The summary is not shown: it is the card's line and the meta description.
+ */
+@Component({
+  selector: 'app-project-page',
+  imports: [
+    InLocalePipe,
+    ProjectHeroComponent,
+    ScrubSentenceComponent,
+    DevWorkComponent,
+    PlateImageDirective,
+    PlateLeanDirective,
+    WorldRevealDirective,
+    VideoFacadeComponent,
+  ],
+  templateUrl: './project-page.component.html',
+  styleUrl: './project-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ProjectPageComponent {
+  // Bound from the route parameter by withComponentInputBinding().
+  readonly slug = input.required<string>();
+
+  protected readonly project = computed(() => projectBySlug(this.slug()));
+  protected readonly total = String(PROJECTS.length).padStart(2, '0');
+  protected readonly rank = computed(() =>
+    String(PROJECTS.indexOf(this.project()) + 1).padStart(2, '0'),
+  );
+  protected readonly tools = computed(() =>
+    this.project().technologies.map((slug) => toolView(slug)),
+  );
+  protected readonly band = computed(() => closingBand(this.project(), PROJECTS));
+
+  protected readonly ramp = BODY_RAMP;
+  protected readonly mediaUrl = mediaUrl();
+  protected readonly srcset = mediaSrcset();
+  // The shot's width: 155% then 120% of the screen while it bleeds, then the
+  // column less the plate's padding, at most 1224px.
+  protected readonly presentationSizes =
+    '(min-width: 1600px) 1224px, (min-width: 1352px) calc(1320px - 6vw), (min-width: 900px) calc(94vw - 32px), (min-width: 600px) 120vw, 155vw';
+
+  private readonly document = inject(DOCUMENT);
+  private readonly smooth = inject(SmoothScrollService);
+  private readonly video = viewChild(VideoFacadeComponent);
+
+  /** « Voir la vidéo »: to the player's poster, focus on its play button. */
+  protected toVideo(event: MouseEvent): void {
+    const target = this.document.getElementById('video');
+    const view = this.document.defaultView;
+    if (!target || !view || event.metaKey || event.ctrlKey || event.shiftKey) return;
+    event.preventDefault();
+    this.smooth.jumpTo(target.getBoundingClientRect().top + view.scrollY - HEADER_CLEARANCE);
+    this.video()?.focus();
+  }
+}
