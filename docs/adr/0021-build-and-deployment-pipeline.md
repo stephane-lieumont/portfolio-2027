@@ -33,7 +33,7 @@ Stéphane questioned the prerendering before deciding (« je pensais que l'on fa
 - The site build depends on the production API being up and reachable from GitHub's runners. If it is down, step 3 fails and the live site stays as it was: no half-built site ever ships. The first deployment has to bring the API up, and seed it, before the first site build.
 - The API's read routes must be public. They are read-only and serve published content only. The write routes stay behind `requireAdmin` (V1.1).
 - SSH must accept connections from GitHub's runners, whose addresses are not fixed. The forced command limits what a stolen key can do — deploy a published image, nothing else — but the port is exposed. fail2ban and key-only authentication remain the server's job.
-- Two secrets enter GitHub: the deploy key (environment `production`) and, server-side only, the dispatch token. Rotating them is a manual chore.
+- Every secret enters GitHub (amended 2026-11-16, below), and the V1.1 dispatch token will join them. Rotating them is a manual chore.
 - Free with the current setup: Actions minutes are unlimited for a public repository. GHCR is free for public images; private images count against a small storage quota.
 
 ## Alternatives considered
@@ -42,3 +42,13 @@ Stéphane questioned the prerendering before deciding (« je pensais que l'on fa
 - **Building on the VPS** (CI connects, `git pull`, `docker build` there): no registry needed. Rejected: the Angular build is memory-hungry on the machine serving the site, what runs is not the artefact CI tested, and a rollback means building again.
 - **Watchtower polling GHCR from the VPS**: no inbound access from GitHub. Rejected: minutes of delay, a failed deployment invisible from GitHub, and rollbacks that depend on moving a `latest` tag.
 - **Vercel or Netlify deploy hooks**: the same publishing model, managed. Rejected: a paid tier for this use or a non-commercial clause, a third party hosting the site, and the VPS is already paid for.
+
+## Amendment — 2026-11-16: the secrets come from GitHub
+
+Stéphane, 2026-11-16: « pour les variables d'environnement sensibles on utilisera les secrets de GitHub ». The server's `.env` is no longer filled by hand.
+
+- The secrets (MinIO keys, session secret, admin email and password hash, SMTP user and password, contact address, Turnstile secret) live in the GitHub environment `production-ssh`. Before deploying the API, every run, rollbacks included, sends them over the same SSH key to the forced command, as `deploy.sh secrets` reading `KEY='value'` lines on its standard input. The script accepts exactly the expected keys, each once and non-empty, and rewrites `.env` around the two version tags. The single quotes keep Docker Compose from interpolating the `$` of an argon2 hash; a value may therefore contain neither a single quote nor a newline, which the workflow checks before sending.
+- The non-secret configuration (domain, ports, bucket, SMTP host) moves into the stack's `docker-compose.yml`, versioned in the infrastructure repository.
+- In V1, `deploy.sh api` also runs the content seed once the API is healthy: the content lives in the API's code (ADR-0022), so it ships with the version, and the first deployment fills the database by itself. The seed is idempotent and never deletes. It must go with the back office (V1.1), or it would overwrite what was edited there.
+
+Consequences: changing a secret is « edit it in GitHub, then re-run the workflow with the live version », not an SSH session; nothing secret is written by hand on the server, so no copy drifts from GitHub. Accepted downsides: `production-ssh` has no required reviewer, so its secrets are only as protected as the workflows allowed to use it — the environment must be restricted to `v*` tags; a secret is readable by anyone who can push a workflow to an allowed ref; and the secrets still sit in clear in the server's `.env` (mode 660, owner `ubuntu`, group `deploy`), as they would have anyway.
