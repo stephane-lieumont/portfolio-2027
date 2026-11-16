@@ -93,8 +93,11 @@ jobs:
     steps:
       - run: echo "Deploying $TAG"
 
+  # always(): on a redeploy build-api is skipped, and a skipped ancestor skips
+  # every job below it unless the job decides for itself.
   deploy-api:
     needs: approve
+    if: always() && needs.approve.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: production-ssh
@@ -141,7 +144,7 @@ jobs:
 
   build-site:
     needs: deploy-api
-    if: github.event_name == 'push'
+    if: always() && github.event_name == 'push' && needs.deploy-api.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
