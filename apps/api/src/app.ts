@@ -13,11 +13,21 @@ import contactRoutes from './routes/contact.ts';
 import contentRoutes from './routes/content.ts';
 import healthRoutes from './routes/health.ts';
 
+// Visitors' addresses are kept only in the reverse proxy's access logs, which
+// are deleted after twelve months as the legal notice promises. The API logs
+// what was asked, never who asked.
+export const loggerOptions = {
+  level: process.env['LOG_LEVEL'] ?? 'info',
+  serializers: {
+    req: (request: { method: string; url: string }) => ({
+      method: request.method,
+      url: request.url,
+    }),
+  },
+};
+
 export async function buildApp(): Promise<FastifyInstance> {
-  const app = Fastify({
-    logger: { level: process.env['LOG_LEVEL'] ?? 'info' },
-    trustProxy: true,
-  });
+  const app = Fastify({ logger: loggerOptions, trustProxy: true });
 
   await app.register(configPlugin);
   await app.register(helmet);
