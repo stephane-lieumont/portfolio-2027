@@ -1,0 +1,30 @@
+name: api image
+
+# The API's Docker image, run in production mode beside MinIO and asked what
+# the server asks of it: the health checks, the content seed, the read routes.
+# Apart from `verify` because it needs Docker. v0.9.0 shipped an image that
+# built but could not start; building it was never the test.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-image-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - run: node --test scripts/test-api-image.mjs

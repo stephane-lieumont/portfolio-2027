@@ -69,15 +69,18 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: docker build -f apps/api/Dockerfile -t "$API_IMAGE:$TAG" .
+      # The image that is pushed is the one that just ran in production mode.
+      - run: API_IMAGE="$API_IMAGE:$TAG" node --test scripts/test-api-image.mjs
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push the API image
-        run: |
-          docker build -f apps/api/Dockerfile -t "$API_IMAGE:$TAG" .
-          docker push "$API_IMAGE:$TAG"
+      - run: docker push "$API_IMAGE:$TAG"
 
   # Stéphane approves every production deployment (environment `production`,
   # required reviewer). The SSH secrets live in `production-ssh`, which has no

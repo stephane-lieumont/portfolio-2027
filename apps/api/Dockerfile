@@ -14,11 +14,14 @@ RUN pnpm install --frozen-lockfile --filter @portfolio/api...
 
 FROM base AS runtime
 ENV NODE_ENV=production
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY package.json pnpm-workspace.yaml ./
 COPY packages/shared-types packages/shared-types
 COPY apps/api apps/api
+# pnpm links each package's dependencies into that package's own node_modules:
+# shared-types needs its own (zod), not only the API's.
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=deps /app/packages/shared-types/node_modules ./packages/shared-types/node_modules
 WORKDIR /app/apps/api
 EXPOSE 3000
 # Node 22 runs TypeScript natively (type stripping): no build step.
