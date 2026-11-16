@@ -15,6 +15,7 @@
     "build:site": "node scripts/build-site.mjs",
     "test:e2e": "pnpm --filter @portfolio/e2e test:e2e",
     "test:site-image": "node scripts/test-site-image.mjs",
+    "test:api-image": "node --test scripts/test-api-image.mjs",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
